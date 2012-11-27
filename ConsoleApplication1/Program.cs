@@ -22,15 +22,9 @@ namespace ConsoleApplication1
     {
         static void Main(string[] args)
         {
-            Person person = new Person();
-            Func<Person> foo = () => person;
-            Person p1 = foo();
-            person.n = 8;
-            Person p2 = foo();
-
             var grammar = new UDLGrammar();
             var parser = new Parser(grammar);
-            ParseTree parseTree = parser.Parse("declare namespace ETUS");
+            ParseTree parseTree = parser.Parse("5 + 3");
         }
     }
 }
