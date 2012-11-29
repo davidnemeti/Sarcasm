@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,6 +48,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Irony\irony_1f7bdd8e9147\Irony\010.Irony.2010.csproj">
+      <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
+      <Name>010.Irony.2010</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ETUS.DomainModel\ETUS.DomainModel.csproj">
       <Project>{54970364-a9f5-4ee1-9165-4b9178fb8d25}</Project>
       <Name>ETUS.DomainModel</Name>

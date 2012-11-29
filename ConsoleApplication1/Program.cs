@@ -23,8 +23,13 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             var grammar = new UDLGrammar();
-            var parser = new Parser(grammar);
-            ParseTree parseTree = parser.Parse("5 + 3");
+            var languageData = new LanguageData(grammar);
+            Console.WriteLine(Helper.GetNonTerminalsAsText(languageData));
+            Console.WriteLine();
+            Console.WriteLine(Helper.GetNonTerminalsAsText(languageData, omitProperties: true));
+            var parser = new Parser(languageData);
+            ParseTree parseTree = parser.Parse("boo 5 +");
+            ParseTree parseTree2 = parser.Parse("soo 6 + 7");
         }
     }
 }
