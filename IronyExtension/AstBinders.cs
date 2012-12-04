@@ -13,12 +13,12 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
-    public class PropertyForBnfTerm : NonTerminal
+    public class PropertyBoundToBnfTerm : NonTerminal
     {
         public PropertyInfo PropertyInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
 
-        private PropertyForBnfTerm(PropertyInfo propertyInfo, BnfTerm bnfTerm)
+        private PropertyBoundToBnfTerm(PropertyInfo propertyInfo, BnfTerm bnfTerm)
             : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(propertyInfo.DeclaringType), propertyInfo.Name.ToLower()))
         {
             this.PropertyInfo = propertyInfo;
@@ -27,22 +27,22 @@ namespace Irony.AstBinders
             this.Rule = new BnfExpression(bnfTerm);
         }
 
-        public static PropertyForBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
+        public static PropertyBoundToBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
         {
-            return new PropertyForBnfTerm(propertyInfo, bnfTerm);
+            return new PropertyBoundToBnfTerm(propertyInfo, bnfTerm);
         }
 
-        public static PropertyForBnfTerm Bind<T>(Expression<Func<T>> exprForPropertyAccess, BnfTerm bnfTerm)
+        public static PropertyBoundToBnfTerm Bind<T>(Expression<Func<T>> exprForPropertyAccess, BnfTerm bnfTerm)
         {
-            return new PropertyForBnfTerm(Helper.GetProperty(exprForPropertyAccess), bnfTerm);
+            return new PropertyBoundToBnfTerm(Helper.GetProperty(exprForPropertyAccess), bnfTerm);
         }
     }
 
-    public class TypeForNonTerminal : NonTerminal
+    public class TypeBoundToNonTerminal : NonTerminal
     {
         private readonly Type type;
 
-        public TypeForNonTerminal(Type type)
+        public TypeBoundToNonTerminal(Type type)
             : base(Helper.TypeNameWithDeclaringTypes(type))
         {
             this.type = type;
@@ -76,8 +76,8 @@ namespace Irony.AstBinders
                 {
                     foreach (var bnfTerm in bnfTermList)
                     {
-                        if (bnfTerm is PropertyForBnfTerm)
-                            ((PropertyForBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
+                        if (bnfTerm is PropertyBoundToBnfTerm)
+                            ((PropertyBoundToBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
                         else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
                             Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property assigned for term: {0}", bnfTerm);
                     }
@@ -89,15 +89,15 @@ namespace Irony.AstBinders
 
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
-            e.ResultNode.Tag = ((PropertyForBnfTerm)sender).PropertyInfo;
+            e.ResultNode.Tag = ((PropertyBoundToBnfTerm)sender).PropertyInfo;
         }
     }
 
-    public class ObjectForTerminal : NonTerminal
+    public class ObjectBoundToTerminal : NonTerminal
     {
-        readonly Terminal terminal;
+        private readonly Terminal terminal;
 
-        public ObjectForTerminal(Terminal terminal, AstNodeCreator nodeCreator)
+        public ObjectBoundToTerminal(Terminal terminal, AstNodeCreator nodeCreator)
             : base(terminal.Name)
         {
             this.terminal = terminal;
@@ -139,7 +139,7 @@ namespace Irony.AstBinders
             var sw = new StringWriter();
             foreach (var nonTerminal in language.GrammarData.NonTerminals.OrderBy(nonTerminal => nonTerminal.Name))
             {
-                if (omitProperties && nonTerminal is PropertyForBnfTerm)
+                if (omitProperties && nonTerminal is PropertyBoundToBnfTerm)
                     continue;
 
                 sw.WriteLine("{0}{1}", nonTerminal.Name, nonTerminal.Flags.IsSet(TermFlags.IsNullable) ? "  (Nullable) " : string.Empty);
@@ -157,8 +157,8 @@ namespace Irony.AstBinders
             sw.Write("{0} -> ", production.LValue.Name);
             foreach (BnfTerm bnfTerm in production.RValues)
             {
-                BnfTerm bnfTermToWrite = omitProperties && bnfTerm is PropertyForBnfTerm
-                    ? ((PropertyForBnfTerm)bnfTerm).BnfTerm
+                BnfTerm bnfTermToWrite = omitProperties && bnfTerm is PropertyBoundToBnfTerm
+                    ? ((PropertyBoundToBnfTerm)bnfTerm).BnfTerm
                     : bnfTerm;
 
                 sw.Write("{0} ", bnfTermToWrite.Name);
