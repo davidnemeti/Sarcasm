@@ -13,68 +13,50 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
-    public abstract class MemberBoundToBnfTerm : NonTerminal
+    public class MemberBoundToBnfTerm : NonTerminal
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
 
-        protected MemberBoundToBnfTerm(Type declaringType, MemberInfo memberInfo, BnfTerm bnfTerm)
-            : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(declaringType), memberInfo.Name.ToLower()))
+        private MemberBoundToBnfTerm(MemberInfo memberInfo, BnfTerm bnfTerm)
+            : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(memberInfo.DeclaringType), memberInfo.Name.ToLower()))
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
             this.Rule = new BnfExpression(bnfTerm);
         }
-    }
 
-    public class PropertyBoundToBnfTerm : MemberBoundToBnfTerm
-    {
-        public PropertyInfo PropertyInfo { get { return (PropertyInfo) MemberInfo; } }
-
-        private PropertyBoundToBnfTerm(PropertyInfo propertyInfo, BnfTerm bnfTerm)
-            : base(propertyInfo.DeclaringType, propertyInfo, bnfTerm)
+        public static MemberBoundToBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
         {
+            return new MemberBoundToBnfTerm(propertyInfo, bnfTerm);
         }
 
-        public static PropertyBoundToBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
+        public static MemberBoundToBnfTerm Bind(FieldInfo fieldInfo, BnfTerm bnfTerm)
         {
-            return new PropertyBoundToBnfTerm(propertyInfo, bnfTerm);
+            return new MemberBoundToBnfTerm(fieldInfo, bnfTerm);
         }
 
-        public static PropertyBoundToBnfTerm Bind<TPropertyType>(Expression<Func<TPropertyType>> exprForPropertyAccess, BnfTerm bnfTerm)
+        public static MemberBoundToBnfTerm Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
         {
-            return new PropertyBoundToBnfTerm(Helper.GetProperty(exprForPropertyAccess), bnfTerm);
+            MemberInfo memberInfo = Helper.GetMember(exprForFieldOrPropertyAccess);
+
+            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
+                return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
+            else
+                throw new ArgumentException("Field or property not found", memberInfo.Name);
+
         }
 
-        public static PropertyBoundToBnfTerm Bind<TDeclaringType>(string propertyName, BnfTerm bnfTerm)
+        public static MemberBoundToBnfTerm Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
         {
-            return new PropertyBoundToBnfTerm(typeof(TDeclaringType).GetProperty(propertyName), bnfTerm);
-        }
-    }
+            Type declaringType = typeof(TDeclaringType);
+            MemberInfo memberInfo = (MemberInfo)declaringType.GetField(fieldOrPropertyName) ?? (MemberInfo)declaringType.GetProperty(fieldOrPropertyName);
 
-    public class FieldBoundToBnfTerm : MemberBoundToBnfTerm
-    {
-        public FieldInfo FieldInfo { get { return (FieldInfo) MemberInfo; } }
+            if (memberInfo == null)
+                throw new ArgumentException("Field or property not found", fieldOrPropertyName);
 
-        private FieldBoundToBnfTerm(FieldInfo fieldInfo, BnfTerm bnfTerm)
-            : base(fieldInfo.DeclaringType, fieldInfo, bnfTerm)
-        {
-        }
-
-        public static FieldBoundToBnfTerm Bind(FieldInfo fieldInfo, BnfTerm bnfTerm)
-        {
-            return new FieldBoundToBnfTerm(fieldInfo, bnfTerm);
-        }
-
-        public static FieldBoundToBnfTerm Bind<TFieldType>(Expression<Func<TFieldType>> exprForFieldAccess, BnfTerm bnfTerm)
-        {
-            return new FieldBoundToBnfTerm(Helper.GetField(exprForFieldAccess), bnfTerm);
-        }
-
-        public static FieldBoundToBnfTerm Bind<TDeclaringType>(string fieldName, BnfTerm bnfTerm)
-        {
-            return new FieldBoundToBnfTerm(typeof(TDeclaringType).GetField(fieldName), bnfTerm);
+            return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
         }
     }
 
@@ -159,14 +141,14 @@ namespace Irony.AstBinders
 
     public static class Helper
     {
-        public static PropertyBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, Expression<Func<T>> exprForPropertyAccess)
+        public static MemberBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, Expression<Func<T>> exprForPropertyAccess)
         {
-            return PropertyBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
+            return MemberBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
         }
 
-        public static PropertyBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static MemberBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
-            return PropertyBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
+            return MemberBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
