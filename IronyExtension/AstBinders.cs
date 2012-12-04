@@ -38,14 +38,20 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeBoundToNonTerminal : NonTerminal
+    public class NonTerminalWithType : NonTerminal
     {
         private readonly Type type;
 
-        public TypeBoundToNonTerminal(Type type)
+        protected NonTerminalWithType(Type type)
             : base(Helper.TypeNameWithDeclaringTypes(type))
         {
             this.type = type;
+        }
+
+        public static NonTerminalWithType Of<T>()
+            where T: new()
+        {
+            return new NonTerminalWithType(typeof(T));
         }
 
         public new BnfExpression Rule
@@ -108,11 +114,6 @@ namespace Irony.AstBinders
 
     public static class Helper
     {
-        public static PropertyBoundToBnfTerm Bind2<TDeclaringType, TPropertyType>(this BnfTerm bnfTerm, Expression<Func<TPropertyType>> exprForPropertyAccess)
-        {
-            return PropertyBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
-        }
-
         public static PropertyBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, Expression<Func<T>> exprForPropertyAccess)
         {
             return PropertyBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
