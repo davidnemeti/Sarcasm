@@ -7,17 +7,13 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.AstBinders;
 
 using ETUS.DomainModel;
 using ETUS.Grammar;
 
 namespace ConsoleApplication1
 {
-    class Person
-    {
-        public int n = 5;
-    }
-
     class Program
     {
         static void Main(string[] args)

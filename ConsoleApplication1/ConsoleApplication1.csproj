@@ -60,6 +60,10 @@
       <Project>{7605ac67-3b9c-4e05-8fe6-fd3552852e23}</Project>
       <Name>ETUS.Grammar</Name>
     </ProjectReference>
+    <ProjectReference Include="..\IronyExtension\IronyExtension.csproj">
+      <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
+      <Name>IronyExtension</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -13,30 +13,6 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
-    //class BnfTermProperty : BnfExpression
-    //{
-    //    readonly PropertyInfo propertyInfo;
-
-    //    public BnfTermProperty(PropertyInfo propertyInfo, BnfTerm element)
-    //        : base(element)
-    //    {
-    //        this.propertyInfo = propertyInfo;
-    //    }
-    //}
-
-    //class BnfTermProperty : BnfTerm
-    //{
-    //    readonly PropertyInfo propertyInfo;
-    //    public readonly BnfTerm bnfTerm;
-
-    //    public BnfTermProperty(PropertyInfo propertyInfo, BnfTerm bnfTerm)
-    //        : base(propertyInfo.Name)
-    //    {
-    //        this.propertyInfo = propertyInfo;
-    //        this.bnfTerm = bnfTerm;
-    //    }
-    //}
-
     public class PropertyForBnfTerm : NonTerminal
     {
         public PropertyInfo PropertyInfo { get; private set; }
@@ -59,6 +35,74 @@ namespace Irony.AstBinders
         public static PropertyForBnfTerm Bind<T>(Expression<Func<T>> exprForPropertyAccess, BnfTerm bnfTerm)
         {
             return new PropertyForBnfTerm(Helper.GetProperty(exprForPropertyAccess), bnfTerm);
+        }
+    }
+
+    public class TypeForNonTerminal : NonTerminal
+    {
+        private readonly Type type;
+
+        public TypeForNonTerminal(Type type)
+            : base(Helper.TypeNameWithDeclaringTypes(type))
+        {
+            this.type = type;
+        }
+
+        public new BnfExpression Rule
+        {
+            get { return base.Rule; }
+            set
+            {
+                AstConfig.NodeCreator = (context, parseTreeNode) =>
+                {
+                    parseTreeNode.AstNode = Activator.CreateInstance(type);
+
+                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
+                    {
+                        PropertyInfo propertyInfo = (PropertyInfo)parseTreeChild.Tag;
+                        if (propertyInfo != null)
+                        {
+                            propertyInfo.SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
+                        }
+                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
+                        {
+                            // NOTE: we shouldn't get here since the Rule setter should have handle this kind of error
+                            context.AddMessage(ErrorLevel.Warning, parseTreeChild.Token.Location, "No property assigned for term: {0}", parseTreeChild.Term);
+                        }
+                    }
+                };
+
+                foreach (var bnfTermList in value.Data)
+                {
+                    foreach (var bnfTerm in bnfTermList)
+                    {
+                        if (bnfTerm is PropertyForBnfTerm)
+                            ((PropertyForBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
+                        else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
+                            Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property assigned for term: {0}", bnfTerm);
+                    }
+                }
+
+                base.Rule = value;
+            }
+        }
+
+        void nonTerminal_Reduced(object sender, ReducedEventArgs e)
+        {
+            e.ResultNode.Tag = ((PropertyForBnfTerm)sender).PropertyInfo;
+        }
+    }
+
+    public class ObjectForTerminal : NonTerminal
+    {
+        readonly Terminal terminal;
+
+        public ObjectForTerminal(Terminal terminal, AstNodeCreator nodeCreator)
+            : base(terminal.Name)
+        {
+            this.terminal = terminal;
+            this.AstConfig.NodeCreator = nodeCreator;
+            this.Rule = terminal;
         }
     }
 
@@ -120,116 +164,6 @@ namespace Irony.AstBinders
                 sw.Write("{0} ", bnfTermToWrite.Name);
             }
             return sw.ToString();
-        }
-    }
-
-    public class TypeForNonTerminal : NonTerminal
-    {
-        readonly Type type;
-
-        //IDictionary<int, PropertyInfo> parseTreeChildIndexToProperty = new Dictionary<int, PropertyInfo>();
-        //ISet<BnfTerm> bnfTermsPunctuationOrEmptyTransient = new HashSet<BnfTerm>();
-
-        //void NonTerminalType_Reduced(object sender, ReducedEventArgs e)
-        //{
-        //    int parseTreeChildIndex = 0;
-        //    foreach (BnfTerm bnfTerm in e.ReducedProduction.RValues)
-        //    {
-        //        // NOTE: we can recognize empty transient terms only by using bnfTermsPunctuationOrEmptyTransient (since they were eliminated earlier)
-        //        if (bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) || bnfTermsPunctuationOrEmptyTransient.Contains(bnfTerm))
-        //            continue;
-
-        //        if (bnfTerm is BnfTermProperty)
-        //        {
-        //            BnfTermProperty bnfTermProperty = (BnfTermProperty)bnfTerm;
-        //            parseTreeChildIndexToProperty[parseTreeChildIndex] = bnfTermProperty.PropertyInfo;
-        //        }
-
-        //        parseTreeChildIndex++;
-        //    }
-        //    bnfTermsPunctuationOrEmptyTransient.Clear();
-        //}
-
-        public TypeForNonTerminal(Type type)
-            : base(Helper.TypeNameWithDeclaringTypes(type))
-        {
-            this.type = type;
-            //            this.Reduced += NonTerminalType_Reduced;
-        }
-
-        public new BnfExpression Rule
-        {
-            get { return base.Rule; }
-            set
-            {
-                AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    parseTreeNode.AstNode = Activator.CreateInstance(type);
-
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
-                    {
-                        PropertyInfo propertyInfo = (PropertyInfo)parseTreeChild.Tag;
-                        if (propertyInfo != null)
-                        {
-                            propertyInfo.SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
-                        }
-                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                        {
-                            // NOTE: we shouldn't get here since the Rule setter should have handle this kind of error
-                            context.AddMessage(ErrorLevel.Warning, parseTreeChild.Token.Location, "No property assigned for term: {0}", parseTreeChild.Term);
-                        }
-                    }
-
-                    //foreach (var parseTreeChild in parseTreeNode.ChildNodes.Select((parseTreeChild, parseTreeChildIndex) =>
-                    //    new { Value = parseTreeChild, Index = parseTreeChildIndex }))
-                    //{
-                    //    PropertyInfo propertyInfo;
-                    //    if (parseTreeChildIndexToProperty.TryGetValue(parseTreeChild.Index, out propertyInfo))
-                    //    {
-                    //        propertyInfo.SetValue(parseTreeNode.AstNode, parseTreeChild.Value.AstNode);
-                    //    }
-                    //    else if (!parseTreeChild.Value.Term.Flags.IsSet(TermFlags.NoAstNode))
-                    //    {
-                    //        context.AddMessage(ErrorLevel.Warning, parseTreeChild.Value.Token.Location, "No property assigned for term: {0}", parseTreeChild.Value.Term);
-                    //    }
-                    //}
-
-                    //parseTreeChildIndexToProperty.Clear();
-                };
-
-                foreach (var bnfTermList in value.Data)
-                {
-                    foreach (var bnfTerm in bnfTermList)
-                    {
-                        if (bnfTerm is PropertyForBnfTerm)
-                            ((PropertyForBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
-                        else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                            Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property assigned for term: {0}", bnfTerm);
-                    }
-                }
-
-                base.Rule = value;
-            }
-        }
-
-        void nonTerminal_Reduced(object sender, ReducedEventArgs e)
-        {
-            e.ResultNode.Tag = ((PropertyForBnfTerm)sender).PropertyInfo;
-            //if (e.ResultNode.IsPunctuationOrEmptyTransient())
-            //    bnfTermsPunctuationOrEmptyTransient.Add(e.ResultNode.Term);
-        }
-    }
-
-    public class ObjectForTerminal : NonTerminal
-    {
-        readonly Terminal terminal;
-
-        public ObjectForTerminal(Terminal terminal, AstNodeCreator nodeCreator)
-            : base(terminal.Name)
-        {
-            this.terminal = terminal;
-            this.AstConfig.NodeCreator = nodeCreator;
-            this.Rule = terminal;
         }
     }
 }
