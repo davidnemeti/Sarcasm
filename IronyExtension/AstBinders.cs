@@ -108,6 +108,16 @@ namespace Irony.AstBinders
 
     public static class Helper
     {
+        public static PropertyBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, Expression<Func<T>> exprForPropertyAccess)
+        {
+            return PropertyBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
+        }
+
+        public static PropertyBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        {
+            return PropertyBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
+        }
+
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
         {
             var member = exprForPropertyAccess.Body as MemberExpression;
