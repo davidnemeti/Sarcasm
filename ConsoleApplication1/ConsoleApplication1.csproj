@@ -48,7 +48,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Irony\irony_1f7bdd8e9147\Irony\010.Irony.2010.csproj">
+    <ProjectReference Include="..\..\Irony\Irony\010.Irony.2010.csproj">
       <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
       <Name>010.Irony.2010</Name>
     </ProjectReference>
