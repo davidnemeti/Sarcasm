@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("IronyExtension")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Extensions for Irony: property, field and type binding for terminals and non-terminals; automatic unparser based on bound grammar")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("IronyExtension")]
-[assembly: AssemblyCopyright("Copyright ©  2012")]
+[assembly: AssemblyCopyright("Copyright ©  2012, Dávid Németi")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
