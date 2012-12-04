@@ -13,18 +13,28 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
-    public class PropertyBoundToBnfTerm : NonTerminal
+    public abstract class MemberBoundToBnfTerm : NonTerminal
     {
-        public PropertyInfo PropertyInfo { get; private set; }
+        public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
 
-        private PropertyBoundToBnfTerm(PropertyInfo propertyInfo, BnfTerm bnfTerm)
-            : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(propertyInfo.DeclaringType), propertyInfo.Name.ToLower()))
+        protected MemberBoundToBnfTerm(Type declaringType, MemberInfo memberInfo, BnfTerm bnfTerm)
+            : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(declaringType), memberInfo.Name.ToLower()))
         {
-            this.PropertyInfo = propertyInfo;
+            this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
             this.Rule = new BnfExpression(bnfTerm);
+        }
+    }
+
+    public class PropertyBoundToBnfTerm : MemberBoundToBnfTerm
+    {
+        public PropertyInfo PropertyInfo { get { return (PropertyInfo) MemberInfo; } }
+
+        private PropertyBoundToBnfTerm(PropertyInfo propertyInfo, BnfTerm bnfTerm)
+            : base(propertyInfo.DeclaringType, propertyInfo, bnfTerm)
+        {
         }
 
         public static PropertyBoundToBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
@@ -32,9 +42,39 @@ namespace Irony.AstBinders
             return new PropertyBoundToBnfTerm(propertyInfo, bnfTerm);
         }
 
-        public static PropertyBoundToBnfTerm Bind<T>(Expression<Func<T>> exprForPropertyAccess, BnfTerm bnfTerm)
+        public static PropertyBoundToBnfTerm Bind<TPropertyType>(Expression<Func<TPropertyType>> exprForPropertyAccess, BnfTerm bnfTerm)
         {
             return new PropertyBoundToBnfTerm(Helper.GetProperty(exprForPropertyAccess), bnfTerm);
+        }
+
+        public static PropertyBoundToBnfTerm Bind<TDeclaringType>(string propertyName, BnfTerm bnfTerm)
+        {
+            return new PropertyBoundToBnfTerm(typeof(TDeclaringType).GetProperty(propertyName), bnfTerm);
+        }
+    }
+
+    public class FieldBoundToBnfTerm : MemberBoundToBnfTerm
+    {
+        public FieldInfo FieldInfo { get { return (FieldInfo) MemberInfo; } }
+
+        private FieldBoundToBnfTerm(FieldInfo fieldInfo, BnfTerm bnfTerm)
+            : base(fieldInfo.DeclaringType, fieldInfo, bnfTerm)
+        {
+        }
+
+        public static FieldBoundToBnfTerm Bind(FieldInfo fieldInfo, BnfTerm bnfTerm)
+        {
+            return new FieldBoundToBnfTerm(fieldInfo, bnfTerm);
+        }
+
+        public static FieldBoundToBnfTerm Bind<TFieldType>(Expression<Func<TFieldType>> exprForFieldAccess, BnfTerm bnfTerm)
+        {
+            return new FieldBoundToBnfTerm(Helper.GetField(exprForFieldAccess), bnfTerm);
+        }
+
+        public static FieldBoundToBnfTerm Bind<TDeclaringType>(string fieldName, BnfTerm bnfTerm)
+        {
+            return new FieldBoundToBnfTerm(typeof(TDeclaringType).GetField(fieldName), bnfTerm);
         }
     }
 
@@ -65,15 +105,20 @@ namespace Irony.AstBinders
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
-                        PropertyInfo propertyInfo = (PropertyInfo)parseTreeChild.Tag;
-                        if (propertyInfo != null)
+                        MemberInfo memberInfo = parseTreeChild.Tag as MemberInfo;
+
+                        if (memberInfo is PropertyInfo)
                         {
-                            propertyInfo.SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
+                            ((PropertyInfo)memberInfo).SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
+                        }
+                        else if (memberInfo is FieldInfo)
+                        {
+                            ((FieldInfo)memberInfo).SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
                         }
                         else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
                         {
                             // NOTE: we shouldn't get here since the Rule setter should have handle this kind of error
-                            context.AddMessage(ErrorLevel.Warning, parseTreeChild.Token.Location, "No property assigned for term: {0}", parseTreeChild.Term);
+                            context.AddMessage(ErrorLevel.Warning, parseTreeChild.Token.Location, "No property or field assigned for term: {0}", parseTreeChild.Term);
                         }
                     }
                 };
@@ -82,10 +127,10 @@ namespace Irony.AstBinders
                 {
                     foreach (var bnfTerm in bnfTermList)
                     {
-                        if (bnfTerm is PropertyBoundToBnfTerm)
-                            ((PropertyBoundToBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
+                        if (bnfTerm is MemberBoundToBnfTerm)
+                            ((MemberBoundToBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
                         else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                            Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property assigned for term: {0}", bnfTerm);
+                            Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property or field assigned for term: {0}", bnfTerm);
                     }
                 }
 
@@ -95,7 +140,7 @@ namespace Irony.AstBinders
 
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
-            e.ResultNode.Tag = ((PropertyBoundToBnfTerm)sender).PropertyInfo;
+            e.ResultNode.Tag = ((MemberBoundToBnfTerm)sender).MemberInfo;
         }
     }
 
@@ -126,13 +171,41 @@ namespace Irony.AstBinders
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
         {
-            var member = exprForPropertyAccess.Body as MemberExpression;
-            if (member == null)
+            var memberExpression = exprForPropertyAccess.Body as MemberExpression;
+            if (memberExpression == null)
                 throw new InvalidOperationException("Expression is not a member access expression.");
-            var property = member.Member as PropertyInfo;
-            if (property == null)
+
+            var propertyInfo = memberExpression.Member as PropertyInfo;
+            if (propertyInfo == null)
                 throw new InvalidOperationException("Member in expression is not a property.");
-            return property;
+
+            return propertyInfo;
+        }
+
+        public static FieldInfo GetField<T>(Expression<Func<T>> exprForFieldAccess)
+        {
+            var memberExpression = exprForFieldAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var fieldInfo = memberExpression.Member as FieldInfo;
+            if (fieldInfo == null)
+                throw new InvalidOperationException("Member in expression is not a field.");
+
+            return fieldInfo;
+        }
+
+        public static MemberInfo GetMember<T>(Expression<Func<T>> exprForMemberAccess)
+        {
+            var memberExpression = exprForMemberAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var memberInfo = memberExpression.Member as MemberInfo;
+            if (memberInfo == null)
+                throw new InvalidOperationException("Member in expression is not a member.");
+
+            return memberInfo;
         }
 
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
@@ -150,31 +223,31 @@ namespace Irony.AstBinders
                 : type.Name.ToLower();
         }
 
-        public static string GetNonTerminalsAsText(LanguageData language, bool omitProperties = false)
+        public static string GetNonTerminalsAsText(LanguageData language, bool omitBoundMembers = false)
         {
             var sw = new StringWriter();
             foreach (var nonTerminal in language.GrammarData.NonTerminals.OrderBy(nonTerminal => nonTerminal.Name))
             {
-                if (omitProperties && nonTerminal is PropertyBoundToBnfTerm)
+                if (omitBoundMembers && nonTerminal is MemberBoundToBnfTerm)
                     continue;
 
                 sw.WriteLine("{0}{1}", nonTerminal.Name, nonTerminal.Flags.IsSet(TermFlags.IsNullable) ? "  (Nullable) " : string.Empty);
                 foreach (Production pr in nonTerminal.Productions)
                 {
-                    sw.WriteLine("   {0}", ProductionToString(pr, omitProperties));
+                    sw.WriteLine("   {0}", ProductionToString(pr, omitBoundMembers));
                 }
             }
             return sw.ToString();
         }
 
-        private static string ProductionToString(Production production, bool omitProperties)
+        private static string ProductionToString(Production production, bool omitBoundMembers)
         {
             var sw = new StringWriter();
             sw.Write("{0} -> ", production.LValue.Name);
             foreach (BnfTerm bnfTerm in production.RValues)
             {
-                BnfTerm bnfTermToWrite = omitProperties && bnfTerm is PropertyBoundToBnfTerm
-                    ? ((PropertyBoundToBnfTerm)bnfTerm).BnfTerm
+                BnfTerm bnfTermToWrite = omitBoundMembers && bnfTerm is MemberBoundToBnfTerm
+                    ? ((MemberBoundToBnfTerm)bnfTerm).BnfTerm
                     : bnfTerm;
 
                 sw.Write("{0} ", bnfTermToWrite.Name);
