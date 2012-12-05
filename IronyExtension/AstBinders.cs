@@ -80,6 +80,11 @@ namespace Irony.AstBinders
             return new NonTerminalWithType(typeof(TType), errorAlias);
         }
 
+        public static NonTerminalWithType OfAbstract<TType>(string errorAlias = null)
+        {
+            return new NonTerminalWithType(typeof(TType), errorAlias);
+        }
+
         public static NonTerminalWithType Of(Type type, string errorAlias = null)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
