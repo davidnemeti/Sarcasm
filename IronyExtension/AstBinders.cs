@@ -68,24 +68,24 @@ namespace Irony.AstBinders
     {
         private readonly Type type;
 
-        protected NonTerminalWithType(Type type)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(type))
+        protected NonTerminalWithType(Type type, string errorAlias)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
         {
             this.type = type;
         }
 
-        public static NonTerminalWithType Of<TType>()
+        public static NonTerminalWithType Of<TType>(string errorAlias = null)
             where TType : new()
         {
-            return new NonTerminalWithType(typeof(TType));
+            return new NonTerminalWithType(typeof(TType), errorAlias);
         }
 
-        public static NonTerminalWithType Of(Type type)
+        public static NonTerminalWithType Of(Type type, string errorAlias = null)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
 
-            return new NonTerminalWithType(type);
+            return new NonTerminalWithType(type, errorAlias);
         }
 
         public new BnfExpression Rule
