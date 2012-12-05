@@ -13,7 +13,8 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
-    public delegate object AstObjectCreator(AstContext context, ParseTreeNode parseNode);
+    public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
+    public delegate TOut AstObjectCreator<TIn, TOut>(AstContext context, ParseTreeNode parseNode, TIn inputObject);
 
     public class MemberBoundToBnfTerm : NonTerminal
     {
@@ -202,29 +203,25 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeForAbstract : NonTerminal
+    public class TypeForTransient : NonTerminal
     {
         private readonly Type type;
 
-        protected TypeForAbstract(Type type, string errorAlias)
+        protected TypeForTransient(Type type, string errorAlias)
             : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
         {
-            if (!type.IsAbstract)
-                throw new ArgumentException("Type is not abstract");
-
             this.type = type;
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
         }
 
-        public static TypeForAbstract Of<TType>(string errorAlias = null)
-            where TType : class
+        public static TypeForTransient Of<TType>(string errorAlias = null)
         {
-            return new TypeForAbstract(typeof(TType), errorAlias);
+            return new TypeForTransient(typeof(TType), errorAlias);
         }
 
-        public static TypeForAbstract Of(Type type, string errorAlias = null)
+        public static TypeForTransient Of(Type type, string errorAlias = null)
         {
-            return new TypeForAbstract(type, errorAlias);
+            return new TypeForTransient(type, errorAlias);
         }
     }
 
@@ -245,9 +242,23 @@ namespace Irony.AstBinders
             return new ObjectBoundToBnfTerm(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfTerm Bind(BnfTerm bnfTerm, AstObjectCreator astObjectCreator)
+        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return new ObjectBoundToBnfTerm(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
+            return new ObjectBoundToBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
+        }
+
+        public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        {
+            return new ObjectBoundToBnfTerm<TOut>(inputObjectBoundToBnfTerm,
+                (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator(context, parseNode, (TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == inputObjectBoundToBnfTerm).AstNode));
+        }
+    }
+
+    public class ObjectBoundToBnfTerm<T> : ObjectBoundToBnfTerm
+    {
+        internal ObjectBoundToBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+            : base(bnfTerm, nodeCreator)
+        {
         }
     }
 
@@ -273,9 +284,14 @@ namespace Irony.AstBinders
             return ObjectBoundToBnfTerm.Bind(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfTerm Bind(this BnfTerm bnfTerm, AstObjectCreator astObjectCreator)
+        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
             return ObjectBoundToBnfTerm.Bind(bnfTerm, astObjectCreator);
+        }
+
+        public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(this ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        {
+            return ObjectBoundToBnfTerm.Bind(inputObjectBoundToBnfTerm, astObjectCreator);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
