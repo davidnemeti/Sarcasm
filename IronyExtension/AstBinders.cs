@@ -13,6 +13,8 @@ using System.IO;
 
 namespace Irony.AstBinders
 {
+    public delegate object AstObjectCreator(AstContext context, ParseTreeNode parseNode);
+
     public class MemberBoundToBnfTerm : NonTerminal
     {
         public MemberInfo MemberInfo { get; private set; }
@@ -45,7 +47,6 @@ namespace Irony.AstBinders
                 return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
-
         }
 
         public static MemberBoundToBnfTerm Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
@@ -137,35 +138,46 @@ namespace Irony.AstBinders
             }
         }
 
+        public NonTerminalWithType Bind(BnfExpression bnfExpression)
+        {
+            this.Rule = bnfExpression;
+            return this;
+        }
+
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
             e.ResultNode.Tag = ((MemberBoundToBnfTerm)sender).MemberInfo;
         }
     }
 
-    public class ObjectBoundToTerminal : NonTerminal
+    public class ObjectBoundToBnfExpression : NonTerminal
     {
-        private readonly Terminal terminal;
+        private readonly BnfExpression bnfExpression;
 
-        protected ObjectBoundToTerminal(Terminal terminal, AstNodeCreator nodeCreator)
-            : base(terminal.Name)
+        protected ObjectBoundToBnfExpression(BnfExpression bnfExpression, AstNodeCreator nodeCreator)
+            : base(bnfExpression.Name)
         {
-            this.terminal = terminal;
+            this.bnfExpression = bnfExpression;
             this.AstConfig.NodeCreator = nodeCreator;
-            this.Rule = terminal;
+            this.Rule = bnfExpression;
         }
 
-        public static ObjectBoundToTerminal Bind(Terminal terminal, AstNodeCreator nodeCreator)
+        public static ObjectBoundToBnfExpression Bind(BnfExpression bnfExpression, AstNodeCreator nodeCreator)
         {
-            return new ObjectBoundToTerminal(terminal, nodeCreator);
+            return new ObjectBoundToBnfExpression(bnfExpression, nodeCreator);
+        }
+
+        public static ObjectBoundToBnfExpression Bind(BnfExpression bnfExpression, AstObjectCreator astObjectCreator)
+        {
+            return new ObjectBoundToBnfExpression(bnfExpression, (context, parseNode) => parseNode.AstNode = astObjectCreator);
         }
     }
 
     public static class GrammarHelper
     {
-        public static MemberBoundToBnfTerm Bind<TMemberType>(this BnfTerm bnfTerm, Expression<Func<TMemberType>> exprForPropertyAccess)
+        public static MemberBoundToBnfTerm Bind<TMemberType>(this BnfTerm bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
         {
-            return MemberBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
+            return MemberBoundToBnfTerm.Bind(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
         public static MemberBoundToBnfTerm Bind(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
@@ -173,9 +185,19 @@ namespace Irony.AstBinders
             return MemberBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
         }
 
-        public static ObjectBoundToTerminal Bind(this Terminal terminal, AstNodeCreator nodeCreator)
+        public static MemberBoundToBnfTerm Bind(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
-            return ObjectBoundToTerminal.Bind(terminal, nodeCreator);
+            return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
+        }
+
+        public static ObjectBoundToBnfExpression Bind(this BnfExpression bnfExpression, AstNodeCreator nodeCreator)
+        {
+            return ObjectBoundToBnfExpression.Bind(bnfExpression, nodeCreator);
+        }
+
+        public static ObjectBoundToBnfExpression Bind(this BnfExpression bnfExpression, AstObjectCreator astObjectCreator)
+        {
+            return ObjectBoundToBnfExpression.Bind(bnfExpression, astObjectCreator);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
