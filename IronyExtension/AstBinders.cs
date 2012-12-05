@@ -65,33 +65,91 @@ namespace Irony.AstBinders
         }
     }
 
-    public class NonTerminalWithType : NonTerminal
+    public class TypeForCollection : NonTerminal
+    {
+        private static readonly Type collectionBaseGenericTypeDefinition = typeof(ICollection<>);
+
+        private readonly Type collectionType;
+        private readonly Type elementType;
+
+        protected TypeForCollection(Type collectionType, string errorAlias)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(collectionType), errorAlias)
+        {
+            Type collectionBaseGenericDefinition = collectionType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == collectionBaseGenericTypeDefinition);
+
+            if (collectionBaseGenericDefinition == null)
+                throw new ArgumentException(string.Format("Type does not implement {0}", collectionBaseGenericTypeDefinition.FullName), "type");
+
+            this.collectionType = collectionType;
+            this.elementType = collectionBaseGenericDefinition.GetGenericArguments()[0];
+        }
+
+        public static TypeForCollection Of<TCollectionType>(string errorAlias = null)
+            where TCollectionType : new()
+        {
+            return new TypeForCollection(typeof(TCollectionType), errorAlias);
+        }
+
+        public static TypeForCollection Of(Type collectionType, string errorAlias = null)
+        {
+            if (collectionType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+                throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
+
+            return new TypeForCollection(collectionType, errorAlias);
+        }
+
+        public new BnfExpression Rule
+        {
+            get { return base.Rule; }
+            set
+            {
+                AstConfig.NodeCreator = (context, parseTreeNode) =>
+                {
+                    dynamic collection = Activator.CreateInstance(collectionType, nonPublic: true);
+
+                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
+                    {
+                        if (parseTreeChild.AstNode.GetType() == elementType)
+                        {
+                            collection.Add(parseTreeChild.AstNode);
+                        }
+                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
+                        {
+                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
+                                parseTreeChild.Term, elementType.FullName, parseTreeChild.AstNode.GetType().FullName);
+                        }
+                    }
+
+                    parseTreeNode.AstNode = collection;
+                };
+
+                base.Rule = value;
+            }
+        }
+    }
+
+    public class TypeForBoundMembers : NonTerminal
     {
         private readonly Type type;
 
-        protected NonTerminalWithType(Type type, string errorAlias)
+        protected TypeForBoundMembers(Type type, string errorAlias)
             : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
         {
             this.type = type;
         }
 
-        public static NonTerminalWithType Of<TType>(string errorAlias = null)
+        public static TypeForBoundMembers Of<TType>(string errorAlias = null)
             where TType : new()
         {
-            return new NonTerminalWithType(typeof(TType), errorAlias);
+            return new TypeForBoundMembers(typeof(TType), errorAlias);
         }
 
-        public static NonTerminalWithType OfAbstract<TType>(string errorAlias = null)
-        {
-            return new NonTerminalWithType(typeof(TType), errorAlias);
-        }
-
-        public static NonTerminalWithType Of(Type type, string errorAlias = null)
+        public static TypeForBoundMembers Of(Type type, string errorAlias = null)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
 
-            return new NonTerminalWithType(type, errorAlias);
+            return new TypeForBoundMembers(type, errorAlias);
         }
 
         public new BnfExpression Rule
@@ -118,7 +176,7 @@ namespace Irony.AstBinders
                         else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
                         {
                             // NOTE: we shouldn't get here since the Rule setter should have handle this kind of error
-                            context.AddMessage(ErrorLevel.Warning, parseTreeChild.Token.Location, "No property or field assigned for term: {0}", parseTreeChild.Term);
+                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "No property or field assigned for term: {0}", parseTreeChild.Term);
                         }
                     }
                 };
@@ -138,15 +196,35 @@ namespace Irony.AstBinders
             }
         }
 
-        public NonTerminalWithType Bind(BnfExpression bnfExpression)
-        {
-            this.Rule = bnfExpression;
-            return this;
-        }
-
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
             e.ResultNode.Tag = ((MemberBoundToBnfTerm)sender).MemberInfo;
+        }
+    }
+
+    public class TypeForAbstract : NonTerminal
+    {
+        private readonly Type type;
+
+        protected TypeForAbstract(Type type, string errorAlias)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
+        {
+            if (!type.IsAbstract)
+                throw new ArgumentException("Type is not abstract");
+
+            this.type = type;
+            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+        }
+
+        public static TypeForAbstract Of<TType>(string errorAlias = null)
+            where TType : class
+        {
+            return new TypeForAbstract(typeof(TType), errorAlias);
+        }
+
+        public static TypeForAbstract Of(Type type, string errorAlias = null)
+        {
+            return new TypeForAbstract(type, errorAlias);
         }
     }
 
