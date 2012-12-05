@@ -150,26 +150,26 @@ namespace Irony.AstBinders
         }
     }
 
-    public class ObjectBoundToBnfExpression : NonTerminal
+    public class ObjectBoundToBnfTerm : NonTerminal
     {
-        private readonly BnfExpression bnfExpression;
+        private readonly BnfTerm bnfTerm;
 
-        protected ObjectBoundToBnfExpression(BnfExpression bnfExpression, AstNodeCreator nodeCreator)
-            : base(bnfExpression.Name)
+        protected ObjectBoundToBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+            : base(bnfTerm.Name)
         {
-            this.bnfExpression = bnfExpression;
+            this.bnfTerm = bnfTerm;
             this.AstConfig.NodeCreator = nodeCreator;
-            this.Rule = bnfExpression;
+            this.Rule = new BnfExpression(bnfTerm);
         }
 
-        public static ObjectBoundToBnfExpression Bind(BnfExpression bnfExpression, AstNodeCreator nodeCreator)
+        public static ObjectBoundToBnfTerm Bind(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
         {
-            return new ObjectBoundToBnfExpression(bnfExpression, nodeCreator);
+            return new ObjectBoundToBnfTerm(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfExpression Bind(BnfExpression bnfExpression, AstObjectCreator astObjectCreator)
+        public static ObjectBoundToBnfTerm Bind(BnfTerm bnfTerm, AstObjectCreator astObjectCreator)
         {
-            return new ObjectBoundToBnfExpression(bnfExpression, (context, parseNode) => parseNode.AstNode = astObjectCreator);
+            return new ObjectBoundToBnfTerm(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator);
         }
     }
 
@@ -190,14 +190,14 @@ namespace Irony.AstBinders
             return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
         }
 
-        public static ObjectBoundToBnfExpression Bind(this BnfExpression bnfExpression, AstNodeCreator nodeCreator)
+        public static ObjectBoundToBnfTerm Bind(this BnfTerm bnfTerm, AstNodeCreator nodeCreator)
         {
-            return ObjectBoundToBnfExpression.Bind(bnfExpression, nodeCreator);
+            return ObjectBoundToBnfTerm.Bind(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfExpression Bind(this BnfExpression bnfExpression, AstObjectCreator astObjectCreator)
+        public static ObjectBoundToBnfTerm Bind(this BnfTerm bnfTerm, AstObjectCreator astObjectCreator)
         {
-            return ObjectBoundToBnfExpression.Bind(bnfExpression, astObjectCreator);
+            return ObjectBoundToBnfTerm.Bind(bnfTerm, astObjectCreator);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
