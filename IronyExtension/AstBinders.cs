@@ -169,7 +169,7 @@ namespace Irony.AstBinders
 
         public static ObjectBoundToBnfTerm Bind(BnfTerm bnfTerm, AstObjectCreator astObjectCreator)
         {
-            return new ObjectBoundToBnfTerm(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator);
+            return new ObjectBoundToBnfTerm(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
         }
     }
 
