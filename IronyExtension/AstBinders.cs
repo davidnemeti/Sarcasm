@@ -18,8 +18,8 @@ namespace Irony.AstBinders
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
 
-        private MemberBoundToBnfTerm(MemberInfo memberInfo, BnfTerm bnfTerm)
-            : base(name: string.Format("{0}.{1}", Helper.TypeNameWithDeclaringTypes(memberInfo.DeclaringType), memberInfo.Name.ToLower()))
+        protected MemberBoundToBnfTerm(MemberInfo memberInfo, BnfTerm bnfTerm)
+            : base(name: string.Format("{0}.{1}", GrammarHelper.TypeNameWithDeclaringTypes(memberInfo.DeclaringType), memberInfo.Name.ToLower()))
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
@@ -39,7 +39,7 @@ namespace Irony.AstBinders
 
         public static MemberBoundToBnfTerm Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
         {
-            MemberInfo memberInfo = Helper.GetMember(exprForFieldOrPropertyAccess);
+            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
                 return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
@@ -50,7 +50,11 @@ namespace Irony.AstBinders
 
         public static MemberBoundToBnfTerm Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
         {
-            Type declaringType = typeof(TDeclaringType);
+            return Bind(typeof(TDeclaringType), fieldOrPropertyName, bnfTerm);
+        }
+
+        public static MemberBoundToBnfTerm Bind(Type declaringType, string fieldOrPropertyName, BnfTerm bnfTerm)
+        {
             MemberInfo memberInfo = (MemberInfo)declaringType.GetField(fieldOrPropertyName) ?? (MemberInfo)declaringType.GetProperty(fieldOrPropertyName);
 
             if (memberInfo == null)
@@ -65,15 +69,23 @@ namespace Irony.AstBinders
         private readonly Type type;
 
         protected NonTerminalWithType(Type type)
-            : base(Helper.TypeNameWithDeclaringTypes(type))
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
             this.type = type;
         }
 
-        public static NonTerminalWithType Of<T>()
-            where T: new()
+        public static NonTerminalWithType Of<TType>()
+            where TType : new()
         {
-            return new NonTerminalWithType(typeof(T));
+            return new NonTerminalWithType(typeof(TType));
+        }
+
+        public static NonTerminalWithType Of(Type type)
+        {
+            if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+                throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
+
+            return new NonTerminalWithType(type);
         }
 
         public new BnfExpression Rule
@@ -83,7 +95,7 @@ namespace Irony.AstBinders
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    parseTreeNode.AstNode = Activator.CreateInstance(type);
+                    parseTreeNode.AstNode = Activator.CreateInstance(type, nonPublic: true);
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
@@ -112,7 +124,7 @@ namespace Irony.AstBinders
                         if (bnfTerm is MemberBoundToBnfTerm)
                             ((MemberBoundToBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
                         else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                            Helper.ThrowGrammarError(GrammarErrorLevel.Error, "No property or field assigned for term: {0}", bnfTerm);
+                            GrammarHelper.ThrowGrammarError(GrammarErrorLevel.Error, "No property or field assigned for term: {0}", bnfTerm);
                     }
                 }
 
@@ -130,25 +142,35 @@ namespace Irony.AstBinders
     {
         private readonly Terminal terminal;
 
-        public ObjectBoundToTerminal(Terminal terminal, AstNodeCreator nodeCreator)
+        protected ObjectBoundToTerminal(Terminal terminal, AstNodeCreator nodeCreator)
             : base(terminal.Name)
         {
             this.terminal = terminal;
             this.AstConfig.NodeCreator = nodeCreator;
             this.Rule = terminal;
         }
+
+        public static ObjectBoundToTerminal Bind(Terminal terminal, AstNodeCreator nodeCreator)
+        {
+            return new ObjectBoundToTerminal(terminal, nodeCreator);
+        }
     }
 
-    public static class Helper
+    public static class GrammarHelper
     {
-        public static MemberBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, Expression<Func<T>> exprForPropertyAccess)
+        public static MemberBoundToBnfTerm Bind<TMemberType>(this BnfTerm bnfTerm, Expression<Func<TMemberType>> exprForPropertyAccess)
         {
             return MemberBoundToBnfTerm.Bind(exprForPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm Bind<T>(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static MemberBoundToBnfTerm Bind(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
             return MemberBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
+        }
+
+        public static ObjectBoundToTerminal Bind(this Terminal terminal, AstNodeCreator nodeCreator)
+        {
+            return ObjectBoundToTerminal.Bind(terminal, nodeCreator);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
