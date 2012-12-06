@@ -16,6 +16,11 @@ namespace Irony.AstBinders
     public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
     public delegate TOut AstObjectCreator<TIn, TOut>(TIn inputObject);
 
+    public interface BnfTerm<T>
+    {
+        BnfTerm AsTypeless();
+    }
+
     public class MemberBoundToBnfTerm : NonTerminal
     {
         public MemberInfo MemberInfo { get; private set; }
@@ -260,10 +265,10 @@ namespace Irony.AstBinders
             return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(DataForBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(BnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
-            return new DataForBnfTerm<TOut>(inputObjectBoundToBnfTerm,
-                (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator((TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == inputObjectBoundToBnfTerm).AstNode));
+            return new DataForBnfTerm<TOut>(bnfTerm.AsTypeless(),
+                (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator((TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode));
         }
 
         public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, TOut astObject)
@@ -272,11 +277,16 @@ namespace Irony.AstBinders
         }
     }
 
-    public class DataForBnfTerm<T> : DataForBnfTerm
+    public class DataForBnfTerm<T> : DataForBnfTerm, BnfTerm<T>
     {
         internal DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
             : base(bnfTerm, nodeCreator)
         {
+        }
+
+        BnfTerm BnfTerm<T>.AsTypeless()
+        {
+            return this;
         }
     }
 
@@ -307,9 +317,9 @@ namespace Irony.AstBinders
             return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this DataForBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this BnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
-            return DataForBnfTerm.SetValue(inputObjectBoundToBnfTerm, astObjectCreator);
+            return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
 
         public static DataForBnfTerm<TOut> SetValue<TOut>(this BnfTerm bnfTerm, TOut astObject)
