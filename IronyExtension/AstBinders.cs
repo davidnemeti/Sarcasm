@@ -16,7 +16,7 @@ namespace Irony.AstBinders
     public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
     public delegate TOut AstObjectCreator<TIn, TOut>(TIn inputObject);
 
-    public interface BnfTerm<T>
+    public interface IBnfTerm<T>
     {
         BnfTerm AsTypeless();
     }
@@ -45,12 +45,13 @@ namespace Irony.AstBinders
             return new MemberBoundToBnfTerm(fieldInfo, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
+        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+            where TBnfTermType : TMemberType
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
+                return new MemberBoundToBnfTerm<TMemberType, TBnfTermType>(memberInfo, bnfTerm);
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
@@ -68,6 +69,19 @@ namespace Irony.AstBinders
                 throw new ArgumentException("Field or property not found", fieldOrPropertyName);
 
             return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
+        }
+    }
+
+    public class MemberBoundToBnfTerm<TMemberType, TBnfTermType> : MemberBoundToBnfTerm, IBnfTerm<TMemberType>
+    {
+        internal MemberBoundToBnfTerm(MemberInfo memberInfo, IBnfTerm<TBnfTermType> bnfTerm)
+            : base(memberInfo, bnfTerm.AsTypeless())
+        {
+        }
+
+        BnfTerm IBnfTerm<TMemberType>.AsTypeless()
+        {
+            return this;
         }
     }
 
@@ -109,10 +123,10 @@ namespace Irony.AstBinders
             this.elementType = collectionBaseGenericDefinition.GetGenericArguments()[0];
         }
 
-        public static TypeForCollection Of<TCollectionType>(string errorAlias = null)
+        public static TypeForCollection<TCollectionType> Of<TCollectionType>(string errorAlias = null)
             where TCollectionType : new()
         {
-            return new TypeForCollection(typeof(TCollectionType), errorAlias);
+            return new TypeForCollection<TCollectionType>(typeof(TCollectionType), errorAlias);
         }
 
         public static TypeForCollection Of(Type collectionType, string errorAlias = null)
@@ -153,6 +167,19 @@ namespace Irony.AstBinders
         }
     }
 
+    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>
+    {
+        internal TypeForCollection(Type collectionType, string errorAlias)
+            : base(collectionType, errorAlias)
+        {
+        }
+
+        BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
+        {
+            return this;
+        }
+    }
+
     public class TypeForBoundMembers : TypeForNonTerminal
     {
         protected TypeForBoundMembers(Type type, string errorAlias)
@@ -160,10 +187,10 @@ namespace Irony.AstBinders
         {
         }
 
-        public static TypeForBoundMembers Of<TType>(string errorAlias = null)
+        public static TypeForBoundMembers<TType> Of<TType>(string errorAlias = null)
             where TType : new()
         {
-            return new TypeForBoundMembers(typeof(TType), errorAlias);
+            return new TypeForBoundMembers<TType>(typeof(TType), errorAlias);
         }
 
         public static TypeForBoundMembers Of(Type type, string errorAlias = null)
@@ -224,6 +251,19 @@ namespace Irony.AstBinders
         }
     }
 
+    public class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>
+    {
+        internal TypeForBoundMembers(Type type, string errorAlias)
+            : base(type, errorAlias)
+        {
+        }
+
+        BnfTerm IBnfTerm<TType>.AsTypeless()
+        {
+            return this;
+        }
+    }
+
     public class TypeForTransient : TypeForNonTerminal
     {
         protected TypeForTransient(Type type, string errorAlias)
@@ -232,14 +272,27 @@ namespace Irony.AstBinders
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
         }
 
-        public static TypeForTransient Of<TType>(string errorAlias = null)
+        public static TypeForTransient<TType> Of<TType>(string errorAlias = null)
         {
-            return new TypeForTransient(typeof(TType), errorAlias);
+            return new TypeForTransient<TType>(typeof(TType), errorAlias);
         }
 
         public static TypeForTransient Of(Type type, string errorAlias = null)
         {
             return new TypeForTransient(type, errorAlias);
+        }
+    }
+
+    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>
+    {
+        internal TypeForTransient(Type type, string errorAlias)
+            : base(type, errorAlias)
+        {
+        }
+
+        BnfTerm IBnfTerm<TType>.AsTypeless()
+        {
+            return this;
         }
     }
 
@@ -265,7 +318,7 @@ namespace Irony.AstBinders
             return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(BnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
             return new DataForBnfTerm<TOut>(bnfTerm.AsTypeless(),
                 (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator((TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode));
@@ -277,14 +330,14 @@ namespace Irony.AstBinders
         }
     }
 
-    public class DataForBnfTerm<T> : DataForBnfTerm, BnfTerm<T>
+    public class DataForBnfTerm<T> : DataForBnfTerm, IBnfTerm<T>
     {
         internal DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
             : base(bnfTerm, nodeCreator)
         {
         }
 
-        BnfTerm BnfTerm<T>.AsTypeless()
+        BnfTerm IBnfTerm<T>.AsTypeless()
         {
             return this;
         }
@@ -292,7 +345,8 @@ namespace Irony.AstBinders
 
     public static class GrammarHelper
     {
-        public static MemberBoundToBnfTerm Bind<TMemberType>(this BnfTerm bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+            where TBnfTermType : TMemberType
         {
             return MemberBoundToBnfTerm.Bind(exprForFieldOrPropertyAccess, bnfTerm);
         }
@@ -317,7 +371,7 @@ namespace Irony.AstBinders
             return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this BnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
             return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
