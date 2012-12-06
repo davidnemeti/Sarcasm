@@ -66,22 +66,41 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeForCollection : NonTerminal
+    public abstract class TypeForNonTerminal : NonTerminal
+    {
+        protected Type type { get; private set; }
+
+        protected TypeForNonTerminal(Type type, string errorAlias)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
+        {
+            this.type = type;
+        }
+
+        public new virtual BnfExpression Rule
+        {
+            get { return base.Rule; }
+            set { base.Rule = value; }
+        }
+    }
+
+    public class TypeForCollection : TypeForNonTerminal
     {
         private static readonly Type collectionBaseGenericTypeDefinition = typeof(ICollection<>);
 
-        private readonly Type collectionType;
+        protected Type collectionType { get { return base.type; } }
         private readonly Type elementType;
 
+        [Obsolete("Use collectionType instead", error: true)]
+        protected new Type type { get { return base.type; } }
+
         protected TypeForCollection(Type collectionType, string errorAlias)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(collectionType), errorAlias)
+            : base(collectionType, errorAlias)
         {
             Type collectionBaseGenericDefinition = collectionType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == collectionBaseGenericTypeDefinition);
 
             if (collectionBaseGenericDefinition == null)
                 throw new ArgumentException(string.Format("Type does not implement {0}", collectionBaseGenericTypeDefinition.FullName), "type");
 
-            this.collectionType = collectionType;
             this.elementType = collectionBaseGenericDefinition.GetGenericArguments()[0];
         }
 
@@ -99,7 +118,7 @@ namespace Irony.AstBinders
             return new TypeForCollection(collectionType, errorAlias);
         }
 
-        public new BnfExpression Rule
+        public override BnfExpression Rule
         {
             get { return base.Rule; }
             set
@@ -129,14 +148,11 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeForBoundMembers : NonTerminal
+    public class TypeForBoundMembers : TypeForNonTerminal
     {
-        private readonly Type type;
-
         protected TypeForBoundMembers(Type type, string errorAlias)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
+            : base(type, errorAlias)
         {
-            this.type = type;
         }
 
         public static TypeForBoundMembers Of<TType>(string errorAlias = null)
@@ -153,7 +169,7 @@ namespace Irony.AstBinders
             return new TypeForBoundMembers(type, errorAlias);
         }
 
-        public new BnfExpression Rule
+        public override BnfExpression Rule
         {
             get { return base.Rule; }
             set
@@ -203,14 +219,11 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeForTransient : NonTerminal
+    public class TypeForTransient : TypeForNonTerminal
     {
-        private readonly Type type;
-
         protected TypeForTransient(Type type, string errorAlias)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
+            : base(type, errorAlias)
         {
-            this.type = type;
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
         }
 
