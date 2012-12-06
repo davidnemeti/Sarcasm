@@ -14,7 +14,7 @@ using System.IO;
 namespace Irony.AstBinders
 {
     public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
-    public delegate TOut AstObjectCreator<TIn, TOut>(AstContext context, ParseTreeNode parseNode, TIn inputObject);
+    public delegate TOut AstObjectCreator<TIn, TOut>(TIn inputObject);
 
     public class MemberBoundToBnfTerm : NonTerminal
     {
@@ -250,7 +250,12 @@ namespace Irony.AstBinders
         public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
             return new ObjectBoundToBnfTerm<TOut>(inputObjectBoundToBnfTerm,
-                (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator(context, parseNode, (TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == inputObjectBoundToBnfTerm).AstNode));
+                (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator((TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == inputObjectBoundToBnfTerm).AstNode));
+        }
+
+        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(BnfTerm bnfTerm, TOut astObject)
+        {
+            return new ObjectBoundToBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObject);
         }
     }
 
@@ -292,6 +297,11 @@ namespace Irony.AstBinders
         public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(this ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
             return ObjectBoundToBnfTerm.Bind(inputObjectBoundToBnfTerm, astObjectCreator);
+        }
+
+        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(this BnfTerm bnfTerm, TOut astObject)
+        {
+            return ObjectBoundToBnfTerm.Bind(bnfTerm, astObject);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
