@@ -45,7 +45,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AstBinders.cs" />
+    <Compile Include="AstBinders\Common.cs" />
+    <Compile Include="AstBinders\DataForBnfTerm.cs" />
+    <Compile Include="AstBinders\TypeForTransient.cs" />
+    <Compile Include="AstBinders\TypeForCollection.cs" />
+    <Compile Include="AstBinders\TypeForBoundMembers.cs" />
+    <Compile Include="AstBinders\MemberBoundToBnfTerm.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unparser.cs" />
   </ItemGroup>
