@@ -87,14 +87,14 @@ namespace Irony.AstBinders
     public class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>
         where TType : new()
     {
-        public static TType O { get; private set; }
+        public static TType __ { get; private set; }
 
         static TypeForBoundMembers()
         {
-            O = new TType();
+            __ = new TType();
         }
 
-        public TType o { get { return TypeForBoundMembers<TType>.O; } }
+        public TType _ { get { return TypeForBoundMembers<TType>.__; } }
 
         internal TypeForBoundMembers(Type type, string errorAlias)
             : base(type, errorAlias)
