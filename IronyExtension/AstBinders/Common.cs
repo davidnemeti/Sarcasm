@@ -40,19 +40,35 @@ namespace Irony.AstBinders
 
     public static class GrammarHelper
     {
-        public static IBnfTerm<CollectionType> StarList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement)
+        public static IBnfTerm<CollectionType> StarList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
             where CollectionType : new()
         {
             var typeForCollection = TypeForCollection.Of<CollectionType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, bnfTermElement.AsTypeless());
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
             return typeForCollection;
         }
 
         public static MemberBoundToBnfTerm<TCollectionStaticType, TCollectionStaticType> BindStarList<ElementType, TCollectionStaticType>(
-            this IBnfTerm<ElementType> bnfTermElement, Type collectionDynamicGenericTypeDefinition, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess)
+            this IBnfTerm<ElementType> bnfTermElement, Type collectionDynamicGenericTypeDefinition, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess, BnfTerm delimiter = null)
         {
             var typeForCollection = TypeForCollection.Of<TCollectionStaticType>(collectionDynamicGenericTypeDefinition.MakeGenericType(typeof(ElementType)));
             typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, bnfTermElement.AsTypeless());
+            return typeForCollection.Bind(exprForFieldOrPropertyAccess);
+        }
+
+        public static IBnfTerm<CollectionType> PlusList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
+            where CollectionType : new()
+        {
+            var typeForCollection = TypeForCollection.Of<CollectionType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+            return typeForCollection;
+        }
+
+        public static MemberBoundToBnfTerm<TCollectionStaticType, TCollectionStaticType> BindPlusList<ElementType, TCollectionStaticType>(
+            this IBnfTerm<ElementType> bnfTermElement, Type collectionDynamicGenericTypeDefinition, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess, BnfTerm delimiter = null)
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionStaticType>(collectionDynamicGenericTypeDefinition.MakeGenericType(typeof(ElementType)));
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, bnfTermElement.AsTypeless());
             return typeForCollection.Bind(exprForFieldOrPropertyAccess);
         }
 
