@@ -16,7 +16,7 @@ namespace Irony.AstBinders
     public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
     public delegate TOut AstObjectCreator<TIn, TOut>(TIn inputObject);
 
-    public interface IBnfTerm<T>
+    public interface IBnfTerm<out T>
     {
         BnfTerm AsTypeless();
     }
@@ -40,6 +40,22 @@ namespace Irony.AstBinders
 
     public static class GrammarHelper
     {
+        public static IBnfTerm<CollectionType> StarList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement)
+            where CollectionType : new()
+        {
+            var typeForCollection = TypeForCollection.Of<CollectionType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, bnfTermElement.AsTypeless());
+            return typeForCollection;
+        }
+
+        public static MemberBoundToBnfTerm<TCollectionStaticType, TCollectionStaticType> BindStarList<ElementType, TCollectionStaticType>(
+            this IBnfTerm<ElementType> bnfTermElement, Type collectionDynamicGenericTypeDefinition, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess)
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionStaticType>(collectionDynamicGenericTypeDefinition.MakeGenericType(typeof(ElementType)));
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, bnfTermElement.AsTypeless());
+            return typeForCollection.Bind(exprForFieldOrPropertyAccess);
+        }
+
         public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {

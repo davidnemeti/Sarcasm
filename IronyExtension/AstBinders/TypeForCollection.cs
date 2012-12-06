@@ -23,29 +23,34 @@ namespace Irony.AstBinders
         [Obsolete("Use collectionType instead", error: true)]
         protected new Type type { get { return base.type; } }
 
-        protected TypeForCollection(Type collectionType, string errorAlias)
-            : base(collectionType, errorAlias)
+        protected TypeForCollection(Type collectionDynamicType, string errorAlias)
+            : base(collectionDynamicType, errorAlias)
         {
-            Type collectionBaseGenericDefinition = collectionType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == collectionBaseGenericTypeDefinition);
-
-            if (collectionBaseGenericDefinition == null)
-                throw new ArgumentException(string.Format("Type does not implement {0}", collectionBaseGenericTypeDefinition.FullName), "type");
-
-            this.elementType = collectionBaseGenericDefinition.GetGenericArguments()[0];
-        }
-
-        public static TypeForCollection<TCollectionType> Of<TCollectionType>(string errorAlias = null)
-            where TCollectionType : new()
-        {
-            return new TypeForCollection<TCollectionType>(typeof(TCollectionType), errorAlias);
-        }
-
-        public static TypeForCollection Of(Type collectionType, string errorAlias = null)
-        {
-            if (collectionType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+            if (collectionDynamicType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
 
-            return new TypeForCollection(collectionType, errorAlias);
+            Type collectionDynamicBaseGenericDefinition = collectionDynamicType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == collectionBaseGenericTypeDefinition);
+
+            if (collectionDynamicBaseGenericDefinition == null)
+                throw new ArgumentException(string.Format("Type does not implement {0}", collectionBaseGenericTypeDefinition.FullName), "type");
+
+            this.elementType = collectionDynamicBaseGenericDefinition.GetGenericArguments()[0];
+        }
+
+        public static TypeForCollection<TCollectionStaticType> Of<TCollectionStaticType>(string errorAlias = null)
+            where TCollectionStaticType : new()
+        {
+            return new TypeForCollection<TCollectionStaticType>(typeof(TCollectionStaticType), errorAlias);
+        }
+
+        public static TypeForCollection<TCollectionStaticType> Of<TCollectionStaticType>(Type collectionDynamicType, string errorAlias = null)
+        {
+            return new TypeForCollection<TCollectionStaticType>(collectionDynamicType, errorAlias);
+        }
+
+        public static TypeForCollection Of(Type collectionDynamicType, string errorAlias = null)
+        {
+            return new TypeForCollection(collectionDynamicType, errorAlias);
         }
 
         public override BnfExpression Rule
@@ -78,14 +83,16 @@ namespace Irony.AstBinders
         }
     }
 
-    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>
+    public class TypeForCollection<TCollectionStaticType> : TypeForCollection, IBnfTerm<TCollectionStaticType>
     {
-        internal TypeForCollection(Type collectionType, string errorAlias)
-            : base(collectionType, errorAlias)
+        internal TypeForCollection(Type collectionDynamicType, string errorAlias)
+            : base(collectionDynamicType, errorAlias)
         {
+            if (collectionDynamicType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+                throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
         }
 
-        BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
+        BnfTerm IBnfTerm<TCollectionStaticType>.AsTypeless()
         {
             return this;
         }

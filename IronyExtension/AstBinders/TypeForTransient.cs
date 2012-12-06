@@ -23,7 +23,7 @@ namespace Irony.AstBinders
 
         public static TypeForTransient<TType> Of<TType>(string errorAlias = null)
         {
-            return new TypeForTransient<TType>(typeof(TType), errorAlias);
+            return new TypeForTransient<TType>(errorAlias);
         }
 
         public static TypeForTransient Of(Type type, string errorAlias = null)
@@ -34,8 +34,8 @@ namespace Irony.AstBinders
 
     public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>
     {
-        internal TypeForTransient(Type type, string errorAlias)
-            : base(type, errorAlias)
+        internal TypeForTransient(string errorAlias)
+            : base(typeof(TType), errorAlias)
         {
         }
 

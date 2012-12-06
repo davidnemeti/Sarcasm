@@ -23,7 +23,7 @@ namespace Irony.AstBinders
         public static TypeForBoundMembers<TType> Of<TType>(string errorAlias = null)
             where TType : new()
         {
-            return new TypeForBoundMembers<TType>(typeof(TType), errorAlias);
+            return new TypeForBoundMembers<TType>(errorAlias);
         }
 
         public static TypeForBoundMembers Of(Type type, string errorAlias = null)
@@ -96,8 +96,8 @@ namespace Irony.AstBinders
 
         public TType _ { get { return TypeForBoundMembers<TType>.__; } }
 
-        internal TypeForBoundMembers(Type type, string errorAlias)
-            : base(type, errorAlias)
+        internal TypeForBoundMembers(string errorAlias)
+            : base(typeof(TType), errorAlias)
         {
         }
 
