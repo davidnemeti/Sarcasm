@@ -225,11 +225,11 @@ namespace Irony.AstBinders
         }
     }
 
-    public class ObjectBoundToBnfTerm : NonTerminal
+    public class DataForBnfTerm : NonTerminal
     {
         private readonly BnfTerm bnfTerm;
 
-        protected ObjectBoundToBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+        protected DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
             : base(bnfTerm.Name)
         {
             this.bnfTerm = bnfTerm;
@@ -237,31 +237,31 @@ namespace Irony.AstBinders
             this.Rule = new BnfExpression(bnfTerm);
         }
 
-        public static ObjectBoundToBnfTerm Bind(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+        public static DataForBnfTerm SetValue(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
         {
-            return new ObjectBoundToBnfTerm(bnfTerm, nodeCreator);
+            return new DataForBnfTerm(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return new ObjectBoundToBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
+            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode));
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(DataForBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
-            return new ObjectBoundToBnfTerm<TOut>(inputObjectBoundToBnfTerm,
+            return new DataForBnfTerm<TOut>(inputObjectBoundToBnfTerm,
                 (context, parseNode) => parseNode.AstNode = (TOut) astObjectCreator((TIn) parseNode.ChildNodes.Find(parseTreeChild => parseTreeChild.Term == inputObjectBoundToBnfTerm).AstNode));
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(BnfTerm bnfTerm, TOut astObject)
+        public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, TOut astObject)
         {
-            return new ObjectBoundToBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObject);
+            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObject);
         }
     }
 
-    public class ObjectBoundToBnfTerm<T> : ObjectBoundToBnfTerm
+    public class DataForBnfTerm<T> : DataForBnfTerm
     {
-        internal ObjectBoundToBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+        internal DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
             : base(bnfTerm, nodeCreator)
         {
         }
@@ -284,24 +284,24 @@ namespace Irony.AstBinders
             return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
         }
 
-        public static ObjectBoundToBnfTerm Bind(this BnfTerm bnfTerm, AstNodeCreator nodeCreator)
+        public static DataForBnfTerm SetValue(this BnfTerm bnfTerm, AstNodeCreator nodeCreator)
         {
-            return ObjectBoundToBnfTerm.Bind(bnfTerm, nodeCreator);
+            return DataForBnfTerm.SetValue(bnfTerm, nodeCreator);
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return ObjectBoundToBnfTerm.Bind(bnfTerm, astObjectCreator);
+            return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TIn, TOut>(this ObjectBoundToBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this DataForBnfTerm<TIn> inputObjectBoundToBnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
         {
-            return ObjectBoundToBnfTerm.Bind(inputObjectBoundToBnfTerm, astObjectCreator);
+            return DataForBnfTerm.SetValue(inputObjectBoundToBnfTerm, astObjectCreator);
         }
 
-        public static ObjectBoundToBnfTerm<TOut> Bind<TOut>(this BnfTerm bnfTerm, TOut astObject)
+        public static DataForBnfTerm<TOut> SetValue<TOut>(this BnfTerm bnfTerm, TOut astObject)
         {
-            return ObjectBoundToBnfTerm.Bind(bnfTerm, astObject);
+            return DataForBnfTerm.SetValue(bnfTerm, astObject);
         }
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
