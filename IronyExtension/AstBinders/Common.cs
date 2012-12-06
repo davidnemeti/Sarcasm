@@ -56,6 +56,12 @@ namespace Irony.AstBinders
             return typeForCollection.Bind(exprForFieldOrPropertyAccess);
         }
 
+        public static MemberBoundToBnfTerm<TCollectionStaticType, TCollectionStaticType> BindStarList<ElementType, TCollectionStaticType>(
+            this IBnfTerm<ElementType> bnfTermElement, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess, BnfTerm delimiter = null)
+        {
+            return bnfTermElement.BindStarList(typeof(List<>), exprForFieldOrPropertyAccess, delimiter);
+        }
+
         public static IBnfTerm<CollectionType> PlusList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
             where CollectionType : new()
         {
@@ -70,6 +76,12 @@ namespace Irony.AstBinders
             var typeForCollection = TypeForCollection.Of<TCollectionStaticType>(collectionDynamicGenericTypeDefinition.MakeGenericType(typeof(ElementType)));
             typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, bnfTermElement.AsTypeless());
             return typeForCollection.Bind(exprForFieldOrPropertyAccess);
+        }
+
+        public static MemberBoundToBnfTerm<TCollectionStaticType, TCollectionStaticType> BindPlusList<ElementType, TCollectionStaticType>(
+            this IBnfTerm<ElementType> bnfTermElement, Expression<Func<TCollectionStaticType>> exprForFieldOrPropertyAccess, BnfTerm delimiter = null)
+        {
+            return bnfTermElement.BindPlusList(typeof(List<>), exprForFieldOrPropertyAccess, delimiter);
         }
 
         public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
