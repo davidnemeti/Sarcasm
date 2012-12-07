@@ -40,6 +40,10 @@ namespace Irony.AstBinders
 
     public static class GrammarHelper
     {
+        #region StarList and PlusList
+
+        #region Typesafe
+
         public static IBnfTerm<TCollectionType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
@@ -66,21 +70,31 @@ namespace Irony.AstBinders
             return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        #endregion
+
+        #endregion
+
+        #region BindMember
+
+        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
             return MemberBoundToBnfTerm.Bind(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm Bind(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
             return MemberBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm Bind(this BnfTerm bnfTerm, FieldInfo fieldInfo)
+        public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
             return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
         }
+
+        #endregion
+
+        #region SetValue
 
         public static DataForBnfTerm SetValue(this BnfTerm bnfTerm, AstNodeCreator nodeCreator)
         {
@@ -101,6 +115,10 @@ namespace Irony.AstBinders
         {
             return DataForBnfTerm.SetValue(bnfTerm, astObject);
         }
+
+        #endregion
+
+        #region GetMember
 
         public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
         {
@@ -140,6 +158,10 @@ namespace Irony.AstBinders
 
             return memberInfo;
         }
+
+        #endregion
+
+        #region Misc
 
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {
@@ -187,5 +209,7 @@ namespace Irony.AstBinders
             }
             return sw.ToString();
         }
+
+        #endregion
     }
 }
