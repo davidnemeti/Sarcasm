@@ -72,6 +72,36 @@ namespace Irony.AstBinders
 
         #endregion
 
+        #region Typeless converted to typesafe
+
+        public static IBnfTerm<TCollectionType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static IBnfTerm<List<TElementType>> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        public static IBnfTerm<TCollectionType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static IBnfTerm<List<TElementType>> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
         #region Typeless
 
         public static IBnfTerm<TCollectionType> StarListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
