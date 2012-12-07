@@ -37,15 +37,32 @@ namespace Irony.AstBinders
             return new MemberBoundToBnfTerm(fieldInfo, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+        public static MemberBoundToBnfTerm Bind<TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
             where TBnfTermType : TMemberType
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new MemberBoundToBnfTerm<TMemberType, TBnfTermType>(memberInfo, bnfTerm);
+                return new MemberBoundToBnfTerm(memberInfo, bnfTerm.AsTypeless());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
+        }
+
+        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+            where TBnfTermType : TMemberType
+        {
+            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
+
+            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
+                return new MemberBoundToBnfTerm<TDeclaringType>(memberInfo, bnfTerm.AsTypeless());
+            else
+                throw new ArgumentException("Field or property not found", memberInfo.Name);
+        }
+
+        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(TDeclaringType dummyObj, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+            where TBnfTermType : TMemberType
+        {
+            return Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
         public static MemberBoundToBnfTerm Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
@@ -64,14 +81,14 @@ namespace Irony.AstBinders
         }
     }
 
-    public class MemberBoundToBnfTerm<TMemberType, TBnfTermType> : MemberBoundToBnfTerm, IBnfTerm<TMemberType>
+    public class MemberBoundToBnfTerm<TDeclaringType> : MemberBoundToBnfTerm, IBnfTerm<TDeclaringType>
     {
-        internal MemberBoundToBnfTerm(MemberInfo memberInfo, IBnfTerm<TBnfTermType> bnfTerm)
-            : base(memberInfo, bnfTerm.AsTypeless())
+        internal MemberBoundToBnfTerm(MemberInfo memberInfo, BnfTerm bnfTerm)
+            : base(memberInfo, bnfTerm)
         {
         }
 
-        BnfTerm IBnfTerm<TMemberType>.AsTypeless()
+        BnfTerm IBnfTerm<TDeclaringType>.AsTypeless()
         {
             return this;
         }

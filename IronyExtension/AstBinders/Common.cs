@@ -146,10 +146,22 @@ namespace Irony.AstBinders
 
         #region BindMember
 
-        public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static MemberBoundToBnfTerm BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
             return MemberBoundToBnfTerm.Bind(exprForFieldOrPropertyAccess, bnfTerm);
+        }
+
+        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+            where TBnfTermType : TMemberType
+        {
+            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
+        }
+
+        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, TDeclaringType dummyObj, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+            where TBnfTermType : TMemberType
+        {
+            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyObj, exprForFieldOrPropertyAccess, bnfTerm);
         }
 
         public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
