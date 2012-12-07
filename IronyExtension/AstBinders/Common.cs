@@ -21,6 +21,26 @@ namespace Irony.AstBinders
         BnfTerm AsTypeless();
     }
 
+    public class BnfExpression<TDeclaringType> : IBnfTerm<TDeclaringType>
+    {
+        private readonly BnfExpression bnfExpression;
+
+        public BnfExpression(BnfTerm bnfTerm)
+        {
+            this.bnfExpression = new BnfExpression(bnfTerm);
+        }
+
+        BnfTerm IBnfTerm<TDeclaringType>.AsTypeless()
+        {
+            return this.bnfExpression;
+        }
+
+        public static explicit operator BnfExpression(BnfExpression<TDeclaringType> bnfExpression)
+        {
+            return bnfExpression.bnfExpression;
+        }
+    }
+
     public abstract class TypeForNonTerminal : NonTerminal
     {
         protected Type type { get; private set; }
@@ -35,6 +55,14 @@ namespace Irony.AstBinders
         {
             get { return base.Rule; }
             set { base.Rule = value; }
+        }
+
+        protected static BnfExpression GetRuleWithOrBetweenTypesafeExpressions<T>(params IBnfTerm<T>[] bnfExpressions)
+        {
+            return bnfExpressions.Cast<BnfExpression>().Aggregate(
+                (BnfExpression)bnfExpressions[0],
+                (bnfExpressionProcessed, bnfExpressionToBeProcess) => bnfExpressionProcessed | bnfExpressionToBeProcess
+                );
         }
     }
 
@@ -158,10 +186,10 @@ namespace Irony.AstBinders
             return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, TDeclaringType dummyObj, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, IBnfTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
-            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyObj, exprForFieldOrPropertyAccess, bnfTerm);
+            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyBnfTerm, exprForFieldOrPropertyAccess, bnfTerm);
         }
 
         public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
@@ -244,6 +272,11 @@ namespace Irony.AstBinders
         #endregion
 
         #region Misc
+
+        public static IBnfTerm<T> ToType<T>(this BnfTerm bnfTerm)
+        {
+            return new BnfExpression<T>(bnfTerm);
+        }
 
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {

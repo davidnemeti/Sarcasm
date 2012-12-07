@@ -149,6 +149,11 @@ namespace Irony.AstBinders
         {
             return base.Q();
         }
+
+        public void SetRule(params IBnfTerm<TCollectionType>[] bnfExpressions)
+        {
+            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
+        }
     }
 
     /*
@@ -191,6 +196,11 @@ namespace Irony.AstBinders
         public new BnfExpression Q()
         {
             return base.Q();
+        }
+
+        public void SetRule(params IBnfTerm<TCollectionType>[] bnfExpressions)
+        {
+            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
         }
     }
 }

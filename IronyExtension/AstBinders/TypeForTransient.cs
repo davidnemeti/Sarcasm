@@ -49,5 +49,10 @@ namespace Irony.AstBinders
         {
             return base.Q();
         }
+
+        public void SetRule(params IBnfTerm<TType>[] bnfExpressions)
+        {
+            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
+        }
     }
 }

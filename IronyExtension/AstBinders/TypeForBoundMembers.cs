@@ -111,5 +111,12 @@ namespace Irony.AstBinders
         {
             return base.Q();
         }
+
+//        public IBnfTerm<TType> Rule { set { SetRule(value); } }
+
+        public void SetRule(params IBnfTerm<TType>[] bnfExpressions)
+        {
+            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
+        }
     }
 }
