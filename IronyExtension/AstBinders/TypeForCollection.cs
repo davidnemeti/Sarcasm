@@ -25,7 +25,7 @@ namespace Irony.AstBinders
         [Obsolete("Use collectionDynamicType instead", error: true)]
         protected new Type type { get { return base.type; } }
 
-        protected const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+        private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         protected TypeForCollection(Type collectionType, Type elementType, string errorAlias, bool runtimeCheck)
             : base(collectionType, errorAlias)
@@ -76,49 +76,51 @@ namespace Irony.AstBinders
             get { return base.Rule; }
             set
             {
-                AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    /*
-                     * NOTE: ICollection does not have an Add method (only ICollection<> has), IList might be overkill to enforce an Add method,
-                     * so we just working here with an object type and require that the collection has an Add method during runtime (we are using reflection here anyway)
-                     * */
-                    object collection = Activator.CreateInstance(collectionType, nonPublic: true);
-
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
-                    {
-                        if (parseTreeChild.AstNode.GetType() == elementType)
-                        {
-                            addMethodInfo.Invoke(obj: collection, parameters: new[]{parseTreeChild.AstNode});
-                        }
-                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                        {
-                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                                parseTreeChild.Term, elementType.FullName, parseTreeChild.AstNode.GetType().FullName);
-                        }
-                    }
-
-                    parseTreeNode.AstNode = collection;
-                };
-
-                //CreateAndFillCollection<object, object>(
-                //    () => Activator.CreateInstance(collectionType, nonPublic: true),
-                //    (collection, element) => addMethodInfo.Invoke(obj: collection, parameters: new[]{element}),
-                //    elementDynamicType: elementType);
+                /*
+                 * NOTE: ICollection does not have an Add method (only ICollection<> has), so we cannot use ICollection here to enforce the existance of an 'Add' method,
+                 * IList would be an overkill to enforce an Add method, and we are dealing here with totally typeless collection and using reflection anyway,
+                 * so we just working here with an object type and require that the collection has an 'Add' method during runtime
+                 * */
+                SetNodeCreator<object, object>(
+                    () => Activator.CreateInstance(collectionType, nonPublic: true),
+                    (collection, element) => addMethodInfo.Invoke(obj: collection, parameters: new[] { element })
+                    );
 
                 base.Rule = value;
             }
         }
 
-        //protected void CreateAndFillCollection<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection)
-        //{
-        //    CreateAndFillCollection(createCollection, addElementToCollection, elementDynamicType: typeof(TElementStaticType));
-        //}
+        protected void SetNodeCreator<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection)
+        {
+            AstConfig.NodeCreator = (context, parseTreeNode) =>
+            {
+                TCollectionStaticType collection = createCollection();
 
-        //protected void CreateAndFillCollection<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection, Type elementDynamicType)
-        //{
-        //}
+                foreach (var parseTreeChild in parseTreeNode.ChildNodes)
+                {
+                    TElementStaticType element = (TElementStaticType)parseTreeChild.AstNode;
+
+                    if (parseTreeChild.AstNode.GetType() == elementType)
+                    {
+                        addElementToCollection(collection, element);
+                    }
+                    else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
+                    {
+                        context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
+                            parseTreeChild.Term, elementType.FullName, element.GetType().FullName);
+                    }
+                }
+
+                parseTreeNode.AstNode = collection;
+            };
+        }
     }
 
+    /*
+     * NOTE: (non-generic) Collection does not have an 'Add' method, that is why we are inheriting from IList.
+     * 
+     * IList : ICollection, IEnumerable
+     * */
     public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>
         where TCollectionType : System.Collections.IList, new()
     {
@@ -142,31 +144,24 @@ namespace Irony.AstBinders
             get { return base.Rule; }
             set
             {
-                AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    TCollectionType collection = new TCollectionType();
-
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
-                    {
-                        if (parseTreeChild.AstNode.GetType() == typeof(object))
-                        {
-                            collection.Add(parseTreeChild.AstNode);
-                        }
-                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                        {
-                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                                parseTreeChild.Term, typeof(object).FullName, parseTreeChild.AstNode.GetType().FullName);
-                        }
-                    }
-
-                    parseTreeNode.AstNode = collection;
-                };
+                SetNodeCreator<TCollectionType, object>(
+                    () => new TCollectionType(),
+                    (collection, element) => collection.Add(element)
+                    );
 
                 base.Rule = value;
             }
         }
     }
 
+    /*
+     * NOTE: TypeForCollection<TCollectionType, TElementType> cannot inherit from TypeForCollection<TCollectionType> because constraints on TCollectionType are incompatible
+     * since ICollection<T> (type constraint here) and IList (type constraint in TypeForCollection<TCollectionType>) are incompatible types.
+     * ICollection<T> has an 'Add' method, so using IList<T> would be an overkill, besides, it would not work either since IList<T> and IList are incompatible as well.
+     * 
+     * ICollection<T> : IEnumerable<T>, IEnumerable
+     * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
+     * */
     public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
@@ -185,25 +180,10 @@ namespace Irony.AstBinders
             get { return base.Rule; }
             set
             {
-                AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    TCollectionType collection = new TCollectionType();
-
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
-                    {
-                        if (parseTreeChild.AstNode.GetType() == typeof(TElementType))
-                        {
-                            collection.Add((TElementType)parseTreeChild.AstNode);
-                        }
-                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                        {
-                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                                parseTreeChild.Term, typeof(TElementType).FullName, parseTreeChild.AstNode.GetType().FullName);
-                        }
-                    }
-
-                    parseTreeNode.AstNode = collection;
-                };
+                SetNodeCreator<TCollectionType, TElementType>(
+                    () => new TCollectionType(),
+                    (collection, element) => collection.Add(element)
+                    );
 
                 base.Rule = value;
             }
