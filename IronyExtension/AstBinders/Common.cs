@@ -72,6 +72,36 @@ namespace Irony.AstBinders
 
         #endregion
 
+        #region Typeless
+
+        public static IBnfTerm<TCollectionType> StarListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : System.Collections.IList, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static IBnfTerm<System.Collections.ArrayList> StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return StarListTL<System.Collections.ArrayList>(bnfTermElement, delimiter);
+        }
+
+        public static IBnfTerm<TCollectionType> PlusListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : System.Collections.IList, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType>();
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static IBnfTerm<System.Collections.ArrayList> PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return PlusListTL<System.Collections.ArrayList>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
         #endregion
 
         #region BindMember
