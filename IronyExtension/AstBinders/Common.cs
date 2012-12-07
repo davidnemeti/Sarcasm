@@ -14,7 +14,7 @@ using System.IO;
 namespace Irony.AstBinders
 {
     public delegate TOut AstObjectCreator<TOut>(AstContext context, ParseTreeNode parseNode);
-    public delegate TOut AstObjectCreator<TIn, TOut>(TIn inputObject);
+    public delegate TOut AstObjectConverter<TIn, TOut>(TIn inputObject);
 
     public interface IBnfTerm<out T>
     {
@@ -134,6 +134,16 @@ namespace Irony.AstBinders
 
         #endregion
 
+        #region Q
+
+        public static IBnfTerm<T?> QQ<T>(this IBnfTerm<T> bnfTerm)
+            where T : struct
+        {
+            return DataForBnfTerm.SetValueOpt(bnfTerm, value => value);
+        }
+
+        #endregion
+
         #region BindMember
 
         public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
@@ -166,7 +176,7 @@ namespace Irony.AstBinders
             return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectCreator<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
         {
             return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
         }

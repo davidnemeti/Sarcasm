@@ -105,5 +105,11 @@ namespace Irony.AstBinders
         {
             return this;
         }
+
+        [Obsolete("Use the typesafe QQ extension method instead", error: true)]
+        public new BnfExpression Q()
+        {
+            return base.Q();
+        }
     }
 }

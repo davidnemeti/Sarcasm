@@ -143,6 +143,12 @@ namespace Irony.AstBinders
                 base.Rule = value;
             }
         }
+
+        [Obsolete("Use the typesafe QQ extension method instead", error: true)]
+        public new BnfExpression Q()
+        {
+            return base.Q();
+        }
     }
 
     /*
@@ -179,6 +185,12 @@ namespace Irony.AstBinders
 
                 base.Rule = value;
             }
+        }
+
+        [Obsolete("Use the typesafe QQ extension method instead", error: true)]
+        public new BnfExpression Q()
+        {
+            return base.Q();
         }
     }
 }
