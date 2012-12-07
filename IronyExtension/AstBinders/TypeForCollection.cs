@@ -15,9 +15,6 @@ namespace Irony.AstBinders
 {
     public class TypeForCollection : TypeForNonTerminal
     {
-        //private static readonly Type iCollectionGenericTypeDefinition = typeof(ICollection<>);
-        //private static readonly Type iCollectionType = typeof(ICollection<>);
-
         protected Type collectionType { get { return base.type; } }
         private readonly Type elementType;
         private readonly MethodInfo addMethodInfo;
@@ -50,7 +47,7 @@ namespace Irony.AstBinders
         }
 
         public static TypeForCollection<TCollectionType> Of<TCollectionType>(string errorAlias = null)
-            where TCollectionType : System.Collections.IList, new()
+            where TCollectionType : ICollection<object>, new()
         {
             return new TypeForCollection<TCollectionType>(errorAlias);
         }
@@ -77,9 +74,8 @@ namespace Irony.AstBinders
             set
             {
                 /*
-                 * NOTE: ICollection does not have an Add method (only ICollection<> has), so we cannot use ICollection here to enforce the existance of an 'Add' method,
-                 * IList would be an overkill to enforce an Add method, and we are dealing here with totally typeless collection and using reflection anyway,
-                 * so we just working here with an object type and require that the collection has an 'Add' method during runtime
+                 * NOTE: We are dealing here with totally typeless collection and using reflection anyway, so we are not forcing the created object to be
+                 * an IList, ICollection, etc., so we are just working here with an object type and require that the collection has an 'Add' method during runtime.
                  * */
                 SetNodeCreator<object, object>(
                     () => Activator.CreateInstance(collectionType, nonPublic: true),
@@ -116,13 +112,8 @@ namespace Irony.AstBinders
         }
     }
 
-    /*
-     * NOTE: (non-generic) Collection does not have an 'Add' method, that is why we are inheriting from IList.
-     * 
-     * IList : ICollection, IEnumerable
-     * */
     public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>
-        where TCollectionType : System.Collections.IList, new()
+        where TCollectionType : ICollection<object>, new()
     {
         internal TypeForCollection(string errorAlias)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
@@ -156,9 +147,10 @@ namespace Irony.AstBinders
 
     /*
      * NOTE: TypeForCollection<TCollectionType, TElementType> cannot inherit from TypeForCollection<TCollectionType> because constraints on TCollectionType are incompatible
-     * since ICollection<T> (type constraint here) and IList (type constraint in TypeForCollection<TCollectionType>) are incompatible types.
+     * since ICollection<T> (type constraint here) and IList/ICollection<object> (type constraint in TypeForCollection<TCollectionType>) are incompatible types.
      * ICollection<T> has an 'Add' method, so using IList<T> would be an overkill, besides, it would not work either since IList<T> and IList are incompatible as well.
      * 
+     * IList : ICollection, IEnumerable
      * ICollection<T> : IEnumerable<T>, IEnumerable
      * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
      * */
