@@ -40,30 +40,30 @@ namespace Irony.AstBinders
 
     public static class GrammarHelper
     {
-        public static IBnfTerm<CollectionType> StarList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
-            where CollectionType : new()
+        public static IBnfTerm<TCollectionType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<CollectionType>();
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
             typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<ElementType>> StarList<ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfTerm<List<TElementType>> StarList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return StarList<List<ElementType>, ElementType>(bnfTermElement, delimiter);
+            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfTerm<CollectionType> PlusList<CollectionType, ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
-            where CollectionType : new()
+        public static IBnfTerm<TCollectionType> PlusList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<CollectionType>();
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
             typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<ElementType>> PlusList<ElementType>(this IBnfTerm<ElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfTerm<List<TElementType>> PlusList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return PlusList<List<ElementType>, ElementType>(bnfTermElement, delimiter);
+            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
         public static MemberBoundToBnfTerm<TMemberType, TBnfTermType> Bind<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)

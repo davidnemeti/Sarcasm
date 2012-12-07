@@ -15,12 +15,13 @@ namespace Irony.AstBinders
 {
     public class TypeForCollection : TypeForNonTerminal
     {
+        // NOTE: this type has to be in syncron with the type constraint in TypeForCollection<TCollectionStaticType> and TypeForCollection<TCollectionStaticType, TElementType>
         private static readonly Type collectionBaseGenericTypeDefinition = typeof(ICollection<>);
 
-        protected Type collectionType { get { return base.type; } }
+        protected Type collectionDynamicType { get { return base.type; } }
         private readonly Type elementType;
 
-        [Obsolete("Use collectionType instead", error: true)]
+        [Obsolete("Use collectionDynamicType instead", error: true)]
         protected new Type type { get { return base.type; } }
 
         protected TypeForCollection(Type collectionDynamicType, string errorAlias)
@@ -48,6 +49,18 @@ namespace Irony.AstBinders
             return new TypeForCollection<TCollectionStaticType>(collectionDynamicType, errorAlias);
         }
 
+        public static TypeForCollection<TCollectionStaticType> Of<TCollectionStaticType, TElementType>(string errorAlias = null)
+            where TCollectionStaticType : ICollection<TElementType>, new()
+        {
+            return new TypeForCollection<TCollectionStaticType, TElementType>(typeof(TCollectionStaticType), errorAlias);
+        }
+
+        public static TypeForCollection<TCollectionStaticType> Of<TCollectionStaticType, TElementType>(Type collectionDynamicType, string errorAlias = null)
+            where TCollectionStaticType : ICollection<TElementType>
+        {
+            return new TypeForCollection<TCollectionStaticType, TElementType>(collectionDynamicType, errorAlias);
+        }
+
         public static TypeForCollection Of(Type collectionDynamicType, string errorAlias = null)
         {
             return new TypeForCollection(collectionDynamicType, errorAlias);
@@ -60,7 +73,7 @@ namespace Irony.AstBinders
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    dynamic collection = Activator.CreateInstance(collectionType, nonPublic: true);
+                    dynamic collection = Activator.CreateInstance(collectionDynamicType, nonPublic: true);
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
@@ -84,17 +97,27 @@ namespace Irony.AstBinders
     }
 
     public class TypeForCollection<TCollectionStaticType> : TypeForCollection, IBnfTerm<TCollectionStaticType>
+    //        where TCollectionStaticType : ICollection<>   // unfortunately C# does not allow to write this, so no compile time check can be done here (runtime check is in done in TypeForCollection)
+        // NOTE: this type constraint has to be in syncron with the type stored in the value of TypeForCollection.collectionBaseGenericTypeDefinition
     {
         internal TypeForCollection(Type collectionDynamicType, string errorAlias)
             : base(collectionDynamicType, errorAlias)
         {
-            if (collectionDynamicType.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
-                throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
         }
 
         BnfTerm IBnfTerm<TCollectionStaticType>.AsTypeless()
         {
             return this;
+        }
+    }
+
+    public class TypeForCollection<TCollectionStaticType, TElementType> : TypeForCollection<TCollectionStaticType>
+        where TCollectionStaticType : ICollection<TElementType>
+        // NOTE: this type constraint has to be in syncron with the type stored in the value of TypeForCollection.collectionBaseGenericTypeDefinition
+    {
+        internal TypeForCollection(Type collectionDynamicType, string errorAlias)
+            : base(collectionDynamicType, errorAlias)
+        {
         }
     }
 }
