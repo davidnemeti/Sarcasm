@@ -11,7 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.AstBinders
+namespace Irony.Extension.AstBinders
 {
     public class MemberBoundToBnfTerm : NonTerminal
     {

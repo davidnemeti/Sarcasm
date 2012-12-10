@@ -7,8 +7,8 @@
     <ProjectGuid>{A02FB9DE-B174-4438-83AF-034F8004C724}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>IronyExtension</RootNamespace>
-    <AssemblyName>IronyExtension</AssemblyName>
+    <RootNamespace>Irony.Extension</RootNamespace>
+    <AssemblyName>Irony.Extension</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -33,7 +33,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>IronyExtension.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Irony.Extension.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -61,8 +61,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="IronyExtension.pub" />
-    <None Include="IronyExtension.snk" />
+    <None Include="Irony.Extension.pub" />
+    <None Include="Irony.Extension.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
