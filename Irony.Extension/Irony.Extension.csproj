@@ -47,6 +47,7 @@
   <ItemGroup>
     <Compile Include="AstBinders\AstNodeWrapper.cs" />
     <Compile Include="AstBinders\Common.cs" />
+    <Compile Include="AstBinders\Properties.cs" />
     <Compile Include="AstBinders\GrammarHelper.cs" />
     <Compile Include="AstBinders\ValueForBnfTerm.cs" />
     <Compile Include="AstBinders\ParseTreeNodeWithOutAst.cs" />
