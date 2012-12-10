@@ -37,11 +37,11 @@ namespace Irony.Extension.AstBinders
             return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode), isOptionalData: false);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
         {
             return new DataForBnfTerm<TOut>(
                 bnfTerm.AsTypeless(),
-                (context, parseNode) => parseNode.AstNode = astObjectCreator((TIn)parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode),
+                (context, parseNode) => parseNode.AstNode = astObjectConverter((TIn)parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode),
                 isOptionalData: false
                 );
         }
@@ -52,11 +52,11 @@ namespace Irony.Extension.AstBinders
             return SetValueOptVal(bnfTerm, value => value);
         }
 
-        public static DataForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
             where TIn : struct
             where TOut : struct
         {
-            return SetValueOpt<TIn, TOut, TOut?>(bnfTerm, value => astObjectCreator(value));
+            return SetValueOpt<TIn, TOut, TOut?>(bnfTerm, value => astObjectConverter(value));
         }
 
         public static DataForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
@@ -65,14 +65,14 @@ namespace Irony.Extension.AstBinders
             return SetValueOptRef(bnfTerm, value => value);
         }
 
-        public static DataForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
             where TIn : class
             where TOut : class
         {
-            return SetValueOpt<TIn, TOut, TOut>(bnfTerm, value => astObjectCreator(value));
+            return SetValueOpt<TIn, TOut, TOut>(bnfTerm, value => astObjectConverter(value));
         }
 
-        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutAst, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutAst> astObjectCreator)
+        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutAst, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutAst> astObjectConverter)
         {
             return new DataForBnfTerm<TOutData>(
                 bnfTerm.AsTypeless(),
@@ -80,7 +80,7 @@ namespace Irony.Extension.AstBinders
                 {
                     object astNode = parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode;
                     parseNode.AstNode = astNode != null
-                        ? (object)astObjectCreator((TIn)astNode)
+                        ? (object)astObjectConverter((TIn)astNode)
                         : null;
                 },
                 isOptionalData: true
