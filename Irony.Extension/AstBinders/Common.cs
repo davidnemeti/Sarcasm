@@ -65,6 +65,6 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        internal const string obsoleteQErrorMessage = "Use the typesafe QVal or QRef extension method instead";
+        internal const string obsoleteQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
     }
 }

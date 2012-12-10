@@ -109,22 +109,6 @@ namespace Irony.Extension.AstBinders
 
         #endregion
 
-        #region Q
-
-        public static IBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
-            where T : struct
-        {
-            return ValueForBnfTerm.ConvertValueOptVal(bnfTerm);
-        }
-
-        public static IBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
-            where T : class
-        {
-            return ValueForBnfTerm.ConvertValueOptRef(bnfTerm);
-        }
-
-        #endregion
-
         #region BindMember
 
         public static MemberBoundToBnfTerm BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
@@ -172,6 +156,22 @@ namespace Irony.Extension.AstBinders
         public static ValueForBnfTerm<TOut> ConvertValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
             return ValueForBnfTerm.Convert(bnfTerm, valueConverter);
+        }
+
+        #endregion
+
+        #region Typesafe Q
+
+        public static ValueForBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
+            where T : struct
+        {
+            return ValueForBnfTerm.ConvertValueOptVal(bnfTerm);
+        }
+
+        public static ValueForBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
+            where T : class
+        {
+            return ValueForBnfTerm.ConvertValueOptRef(bnfTerm);
         }
 
         #endregion
