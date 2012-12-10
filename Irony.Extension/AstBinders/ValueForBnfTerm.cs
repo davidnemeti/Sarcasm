@@ -28,6 +28,11 @@ namespace Irony.Extension.AstBinders
                 : new BnfExpression(bnfTerm);
         }
 
+        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, TOut value)
+        {
+            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => value, isOptionalData: false);
+        }
+
         public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
         {
             return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false);
@@ -42,33 +47,33 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        public static ValueForBnfTerm<T?> SetValueOptVal<T>(IBnfTerm<T> bnfTerm)
+        public static ValueForBnfTerm<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
             where T : struct
         {
-            return SetValueOptVal(bnfTerm, value => value);
+            return ConvertValueOptVal(bnfTerm, value => value);
         }
 
-        public static ValueForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static ValueForBnfTerm<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : struct
             where TOut : struct
         {
-            return SetValueOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
+            return ConvertValueOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
         }
 
-        public static ValueForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
+        public static ValueForBnfTerm<T> ConvertValueOptRef<T>(IBnfTerm<T> bnfTerm)
             where T : class
         {
-            return SetValueOptRef(bnfTerm, value => value);
+            return ConvertValueOptRef(bnfTerm, value => value);
         }
 
-        public static ValueForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static ValueForBnfTerm<TOut> ConvertValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : class
             where TOut : class
         {
-            return SetValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
+            return ConvertValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
         }
 
-        private static ValueForBnfTerm<TOutData> SetValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
+        private static ValueForBnfTerm<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
         {
             return new ValueForBnfTerm<TOutData>(
                 bnfTerm.AsTypeless(),
@@ -79,11 +84,6 @@ namespace Irony.Extension.AstBinders
                 },
                 isOptionalData: true
                 );
-        }
-
-        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, TOut value)
-        {
-            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => value, isOptionalData: false);
         }
     }
 

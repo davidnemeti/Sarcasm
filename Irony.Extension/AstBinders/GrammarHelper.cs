@@ -114,13 +114,13 @@ namespace Irony.Extension.AstBinders
         public static IBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
             where T : struct
         {
-            return ValueForBnfTerm.SetValueOptVal(bnfTerm);
+            return ValueForBnfTerm.ConvertValueOptVal(bnfTerm);
         }
 
         public static IBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
             where T : class
         {
-            return ValueForBnfTerm.SetValueOptRef(bnfTerm);
+            return ValueForBnfTerm.ConvertValueOptRef(bnfTerm);
         }
 
         #endregion
