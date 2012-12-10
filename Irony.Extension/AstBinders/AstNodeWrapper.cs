@@ -22,14 +22,14 @@ namespace Irony.Extension.AstBinders
     {
         public T Value { get; private set; }
 
-        internal AstNodeWrapper(T value, AstContext context, ParseTreeNode treeNode)
+        private readonly AstContext context;
+        private readonly ParseTreeNode parseTreeNode;
+
+        internal AstNodeWrapper(T value, AstContext context, ParseTreeNode parseTreeNode)
         {
             this.Value = value;
-
-            //this.Term = treeNode.Term;
-            //this.Span = treeNode.Span;
-            //this.ErrorAnchor = this.Location;
-            //            this.AsString = (Term == null ? this.GetType().Name : Term.Name);
+            this.context = context;
+            this.parseTreeNode = parseTreeNode;
         }
 
         public static implicit operator T(AstNodeWrapper<T> astNode)
@@ -39,12 +39,12 @@ namespace Irony.Extension.AstBinders
 
         System.Collections.IEnumerable IBrowsableAstNode.GetChildNodes()
         {
-            return null;
+            return parseTreeNode.ChildNodes.Select(parseTreeChild => parseTreeChild.AstNode);
         }
 
         int IBrowsableAstNode.Position
         {
-            get { return -1/*Span.Location.Position*/; }
+            get { return parseTreeNode.Span.Location.Position; }
         }
     }
 }
