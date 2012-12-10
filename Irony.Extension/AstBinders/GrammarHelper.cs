@@ -114,13 +114,13 @@ namespace Irony.Extension.AstBinders
         public static IBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
             where T : struct
         {
-            return DataForBnfTerm.SetValueOptVal(bnfTerm);
+            return ValueForBnfTerm.SetValueOptVal(bnfTerm);
         }
 
         public static IBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
             where T : class
         {
-            return DataForBnfTerm.SetValueOptRef(bnfTerm);
+            return ValueForBnfTerm.SetValueOptRef(bnfTerm);
         }
 
         #endregion
@@ -159,19 +159,19 @@ namespace Irony.Extension.AstBinders
 
         #region SetValue
 
-        public static DataForBnfTerm<TOut> SetValue<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
+        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
+            return ValueForBnfTerm.Create(bnfTerm, astObjectCreator);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static ValueForBnfTerm<TOut> CreateValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
         {
-            return DataForBnfTerm.SetValue(bnfTerm, astObjectCreator);
+            return ValueForBnfTerm.Create(bnfTerm, astObjectCreator);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TOut>(this BnfTerm bnfTerm, TOut astObject)
+        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut astObject)
         {
-            return DataForBnfTerm.SetValue(bnfTerm, astObject);
+            return ValueForBnfTerm.Create(bnfTerm, astObject);
         }
 
         #endregion

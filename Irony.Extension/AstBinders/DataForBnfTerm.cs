@@ -13,11 +13,11 @@ using System.IO;
 
 namespace Irony.Extension.AstBinders
 {
-    public class DataForBnfTerm : NonTerminal
+    public class ValueForBnfTerm : NonTerminal
     {
         private readonly BnfTerm bnfTerm;
 
-        protected DataForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<object> astObjectCreator, bool isOptionalData)
+        protected ValueForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<object> astObjectCreator, bool isOptionalData)
             : base(bnfTerm.Name)
         {
             this.bnfTerm = bnfTerm;
@@ -27,49 +27,49 @@ namespace Irony.Extension.AstBinders
                 : new BnfExpression(bnfTerm);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
+        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObjectCreator(context, parseNode), isOptionalData: false);
+            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObjectCreator(context, parseNode), isOptionalData: false);
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
+        public static ValueForBnfTerm<TOut> Create<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
         {
-            return new DataForBnfTerm<TOut>(
+            return new ValueForBnfTerm<TOut>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) => astObjectConverter((TIn)parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode),
                 isOptionalData: false
                 );
         }
 
-        public static DataForBnfTerm<T?> SetValueOptVal<T>(IBnfTerm<T> bnfTerm)
+        public static ValueForBnfTerm<T?> SetValueOptVal<T>(IBnfTerm<T> bnfTerm)
             where T : struct
         {
             return SetValueOptVal(bnfTerm, value => value);
         }
 
-        public static DataForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
+        public static ValueForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
             where TIn : struct
             where TOut : struct
         {
             return SetValueOpt<TIn, TOut?>(bnfTerm, value => astObjectConverter(value));
         }
 
-        public static DataForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
+        public static ValueForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
             where T : class
         {
             return SetValueOptRef(bnfTerm, value => value);
         }
 
-        public static DataForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
+        public static ValueForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
             where TIn : class
             where TOut : class
         {
             return SetValueOpt<TIn, TOut>(bnfTerm, value => astObjectConverter(value));
         }
 
-        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutData> astObjectConverter)
+        private static ValueForBnfTerm<TOutData> SetValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutData> astObjectConverter)
         {
-            return new DataForBnfTerm<TOutData>(
+            return new ValueForBnfTerm<TOutData>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) =>
                 {
@@ -80,15 +80,15 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, TOut astObject)
+        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, TOut astObject)
         {
-            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObject, isOptionalData: false);
+            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObject, isOptionalData: false);
         }
     }
 
-    public class DataForBnfTerm<T> : DataForBnfTerm, IBnfTerm<T>
+    public class ValueForBnfTerm<T> : ValueForBnfTerm, IBnfTerm<T>
     {
-        internal DataForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<T> astObjectCreator, bool isOptionalData)
+        internal ValueForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<T> astObjectCreator, bool isOptionalData)
             : base(bnfTerm, (context, parseNode) => astObjectCreator(context, parseNode), isOptionalData)
         {
         }
