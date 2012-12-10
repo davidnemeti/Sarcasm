@@ -12,19 +12,40 @@ namespace Irony.Extension.AstBinders
 {
     public static class AstNodeWrapper
     {
-        public static AstNodeWrapper<T> Create<T>(T astObject, AstContext context, ParseTreeNodeWithOutAst treeNode)
+        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNodeWithOutAst parseTreeNode)
         {
-            return new AstNodeWrapper<T>(astObject, context, treeNode);
+            return GrammarHelper.Properties[context.Language.Grammar, BoolProperty.BrowsableAstNodes] && !(value is IBrowsableAstNode)
+                ? new AstNodeWrapper<T>(value, context, parseTreeNode)
+                : value;
+        }
+
+        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
+        {
+            return ValueToAstNode(value, context, (ParseTreeNodeWithOutAst)parseTreeNode);
+        }
+
+        public static T AstNodeToValue<T>(object astNode)
+        {
+            AstNodeWrapper<T> astNodeWrapper = astNode as AstNodeWrapper<T>;
+
+            if (astNodeWrapper == null && astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>))
+                throw new ArgumentException(
+                    string.Format("AstNodeWrapper with the wrong generic type argument: {0} was found, but {1} was expected",
+                        astNode.GetType().GenericTypeArguments[0].FullName, typeof(T).FullName),
+                    "astNode"
+                    );
+
+            return astNodeWrapper != null ? astNodeWrapper.Value : (T)astNode;
         }
     }
 
     public class AstNodeWrapper<T> : IBrowsableAstNode
     {
-        private readonly T astObject;
+        public T Value { get; private set; }
 
-        public AstNodeWrapper(T astObject, AstContext context, ParseTreeNodeWithOutAst treeNode)
+        internal AstNodeWrapper(T value, AstContext context, ParseTreeNodeWithOutAst treeNode)
         {
-            this.astObject = astObject;
+            this.Value = value;
 
             //this.Term = treeNode.Term;
             //this.Span = treeNode.Span;
@@ -34,7 +55,7 @@ namespace Irony.Extension.AstBinders
 
         public static implicit operator T(AstNodeWrapper<T> astNode)
         {
-            return astNode.astObject;
+            return astNode.Value;
         }
 
         System.Collections.IEnumerable IBrowsableAstNode.GetChildNodes()

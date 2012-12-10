@@ -41,7 +41,7 @@ namespace Irony.Extension.AstBinders
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    parseTreeNode.AstNode = Activator.CreateInstance(type, nonPublic: true);
+                    parseTreeNode.AstNode = AstNodeWrapper.ValueToAstNode(Activator.CreateInstance(type, nonPublic: true), context, parseTreeNode);
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
@@ -49,11 +49,11 @@ namespace Irony.Extension.AstBinders
 
                         if (memberInfo is PropertyInfo)
                         {
-                            ((PropertyInfo)memberInfo).SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
+                            ((PropertyInfo)memberInfo).SetValue(AstNodeWrapper.AstNodeToValue<object>(parseTreeNode.AstNode), AstNodeWrapper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                         else if (memberInfo is FieldInfo)
                         {
-                            ((FieldInfo)memberInfo).SetValue(parseTreeNode.AstNode, parseTreeChild.AstNode);
+                            ((FieldInfo)memberInfo).SetValue(AstNodeWrapper.AstNodeToValue<object>(parseTreeNode.AstNode), AstNodeWrapper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                         else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
                         {

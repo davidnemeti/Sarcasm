@@ -14,19 +14,30 @@ namespace Irony.Extension.AstBinders
     {
         readonly ParseTreeNode parseTreeNode;
 
+        public ParseTreeNodeWithOutAst(ParseTreeNode parseTreeNode)
+        {
+            this.parseTreeNode = parseTreeNode;
+        }
+
         public Token Token { get { return parseTreeNode.Token; } set { parseTreeNode.Token = value; } }
         public BnfTerm Term { get { return parseTreeNode.Term; } set { parseTreeNode.Term = value; } }
         public int Precedence { get { return parseTreeNode.Precedence; } set { parseTreeNode.Precedence = value; } }
         public Associativity Associativity { get { return parseTreeNode.Associativity; } set { parseTreeNode.Associativity = value; } }
         public SourceSpan Span { get { return parseTreeNode.Span; } set { parseTreeNode.Span = value; } }
-        public ParseTreeNodeList ChildNodes { get { return parseTreeNode.ChildNodes; } }
         public bool IsError { get { return parseTreeNode.IsError; } set { parseTreeNode.IsError = value; } }
         public object Tag { get { return parseTreeNode.Tag; } set { parseTreeNode.Tag = value; } }
         public TokenList Comments { get { return parseTreeNode.Comments; } set { parseTreeNode.Comments = value; } }
 
-        public ParseTreeNodeWithOutAst(ParseTreeNode parseTreeNode)
+        public ParseTreeNodeList ChildNodes { get { return parseTreeNode.ChildNodes; } }
+
+        public static explicit operator ParseTreeNodeWithOutAst(ParseTreeNode parseTreeNode)
         {
-            this.parseTreeNode = parseTreeNode;
+            return new ParseTreeNodeWithOutAst(parseTreeNode);
+        }
+
+        public static implicit operator ParseTreeNode(ParseTreeNodeWithOutAst parseTreeNodeWithOutAst)
+        {
+            return parseTreeNodeWithOutAst.parseTreeNode;
         }
 
         public override string ToString()
