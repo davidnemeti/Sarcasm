@@ -48,7 +48,7 @@
     <Compile Include="AstBinders\AstNodeWrapper.cs" />
     <Compile Include="AstBinders\Common.cs" />
     <Compile Include="AstBinders\GrammarHelper.cs" />
-    <Compile Include="AstBinders\DataForBnfTerm.cs" />
+    <Compile Include="AstBinders\ValueForBnfTerm.cs" />
     <Compile Include="AstBinders\ParseTreeNodeWithOutAst.cs" />
     <Compile Include="AstBinders\TypeForTransient.cs" />
     <Compile Include="AstBinders\TypeForCollection.cs" />
