@@ -103,18 +103,6 @@ namespace Irony.AstBinders
             return Op_Plus(bnfTerm1, bnfTerm2);
         }
 
-        //[Obsolete("Typesafe MemberBoundToBnfTerm<{0}> need for declaring type {0}. Use proper types or force typeless BnfTerm into proper type using the ToType extension method", error: true)]
-        //public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        //[Obsolete("Typesafe MemberBoundToBnfTerm<{0}> need for declaring type {0}. Use proper types or force typeless BnfTerm into proper type using the ToType extension method", error: true)]
-        //public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
         public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
         {
             return Op_Plus(bnfTerm1, bnfTerm2);
