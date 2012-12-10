@@ -94,9 +94,9 @@ namespace Irony.Extension.AstBinders
 
                 foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                 {
-                    TElementStaticType element = AstNodeWrapper.AstNodeToValue<TElementStaticType>(parseTreeChild.AstNode);
+                    TElementStaticType element = GrammarHelper.AstNodeToValue<TElementStaticType>(parseTreeChild.AstNode);
 
-                    if (AstNodeWrapper.AstNodeToValue<object>(parseTreeChild.AstNode).GetType() == elementType)
+                    if (GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode).GetType() == elementType)
                     {
                         addElementToCollection(collection, element);
                     }
@@ -107,7 +107,7 @@ namespace Irony.Extension.AstBinders
                     }
                 }
 
-                parseTreeNode.AstNode = AstNodeWrapper.ValueToAstNode(collection, context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(collection, context, parseTreeNode);
             };
         }
     }

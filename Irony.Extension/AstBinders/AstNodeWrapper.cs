@@ -12,25 +12,9 @@ namespace Irony.Extension.AstBinders
 {
     public static class AstNodeWrapper
     {
-        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
+        public static object Create<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
         {
-            return GrammarHelper.Properties[context.Language.Grammar, BoolProperty.BrowsableAstNodes] && !(value is IBrowsableAstNode)
-                ? new AstNodeWrapper<T>(value, context, parseTreeNode)
-                : value;
-        }
-
-        public static T AstNodeToValue<T>(object astNode)
-        {
-            AstNodeWrapper<T> astNodeWrapper = astNode as AstNodeWrapper<T>;
-
-            if (astNodeWrapper == null && astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>))
-                throw new ArgumentException(
-                    string.Format("AstNodeWrapper with the wrong generic type argument: {0} was found, but {1} was expected",
-                        astNode.GetType().GenericTypeArguments[0].FullName, typeof(T).FullName),
-                    "astNode"
-                    );
-
-            return astNodeWrapper != null ? astNodeWrapper.Value : (T)astNode;
+            return new AstNodeWrapper<T>(value, context, parseTreeNode);
         }
     }
 

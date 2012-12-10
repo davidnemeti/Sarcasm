@@ -41,7 +41,7 @@ namespace Irony.Extension.AstBinders
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    parseTreeNode.AstNode = AstNodeWrapper.ValueToAstNode(Activator.CreateInstance(type, nonPublic: true), context, parseTreeNode);
+                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(Activator.CreateInstance(type, nonPublic: true), context, parseTreeNode);
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
@@ -49,11 +49,11 @@ namespace Irony.Extension.AstBinders
 
                         if (memberInfo is PropertyInfo)
                         {
-                            ((PropertyInfo)memberInfo).SetValue(AstNodeWrapper.AstNodeToValue<object>(parseTreeNode.AstNode), AstNodeWrapper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((PropertyInfo)memberInfo).SetValue(GrammarHelper.AstNodeToValue<object>(parseTreeNode.AstNode), GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                         else if (memberInfo is FieldInfo)
                         {
-                            ((FieldInfo)memberInfo).SetValue(AstNodeWrapper.AstNodeToValue<object>(parseTreeNode.AstNode), AstNodeWrapper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((FieldInfo)memberInfo).SetValue(GrammarHelper.AstNodeToValue<object>(parseTreeNode.AstNode), GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                         else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
                         {

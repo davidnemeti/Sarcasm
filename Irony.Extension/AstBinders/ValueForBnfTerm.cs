@@ -22,7 +22,7 @@ namespace Irony.Extension.AstBinders
         {
             this.bnfTerm = bnfTerm;
             this.AstConfig.NodeCreator = (AstContext context, ParseTreeNode parseTreeNode) =>
-                parseTreeNode.AstNode = AstNodeWrapper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
             this.Rule = isOptionalData
                 ? bnfTerm | Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
@@ -37,7 +37,7 @@ namespace Irony.Extension.AstBinders
         {
             return new ValueForBnfTerm<TOut>(
                 bnfTerm.AsTypeless(),
-                (context, parseNode) => valueConverter(AstNodeWrapper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
+                (context, parseNode) => valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
                 isOptionalData: false
                 );
         }
@@ -74,7 +74,7 @@ namespace Irony.Extension.AstBinders
                 bnfTerm.AsTypeless(),
                 (context, parseNode) =>
                 {
-                    TIn value = AstNodeWrapper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
+                    TIn value = GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
                     return valueConverter(value);
                 },
                 isOptionalData: true
