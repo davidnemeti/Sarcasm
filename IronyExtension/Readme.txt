@@ -1,3 +1,0 @@
-﻿You have to append the following line to the end of the file 'Irony\Properties\AssemblyInfo.cs' (inside Irony project):
-
-[assembly: InternalsVisibleTo("IronyExtension, PublicKey=0024000004800000940000000602000000240000525341310004000001000100a5320b4dd910ecd8cf2abedac077c5a9ee7d26ed2a7797c2090452acc088577092bc841be2410f8ebca131584b38a75a1ec4a986a8667d6d174585b4bc4d94b68a4ecf9eb72b2886c8f1d94c83f9eeb0d307381ea03af0b364791124607dfb91690314397828f50ae338a310f0b2f43543d824d19c486ccaf7409ee8c740e2b0")]
