@@ -159,19 +159,19 @@ namespace Irony.Extension.AstBinders
 
         #region SetValue
 
-        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
+        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
         {
-            return ValueForBnfTerm.Create(bnfTerm, astObjectCreator);
+            return ValueForBnfTerm.Create(bnfTerm, astValueCreator);
         }
 
-        public static ValueForBnfTerm<TOut> CreateValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static ValueForBnfTerm<TOut> CreateValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return ValueForBnfTerm.Create(bnfTerm, astObjectCreator);
+            return ValueForBnfTerm.Create(bnfTerm, valueConverter);
         }
 
-        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut astObject)
+        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut value)
         {
-            return ValueForBnfTerm.Create(bnfTerm, astObject);
+            return ValueForBnfTerm.Create(bnfTerm, value);
         }
 
         #endregion

@@ -13,8 +13,8 @@ using Irony.Parsing;
 
 namespace Irony.Extension.AstBinders
 {
-    public delegate T AstObjectCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseNode);
-    public delegate TOut AstObjectConverter<TIn, TOut>(TIn inputObject);
+    public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseNode);
+    public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
 
     public interface IBnfTerm<out T>
     {
