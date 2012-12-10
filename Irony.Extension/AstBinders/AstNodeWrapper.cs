@@ -12,16 +12,11 @@ namespace Irony.Extension.AstBinders
 {
     public static class AstNodeWrapper
     {
-        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNodeWithOutAst parseTreeNode)
+        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
         {
             return GrammarHelper.Properties[context.Language.Grammar, BoolProperty.BrowsableAstNodes] && !(value is IBrowsableAstNode)
                 ? new AstNodeWrapper<T>(value, context, parseTreeNode)
                 : value;
-        }
-
-        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
-        {
-            return ValueToAstNode(value, context, (ParseTreeNodeWithOutAst)parseTreeNode);
         }
 
         public static T AstNodeToValue<T>(object astNode)
@@ -43,7 +38,7 @@ namespace Irony.Extension.AstBinders
     {
         public T Value { get; private set; }
 
-        internal AstNodeWrapper(T value, AstContext context, ParseTreeNodeWithOutAst treeNode)
+        internal AstNodeWrapper(T value, AstContext context, ParseTreeNode treeNode)
         {
             this.Value = value;
 
