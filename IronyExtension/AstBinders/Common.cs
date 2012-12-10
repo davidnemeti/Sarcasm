@@ -164,10 +164,16 @@ namespace Irony.AstBinders
 
         #region Q
 
-        public static IBnfTerm<T?> QQ<T>(this IBnfTerm<T> bnfTerm)
+        public static IBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
             where T : struct
         {
-            return DataForBnfTerm.SetValueOpt(bnfTerm, value => value);
+            return DataForBnfTerm.SetValueOptVal(bnfTerm);
+        }
+
+        public static IBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
+            where T : class
+        {
+            return DataForBnfTerm.SetValueOptRef(bnfTerm);
         }
 
         #endregion

@@ -46,10 +46,35 @@ namespace Irony.AstBinders
                 );
         }
 
-        public static DataForBnfTerm<TOut?> SetValueOpt<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+        public static DataForBnfTerm<T?> SetValueOptVal<T>(IBnfTerm<T> bnfTerm)
+            where T : struct
+        {
+            return SetValueOptVal(bnfTerm, value => value);
+        }
+
+        public static DataForBnfTerm<TOut?> SetValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+            where TIn : struct
             where TOut : struct
         {
-            return new DataForBnfTerm<TOut?>(
+            return SetValueOpt<TIn, TOut, TOut?>(bnfTerm, value => astObjectCreator(value));
+        }
+
+        public static DataForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
+            where T : class
+        {
+            return SetValueOptRef(bnfTerm, value => value);
+        }
+
+        public static DataForBnfTerm<TOut> SetValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectCreator)
+            where TIn : class
+            where TOut : class
+        {
+            return SetValueOpt<TIn, TOut, TOut>(bnfTerm, value => astObjectCreator(value));
+        }
+
+        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutAst, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutAst> astObjectCreator)
+        {
+            return new DataForBnfTerm<TOutData>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) =>
                 {
