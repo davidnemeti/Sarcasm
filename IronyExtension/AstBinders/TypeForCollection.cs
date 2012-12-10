@@ -144,7 +144,7 @@ namespace Irony.AstBinders
             }
         }
 
-        [Obsolete("Use the typesafe QQ extension method instead", error: true)]
+        [Obsolete("Use the typesafe QVal or QRef extension method instead", error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
@@ -192,7 +192,7 @@ namespace Irony.AstBinders
             }
         }
 
-        [Obsolete("Use the typesafe QQ extension method instead", error: true)]
+        [Obsolete("Use the typesafe QVal or QRef extension method instead", error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
