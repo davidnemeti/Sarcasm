@@ -33,7 +33,7 @@ namespace Irony.Extension.AstBinders
             return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false);
         }
 
-        public static ValueForBnfTerm<TOut> Create<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static ValueForBnfTerm<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
             return new ValueForBnfTerm<TOut>(
                 bnfTerm.AsTypeless(),
