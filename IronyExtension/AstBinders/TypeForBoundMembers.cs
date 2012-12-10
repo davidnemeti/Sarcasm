@@ -106,7 +106,7 @@ namespace Irony.AstBinders
             return this;
         }
 
-        [Obsolete("Use the typesafe QVal or QRef extension method instead", error: true)]
+        [Obsolete(obsoleteQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();

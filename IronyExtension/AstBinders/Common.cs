@@ -64,6 +64,8 @@ namespace Irony.AstBinders
                 (bnfExpressionProcessed, bnfExpressionToBeProcess) => bnfExpressionProcessed | bnfExpressionToBeProcess
                 );
         }
+
+        internal const string obsoleteQErrorMessage = "Use the typesafe QVal or QRef extension method instead";
     }
 
     public static class GrammarHelper
