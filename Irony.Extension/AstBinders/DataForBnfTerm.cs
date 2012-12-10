@@ -17,31 +17,26 @@ namespace Irony.Extension.AstBinders
     {
         private readonly BnfTerm bnfTerm;
 
-        protected DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator, bool isOptionalData)
+        protected DataForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<object> astObjectCreator, bool isOptionalData)
             : base(bnfTerm.Name)
         {
             this.bnfTerm = bnfTerm;
-            this.AstConfig.NodeCreator = nodeCreator;
+            this.AstConfig.NodeCreator = (AstContext context, ParseTreeNode parseNode) => parseNode.AstNode = astObjectCreator(context, new ParseTreeNodeWithOutAst(parseNode));
             this.Rule = isOptionalData
                 ? bnfTerm | Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
         }
 
-        public static DataForBnfTerm SetValue(BnfTerm bnfTerm, AstNodeCreator nodeCreator)
-        {
-            return new DataForBnfTerm(bnfTerm, nodeCreator, isOptionalData: false);
-        }
-
         public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, AstObjectCreator<TOut> astObjectCreator)
         {
-            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObjectCreator(context, parseNode), isOptionalData: false);
+            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObjectCreator(context, parseNode), isOptionalData: false);
         }
 
         public static DataForBnfTerm<TOut> SetValue<TIn, TOut>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOut> astObjectConverter)
         {
             return new DataForBnfTerm<TOut>(
                 bnfTerm.AsTypeless(),
-                (context, parseNode) => parseNode.AstNode = astObjectConverter((TIn)parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode),
+                (context, parseNode) => astObjectConverter((TIn)parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode),
                 isOptionalData: false
                 );
         }
@@ -56,7 +51,7 @@ namespace Irony.Extension.AstBinders
             where TIn : struct
             where TOut : struct
         {
-            return SetValueOpt<TIn, TOut, TOut?>(bnfTerm, value => astObjectConverter(value));
+            return SetValueOpt<TIn, TOut?>(bnfTerm, value => astObjectConverter(value));
         }
 
         public static DataForBnfTerm<T> SetValueOptRef<T>(IBnfTerm<T> bnfTerm)
@@ -69,19 +64,17 @@ namespace Irony.Extension.AstBinders
             where TIn : class
             where TOut : class
         {
-            return SetValueOpt<TIn, TOut, TOut>(bnfTerm, value => astObjectConverter(value));
+            return SetValueOpt<TIn, TOut>(bnfTerm, value => astObjectConverter(value));
         }
 
-        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutAst, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutAst> astObjectConverter)
+        private static DataForBnfTerm<TOutData> SetValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, AstObjectConverter<TIn, TOutData> astObjectConverter)
         {
             return new DataForBnfTerm<TOutData>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) =>
                 {
                     object astNode = parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode;
-                    parseNode.AstNode = astNode != null
-                        ? (object)astObjectConverter((TIn)astNode)
-                        : null;
+                    return astObjectConverter((TIn)astNode);
                 },
                 isOptionalData: true
                 );
@@ -89,14 +82,14 @@ namespace Irony.Extension.AstBinders
 
         public static DataForBnfTerm<TOut> SetValue<TOut>(BnfTerm bnfTerm, TOut astObject)
         {
-            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => parseNode.AstNode = astObject, isOptionalData: false);
+            return new DataForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astObject, isOptionalData: false);
         }
     }
 
     public class DataForBnfTerm<T> : DataForBnfTerm, IBnfTerm<T>
     {
-        internal DataForBnfTerm(BnfTerm bnfTerm, AstNodeCreator nodeCreator, bool isOptionalData)
-            : base(bnfTerm, nodeCreator, isOptionalData)
+        internal DataForBnfTerm(BnfTerm bnfTerm, AstObjectCreator<T> astObjectCreator, bool isOptionalData)
+            : base(bnfTerm, (context, parseNode) => astObjectCreator(context, parseNode), isOptionalData)
         {
         }
 
