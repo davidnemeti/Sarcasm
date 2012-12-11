@@ -49,16 +49,14 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public interface ITypeForWithSingleTypesafeRule<in T>
+    public interface INonTerminalWithSingleTypesafeRule<in T>
     {
         BnfExpression RuleTL { get; set; }
-
         IBnfTerm<T> Rule { set; }
     }
 
-    public interface ITypeForWithMultipleTypesafeRule<in T> : ITypeForWithSingleTypesafeRule<T>
+    public interface INonTerminalWithMultipleTypesafeRule<in T> : INonTerminalWithSingleTypesafeRule<T>
     {
-        void SetRule(params IBnfTerm<T>[] bnfExpressions);
     }
 
     public abstract class TypeForNonTerminal : NonTerminal

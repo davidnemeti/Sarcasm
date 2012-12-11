@@ -32,7 +32,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>, ITypeForWithMultipleTypesafeRule<TType>
+    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>, INonTerminalWithMultipleTypesafeRule<TType>
     {
         internal TypeForTransient(string errorAlias)
             : base(typeof(TType), errorAlias)
@@ -50,14 +50,9 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        public new IBnfTerm<TType> Rule { set { SetRule(value); } }
+        public new IBnfTerm<TType> Rule { set { this.SetRuleOr(value); } }
 
         public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        public void SetRule(params IBnfTerm<TType>[] bnfExpressions)
-        {
-            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
-        }
 
         [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
         public static BnfExpression operator |(TypeForTransient<TType> term1, BnfTerm term2)

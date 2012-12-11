@@ -112,7 +112,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>, ITypeForWithSingleTypesafeRule<TCollectionType>
+    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
         where TCollectionType : ICollection<object>, new()
     {
         internal TypeForCollection(string errorAlias)
@@ -179,7 +179,7 @@ namespace Irony.Extension.AstBinders
      * ICollection<T> : IEnumerable<T>, IEnumerable
      * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
      * */
-    public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>, ITypeForWithSingleTypesafeRule<TCollectionType>
+    public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         internal TypeForCollection(string errorAlias)

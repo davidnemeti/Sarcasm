@@ -246,6 +246,19 @@ namespace Irony.Extension.AstBinders
 
         #region Misc
 
+        public static void SetRule<T>(this INonTerminalWithSingleTypesafeRule<T> nonTerminal, IBnfTerm<T> bnfExpression)
+        {
+            nonTerminal.Rule = bnfExpression;
+        }
+
+        public static void SetRuleOr<T>(this INonTerminalWithMultipleTypesafeRule<T> nonTerminal, params IBnfTerm<T>[] bnfExpressions)
+        {
+            nonTerminal.RuleTL = bnfExpressions.Cast<BnfExpression>().Aggregate(
+                (BnfExpression)bnfExpressions[0],
+                (bnfExpressionProcessed, bnfExpressionToBeProcess) => bnfExpressionProcessed | bnfExpressionToBeProcess
+                );
+        }
+
         public static IBnfTerm<T> ToType<T>(this BnfTerm bnfTerm)
         {
             return new BnfExpression<T>(bnfTerm);
