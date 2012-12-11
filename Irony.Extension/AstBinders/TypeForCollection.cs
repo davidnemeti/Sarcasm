@@ -151,6 +151,23 @@ namespace Irony.Extension.AstBinders
         }
 
         public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(TypeForCollection<TCollectionType> term1, BnfTerm term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(BnfTerm term1, TypeForCollection<TCollectionType> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType> term1, TypeForCollection<TCollectionType> term2)
+        {
+            return Op_Pipe<TCollectionType>(term1, term2);
+        }
     }
 
     /*
@@ -196,5 +213,22 @@ namespace Irony.Extension.AstBinders
         }
 
         public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(TypeForCollection<TCollectionType, TElementType> term1, BnfTerm term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(BnfTerm term1, TypeForCollection<TCollectionType, TElementType> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType, TElementType> term1, TypeForCollection<TCollectionType, TElementType> term2)
+        {
+            return Op_Pipe<TCollectionType>(term1, term2);
+        }
     }
 }

@@ -58,5 +58,22 @@ namespace Irony.Extension.AstBinders
         {
             base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
         }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(TypeForTransient<TType> term1, BnfTerm term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
+        public static BnfExpression operator |(BnfTerm term1, TypeForTransient<TType> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator |(TypeForTransient<TType> term1, TypeForTransient<TType> term2)
+        {
+            return Op_Pipe<TType>(term1, term2);
+        }
     }
 }

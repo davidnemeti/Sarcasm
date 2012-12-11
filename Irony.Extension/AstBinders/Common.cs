@@ -21,7 +21,7 @@ namespace Irony.Extension.AstBinders
         BnfTerm AsTypeless();
     }
 
-    public class BnfExpression<TDeclaringType> : IBnfTerm<TDeclaringType>
+    public class BnfExpression<T> : IBnfTerm<T>
     {
         private readonly BnfExpression bnfExpression;
 
@@ -30,12 +30,12 @@ namespace Irony.Extension.AstBinders
             this.bnfExpression = new BnfExpression(bnfTerm);
         }
 
-        BnfTerm IBnfTerm<TDeclaringType>.AsTypeless()
+        BnfTerm IBnfTerm<T>.AsTypeless()
         {
             return this.bnfExpression;
         }
 
-        public static implicit operator BnfExpression(BnfExpression<TDeclaringType> bnfExpression)
+        public static implicit operator BnfExpression(BnfExpression<T> bnfExpression)
         {
             return bnfExpression.bnfExpression;
         }
@@ -85,8 +85,13 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
+        protected static BnfExpression<T> Op_Pipe<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return new BnfExpression<T>(BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2));
+        }
 
+        internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
         internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
+        internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use SetRuleOr method instead.";
     }
 }
