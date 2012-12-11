@@ -155,6 +155,16 @@ namespace Irony.Extension.AstBinders
         //    return Op_Pipe(term1.AsTypeless(), term2);
         //}
 
+        public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, BnfTerm term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpression<T> operator |(BnfTerm term1, ValueForBnfTerm<T> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
         protected new static BnfExpression<T> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
             return GrammarHelper.Op_Plus<T>(bnfTerm1, bnfTerm2);

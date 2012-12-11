@@ -45,15 +45,15 @@ namespace Irony.Extension.AstBinders
             return GrammarHelper.Op_Pipe<T>(term1, term2);
         }
 
-        public static BnfExpression<T> operator |(BnfExpression<T> term1, IBnfTerm<T> term2)
-        {
-            return GrammarHelper.Op_Pipe<T>(term1, term2.AsTypeless());
-        }
+        //public static BnfExpression<T> operator |(BnfExpression<T> term1, IBnfTerm<T> term2)
+        //{
+        //    return GrammarHelper.Op_Pipe<T>(term1, term2.AsTypeless());
+        //}
 
-        public static BnfExpression<T> operator |(IBnfTerm<T> term1, BnfExpression<T> term2)
-        {
-            return GrammarHelper.Op_Pipe<T>(term1.AsTypeless(), term2);
-        }
+        //public static BnfExpression<T> operator |(IBnfTerm<T> term1, BnfExpression<T> term2)
+        //{
+        //    return GrammarHelper.Op_Pipe<T>(term1.AsTypeless(), term2);
+        //}
 
         public static BnfExpression<T> operator +(BnfExpression<T> term1, BnfExpression<T> term2)
         {
