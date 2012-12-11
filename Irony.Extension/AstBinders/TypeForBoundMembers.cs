@@ -120,5 +120,35 @@ namespace Irony.Extension.AstBinders
         {
             return GrammarHelper.Op_Pipe<TType>(term1, term2);
         }
+
+        public static BnfExpression<TType> operator |(BnfExpression<TType> term1, TypeForBoundMembers<TType> term2)
+        {
+            return GrammarHelper.Op_Pipe<TType>(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator |(TypeForBoundMembers<TType> term1, BnfExpression<TType> term2)
+        {
+            return GrammarHelper.Op_Pipe<TType>(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator +(BnfExpression<TType> term1, TypeForBoundMembers<TType> term2)
+        {
+            return GrammarHelper.Op_Plus<TType>(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator +(TypeForBoundMembers<TType> term1, BnfExpression<TType> term2)
+        {
+            return GrammarHelper.Op_Plus<TType>(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator +(BnfExpression term1, TypeForBoundMembers<TType> term2)
+        {
+            return GrammarHelper.Op_Plus<TType>(term1, term2);
+        }
+
+        public static BnfExpression<TType> operator +(TypeForBoundMembers<TType> term1, BnfExpression term2)
+        {
+            return GrammarHelper.Op_Plus<TType>(term1, term2);
+        }
     }
 }

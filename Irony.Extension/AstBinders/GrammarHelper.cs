@@ -49,7 +49,7 @@ namespace Irony.Extension.AstBinders
 
         #region Typeless converted to typesafe
 
-        public static IBnfTerm<TCollectionType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
@@ -57,12 +57,12 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<TElementType>> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfTerm<TCollectionType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
@@ -70,7 +70,7 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<TElementType>> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
@@ -79,7 +79,7 @@ namespace Irony.Extension.AstBinders
 
         #region Typeless
 
-        public static IBnfTerm<TCollectionType> StarListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType> StarListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
@@ -87,12 +87,12 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<object>> StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<object>> StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return StarListTL<List<object>>(bnfTermElement, delimiter);
         }
 
-        public static IBnfTerm<TCollectionType> PlusListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType> PlusListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
@@ -100,7 +100,7 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<object>> PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<object>> PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusListTL<List<object>>(bnfTermElement, delimiter);
         }
@@ -278,12 +278,12 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        public static IBnfTerm<T> ToType<T>(this BnfTerm bnfTerm)
+        public static BnfExpression<T> ToType<T>(this BnfTerm bnfTerm)
         {
             return new BnfExpression<T>(bnfTerm);
         }
 
-        public static IBnfTerm<T> ToType<T>(this BnfTerm bnfTerm, IBnfTerm<T> dummyBnfTerm)
+        public static BnfExpression<T> ToType<T>(this BnfTerm bnfTerm, IBnfTerm<T> dummyBnfTerm)
         {
             return ToType<T>(bnfTerm);
         }
