@@ -35,7 +35,7 @@ namespace Irony.Extension.AstBinders
             return this.bnfExpression;
         }
 
-        public static explicit operator BnfExpression(BnfExpression<TDeclaringType> bnfExpression)
+        public static implicit operator BnfExpression(BnfExpression<TDeclaringType> bnfExpression)
         {
             return bnfExpression.bnfExpression;
         }
