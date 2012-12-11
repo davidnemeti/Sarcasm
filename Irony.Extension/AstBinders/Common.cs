@@ -41,6 +41,14 @@ namespace Irony.Extension.AstBinders
         }
     }
 
+    public class BnfExpressionWithMemberBoundToBnfTerm : BnfExpression
+    {
+        public BnfExpressionWithMemberBoundToBnfTerm(BnfTerm bnfTerm)
+            : base(bnfTerm)
+        {
+        }
+    }
+
     public abstract class TypeForNonTerminal : NonTerminal
     {
         protected Type type { get; private set; }
@@ -65,6 +73,8 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        internal const string obsoleteQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
+        internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
+
+        internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
     }
 }

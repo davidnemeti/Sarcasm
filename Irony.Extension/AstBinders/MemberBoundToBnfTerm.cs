@@ -79,6 +79,21 @@ namespace Irony.Extension.AstBinders
 
             return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
         }
+
+        public static BnfExpressionWithMemberBoundToBnfTerm operator +(MemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
+        {
+            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+        }
+
+        public static BnfExpressionWithMemberBoundToBnfTerm operator +(MemberBoundToBnfTerm bnfTerm1, BnfExpression bnfTerm2)
+        {
+            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+        }
+
+        public static BnfExpressionWithMemberBoundToBnfTerm operator +(BnfExpression bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
+        {
+            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+        }
     }
 
     public class MemberBoundToBnfTerm<TDeclaringType> : MemberBoundToBnfTerm, IBnfTerm<TDeclaringType>
@@ -91,6 +106,30 @@ namespace Irony.Extension.AstBinders
         BnfTerm IBnfTerm<TDeclaringType>.AsTypeless()
         {
             return this;
+        }
+
+        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
+        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, BnfExpressionWithMemberBoundToBnfTerm bnfTerm2)
+        {
+            return Op_Plus(bnfTerm1, bnfTerm2);
+        }
+
+        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
+        public static BnfExpression<TDeclaringType> operator +(BnfExpressionWithMemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
+        {
+            return Op_Plus(bnfTerm1, bnfTerm2);
+        }
+
+        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
+        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
+        {
+            return Op_Plus(bnfTerm1, bnfTerm2);
+        }
+
+        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
+        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
+        {
+            return Op_Plus(bnfTerm1, bnfTerm2);
         }
 
         public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, BnfExpression bnfTerm2)
@@ -120,12 +159,7 @@ namespace Irony.Extension.AstBinders
 
         protected new static BnfExpression<TDeclaringType> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
-            //Check term1 and see if we can use it as result, simply adding term2 as operand
-            BnfExpression expr1 = bnfTerm1 as BnfExpression;
-            if (expr1 == null || expr1.Data.Count > 1) //either not expression at all, or Pipe-type expression (count > 1)
-                expr1 = new BnfExpression(bnfTerm1);
-            expr1.Data[expr1.Data.Count - 1].Add(bnfTerm2);
-            return new BnfExpression<TDeclaringType>(expr1);
+            return new BnfExpression<TDeclaringType>(BnfTerm.Op_Plus(bnfTerm1, bnfTerm2));
         }
     }
 }

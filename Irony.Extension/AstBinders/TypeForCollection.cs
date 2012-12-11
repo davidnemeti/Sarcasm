@@ -144,7 +144,7 @@ namespace Irony.Extension.AstBinders
             }
         }
 
-        [Obsolete(obsoleteQErrorMessage, error: true)]
+        [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
@@ -192,7 +192,7 @@ namespace Irony.Extension.AstBinders
             }
         }
 
-        [Obsolete(obsoleteQErrorMessage, error: true)]
+        [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();

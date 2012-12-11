@@ -99,7 +99,7 @@ namespace Irony.Extension.AstBinders
             return this;
         }
 
-        [Obsolete(TypeForNonTerminal.obsoleteQErrorMessage, error: true)]
+        [Obsolete(TypeForNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();

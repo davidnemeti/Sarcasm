@@ -106,7 +106,7 @@ namespace Irony.Extension.AstBinders
             return this;
         }
 
-        [Obsolete(obsoleteQErrorMessage, error: true)]
+        [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
