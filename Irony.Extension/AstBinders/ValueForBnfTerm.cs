@@ -115,9 +115,54 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
+        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, bnfTerm2);
+        //}
+
+        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, IBnfTerm<T> bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, (BnfExpression)bnfTerm2);
+        //}
+
+        //public static BnfExpression<T> operator +(IBnfTerm<T> bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
+        //{
+        //    return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
+        //}
+
+        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, BnfExpression bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, bnfTerm2);
+        //}
+
+        //public static BnfExpression<T> operator +(BnfExpression bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, bnfTerm2);
+        //}
+
         public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, ValueForBnfTerm<T> term2)
         {
             return GrammarHelper.Op_Pipe<T>(term1, term2);
+        }
+
+        //public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, IBnfTerm<T> term2)
+        //{
+        //    return Op_Pipe(term1, term2.AsTypeless());
+        //}
+
+        //public static BnfExpression<T> operator |(IBnfTerm<T> term1, ValueForBnfTerm<T> term2)
+        //{
+        //    return Op_Pipe(term1.AsTypeless(), term2);
+        //}
+
+        protected new static BnfExpression<T> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return GrammarHelper.Op_Plus<T>(bnfTerm1, bnfTerm2);
+        }
+
+        protected new static BnfExpression<T> Op_Pipe(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return GrammarHelper.Op_Pipe<T>(bnfTerm1, bnfTerm2);
         }
     }
 }

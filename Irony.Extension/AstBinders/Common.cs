@@ -69,6 +69,16 @@ namespace Irony.Extension.AstBinders
         {
             return GrammarHelper.Op_Plus<T>(term1.AsTypeless(), term2);
         }
+
+        public static BnfExpression<T> operator +(BnfExpression<T> term1, BnfTerm term2)
+        {
+            return GrammarHelper.Op_Plus<T>(term1, term2);
+        }
+
+        public static BnfExpression<T> operator +(BnfTerm term1, BnfExpression<T> term2)
+        {
+            return GrammarHelper.Op_Plus<T>(term1, term2);
+        }
     }
 
     public class BnfExpressionWithMemberBoundToBnfTerm : BnfExpression

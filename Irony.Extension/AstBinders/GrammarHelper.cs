@@ -172,6 +172,11 @@ namespace Irony.Extension.AstBinders
             return ValueForBnfTerm.Cast<TOut>(bnfTerm);
         }
 
+        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, IBnfTerm<TOut> dummyBnfTerm)
+        {
+            return ValueForBnfTerm.Cast<TIn, TOut>(bnfTerm);
+        }
+
         #endregion
 
         #region Typesafe Q
