@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.Extension;
 using Irony.Extension.AstBinders;
 
 using ETUS.DomainModel;
@@ -20,9 +21,9 @@ namespace ConsoleApplication1
         {
             var grammar = new UDLGrammar();
             var languageData = new LanguageData(grammar);
-            Console.WriteLine(GrammarHelper.GetNonTerminalsAsText(languageData));
+            Console.WriteLine(GrammarExtension.GetNonTerminalsAsText(languageData));
             Console.WriteLine();
-            Console.WriteLine(GrammarHelper.GetNonTerminalsAsText(languageData, omitBoundMembers: true));
+            Console.WriteLine(GrammarExtension.GetNonTerminalsAsText(languageData, omitBoundMembers: true));
             var parser = new Parser(languageData);
             ParseTree parseTree = parser.Parse("boo 5 +");
             ParseTree parseTree2 = parser.Parse("soo 6 + 7");

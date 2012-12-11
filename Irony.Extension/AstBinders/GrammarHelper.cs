@@ -223,7 +223,7 @@ namespace Irony.Extension.AstBinders
 
         public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
         {
-            return GrammarHelper.Properties[context.Language.Grammar, BoolProperty.BrowsableAstNodes] && !(value is IBrowsableAstNode)
+            return ((GrammarExtension)context.Language.Grammar).BrowsableAstNodes && !(value is IBrowsableAstNode)
                 ? AstNodeWrapper.Create(value, context, parseTreeNode)
                 : value;
         }
@@ -265,44 +265,6 @@ namespace Irony.Extension.AstBinders
                 ? string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), type.Name.ToLower())
                 : type.Name.ToLower();
         }
-
-        public static string GetNonTerminalsAsText(LanguageData language, bool omitBoundMembers = false)
-        {
-            var sw = new StringWriter();
-            foreach (var nonTerminal in language.GrammarData.NonTerminals.OrderBy(nonTerminal => nonTerminal.Name))
-            {
-                if (omitBoundMembers && nonTerminal is MemberBoundToBnfTerm)
-                    continue;
-
-                sw.WriteLine("{0}{1}", nonTerminal.Name, nonTerminal.Flags.IsSet(TermFlags.IsNullable) ? "  (Nullable) " : string.Empty);
-                foreach (Production pr in nonTerminal.Productions)
-                {
-                    sw.WriteLine("   {0}", ProductionToString(pr, omitBoundMembers));
-                }
-            }
-            return sw.ToString();
-        }
-
-        private static string ProductionToString(Production production, bool omitBoundMembers)
-        {
-            var sw = new StringWriter();
-            sw.Write("{0} -> ", production.LValue.Name);
-            foreach (BnfTerm bnfTerm in production.RValues)
-            {
-                BnfTerm bnfTermToWrite = omitBoundMembers && bnfTerm is MemberBoundToBnfTerm
-                    ? ((MemberBoundToBnfTerm)bnfTerm).BnfTerm
-                    : bnfTerm;
-
-                sw.Write("{0} ", bnfTermToWrite.Name);
-            }
-            return sw.ToString();
-        }
-
-        #endregion
-
-        #region "Extension Properties"
-
-        public static Properties Properties { get { return Properties.Instance; } }
 
         #endregion
     }
