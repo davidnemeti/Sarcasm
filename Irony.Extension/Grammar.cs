@@ -42,6 +42,11 @@ namespace Irony.Extension
             return base.ToTerm(text, string.Format("\"{0}\"", text));
         }
 
+        public string GetNonTerminalsAsText(bool omitBoundMembers = false)
+        {
+            return GetNonTerminalsAsText(new LanguageData(this), omitBoundMembers);
+        }
+
         public static string GetNonTerminalsAsText(LanguageData language, bool omitBoundMembers = false)
         {
             var sw = new StringWriter();

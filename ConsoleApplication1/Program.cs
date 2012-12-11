@@ -20,11 +20,10 @@ namespace ConsoleApplication1
         static void Main(string[] args)
         {
             var grammar = new UDLGrammar();
-            var languageData = new LanguageData(grammar);
-            Console.WriteLine(GrammarExtension.GetNonTerminalsAsText(languageData));
+            Console.WriteLine(grammar.GetNonTerminalsAsText());
             Console.WriteLine();
-            Console.WriteLine(GrammarExtension.GetNonTerminalsAsText(languageData, omitBoundMembers: true));
-            var parser = new Parser(languageData);
+            Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
+            var parser = new Parser(grammar);
             ParseTree parseTree = parser.Parse("boo 5 +");
             ParseTree parseTree2 = parser.Parse("soo 6 + 7");
         }
