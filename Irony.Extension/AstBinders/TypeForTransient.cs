@@ -32,7 +32,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>
+    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>, ITypeForWithMultipleTypesafeRule<TType>
     {
         internal TypeForTransient(string errorAlias)
             : base(typeof(TType), errorAlias)
@@ -49,6 +49,10 @@ namespace Irony.Extension.AstBinders
         {
             return base.Q();
         }
+
+        public new IBnfTerm<TType> Rule { set { SetRule(value); } }
+
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
         public void SetRule(params IBnfTerm<TType>[] bnfExpressions)
         {

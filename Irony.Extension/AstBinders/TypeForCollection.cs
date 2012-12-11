@@ -112,7 +112,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>
+    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>, ITypeForWithSingleTypesafeRule<TCollectionType>
         where TCollectionType : ICollection<object>, new()
     {
         internal TypeForCollection(string errorAlias)
@@ -130,7 +130,13 @@ namespace Irony.Extension.AstBinders
             return this;
         }
 
-        public override BnfExpression Rule
+        [Obsolete(typelessQErrorMessage, error: true)]
+        public new BnfExpression Q()
+        {
+            return base.Q();
+        }
+
+        public BnfExpression RuleTL
         {
             get { return base.Rule; }
             set
@@ -144,16 +150,7 @@ namespace Irony.Extension.AstBinders
             }
         }
 
-        [Obsolete(typelessQErrorMessage, error: true)]
-        public new BnfExpression Q()
-        {
-            return base.Q();
-        }
-
-        public void SetRule(params IBnfTerm<TCollectionType>[] bnfExpressions)
-        {
-            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
-        }
+        public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
     }
 
     /*
@@ -165,7 +162,7 @@ namespace Irony.Extension.AstBinders
      * ICollection<T> : IEnumerable<T>, IEnumerable
      * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
      * */
-    public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>
+    public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>, ITypeForWithSingleTypesafeRule<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         internal TypeForCollection(string errorAlias)
@@ -178,7 +175,13 @@ namespace Irony.Extension.AstBinders
             return this;
         }
 
-        public override BnfExpression Rule
+        [Obsolete(typelessQErrorMessage, error: true)]
+        public new BnfExpression Q()
+        {
+            return base.Q();
+        }
+
+        public BnfExpression RuleTL
         {
             get { return base.Rule; }
             set
@@ -192,15 +195,6 @@ namespace Irony.Extension.AstBinders
             }
         }
 
-        [Obsolete(typelessQErrorMessage, error: true)]
-        public new BnfExpression Q()
-        {
-            return base.Q();
-        }
-
-        public void SetRule(params IBnfTerm<TCollectionType>[] bnfExpressions)
-        {
-            base.Rule = GetRuleWithOrBetweenTypesafeExpressions(bnfExpressions);
-        }
+        public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
     }
 }

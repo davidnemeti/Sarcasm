@@ -84,7 +84,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>
+    public class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>, ITypeForWithMultipleTypesafeRule<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }
@@ -112,7 +112,9 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-//        public new IBnfTerm<TType> Rule { set { SetRule(value); } }
+        public new IBnfTerm<TType> Rule { set { SetRule(value); } }
+
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
         public void SetRule(params IBnfTerm<TType>[] bnfExpressions)
         {

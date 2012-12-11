@@ -23,7 +23,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless()).ToType<TCollectionType>();
             return typeForCollection;
         }
 
@@ -36,7 +36,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless()).ToType<TCollectionType>();
             return typeForCollection;
         }
 
@@ -53,7 +53,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement).ToType<TCollectionType>();
             return typeForCollection;
         }
 
@@ -66,7 +66,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement).ToType<TCollectionType>();
             return typeForCollection;
         }
 
@@ -83,7 +83,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement).ToType<TCollectionType>();
             return typeForCollection;
         }
 
@@ -96,7 +96,7 @@ namespace Irony.Extension.AstBinders
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
-            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            typeForCollection.Rule = Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement).ToType<TCollectionType>();
             return typeForCollection;
         }
 
