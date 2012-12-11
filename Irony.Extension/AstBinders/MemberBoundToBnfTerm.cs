@@ -157,11 +157,6 @@ namespace Irony.Extension.AstBinders
             return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
         }
 
-        //public static BnfExpression<TDeclaringType> operator |(BnfExpression<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        //{
-        //    return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
-        //}
-
         protected new static BnfExpression<TDeclaringType> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
             return new BnfExpression<TDeclaringType>(BnfTerm.Op_Plus(bnfTerm1, bnfTerm2));
