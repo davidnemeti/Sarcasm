@@ -39,6 +39,36 @@ namespace Irony.Extension.AstBinders
         {
             return bnfExpression.bnfExpression;
         }
+
+        public static BnfExpression<T> operator |(BnfExpression<T> term1, BnfExpression<T> term2)
+        {
+            return GrammarHelper.Op_Pipe<T>(term1, term2);
+        }
+
+        public static BnfExpression<T> operator |(BnfExpression<T> term1, IBnfTerm<T> term2)
+        {
+            return GrammarHelper.Op_Pipe<T>(term1, term2.AsTypeless());
+        }
+
+        public static BnfExpression<T> operator |(IBnfTerm<T> term1, BnfExpression<T> term2)
+        {
+            return GrammarHelper.Op_Pipe<T>(term1.AsTypeless(), term2);
+        }
+
+        public static BnfExpression<T> operator +(BnfExpression<T> term1, BnfExpression<T> term2)
+        {
+            return GrammarHelper.Op_Plus<T>(term1, term2);
+        }
+
+        public static BnfExpression<T> operator +(BnfExpression<T> term1, IBnfTerm<T> term2)
+        {
+            return GrammarHelper.Op_Plus<T>(term1, term2.AsTypeless());
+        }
+
+        public static BnfExpression<T> operator +(IBnfTerm<T> term1, BnfExpression<T> term2)
+        {
+            return GrammarHelper.Op_Plus<T>(term1.AsTypeless(), term2);
+        }
     }
 
     public class BnfExpressionWithMemberBoundToBnfTerm : BnfExpression
@@ -81,11 +111,6 @@ namespace Irony.Extension.AstBinders
                 (BnfExpression)bnfExpressions[0],
                 (bnfExpressionProcessed, bnfExpressionToBeProcess) => bnfExpressionProcessed | bnfExpressionToBeProcess
                 );
-        }
-
-        protected static BnfExpression<T> Op_Pipe<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return new BnfExpression<T>(BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2));
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";

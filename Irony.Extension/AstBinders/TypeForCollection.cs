@@ -166,7 +166,7 @@ namespace Irony.Extension.AstBinders
 
         public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType> term1, TypeForCollection<TCollectionType> term2)
         {
-            return Op_Pipe<TCollectionType>(term1, term2);
+            return GrammarHelper.Op_Pipe<TCollectionType>(term1, term2);
         }
     }
 
@@ -228,7 +228,7 @@ namespace Irony.Extension.AstBinders
 
         public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType, TElementType> term1, TypeForCollection<TCollectionType, TElementType> term2)
         {
-            return Op_Pipe<TCollectionType>(term1, term2);
+            return GrammarHelper.Op_Pipe<TCollectionType>(term1, term2);
         }
     }
 }

@@ -160,6 +160,20 @@ namespace Irony.Extension.AstBinders
 
         #endregion
 
+        #region Create/ConvertValue
+
+        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm)
+        {
+            return ValueForBnfTerm.Cast<TIn, TOut>(bnfTerm);
+        }
+
+        public static ValueForBnfTerm<TOut> Cast<TOut>(this BnfTerm bnfTerm)
+        {
+            return ValueForBnfTerm.Cast<TOut>(bnfTerm);
+        }
+
+        #endregion
+
         #region Typesafe Q
 
         public static ValueForBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
@@ -264,6 +278,11 @@ namespace Irony.Extension.AstBinders
             return new BnfExpression<T>(bnfTerm);
         }
 
+        public static IBnfTerm<T> ToType<T>(this BnfTerm bnfTerm, IBnfTerm<T> dummyBnfTerm)
+        {
+            return ToType<T>(bnfTerm);
+        }
+
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {
             if (args.Length > 0)
@@ -277,6 +296,16 @@ namespace Irony.Extension.AstBinders
             return type.IsNested
                 ? string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), type.Name.ToLower())
                 : type.Name.ToLower();
+        }
+
+        internal static BnfExpression<T> Op_Plus<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return new BnfExpression<T>(BnfTerm.Op_Plus(bnfTerm1, bnfTerm2));
+        }
+
+        internal static BnfExpression<T> Op_Pipe<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return new BnfExpression<T>(BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2));
         }
 
         #endregion

@@ -157,9 +157,14 @@ namespace Irony.Extension.AstBinders
             return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
         }
 
+        public static BnfExpression<TDeclaringType> operator |(MemberBoundToBnfTerm<TDeclaringType> term1, MemberBoundToBnfTerm<TDeclaringType> term2)
+        {
+            return GrammarHelper.Op_Pipe<TDeclaringType>(term1, term2);
+        }
+
         protected new static BnfExpression<TDeclaringType> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
-            return new BnfExpression<TDeclaringType>(BnfTerm.Op_Plus(bnfTerm1, bnfTerm2));
+            return GrammarHelper.Op_Plus<TDeclaringType>(bnfTerm1, bnfTerm2);
         }
     }
 }

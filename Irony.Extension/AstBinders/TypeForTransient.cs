@@ -68,7 +68,7 @@ namespace Irony.Extension.AstBinders
 
         public static BnfExpression<TType> operator |(TypeForTransient<TType> term1, TypeForTransient<TType> term2)
         {
-            return Op_Pipe<TType>(term1, term2);
+            return GrammarHelper.Op_Pipe<TType>(term1, term2);
         }
     }
 }

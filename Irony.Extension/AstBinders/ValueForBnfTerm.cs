@@ -47,6 +47,16 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
+        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
+        {
+            return Convert(bnfTerm, inValue => (TOut)(object)inValue);
+        }
+
+        public static ValueForBnfTerm<TOut> Cast<TOut>(BnfTerm bnfTerm)
+        {
+            return Create<TOut>(bnfTerm, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode));
+        }
+
         public static ValueForBnfTerm<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
             where T : struct
         {
@@ -103,6 +113,11 @@ namespace Irony.Extension.AstBinders
         public new BnfExpression Q()
         {
             return base.Q();
+        }
+
+        public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, ValueForBnfTerm<T> term2)
+        {
+            return GrammarHelper.Op_Pipe<T>(term1, term2);
         }
     }
 }

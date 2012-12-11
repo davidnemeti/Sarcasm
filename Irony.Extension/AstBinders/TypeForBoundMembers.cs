@@ -130,7 +130,7 @@ namespace Irony.Extension.AstBinders
 
         public static BnfExpression<TType> operator |(TypeForBoundMembers<TType> term1, TypeForBoundMembers<TType> term2)
         {
-            return Op_Pipe<TType>(term1, term2);
+            return GrammarHelper.Op_Pipe<TType>(term1, term2);
         }
     }
 }
