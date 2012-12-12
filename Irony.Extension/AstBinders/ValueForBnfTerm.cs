@@ -13,11 +13,11 @@ using System.IO;
 
 namespace Irony.Extension.AstBinders
 {
-    public class ValueForBnfTerm : NonTerminal
+    public class TypeForValue : NonTerminal
     {
         private readonly BnfTerm bnfTerm;
 
-        protected ValueForBnfTerm(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData)
+        protected TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData)
             : base(bnfTerm.Name)
         {
             this.bnfTerm = bnfTerm;
@@ -28,64 +28,64 @@ namespace Irony.Extension.AstBinders
                 : new BnfExpression(bnfTerm);
         }
 
-        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, TOut value)
+        public static TypeForValue<TOut> Create<TOut>(BnfTerm bnfTerm, TOut value)
         {
-            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => value, isOptionalData: false);
+            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => value, isOptionalData: false);
         }
 
-        public static ValueForBnfTerm<TOut> Create<TOut>(BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
+        public static TypeForValue<TOut> Create<TOut>(BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
         {
-            return new ValueForBnfTerm<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false);
+            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false);
         }
 
-        public static ValueForBnfTerm<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return new ValueForBnfTerm<TOut>(
+            return new TypeForValue<TOut>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) => valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
                 isOptionalData: false
                 );
         }
 
-        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
+        public static TypeForValue<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
         {
             return Convert(bnfTerm, inValue => (TOut)(object)inValue);
         }
 
-        public static ValueForBnfTerm<TOut> Cast<TOut>(BnfTerm bnfTerm)
+        public static TypeForValue<TOut> Cast<TOut>(BnfTerm bnfTerm)
         {
             return Create<TOut>(bnfTerm, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode));
         }
 
-        public static ValueForBnfTerm<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
+        public static TypeForValue<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
             where T : struct
         {
             return ConvertValueOptVal(bnfTerm, value => value);
         }
 
-        public static ValueForBnfTerm<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static TypeForValue<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : struct
             where TOut : struct
         {
             return ConvertValueOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
         }
 
-        public static ValueForBnfTerm<T> ConvertValueOptRef<T>(IBnfTerm<T> bnfTerm)
+        public static TypeForValue<T> ConvertValueOptRef<T>(IBnfTerm<T> bnfTerm)
             where T : class
         {
             return ConvertValueOptRef(bnfTerm, value => value);
         }
 
-        public static ValueForBnfTerm<TOut> ConvertValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static TypeForValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : class
             where TOut : class
         {
             return ConvertValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
         }
 
-        private static ValueForBnfTerm<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
+        private static TypeForValue<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
         {
-            return new ValueForBnfTerm<TOutData>(
+            return new TypeForValue<TOutData>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) =>
                 {
@@ -97,9 +97,9 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class ValueForBnfTerm<T> : ValueForBnfTerm, IBnfTerm<T>
+    public class TypeForValue<T> : TypeForValue, IBnfTerm<T>
     {
-        internal ValueForBnfTerm(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData)
+        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData)
             : base(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData)
         {
         }
@@ -140,7 +140,7 @@ namespace Irony.Extension.AstBinders
         //    return Op_Plus(bnfTerm1, bnfTerm2);
         //}
 
-        public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, ValueForBnfTerm<T> term2)
+        public static BnfExpression<T> operator |(TypeForValue<T> term1, TypeForValue<T> term2)
         {
             return GrammarHelper.Op_Pipe<T>(term1, term2);
         }
@@ -155,12 +155,12 @@ namespace Irony.Extension.AstBinders
         //    return Op_Pipe(term1.AsTypeless(), term2);
         //}
 
-        public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, BnfTerm term2)
+        public static BnfExpression<T> operator |(TypeForValue<T> term1, BnfTerm term2)
         {
             return Op_Pipe(term1, term2);
         }
 
-        public static BnfExpression<T> operator |(BnfTerm term1, ValueForBnfTerm<T> term2)
+        public static BnfExpression<T> operator |(BnfTerm term1, TypeForValue<T> term2)
         {
             return Op_Pipe(term1, term2);
         }

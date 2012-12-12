@@ -145,54 +145,54 @@ namespace Irony.Extension.AstBinders
 
         #region Create/ConvertValue
 
-        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut value)
+        public static TypeForValue<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut value)
         {
-            return ValueForBnfTerm.Create(bnfTerm, value);
+            return TypeForValue.Create(bnfTerm, value);
         }
 
-        public static ValueForBnfTerm<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
+        public static TypeForValue<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
         {
-            return ValueForBnfTerm.Create(bnfTerm, astValueCreator);
+            return TypeForValue.Create(bnfTerm, astValueCreator);
         }
 
-        public static ValueForBnfTerm<TOut> ConvertValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static TypeForValue<TOut> ConvertValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return ValueForBnfTerm.Convert(bnfTerm, valueConverter);
+            return TypeForValue.Convert(bnfTerm, valueConverter);
         }
 
         #endregion
 
         #region Create/ConvertValue
 
-        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm)
+        public static TypeForValue<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm)
         {
-            return ValueForBnfTerm.Cast<TIn, TOut>(bnfTerm);
+            return TypeForValue.Cast<TIn, TOut>(bnfTerm);
         }
 
-        public static ValueForBnfTerm<TOut> Cast<TOut>(this BnfTerm bnfTerm)
+        public static TypeForValue<TOut> Cast<TOut>(this BnfTerm bnfTerm)
         {
-            return ValueForBnfTerm.Cast<TOut>(bnfTerm);
+            return TypeForValue.Cast<TOut>(bnfTerm);
         }
 
-        public static ValueForBnfTerm<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, IBnfTerm<TOut> dummyBnfTerm)
+        public static TypeForValue<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, IBnfTerm<TOut> dummyBnfTerm)
         {
-            return ValueForBnfTerm.Cast<TIn, TOut>(bnfTerm);
+            return TypeForValue.Cast<TIn, TOut>(bnfTerm);
         }
 
         #endregion
 
         #region Typesafe Q
 
-        public static ValueForBnfTerm<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
+        public static TypeForValue<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
             where T : struct
         {
-            return ValueForBnfTerm.ConvertValueOptVal(bnfTerm);
+            return TypeForValue.ConvertValueOptVal(bnfTerm);
         }
 
-        public static ValueForBnfTerm<T> QRef<T>(this IBnfTerm<T> bnfTerm)
+        public static TypeForValue<T> QRef<T>(this IBnfTerm<T> bnfTerm)
             where T : class
         {
-            return ValueForBnfTerm.ConvertValueOptRef(bnfTerm);
+            return TypeForValue.ConvertValueOptRef(bnfTerm);
         }
 
         #endregion
