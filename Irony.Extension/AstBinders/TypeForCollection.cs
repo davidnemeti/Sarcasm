@@ -44,6 +44,8 @@ namespace Irony.Extension.AstBinders
                 if (addMethodInfo == null)
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
             }
+
+            SetNodeCreator();
         }
 
         public static TypeForCollection<TCollectionType> Of<TCollectionType>(string errorAlias = null)
@@ -68,22 +70,16 @@ namespace Irony.Extension.AstBinders
             return new TypeForCollection(collectionType, elementType, errorAlias, runtimeCheck: true);
         }
 
-        public override BnfExpression Rule
+        protected virtual void SetNodeCreator()
         {
-            get { return base.Rule; }
-            set
-            {
-                /*
-                 * NOTE: We are dealing here with totally typeless collection and using reflection anyway, so we are not forcing the created object to be
-                 * an IList, ICollection, etc., so we are just working here with an object type and require that the collection has an 'Add' method during runtime.
-                 * */
-                SetNodeCreator<object, object>(
-                    () => Activator.CreateInstance(collectionType, nonPublic: true),
-                    (collection, element) => addMethodInfo.Invoke(obj: collection, parameters: new[] { element })
-                    );
-
-                base.Rule = value;
-            }
+            /*
+             * NOTE: We are dealing here with totally typeless collection and using reflection anyway, so we are not forcing the created object to be
+             * an IList, ICollection, etc., so we are just working here with an object type and require that the collection has an 'Add' method during runtime.
+             * */
+            SetNodeCreator<object, object>(
+                () => Activator.CreateInstance(collectionType, nonPublic: true),
+                (collection, element) => addMethodInfo.Invoke(obj: collection, parameters: new[] { element })
+                );
         }
 
         protected void SetNodeCreator<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection)
@@ -120,9 +116,12 @@ namespace Irony.Extension.AstBinders
         {
         }
 
-        protected TypeForCollection(Type collectionType, Type elementType, string errorAlias)
-            : base(collectionType, elementType, errorAlias, runtimeCheck: false)
+        protected override void SetNodeCreator()
         {
+            SetNodeCreator<TCollectionType, object>(
+                () => new TCollectionType(),
+                (collection, element) => collection.Add(element)
+                );
         }
 
         BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
@@ -136,19 +135,7 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        public BnfExpression RuleTL
-        {
-            get { return base.Rule; }
-            set
-            {
-                SetNodeCreator<TCollectionType, object>(
-                    () => new TCollectionType(),
-                    (collection, element) => collection.Add(element)
-                    );
-
-                base.Rule = value;
-            }
-        }
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
         public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
 
@@ -187,6 +174,14 @@ namespace Irony.Extension.AstBinders
         {
         }
 
+        protected override void SetNodeCreator()
+        {
+            SetNodeCreator<TCollectionType, TElementType>(
+                () => new TCollectionType(),
+                (collection, element) => collection.Add(element)
+                );
+        }
+
         BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
         {
             return this;
@@ -198,19 +193,7 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        public BnfExpression RuleTL
-        {
-            get { return base.Rule; }
-            set
-            {
-                SetNodeCreator<TCollectionType, TElementType>(
-                    () => new TCollectionType(),
-                    (collection, element) => collection.Add(element)
-                    );
-
-                base.Rule = value;
-            }
-        }
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
         public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
 
