@@ -292,7 +292,7 @@ namespace Irony.Extension.AstBinders
 
         public static void SetRule<T>(this INonTerminalWithSingleTypesafeRule<T> nonTerminal, IBnfTerm<T> bnfTerm)
         {
-            nonTerminal.Rule = bnfTerm;
+            nonTerminal.RuleTL = (BnfExpression)bnfTerm.AsTypeless();
         }
 
         // bnfTermFirst and bnfTermSecond is here in order to enforce that we have at least two bnfTerms
