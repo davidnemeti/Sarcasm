@@ -112,7 +112,7 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        public new IBnfTerm<TType> Rule { set { this.SetRuleOr(value); } }
+        public new IBnfTerm<TType> Rule { set { this.SetRule(value); } }
 
         public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 

@@ -295,11 +295,12 @@ namespace Irony.Extension.AstBinders
             nonTerminal.Rule = bnfTerm;
         }
 
-        public static void SetRuleOr<T>(this INonTerminalWithMultipleTypesafeRule<T> nonTerminal, params IBnfTerm<T>[] bnfTerms)
+        // bnfTermFirst and bnfTermSecond is here in order to enforce that we have at least two bnfTerms
+        public static void SetRuleOr<T>(this INonTerminalWithMultipleTypesafeRule<T> nonTerminal, IBnfTerm<T> bnfTermFirst, IBnfTerm<T> bnfTermSecond, params IBnfTerm<T>[] bnfTerms)
         {
             nonTerminal.RuleTL = bnfTerms
                 .Aggregate(
-                new BnfExpression(),
+                new BnfExpression(bnfTermFirst.AsTypeless() | bnfTermSecond.AsTypeless()),
                 (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess.AsTypeless()
                 );
         }
