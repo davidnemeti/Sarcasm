@@ -48,7 +48,8 @@ namespace Irony.Extension.AstBinders
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
-        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
+            IBnfTerm<TBnfTermType> bnfTerm)
             where TBnfTermType : TMemberType
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
@@ -59,7 +60,8 @@ namespace Irony.Extension.AstBinders
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
-        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(IBnfTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
+        public static MemberBoundToBnfTerm<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(IBnfTerm<TDeclaringType> dummyBnfTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, IBnfTerm<TBnfTermType> bnfTerm)
             where TBnfTermType : TMemberType
         {
             return Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);

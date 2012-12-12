@@ -118,14 +118,14 @@ namespace Irony.Extension.AstBinders
         }
 
         public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm,
-            Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
             return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
         public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm,
-            IBnfTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+            IBnfTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
             return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyBnfTerm, exprForFieldOrPropertyAccess, bnfTerm);
@@ -226,6 +226,19 @@ namespace Irony.Extension.AstBinders
         }
 
         public static MemberInfo GetMember<T>(Expression<Func<T>> exprForMemberAccess)
+        {
+            var memberExpression = exprForMemberAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var memberInfo = memberExpression.Member as MemberInfo;
+            if (memberInfo == null)
+                throw new InvalidOperationException("Member in expression is not a member.");
+
+            return memberInfo;
+        }
+
+        public static MemberInfo GetMember<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForMemberAccess)
         {
             var memberExpression = exprForMemberAccess.Body as MemberExpression;
             if (memberExpression == null)
