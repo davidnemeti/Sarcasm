@@ -305,16 +305,6 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        public static BnfExpression<T> ToType<T>(this BnfTerm bnfTerm)
-        {
-            return new BnfExpression<T>(bnfTerm);
-        }
-
-        public static BnfExpression<T> ToType<T>(this BnfTerm bnfTerm, IBnfTerm<T> dummyBnfTerm)
-        {
-            return ToType<T>(bnfTerm);
-        }
-
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {
             if (args.Length > 0)
