@@ -55,11 +55,6 @@ namespace Irony.Extension.AstBinders
                         {
                             ((FieldInfo)memberInfo).SetValue(GrammarHelper.AstNodeToValue<object>(parseTreeNode.AstNode), GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
-                        else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                        {
-                            // NOTE: we shouldn't get here since the Rule setter should have handle this kind of error
-                            context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "No property or field assigned for term: {0}", parseTreeChild.Term);
-                        }
                     }
                 };
 
@@ -69,8 +64,6 @@ namespace Irony.Extension.AstBinders
                     {
                         if (bnfTerm is MemberBoundToBnfTerm)
                             ((MemberBoundToBnfTerm)bnfTerm).Reduced += nonTerminal_Reduced;
-                        else if (!bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                            GrammarHelper.ThrowGrammarError(GrammarErrorLevel.Error, "No property or field assigned for term: {0}", bnfTerm);
                     }
                 }
 
