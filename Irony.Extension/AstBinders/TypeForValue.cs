@@ -45,6 +45,16 @@ namespace Irony.Extension.AstBinders
                 : new BnfExpression(bnfTerm);
         }
 
+        public static TypeForValue Create(Type type, BnfTerm bnfTerm, object value)
+        {
+            return new TypeForValue(type, bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+        }
+
+        public static TypeForValue Create(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator)
+        {
+            return new TypeForValue(type, bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+        }
+
         public static TypeForValue<T> Create<T>(BnfTerm bnfTerm, T value)
         {
             return new TypeForValue<T>(bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
