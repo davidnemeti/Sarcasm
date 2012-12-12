@@ -15,8 +15,6 @@ namespace Irony.Extension.AstBinders
 {
     public class TypeForValue : TypeForNonTerminal
     {
-        private BnfTerm bnfTerm;
-
         protected TypeForValue(Type type, string errorAlias)
             : base(type, errorAlias)
         {
@@ -35,8 +33,6 @@ namespace Irony.Extension.AstBinders
         protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
-            this.bnfTerm = bnfTerm;
-
             this.AstConfig.NodeCreator = (AstContext context, ParseTreeNode parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
 
@@ -134,7 +130,6 @@ namespace Irony.Extension.AstBinders
             {
                 // copy the TypeForValue object from 'value' to 'this'
 
-                this.bnfTerm = value.bnfTerm;
                 this.AstConfig.NodeCreator = value.AstConfig.NodeCreator;
                 this.RuleTL = value.RuleTL;
             }

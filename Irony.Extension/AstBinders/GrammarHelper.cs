@@ -145,6 +145,16 @@ namespace Irony.Extension.AstBinders
 
         #region Create/ConvertValue
 
+        public static TypeForValue CreateValue(this BnfTerm bnfTerm, object value)
+        {
+            return TypeForValue.Create(bnfTerm, value);
+        }
+
+        public static TypeForValue CreateValue(this BnfTerm bnfTerm, AstValueCreator<object> astValueCreator)
+        {
+            return TypeForValue.Create(bnfTerm, astValueCreator);
+        }
+
         public static TypeForValue<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut value)
         {
             return TypeForValue.Create(bnfTerm, value);

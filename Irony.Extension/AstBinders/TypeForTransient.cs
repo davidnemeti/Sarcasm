@@ -5,11 +5,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using System.IO;
 
 namespace Irony.Extension.AstBinders
 {
