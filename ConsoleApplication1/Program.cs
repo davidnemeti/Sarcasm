@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
@@ -17,6 +18,8 @@ namespace ConsoleApplication1
 {
     class Program
     {
+        static string path = @"C:\Users\dave\Documents\Programming\ETUS\ETUS.Predefined\Length.units";
+
         static void Main(string[] args)
         {
             var grammar = new UDLGrammar();
@@ -24,8 +27,7 @@ namespace ConsoleApplication1
             Console.WriteLine();
             Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
             var parser = new Parser(grammar);
-            ParseTree parseTree = parser.Parse("boo 5 +");
-            ParseTree parseTree2 = parser.Parse("soo 6 + 7");
+            ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
         }
     }
 }
