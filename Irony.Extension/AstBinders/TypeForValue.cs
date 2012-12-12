@@ -50,9 +50,9 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue<T>(bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
         }
 
-        public static TypeForValue<TOut> Create<TOut>(BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
+        public static TypeForValue<T> Create<T>(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator)
         {
-            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new TypeForValue<T>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
