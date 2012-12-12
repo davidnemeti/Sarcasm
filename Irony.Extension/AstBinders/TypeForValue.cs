@@ -13,29 +13,46 @@ using System.IO;
 
 namespace Irony.Extension.AstBinders
 {
-    public class TypeForValue : NonTerminal
+    public class TypeForValue : TypeForNonTerminal
     {
-        private readonly BnfTerm bnfTerm;
+        private BnfTerm bnfTerm;
 
-        protected TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData)
-            : base(bnfTerm.Name)
+        protected TypeForValue(Type type, string errorAlias)
+            : base(type, errorAlias)
+        {
+        }
+
+        public static TypeForValue<TType> Of<TType>(string errorAlias = null)
+        {
+            return new TypeForValue<TType>(errorAlias);
+        }
+
+        public static TypeForValue Of(Type type, string errorAlias = null)
+        {
+            return new TypeForValue(type, errorAlias);
+        }
+
+        protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+            : base(type, errorAlias)
         {
             this.bnfTerm = bnfTerm;
+
             this.AstConfig.NodeCreator = (AstContext context, ParseTreeNode parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
-            this.Rule = isOptionalData
+
+            this.RuleTL = isOptionalData
                 ? bnfTerm | Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
         }
 
-        public static TypeForValue<TOut> Create<TOut>(BnfTerm bnfTerm, TOut value)
+        public static TypeForValue<T> Create<T>(BnfTerm bnfTerm, T value)
         {
-            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => value, isOptionalData: false);
+            return new TypeForValue<T>(bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<TOut> Create<TOut>(BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
         {
-            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false);
+            return new TypeForValue<TOut>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
@@ -43,7 +60,8 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue<TOut>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) => valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
-                isOptionalData: false
+                isOptionalData: false,
+                errorAlias: null
                 );
         }
 
@@ -92,16 +110,47 @@ namespace Irony.Extension.AstBinders
                     TIn value = GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
                     return valueConverter(value);
                 },
-                isOptionalData: true
+                isOptionalData: true,
+                errorAlias: null
                 );
+        }
+
+        protected BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+
+        public new TypeForValue Rule
+        {
+            get { return this; }
+            set
+            {
+                // copy the TypeForValue object from 'value' to 'this'
+
+                this.bnfTerm = value.bnfTerm;
+                this.AstConfig.NodeCreator = value.AstConfig.NodeCreator;
+                this.RuleTL = value.RuleTL;
+            }
         }
     }
 
     public class TypeForValue<T> : TypeForValue, IBnfTerm<T>
     {
-        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData)
-            : base(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData)
+        internal TypeForValue(string errorAlias)
+            : base(typeof(T), errorAlias)
         {
+        }
+
+        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+            : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias)
+        {
+        }
+
+        public new TypeForValue<T> Rule
+        {
+            get { return this; }
+            set
+            {
+                // copy the TypeForValue<T> object from 'value' to 'this'
+                base.Rule = value.Rule;
+            }
         }
 
         BnfTerm IBnfTerm<T>.AsTypeless()
@@ -115,7 +164,20 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
+        //[Obsolete("blabla", error: true)]
+        //public static BnfExpression<T> operator +(TypeForValue<T> bnfTerm1, TypeForValue<T> bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, bnfTerm2);
+        //}
+
+        //[Obsolete("blabla", error: true)]
+        //public static BnfExpression<T> operator +(BnfTerm bnfTerm1, TypeForValue<T> bnfTerm2)
+        //{
+        //    return Op_Plus(bnfTerm1, bnfTerm2);
+        //}
+
+        //[Obsolete("blabla", error: true)]
+        //public static BnfExpression<T> operator +(TypeForValue<T> bnfTerm1, BnfTerm bnfTerm2)
         //{
         //    return Op_Plus(bnfTerm1, bnfTerm2);
         //}
