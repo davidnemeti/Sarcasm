@@ -25,9 +25,19 @@ namespace Irony.Extension.AstBinders
     {
         private readonly BnfExpression bnfExpression;
 
+        public BnfExpression()
+        {
+            this.bnfExpression = new BnfExpression();
+        }
+
         public BnfExpression(BnfTerm bnfTerm)
         {
             this.bnfExpression = new BnfExpression(bnfTerm);
+        }
+
+        public BnfExpression(BnfExpression bnfExpression)
+        {
+            this.bnfExpression = bnfExpression;
         }
 
         BnfTerm IBnfTerm<T>.AsTypeless()
@@ -38,6 +48,11 @@ namespace Irony.Extension.AstBinders
         public static implicit operator BnfExpression(BnfExpression<T> bnfExpression)
         {
             return bnfExpression.bnfExpression;
+        }
+
+        public static explicit operator BnfExpression<T>(BnfExpression bnfExpression)
+        {
+            return new BnfExpression<T>(bnfExpression);
         }
 
         public static BnfExpression<T> operator |(BnfExpression<T> term1, BnfExpression<T> term2)

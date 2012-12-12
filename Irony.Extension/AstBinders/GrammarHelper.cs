@@ -322,12 +322,12 @@ namespace Irony.Extension.AstBinders
 
         internal static BnfExpression<T> Op_Plus<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
-            return new BnfExpression<T>(BnfTerm.Op_Plus(bnfTerm1, bnfTerm2));
+            return (BnfExpression<T>)BnfTerm.Op_Plus(bnfTerm1, bnfTerm2);
         }
 
         internal static BnfExpression<T> Op_Pipe<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
         {
-            return new BnfExpression<T>(BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2));
+            return (BnfExpression<T>)BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2);
         }
 
         #endregion
