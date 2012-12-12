@@ -19,7 +19,7 @@ namespace Irony.Extension.AstBinders
 
         #region Typesafe
 
-        public static IBnfTerm<TCollectionType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
@@ -27,12 +27,12 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<TElementType>> StarList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfTerm<TCollectionType> PlusList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
@@ -40,7 +40,7 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static IBnfTerm<List<TElementType>> PlusList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
