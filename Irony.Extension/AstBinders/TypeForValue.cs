@@ -30,22 +30,9 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue(type, errorAlias);
         }
 
-        protected TypeForValue(Type type, BnfTerm bnfTerm, bool isOptionalData, string errorAlias)
-            : base(type, errorAlias)
-        {
-            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
-
-            this.RuleTL = isOptionalData
-                ? bnfTerm | Grammar.CurrentGrammar.Empty
-                : new BnfExpression(bnfTerm);
-        }
-
         protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
-            //if (bnfTerm is Terminal)
-            //    bnfTerm.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;   // instead of the terminal let the current TypeForValue read from Token
-
             AstNodeCreator nodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
 
@@ -111,11 +98,7 @@ namespace Irony.Extension.AstBinders
 
         public static TypeForValue<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
         {
-            return new TypeForValue<TOut>(
-                bnfTerm.AsTypeless(),
-                isOptionalData: false,
-                errorAlias: null
-                );
+            return Convert(bnfTerm, inValue => (TOut)(object)inValue);
         }
 
         public static TypeForValue<TOut> Cast<TOut>(Terminal terminal)
@@ -182,11 +165,6 @@ namespace Irony.Extension.AstBinders
     {
         internal TypeForValue(string errorAlias)
             : base(typeof(T), errorAlias)
-        {
-        }
-
-        internal TypeForValue(BnfTerm bnfTerm, bool isOptionalData, string errorAlias)
-            : base(typeof(T), bnfTerm, isOptionalData, errorAlias)
         {
         }
 
