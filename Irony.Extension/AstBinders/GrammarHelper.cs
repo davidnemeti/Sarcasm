@@ -347,6 +347,18 @@ namespace Irony.Extension.AstBinders
             return (BnfExpression<T>)BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2);
         }
 
+        internal static IdentifierTerminal SetNodeCreator(this IdentifierTerminal identifierTerminal)
+        {
+            identifierTerminal.AstConfig.NodeCreator = (context, parseNode) => parseNode.AstNode = parseNode.Token.Value;
+            return identifierTerminal;
+        }
+
+        internal static NumberLiteral SetNodeCreator(this NumberLiteral identifierTerminal)
+        {
+            identifierTerminal.AstConfig.NodeCreator = (context, parseNode) => parseNode.AstNode = parseNode.Token.Value;
+            return identifierTerminal;
+        }
+
         #endregion
     }
 }

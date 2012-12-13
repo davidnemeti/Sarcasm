@@ -56,6 +56,36 @@ namespace Irony.Extension
             return base.ToTerm(text, string.Format("\"{0}\"", text));
         }
 
+        public IdentifierTerminal ToIdentifier(string name)
+        {
+            return new IdentifierTerminal(name).SetNodeCreator();
+        }
+
+        public IdentifierTerminal ToIdentifier(string name, IdOptions options)
+        {
+            return new IdentifierTerminal(name, options).SetNodeCreator();
+        }
+
+        public IdentifierTerminal ToIdentifier(string name, string extraChars)
+        {
+            return new IdentifierTerminal(name, extraChars).SetNodeCreator();
+        }
+
+        public IdentifierTerminal ToIdentifier(string name, string extraChars, string extraFirstChars = "")
+        {
+            return new IdentifierTerminal(name, extraChars, extraFirstChars).SetNodeCreator();
+        }
+
+        public NumberLiteral ToNumber(string name)
+        {
+            return new NumberLiteral(name).SetNodeCreator();
+        }
+
+        public NumberLiteral ToNumber(string name, NumberOptions options)
+        {
+            return new NumberLiteral(name, options).SetNodeCreator();
+        }
+
         public string GetNonTerminalsAsText(bool omitBoundMembers = false)
         {
             return GetNonTerminalsAsText(new LanguageData(this), omitBoundMembers);
