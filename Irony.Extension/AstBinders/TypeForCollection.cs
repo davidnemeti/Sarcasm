@@ -15,9 +15,15 @@ namespace Irony.Extension.AstBinders
 {
     public class TypeForCollection : TypeForNonTerminal
     {
+        protected enum ListKind { Star, Plus }
+
+        private ListKind? listKind = null;
+
         protected Type collectionType { get { return base.type; } }
         private readonly Type elementType;
         private readonly MethodInfo addMethodInfo;
+
+        private BnfTerm bnfTermElement;
 
         [Obsolete("Use collectionDynamicType instead", error: true)]
         protected new Type type { get { return base.type; } }
@@ -70,6 +76,143 @@ namespace Irony.Extension.AstBinders
             return new TypeForCollection(collectionType, elementType, errorAlias, runtimeCheck: true);
         }
 
+        #region StarList and PlusList
+
+        #region Typesafe
+
+        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        {
+            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        {
+            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
+        #region Typeless converted to typesafe
+
+        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
+            MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
+        #region Typeless
+
+        public static TypeForCollection<TCollectionType> StarListTL<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<object>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType>();
+            MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<object>> StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return StarListTL<List<object>>(bnfTermElement, delimiter);
+        }
+
+        public static TypeForCollection<TCollectionType> PlusListTL<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+            where TCollectionType : ICollection<object>, new()
+        {
+            var typeForCollection = TypeForCollection.Of<TCollectionType>();
+            MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection<List<object>> PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            return PlusListTL<List<object>>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
+        #endregion
+
+        protected void SetList(BnfTerm bnfTermElement, ListKind listKind)
+        {
+            this.listKind = listKind;
+            this.bnfTermElement = bnfTermElement;
+            this.Name = GetName();
+        }
+
+        public static BnfExpression MakePlusRule(TypeForCollection typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        {
+            typeForCollection.SetList(bnfTermElement, ListKind.Plus);
+            return Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+        }
+
+        public static BnfExpression MakeStarRule(TypeForCollection typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        {
+            typeForCollection.SetList(bnfTermElement, ListKind.Star);
+            return Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+        }
+
+        public static BnfExpression<TCollectionType> MakePlusRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+            where TCollectionType : ICollection<object>, new()
+        {
+            return (BnfExpression<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+        }
+
+        public static BnfExpression<TCollectionType> MakeStarRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+            where TCollectionType : ICollection<object>, new()
+        {
+            return (BnfExpression<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+        }
+
+        public static BnfExpression<TCollectionType> MakePlusRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            return (BnfExpression<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+        }
+
+        public static BnfExpression<TCollectionType> MakeStarRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
+            where TCollectionType : ICollection<TElementType>, new()
+        {
+            return (BnfExpression<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+        }
+
         protected virtual void SetNodeCreator()
         {
             /*
@@ -105,6 +248,11 @@ namespace Irony.Extension.AstBinders
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(collection, context, parseTreeNode);
             };
+        }
+
+        protected string GetName()
+        {
+            return string.Format("{0}List<{1}>", listKind, bnfTermElement.Name);
         }
     }
 

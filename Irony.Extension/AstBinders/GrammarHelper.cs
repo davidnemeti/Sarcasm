@@ -22,27 +22,23 @@ namespace Irony.Extension.AstBinders
         public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
-            return typeForCollection;
+            return TypeForCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+            return TypeForCollection.StarList(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
-            return typeForCollection;
+            return TypeForCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+            return TypeForCollection.PlusList(bnfTermElement, delimiter);
         }
 
         #endregion
@@ -52,27 +48,23 @@ namespace Irony.Extension.AstBinders
         public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
-            return typeForCollection;
+            return TypeForCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+            return TypeForCollection.StarList<TElementType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType, TElementType>();
-            Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
-            return typeForCollection;
+            return TypeForCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
+            return TypeForCollection.PlusList<TElementType>(bnfTermElement, delimiter);
         }
 
         #endregion
@@ -82,27 +74,23 @@ namespace Irony.Extension.AstBinders
         public static TypeForCollection<TCollectionType> StarListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType>();
-            Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
-            return typeForCollection;
+            return TypeForCollection.StarListTL<TCollectionType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<object>> StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return StarListTL<List<object>>(bnfTermElement, delimiter);
+            return TypeForCollection.StarListTL(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<TCollectionType> PlusListTL<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = TypeForCollection.Of<TCollectionType>();
-            Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
-            return typeForCollection;
+            return TypeForCollection.PlusListTL<TCollectionType>(bnfTermElement, delimiter);
         }
 
         public static TypeForCollection<List<object>> PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return PlusListTL<List<object>>(bnfTermElement, delimiter);
+            return TypeForCollection.PlusListTL(bnfTermElement, delimiter);
         }
 
         #endregion
