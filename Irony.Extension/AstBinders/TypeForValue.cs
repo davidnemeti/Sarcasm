@@ -30,6 +30,16 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue(type, errorAlias);
         }
 
+        protected TypeForValue(Type type, BnfTerm bnfTerm, bool isOptionalData, string errorAlias)
+            : base(type, errorAlias)
+        {
+            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+
+            this.RuleTL = isOptionalData
+                ? bnfTerm | Grammar.CurrentGrammar.Empty
+                : new BnfExpression(bnfTerm);
+        }
+
         protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool putValueCreatorOnEmbeddedBnfTerm, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
@@ -69,11 +79,35 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), putValueCreatorOnEmbeddedBnfTerm: true, isOptionalData: false, errorAlias: null);
         }
 
+        public static TypeForValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
+        {
+            return new TypeForValue(
+                type,
+                bnfTerm,
+                (context, parseNode) =>
+                    {
+                        if (parseNode.ChildNodes.Count != 1)
+                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseNode.Term.Name);
+
+                        return valueConverter(GrammarHelper.AstNodeToValue<object>(parseNode.ChildNodes[0].AstNode));
+                    },
+                putValueCreatorOnEmbeddedBnfTerm: false,
+                isOptionalData: false,
+                errorAlias: null
+                );
+        }
+
         public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
             return new TypeForValue<TOut>(
                 bnfTerm.AsTypeless(),
-                (context, parseNode) => valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
+                (context, parseNode) =>
+                    {
+                        if (parseNode.ChildNodes.Count != 1)
+                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseNode.Term.Name);
+
+                        return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes[0].AstNode));
+                    },
                 putValueCreatorOnEmbeddedBnfTerm: false,
                 isOptionalData: false,
                 errorAlias: null
@@ -150,6 +184,11 @@ namespace Irony.Extension.AstBinders
     {
         internal TypeForValue(string errorAlias)
             : base(typeof(T), errorAlias)
+        {
+        }
+
+        internal TypeForValue(BnfTerm bnfTerm, bool isOptionalData, string errorAlias)
+            : base(typeof(T), bnfTerm, isOptionalData, errorAlias)
         {
         }
 
