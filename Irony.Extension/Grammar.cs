@@ -37,6 +37,14 @@ namespace Irony.Extension
 
         #region Misc
 
+        public void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
+        {
+            openBrace.SetFlag(TermFlags.IsOpenBrace);
+            openBrace.IsPairFor = closeBrace;
+            closeBrace.SetFlag(TermFlags.IsCloseBrace);
+            closeBrace.IsPairFor = openBrace;
+        }
+
         public new KeyTerm ToTerm(string text)
         {
             return base.ToTerm(text, string.Format("\"{0}\"", text));
