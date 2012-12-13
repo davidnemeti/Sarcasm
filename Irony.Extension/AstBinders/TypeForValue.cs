@@ -30,11 +30,19 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue(type, errorAlias);
         }
 
-        protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+        protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool putValueCreatorOnEmbeddedBnfTerm, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
-            this.AstConfig.NodeCreator = (AstContext context, ParseTreeNode parseTreeNode) =>
+            AstNodeCreator nodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
+
+            if (putValueCreatorOnEmbeddedBnfTerm)
+            {
+                bnfTerm.AstConfig.NodeCreator = nodeCreator;
+                this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+            }
+            else
+                this.AstConfig.NodeCreator = nodeCreator;
 
             this.RuleTL = isOptionalData
                 ? bnfTerm | Grammar.CurrentGrammar.Empty
@@ -43,22 +51,22 @@ namespace Irony.Extension.AstBinders
 
         public static TypeForValue Create(Type type, BnfTerm bnfTerm, object value)
         {
-            return new TypeForValue(type, bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new TypeForValue(type, bnfTerm, (context, parseNode) => value, putValueCreatorOnEmbeddedBnfTerm: true, isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue Create(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator)
         {
-            return new TypeForValue(type, bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new TypeForValue(type, bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), putValueCreatorOnEmbeddedBnfTerm: true, isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<T> Create<T>(BnfTerm bnfTerm, T value)
         {
-            return new TypeForValue<T>(bnfTerm, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new TypeForValue<T>(bnfTerm, (context, parseNode) => value, putValueCreatorOnEmbeddedBnfTerm: true, isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<T> Create<T>(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator)
         {
-            return new TypeForValue<T>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new TypeForValue<T>(bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), putValueCreatorOnEmbeddedBnfTerm: true, isOptionalData: false, errorAlias: null);
         }
 
         public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
@@ -66,6 +74,7 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue<TOut>(
                 bnfTerm.AsTypeless(),
                 (context, parseNode) => valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode)),
+                putValueCreatorOnEmbeddedBnfTerm: false,
                 isOptionalData: false,
                 errorAlias: null
                 );
@@ -78,7 +87,7 @@ namespace Irony.Extension.AstBinders
 
         public static TypeForValue<TOut> Cast<TOut>(BnfTerm bnfTerm)
         {
-            return Create<TOut>(bnfTerm, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.ChildNodes.First(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode));
+            return Create<TOut>(bnfTerm, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.Token.Value));
         }
 
         public static TypeForValue<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
@@ -116,6 +125,7 @@ namespace Irony.Extension.AstBinders
                     TIn value = GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
                     return valueConverter(value);
                 },
+                putValueCreatorOnEmbeddedBnfTerm: false,
                 isOptionalData: true,
                 errorAlias: null
                 );
@@ -143,8 +153,8 @@ namespace Irony.Extension.AstBinders
         {
         }
 
-        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
-            : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias)
+        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool putValueCreatorOnEmbeddedBnfTerm, bool isOptionalData, string errorAlias)
+            : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), putValueCreatorOnEmbeddedBnfTerm, isOptionalData, errorAlias)
         {
         }
 
