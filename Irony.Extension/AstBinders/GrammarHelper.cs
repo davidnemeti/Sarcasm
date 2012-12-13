@@ -305,7 +305,7 @@ namespace Irony.Extension.AstBinders
         {
             nonTerminal.RuleTL = bnfTerms
                 .Aggregate(
-                new BnfExpression(bnfTermFirst.AsTypeless() | bnfTermSecond.AsTypeless()),
+                bnfTermFirst.AsTypeless() | bnfTermSecond.AsTypeless(),
                 (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess.AsTypeless()
                 );
         }
