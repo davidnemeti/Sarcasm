@@ -320,9 +320,19 @@ namespace Irony.Extension.AstBinders
 
         public static string TypeNameWithDeclaringTypes(Type type)
         {
-            return type.IsNested
-                ? string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), type.Name.ToLower())
-                : type.Name.ToLower();
+            string typeName = type.Name.ToLower();
+
+            if (type.IsGenericType)
+            {
+                typeName = string.Format("{0}<{1}>",
+                    typeName.Remove(typeName.IndexOf('`')),
+                    string.Join(",", type.GetGenericArguments().Select(genericArgumentType => TypeNameWithDeclaringTypes(genericArgumentType))));
+            }
+
+            if (type.IsNested)
+                typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), typeName);
+
+            return typeName;
         }
 
         internal static BnfExpression<T> Op_Plus<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
