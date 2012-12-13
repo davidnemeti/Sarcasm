@@ -48,6 +48,9 @@ namespace Irony.Extension.AstBinders
 
             if (putValueCreatorOnEmbeddedBnfTerm)
             {
+                if (bnfTerm.AstConfig.NodeCreator != null)
+                    throw new ArgumentException("NodeCreator is already set for term: {0}", bnfTerm.Name);
+
                 bnfTerm.AstConfig.NodeCreator = nodeCreator;
                 this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
             }
@@ -116,7 +119,11 @@ namespace Irony.Extension.AstBinders
 
         public static TypeForValue<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
         {
-            return Convert(bnfTerm, inValue => (TOut)(object)inValue);
+            return new TypeForValue<TOut>(
+                bnfTerm.AsTypeless(),
+                isOptionalData: false,
+                errorAlias: null
+                );
         }
 
         public static TypeForValue<TOut> Cast<TOut>(Terminal terminal)
