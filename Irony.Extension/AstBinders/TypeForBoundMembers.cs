@@ -42,7 +42,7 @@ namespace Irony.Extension.AstBinders
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(Activator.CreateInstance(type, nonPublic: true), context, parseTreeNode);
+                    object obj = Activator.CreateInstance(type, nonPublic: true);
 
                     foreach (var parseTreeChild in parseTreeNode.ChildNodes)
                     {
@@ -50,13 +50,15 @@ namespace Irony.Extension.AstBinders
 
                         if (memberInfo is PropertyInfo)
                         {
-                            ((PropertyInfo)memberInfo).SetValue(GrammarHelper.AstNodeToValue<object>(parseTreeNode.AstNode), GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((PropertyInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                         else if (memberInfo is FieldInfo)
                         {
-                            ((FieldInfo)memberInfo).SetValue(GrammarHelper.AstNodeToValue<object>(parseTreeNode.AstNode), GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((FieldInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
                         }
                     }
+
+                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(obj, context, parseTreeNode);
                 };
 
                 foreach (var bnfTermList in value.Data)
