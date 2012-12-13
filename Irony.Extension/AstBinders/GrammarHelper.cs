@@ -349,13 +349,13 @@ namespace Irony.Extension.AstBinders
 
         internal static IdentifierTerminal SetNodeCreator(this IdentifierTerminal identifierTerminal)
         {
-            identifierTerminal.AstConfig.NodeCreator = (context, parseNode) => parseNode.AstNode = parseNode.Token.Value;
+            identifierTerminal.Flags |= TermFlags.NoAstNode;
             return identifierTerminal;
         }
 
         internal static NumberLiteral SetNodeCreator(this NumberLiteral identifierTerminal)
         {
-            identifierTerminal.AstConfig.NodeCreator = (context, parseNode) => parseNode.AstNode = parseNode.Token.Value;
+            identifierTerminal.Flags |= TermFlags.NoAstNode;
             return identifierTerminal;
         }
 
