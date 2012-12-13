@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.Diagnostics;
 
 using Irony;
 using Irony.Ast;
@@ -73,6 +74,14 @@ namespace Irony.Extension.AstBinders
 
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
+            if (e.ResultNode.Tag != null && !object.Equals(e.ResultNode.Tag, ((MemberBoundToBnfTerm)sender).MemberInfo))
+            {
+                throw new ApplicationException(string.Format("Internal error in binding framework. Reduce of {0} was bound to {1} and now to {2}",
+                    ((MemberBoundToBnfTerm)sender).Name,
+                    ((MemberInfo)e.ResultNode.Tag).Name,
+                    ((MemberBoundToBnfTerm)sender).MemberInfo.Name));
+            }
+
             e.ResultNode.Tag = ((MemberBoundToBnfTerm)sender).MemberInfo;
         }
     }
