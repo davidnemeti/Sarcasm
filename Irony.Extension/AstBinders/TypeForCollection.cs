@@ -78,7 +78,7 @@ namespace Irony.Extension.AstBinders
 
         #region StarList and PlusList
 
-        #region Typesafe
+        #region Typesafe (TCollectionType, TElementType)
 
         public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
@@ -108,7 +108,7 @@ namespace Irony.Extension.AstBinders
 
         #endregion
 
-        #region Typeless converted to typesafe
+        #region Typeless converted to typesafe (TCollectionType, TElementType)
 
         public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
@@ -138,9 +138,9 @@ namespace Irony.Extension.AstBinders
 
         #endregion
 
-        #region Typeless
+        #region Typeless converted to semi-typesafe (TCollectionType)
 
-        public static TypeForCollection<TCollectionType> StarListTL<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
@@ -148,12 +148,12 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static TypeForCollection<List<object>> StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<object>> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return StarListTL<List<object>>(bnfTermElement, delimiter);
+            return StarListST<List<object>>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<TCollectionType> PlusListTL<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<TCollectionType> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var typeForCollection = TypeForCollection.Of<TCollectionType>();
@@ -161,9 +161,27 @@ namespace Irony.Extension.AstBinders
             return typeForCollection;
         }
 
-        public static TypeForCollection<List<object>> PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static TypeForCollection<List<object>> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return PlusListTL<List<object>>(bnfTermElement, delimiter);
+            return PlusListST<List<object>>(bnfTermElement, delimiter);
+        }
+
+        #endregion
+
+        #region Typeless
+
+        public static TypeForCollection StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            var typeForCollection = TypeForCollection.Of(typeof(ICollection<object>));
+            MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
+        }
+
+        public static TypeForCollection PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            var typeForCollection = TypeForCollection.Of(typeof(ICollection<object>));
+            MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return typeForCollection;
         }
 
         #endregion
