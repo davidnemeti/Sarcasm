@@ -253,13 +253,13 @@ namespace Irony.Extension.AstBinders
                 {
                     TElementStaticType element = GrammarHelper.AstNodeToValue<TElementStaticType>(parseTreeChild.AstNode);
 
-                    if (GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode).GetType() == elementType)
+                    if (elementType.IsInstanceOfType(GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode)))
                     {
                         addElementToCollection(collection, element);
                     }
                     else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
                     {
-                        context.AddMessage(ErrorLevel.Error, parseTreeChild.Token.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
+                        context.AddMessage(ErrorLevel.Error, parseTreeChild.Span.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
                             parseTreeChild.Term, elementType.FullName, element.GetType().FullName);
                     }
                 }
