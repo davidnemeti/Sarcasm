@@ -18,13 +18,19 @@ namespace Irony.Extension
         public GrammarExtension()
             : base()
         {
-            // default values for properties
-            BrowsableAstNodes = false;
+            Init();
         }
 
         public GrammarExtension(bool caseSensitive)
             : base(caseSensitive)
         {
+            Init();
+        }
+
+        void Init()
+        {
+            // default values for properties
+            BrowsableAstNodes = false;
         }
 
         #endregion

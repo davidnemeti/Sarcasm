@@ -59,12 +59,12 @@ namespace Irony.Extension.AstBinders
             return GrammarHelper.Op_Pipe<TType>(term1, term2);
         }
 
-        public static BnfExpression<TType> operator +(TypeForTransient<TType> bnfTerm1, BnfExpression bnfTerm2)
+        public static BnfExpression<TType> operator +(TypeForTransient<TType> bnfTerm1, BnfTerm bnfTerm2)
         {
             return GrammarHelper.Op_Plus<TType>(bnfTerm1, bnfTerm2);
         }
 
-        public static BnfExpression<TType> operator +(BnfExpression bnfTerm1, TypeForTransient<TType> bnfTerm2)
+        public static BnfExpression<TType> operator +(BnfTerm bnfTerm1, TypeForTransient<TType> bnfTerm2)
         {
             return GrammarHelper.Op_Plus<TType>(bnfTerm1, bnfTerm2);
         }
