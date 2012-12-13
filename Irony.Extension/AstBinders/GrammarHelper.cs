@@ -145,24 +145,24 @@ namespace Irony.Extension.AstBinders
 
         #region Create/ConvertValue
 
-        public static TypeForValue CreateValue(this BnfTerm bnfTerm, object value)
+        public static TypeForValue CreateValue(this Terminal terminal, object value)
         {
-            return TypeForValue.Create(bnfTerm, value);
+            return TypeForValue.Create(terminal, value);
         }
 
-        public static TypeForValue CreateValue(this BnfTerm bnfTerm, AstValueCreator<object> astValueCreator)
+        public static TypeForValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator)
         {
-            return TypeForValue.Create(bnfTerm, astValueCreator);
+            return TypeForValue.Create(terminal, astValueCreator);
         }
 
-        public static TypeForValue<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, TOut value)
+        public static TypeForValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value)
         {
-            return TypeForValue.Create(bnfTerm, value);
+            return TypeForValue.Create(terminal, value);
         }
 
-        public static TypeForValue<TOut> CreateValue<TOut>(this BnfTerm bnfTerm, AstValueCreator<TOut> astValueCreator)
+        public static TypeForValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator)
         {
-            return TypeForValue.Create(bnfTerm, astValueCreator);
+            return TypeForValue.Create(terminal, astValueCreator);
         }
 
         public static TypeForValue<TOut> ConvertValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
@@ -179,9 +179,9 @@ namespace Irony.Extension.AstBinders
             return TypeForValue.Cast<TIn, TOut>(bnfTerm);
         }
 
-        public static TypeForValue<TOut> Cast<TOut>(this BnfTerm bnfTerm)
+        public static TypeForValue<TOut> Cast<TOut>(this Terminal terminal)
         {
-            return TypeForValue.Cast<TOut>(bnfTerm);
+            return TypeForValue.Cast<TOut>(terminal);
         }
 
         public static TypeForValue<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, IBnfTerm<TOut> dummyBnfTerm)
