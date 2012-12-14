@@ -54,19 +54,25 @@ namespace Irony.Extension.AstBinders
 
         public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
-        public static BnfExpression<TType> operator |(TypeForTransient<TType> term1, TypeForTransient<TType> term2)
+        public static BnfExpressionTransient<TType> operator |(TypeForTransient<TType> term1, TypeForTransient<TType> term2)
         {
-            return GrammarHelper.Op_Pipe<TType>(term1, term2);
+            return BnfExpressionTransient<TType>.Op_Pipe(term1, term2);
         }
 
-        public static BnfExpression<TType> operator +(TypeForTransient<TType> bnfTerm1, BnfTerm bnfTerm2)
+        public static BnfExpressionTransient<TType> operator +(TypeForTransient<TType> term1, KeyTermPunctuation term2)
         {
-            return GrammarHelper.Op_Plus<TType>(bnfTerm1, bnfTerm2);
+            return BnfExpressionTransient<TType>.Op_Plus(term1, term2);
         }
 
-        public static BnfExpression<TType> operator +(BnfTerm bnfTerm1, TypeForTransient<TType> bnfTerm2)
+        public static BnfExpressionTransient<TType> operator +(KeyTermPunctuation term1, TypeForTransient<TType> term2)
         {
-            return GrammarHelper.Op_Plus<TType>(bnfTerm1, bnfTerm2);
+            return BnfExpressionTransient<TType>.Op_Plus(term1, term2);
         }
+
+        /*
+         * public static BnfExpressionTransient<T> operator +(TypeForTransient<T> term1, TypeForTransient<T> term2)
+         * is not defined, because in a BnfExpressionTransient there can be only one TypeForTransient term,
+         * and the resulting BnfExpressionTransient would contain two of them
+         * */
     }
 }

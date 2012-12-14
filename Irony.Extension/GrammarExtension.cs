@@ -51,6 +51,11 @@ namespace Irony.Extension
             closeBrace.IsPairFor = openBrace;
         }
 
+        public KeyTermPunctuation ToPunctuation(string text)
+        {
+            return new KeyTermPunctuation(text);
+        }
+
         public new KeyTerm ToTerm(string text)
         {
             return base.ToTerm(text, string.Format("\"{0}\"", text));

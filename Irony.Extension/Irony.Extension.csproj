@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AstBinders\AstNodeWrapper.cs" />
+    <Compile Include="AstBinders\KeyTermPunctuation.cs" />
     <Compile Include="AstBinders\Common.cs" />
     <Compile Include="AstBinders\GrammarHelper.cs" />
     <Compile Include="AstBinders\TypeForConstant.cs" />

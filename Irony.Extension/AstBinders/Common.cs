@@ -86,6 +86,82 @@ namespace Irony.Extension.AstBinders
         }
     }
 
+    public class BnfExpressionTransient<T> : IBnfTerm<T>
+    {
+        private readonly BnfExpression bnfExpression;
+
+        public BnfExpressionTransient()
+        {
+            this.bnfExpression = new BnfExpression();
+        }
+
+        public BnfExpressionTransient(BnfTerm bnfTerm)
+        {
+            this.bnfExpression = new BnfExpression(bnfTerm);
+        }
+
+        public BnfExpressionTransient(BnfExpression bnfExpression)
+        {
+            this.bnfExpression = bnfExpression;
+        }
+
+        BnfTerm IBnfTerm<T>.AsTypeless()
+        {
+            return this.bnfExpression;
+        }
+
+        public static implicit operator BnfExpression(BnfExpressionTransient<T> bnfExpression)
+        {
+            return bnfExpression.bnfExpression;
+        }
+
+        public static explicit operator BnfExpressionTransient<T>(BnfExpression bnfExpression)
+        {
+            return new BnfExpressionTransient<T>(bnfExpression);
+        }
+
+        public static BnfExpressionTransient<T> operator |(BnfExpressionTransient<T> term1, BnfExpressionTransient<T> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpressionTransient<T> operator |(TypeForTransient<T> term1, BnfExpressionTransient<T> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpressionTransient<T> operator |(BnfExpressionTransient<T> term1, TypeForTransient<T> term2)
+        {
+            return Op_Pipe(term1, term2);
+        }
+
+        public static BnfExpressionTransient<T> operator +(BnfExpressionTransient<T> term1, KeyTermPunctuation term2)
+        {
+            return Op_Plus(term1, term2);
+        }
+
+        public static BnfExpressionTransient<T> operator +(KeyTermPunctuation term1, BnfExpressionTransient<T> term2)
+        {
+            return Op_Plus(term1, term2);
+        }
+
+        /*
+         * public static BnfExpressionTransient<T> operator +(BnfExpressionTransient<T> term1, BnfExpressionTransient<T> term2)
+         * is not defined, because in a BnfExpressionTransient there can be only one TypeForTransient term,
+         * and the resulting BnfExpressionTransient would contain two of them
+         * */
+
+        internal static BnfExpressionTransient<T> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return (BnfExpressionTransient<T>)BnfTerm.Op_Plus(bnfTerm1, bnfTerm2);
+        }
+
+        internal static BnfExpressionTransient<T> Op_Pipe(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
+        {
+            return (BnfExpressionTransient<T>)BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2);
+        }
+    }
+
     public class BnfExpressionWithMemberBoundToBnfTerm : BnfExpression
     {
         public BnfExpressionWithMemberBoundToBnfTerm(BnfTerm bnfTerm)
