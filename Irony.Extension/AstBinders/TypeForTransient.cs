@@ -18,7 +18,7 @@ namespace Irony.Extension.AstBinders
         protected TypeForTransient(Type type, string errorAlias)
             : base(type, errorAlias)
         {
-            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the child node already contains the created ast node
         }
 
         public static TypeForTransient<TType> Of<TType>(string errorAlias = null)

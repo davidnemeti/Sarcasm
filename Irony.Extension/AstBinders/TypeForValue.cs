@@ -33,10 +33,8 @@ namespace Irony.Extension.AstBinders
         protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
-            AstNodeCreator nodeCreator = (context, parseTreeNode) =>
+            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
-
-            this.AstConfig.NodeCreator = nodeCreator;
 
             this.RuleTL = isOptionalData
                 ? bnfTerm | Grammar.CurrentGrammar.Empty
@@ -68,12 +66,12 @@ namespace Irony.Extension.AstBinders
             return new TypeForValue(
                 type,
                 bnfTerm,
-                (context, parseNode) =>
+                (context, parseTreeNode) =>
                     {
-                        if (parseNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseNode.Term.Name);
+                        if (parseTreeNode.ChildNodes.Count != 1)
+                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseTreeNode.Term.Name);
 
-                        return valueConverter(GrammarHelper.AstNodeToValue<object>(parseNode.ChildNodes[0].AstNode));
+                        return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
                     },
                 isOptionalData: false,
                 errorAlias: null
@@ -84,12 +82,12 @@ namespace Irony.Extension.AstBinders
         {
             return new TypeForValue<TOut>(
                 bnfTerm.AsTypeless(),
-                (context, parseNode) =>
+                (context, parseTreeNode) =>
                     {
-                        if (parseNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseNode.Term.Name);
+                        if (parseTreeNode.ChildNodes.Count != 1)
+                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseTreeNode.Term.Name);
 
-                        return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes[0].AstNode));
+                        return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeNode.ChildNodes[0].AstNode));
                     },
                 isOptionalData: false,
                 errorAlias: null

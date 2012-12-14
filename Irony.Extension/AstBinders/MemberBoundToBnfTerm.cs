@@ -23,8 +23,8 @@ namespace Irony.Extension.AstBinders
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
-            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
             this.Rule = new BnfExpression(bnfTerm);
+            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the parent TypeForBoundMembers will take care of the child ast node
         }
 
         public static MemberBoundToBnfTerm Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
