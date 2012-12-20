@@ -45,33 +45,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AstBinders\AstNodeWrapper.cs" />
-    <Compile Include="AstBinders\BnfExpressions.cs" />
-    <Compile Include="AstBinders\BnfExpressions.generated.cs">
+    <Compile Include="AstNodeWrapper.cs" />
+    <Compile Include="BnfiExpressions\BnfiExpression.cs" />
+    <Compile Include="BnfiExpressions\BnfiExpression.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>BnfExpressions.tt</DependentUpon>
+      <DependentUpon>BnfiExpression.tt</DependentUpon>
     </Compile>
-    <Compile Include="AstBinders\KeyTermPunctuation.cs" />
-    <Compile Include="AstBinders\Common.cs" />
-    <Compile Include="AstBinders\GrammarHelper.cs" />
-    <Compile Include="AstBinders\TypeForConstant.cs" />
-    <Compile Include="AstBinders\TypeForValue.cs" />
-    <Compile Include="AstBinders\ParseTreeNodeWithOutAst.cs" />
-    <Compile Include="AstBinders\TypeForTransient.cs" />
-    <Compile Include="AstBinders\TypeForCollection.cs" />
-    <Compile Include="AstBinders\TypeForBoundMembers.cs" />
-    <Compile Include="AstBinders\MemberBoundToBnfTerm.cs" />
+    <Compile Include="BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="GrammarHelper.cs" />
+    <Compile Include="BnfiTerms\BnfiTermConstant.cs" />
+    <Compile Include="BnfiTerms\BnfiTermValue.cs" />
+    <Compile Include="ParseTreeNodeWithOutAst.cs" />
+    <Compile Include="BnfiTerms\BnfiTermTransient.cs" />
+    <Compile Include="BnfiTerms\BnfiTermCollection.cs" />
+    <Compile Include="BnfiTerms\BnfiTermType.cs" />
+    <Compile Include="BnfiTerms\BnfiTermMember.cs" />
     <Compile Include="GrammarExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unparser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="AstBinders\BnfExpressionGeneration.ttinclude" />
-    <None Include="AstBinders\BnfExpressions.tt">
+    <None Include="BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
+    <None Include="BnfiExpressions\BnfiExpression.tt">
       <TransformOnBuild>False</TransformOnBuild>
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BnfExpressions.generated.cs</LastGenOutput>
+      <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
     </None>
     <None Include="Irony.ITG.pub" />
     <None Include="Irony.ITG.snk" />

@@ -13,24 +13,24 @@ using System.IO;
 
 namespace Irony.ITG
 {
-    public partial class TypeForValue : TypeForNonTerminal, IBnfTerm
+    public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
     {
-        protected TypeForValue(Type type, string errorAlias)
+        protected BnfiTermValue(Type type, string errorAlias)
             : base(type, errorAlias)
         {
         }
 
-        public static TypeForValue<TType> Of<TType>(string errorAlias = null)
+        public static BnfiTermValue<TType> Of<TType>(string errorAlias = null)
         {
-            return new TypeForValue<TType>(errorAlias);
+            return new BnfiTermValue<TType>(errorAlias);
         }
 
-        public static TypeForValue Of(Type type, string errorAlias = null)
+        public static BnfiTermValue Of(Type type, string errorAlias = null)
         {
-            return new TypeForValue(type, errorAlias);
+            return new BnfiTermValue(type, errorAlias);
         }
 
-        protected TypeForValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
             : base(type, errorAlias)
         {
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
@@ -41,29 +41,29 @@ namespace Irony.ITG
                 : new BnfExpression(bnfTerm);
         }
 
-        public static TypeForValue Create(Type type, Terminal terminal, object value)
+        public static BnfiTermValue Create(Type type, Terminal terminal, object value)
         {
-            return new TypeForValue(type, terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
         }
 
-        public static TypeForValue Create(Type type, Terminal terminal, AstValueCreator<object> astValueCreator)
+        public static BnfiTermValue Create(Type type, Terminal terminal, AstValueCreator<object> astValueCreator)
         {
-            return new TypeForValue(type, terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue(type, terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
         }
 
-        public static TypeForValue<T> Create<T>(Terminal terminal, T value)
+        public static BnfiTermValue<T> Create<T>(Terminal terminal, T value)
         {
-            return new TypeForValue<T>(terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
         }
 
-        public static TypeForValue<T> Create<T>(Terminal terminal, AstValueCreator<T> astValueCreator)
+        public static BnfiTermValue<T> Create<T>(Terminal terminal, AstValueCreator<T> astValueCreator)
         {
-            return new TypeForValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
         }
 
-        public static TypeForValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
         {
-            return new TypeForValue(
+            return new BnfiTermValue(
                 type,
                 bnfTerm,
                 (context, parseTreeNode) =>
@@ -78,9 +78,9 @@ namespace Irony.ITG
                 );
         }
 
-        public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermValue<TOut> Convert<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return new TypeForValue<TOut>(
+            return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
                 (context, parseTreeNode) =>
                     {
@@ -94,45 +94,45 @@ namespace Irony.ITG
                 );
         }
 
-        public static TypeForValue<TOut> Cast<TIn, TOut>(IBnfTerm<TIn> bnfTerm)
+        public static BnfiTermValue<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
         {
             return Convert(bnfTerm, inValue => (TOut)(object)inValue);
         }
 
-        public static TypeForValue<TOut> Cast<TOut>(Terminal terminal)
+        public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
             return Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.Token.Value));
         }
 
-        public static TypeForValue<T?> ConvertValueOptVal<T>(IBnfTerm<T> bnfTerm)
+        public static BnfiTermValue<T?> ConvertValueOptVal<T>(IBnfiTerm<T> bnfTerm)
             where T : struct
         {
             return ConvertValueOptVal(bnfTerm, value => value);
         }
 
-        public static TypeForValue<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermValue<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : struct
             where TOut : struct
         {
             return ConvertValueOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
         }
 
-        public static TypeForValue<T> ConvertValueOptRef<T>(IBnfTerm<T> bnfTerm)
+        public static BnfiTermValue<T> ConvertValueOptRef<T>(IBnfiTerm<T> bnfTerm)
             where T : class
         {
             return ConvertValueOptRef(bnfTerm, value => value);
         }
 
-        public static TypeForValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : class
             where TOut : class
         {
             return ConvertValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
         }
 
-        private static TypeForValue<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
+        private static BnfiTermValue<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
         {
-            return new TypeForValue<TOutData>(
+            return new BnfiTermValue<TOutData>(
                 bnfTerm.AsBnfTerm(),
                 (context, parseNode) =>
                 {
@@ -146,7 +146,7 @@ namespace Irony.ITG
 
         protected BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new TypeForValue Rule
+        public new BnfiTermValue Rule
         {
             get { return this; }
             set
@@ -164,19 +164,19 @@ namespace Irony.ITG
         }
     }
 
-    public partial class TypeForValue<T> : TypeForValue, IBnfTerm<T>
+    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>
     {
-        internal TypeForValue(string errorAlias)
+        internal BnfiTermValue(string errorAlias)
             : base(typeof(T), errorAlias)
         {
         }
 
-        internal TypeForValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+        internal BnfiTermValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
             : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias)
         {
         }
 
-        public new TypeForValue<T> Rule
+        public new BnfiTermValue<T> Rule
         {
             get { return this; }
             set
@@ -186,7 +186,7 @@ namespace Irony.ITG
             }
         }
 
-        [Obsolete(TypeForNonTerminal.typelessQErrorMessage, error: true)]
+        [Obsolete(BnfiTermNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();

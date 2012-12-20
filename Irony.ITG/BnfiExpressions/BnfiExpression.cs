@@ -8,52 +8,52 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public interface IBnfExpression : IBnfTerm
+    public interface IBnfiExpression : IBnfiTerm
     {
         BnfExpression AsBnfExpression();
     }
 
-    public interface IBnfExpression<out T> : IBnfExpression, IBnfTerm<T>
+    public interface IBnfiExpression<out T> : IBnfiExpression, IBnfiTerm<T>
     {
     }
 
-    #region BnfExpressionCommon
+    #region BnfiExpressionCommon
 
-    public abstract class BnfExpressionCommon : IBnfExpression
+    public abstract class BnfiExpressionCommon : IBnfiExpression
     {
         protected readonly BnfExpression bnfExpression;
 
-        public BnfExpressionCommon()
+        public BnfiExpressionCommon()
         {
             this.bnfExpression = new BnfExpression();
         }
 
-        public BnfExpressionCommon(BnfExpression bnfExpression)
+        public BnfiExpressionCommon(BnfExpression bnfExpression)
         {
             this.bnfExpression = bnfExpression;
         }
 
-        protected BnfExpressionCommon(BnfTerm bnfTerm)
+        protected BnfiExpressionCommon(BnfTerm bnfTerm)
         {
             this.bnfExpression = new BnfExpression(bnfTerm);
         }
 
-        public static implicit operator BnfExpression(BnfExpressionCommon bnfExpression)
+        public static implicit operator BnfExpression(BnfiExpressionCommon bnfExpression)
         {
             return bnfExpression.bnfExpression;
         }
 
-        //public static implicit operator BnfTerm(BnfExpressionCommon bnfExpression)
+        //public static implicit operator BnfTerm(BnfiExpressionCommon bnfExpression)
         //{
         //    return bnfExpression.bnfExpression;
         //}
 
-        BnfExpression IBnfExpression.AsBnfExpression()
+        BnfExpression IBnfiExpression.AsBnfExpression()
         {
             return bnfExpression;
         }
 
-        BnfTerm IBnfTerm.AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return bnfExpression;
         }

@@ -60,9 +60,9 @@ namespace Irony.ITG
             closeBrace.IsPairFor = openBrace;
         }
 
-        public KeyTermPunctuation ToPunctuation(string text)
+        public BnfiTermKeyTermPunctuation ToPunctuation(string text)
         {
-            return new KeyTermPunctuation(text);
+            return new BnfiTermKeyTermPunctuation(text);
         }
 
         public new KeyTerm ToTerm(string text)
@@ -110,7 +110,7 @@ namespace Irony.ITG
             var sw = new StringWriter();
             foreach (var nonTerminal in language.GrammarData.NonTerminals.OrderBy(nonTerminal => nonTerminal.Name))
             {
-                if (omitBoundMembers && nonTerminal is MemberBoundToBnfTerm)
+                if (omitBoundMembers && nonTerminal is BnfiTermMember)
                     continue;
 
                 sw.WriteLine("{0}{1}", nonTerminal.Name, nonTerminal.Flags.IsSet(TermFlags.IsNullable) ? "  (Nullable) " : string.Empty);
@@ -128,8 +128,8 @@ namespace Irony.ITG
             sw.Write("{0} -> ", production.LValue.Name);
             foreach (BnfTerm bnfTerm in production.RValues)
             {
-                BnfTerm bnfTermToWrite = omitBoundMembers && bnfTerm is MemberBoundToBnfTerm
-                    ? ((MemberBoundToBnfTerm)bnfTerm).BnfTerm
+                BnfTerm bnfTermToWrite = omitBoundMembers && bnfTerm is BnfiTermMember
+                    ? ((BnfiTermMember)bnfTerm).BnfTerm
                     : bnfTerm;
 
                 sw.Write("{0} ", bnfTermToWrite.Name);

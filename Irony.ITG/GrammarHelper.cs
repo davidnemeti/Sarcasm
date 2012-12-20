@@ -19,92 +19,92 @@ namespace Irony.ITG
 
         #region Typesafe (TCollectionType, TElementType)
 
-        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return TypeForCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.StarList(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarList(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return TypeForCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.PlusList(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusList(bnfTermElement, delimiter);
         }
 
         #endregion
 
         #region Typeless converted to typesafe (TCollectionType, TElementType)
 
-        public static TypeForCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return TypeForCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.StarList<TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarList<TElementType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return TypeForCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.PlusList<TElementType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusList<TElementType>(bnfTermElement, delimiter);
         }
 
         #endregion
 
         #region Typeless converted to semi-typesafe (TCollectionType)
 
-        public static TypeForCollection<TCollectionType> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            return TypeForCollection.StarListST<TCollectionType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<object>> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.StarListST(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarListST(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<TCollectionType> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            return TypeForCollection.PlusListST<TCollectionType>(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection<List<object>> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.PlusListST(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusListST(bnfTermElement, delimiter);
         }
 
         #endregion
 
         #region Typeless
 
-        public static TypeForCollection StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.StarListTL(bnfTermElement, delimiter);
+            return BnfiTermCollection.StarListTL(bnfTermElement, delimiter);
         }
 
-        public static TypeForCollection PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            return TypeForCollection.PlusListTL(bnfTermElement, delimiter);
+            return BnfiTermCollection.PlusListTL(bnfTermElement, delimiter);
         }
 
         #endregion
@@ -113,103 +113,103 @@ namespace Irony.ITG
 
         #region BindMember
 
-        public static MemberBoundToBnfTerm BindMember<TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static BnfiTermMember BindMember<TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
-            return MemberBoundToBnfTerm.Bind(exprForFieldOrPropertyAccess, bnfTerm);
+            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm,
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
-            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
+            return BnfiTermMember.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfTerm<TBnfTermType> bnfTerm,
-            IBnfTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfTerm,
+            IBnfiTerm<TDeclaringType> dummyBnfTerm, Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {
-            return MemberBoundToBnfTerm.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyBnfTerm, exprForFieldOrPropertyAccess, bnfTerm);
+            return BnfiTermMember.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyBnfTerm, exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
-            return MemberBoundToBnfTerm.Bind(propertyInfo, bnfTerm);
+            return BnfiTermMember.Bind(propertyInfo, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
+        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
-            return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
+            return BnfiTermMember.Bind(fieldInfo, bnfTerm);
         }
 
-        public static MemberBoundToBnfTerm BindToNone(BnfTerm bnfTerm)
+        public static BnfiTermMember BindToNone(BnfTerm bnfTerm)
         {
-            return MemberBoundToBnfTerm.BindToNone(bnfTerm);
-        }
-
-        #endregion
-
-        #region Create/ConvertValue
-
-        public static TypeForValue CreateValue(this Terminal terminal, object value)
-        {
-            return TypeForValue.Create(terminal, value);
-        }
-
-        public static TypeForValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator)
-        {
-            return TypeForValue.Create(terminal, astValueCreator);
-        }
-
-        public static TypeForValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value)
-        {
-            return TypeForValue.Create(terminal, value);
-        }
-
-        public static TypeForValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator)
-        {
-            return TypeForValue.Create(terminal, astValueCreator);
-        }
-
-        public static TypeForValue<TOut> ConvertValue<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
-        {
-            return TypeForValue.Convert(bnfTerm, valueConverter);
+            return BnfiTermMember.BindToNone(bnfTerm);
         }
 
         #endregion
 
         #region Create/ConvertValue
 
-        public static TypeForValue<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm)
+        public static BnfiTermValue CreateValue(this Terminal terminal, object value)
         {
-            return TypeForValue.Cast<TIn, TOut>(bnfTerm);
+            return BnfiTermValue.Create(terminal, value);
         }
 
-        public static TypeForValue<TOut> Cast<TOut>(this Terminal terminal)
+        public static BnfiTermValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator)
         {
-            return TypeForValue.Cast<TOut>(terminal);
+            return BnfiTermValue.Create(terminal, astValueCreator);
         }
 
-        public static TypeForValue<TOut> Cast<TIn, TOut>(this IBnfTerm<TIn> bnfTerm, IBnfTerm<TOut> dummyBnfTerm)
+        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value)
         {
-            return TypeForValue.Cast<TIn, TOut>(bnfTerm);
+            return BnfiTermValue.Create(terminal, value);
+        }
+
+        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator)
+        {
+            return BnfiTermValue.Create(terminal, astValueCreator);
+        }
+
+        public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        {
+            return BnfiTermValue.Convert(bnfTerm, valueConverter);
+        }
+
+        #endregion
+
+        #region Create/ConvertValue
+
+        public static BnfiTermValue<TOut> Cast<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm)
+        {
+            return BnfiTermValue.Cast<TIn, TOut>(bnfTerm);
+        }
+
+        public static BnfiTermValue<TOut> Cast<TOut>(this Terminal terminal)
+        {
+            return BnfiTermValue.Cast<TOut>(terminal);
+        }
+
+        public static BnfiTermValue<TOut> Cast<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm, IBnfiTerm<TOut> dummyBnfTerm)
+        {
+            return BnfiTermValue.Cast<TIn, TOut>(bnfTerm);
         }
 
         #endregion
 
         #region Typesafe Q
 
-        public static TypeForValue<T?> QVal<T>(this IBnfTerm<T> bnfTerm)
+        public static BnfiTermValue<T?> QVal<T>(this IBnfiTerm<T> bnfTerm)
             where T : struct
         {
-            return TypeForValue.ConvertValueOptVal(bnfTerm);
+            return BnfiTermValue.ConvertValueOptVal(bnfTerm);
         }
 
-        public static TypeForValue<T> QRef<T>(this IBnfTerm<T> bnfTerm)
+        public static BnfiTermValue<T> QRef<T>(this IBnfiTerm<T> bnfTerm)
             where T : class
         {
-            return TypeForValue.ConvertValueOptRef(bnfTerm);
+            return BnfiTermValue.ConvertValueOptRef(bnfTerm);
         }
 
         #endregion

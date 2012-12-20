@@ -16,12 +16,12 @@ namespace Irony.ITG
     public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
 
-    public interface IBnfTerm
+    public interface IBnfiTerm
     {
         BnfTerm AsBnfTerm();
     }
 
-    public interface IBnfTerm<out T> : IBnfTerm
+    public interface IBnfiTerm<out T> : IBnfiTerm
     {
     }
 
@@ -38,24 +38,24 @@ namespace Irony.ITG
     public interface ITransientWithSingleTypesafeRule<T>
     {
         BnfExpression RuleTL { get; set; }
-        BnfExpressionTransient<T> Rule { set; }
+        BnfiExpressionTransient<T> Rule { set; }
     }
 
     public interface ITransientWithMultipleTypesafeRule<T> : ITransientWithSingleTypesafeRule<T>
     {
     }
 
-    public abstract class TypeForNonTerminal : NonTerminal
+    public abstract class BnfiTermNonTerminal : NonTerminal
     {
         protected Type type { get; private set; }
 
-        protected TypeForNonTerminal(Type type, string errorAlias)
+        protected BnfiTermNonTerminal(Type type, string errorAlias)
             : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
         {
             this.type = type;
         }
 
-        protected static BnfExpression GetRuleWithOrBetweenTypesafeExpressions<T>(params IBnfTerm<T>[] bnfExpressions)
+        protected static BnfExpression GetRuleWithOrBetweenTypesafeExpressions<T>(params IBnfiTerm<T>[] bnfExpressions)
         {
             return bnfExpressions.Cast<BnfExpression>().Aggregate(
                 (BnfExpression)bnfExpressions[0],

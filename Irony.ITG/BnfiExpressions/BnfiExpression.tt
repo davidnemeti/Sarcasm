@@ -1,0 +1,87 @@
+﻿<#@ template debug="true" hostSpecific="false" #>
+<#@ output extension="generated.cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ include file="BnfiExpressionGeneration.ttinclude" #> 
+<#
+	WriteLine("// GENERATED FILE");
+#>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Irony;
+using Irony.Ast;
+using Irony.Parsing;
+
+namespace Irony.ITG
+{
+<#
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionType",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermMember"},
+//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
+		bnfTermSideTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: true
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionBoundMembers<T>",
+		inheritFromBase: "BnfiExpressionType",
+		implementInterfaces: new[]{"IBnfiExpression<T>"},
+//		constraints: new[]{"T : new()"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>"},
+//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
+		bnfTermSideTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: true
+	);
+
+	// mixCoreTypesWithSideTypes is false e.g. for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionTransient",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermCollection", "BnfiTermType", "BnfiTermTransient", "BnfiTermValue"},
+		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
+		mixCoreTypesWithSideTypes: false
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionTransient<T>",
+		inheritFromBase: "BnfiExpressionTransient",
+		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>", "BnfiTermCollection<TCollectionType>", "BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermValue<T>"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
+		mixCoreTypesWithSideTypes: false,
+		filterOutCorePairs: (bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType, TElementType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType>"
+																				|| bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType, TElementType>"
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionCollection",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: false
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionCollection<TCollectionType>",
+		inheritFromBase: "BnfiExpressionCollection",
+		implementInterfaces: new[]{"IBnfiExpression<TCollectionType>"},
+//		constraints: new[]{"TCollectionType : new()"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: false
+	);
+#>
+}

@@ -124,7 +124,7 @@ void GenerateBnfExpressionConversionsHere(string bnfExpressionTypeName, IEnumera
 #>
 		public static implicit operator <#= bnfExpressionTypeName #>(<#= GetTypeNameWithReplacedTypeParameterName(bnfTermTypeNameForConversion, typeParameterName) #> term)
 		{
-			return new <#= bnfExpressionTypeName #>(term.AsBnfTerm());
+			return new <#= bnfExpressionTypeName #>((BnfTerm)term);
 		}
 <#+
     }
@@ -153,7 +153,7 @@ void GenerateBnfExpressionConversionsThere(string bnfExpressionTypeName, IEnumer
 	{
 		public static implicit operator <#= bnfExpressionTypeNameReplaced #>(<#= bnfTermTypeNameForConversion #> term)
 		{
-			return new <#= bnfExpressionTypeNameReplaced #>(term.AsBnfTerm());
+			return new <#= bnfExpressionTypeNameReplaced #>((BnfTerm)term);
 		}
 	}
 
