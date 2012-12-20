@@ -69,26 +69,26 @@ namespace Irony.ITG
 
         #endregion
 
-        #region Typeless converted to semi-typesafe (TCollectionType)
+        #region Typeless converted to semi-typesafe (TCollectionType, object)
 
-        public static BnfiTermCollection<TCollectionType> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, object> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.StarListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<object>> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>, object> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListST(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, object> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.PlusListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<object>> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>, object> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListST(bnfTermElement, delimiter);
         }

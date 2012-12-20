@@ -129,30 +129,30 @@ namespace Irony.ITG
 
         #endregion
 
-        #region Typeless converted to semi-typesafe (TCollectionType)
+        #region Typeless converted to semi-typesafe (TCollectionType, object)
 
-        public static BnfiTermCollection<TCollectionType> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, object> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = new BnfiTermCollection<TCollectionType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, object>();
             MakeStarRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
 
-        public static BnfiTermCollection<List<object>> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>, object> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return StarListST<List<object>>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, object> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = new BnfiTermCollection<TCollectionType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, object>();
             MakePlusRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
 
-        public static BnfiTermCollection<List<object>> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<object>, object> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusListST<List<object>>(bnfTermElement, delimiter);
         }
@@ -198,13 +198,13 @@ namespace Irony.ITG
             return Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
             return (BnfiExpressionCollection<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
             return (BnfiExpressionCollection<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement);
@@ -274,40 +274,6 @@ namespace Irony.ITG
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfiTermCollection<TCollectionType>
-        where TCollectionType : ICollection<object>, new()
-    {
-        public BnfiTermCollection(string errorAlias = null)
-            : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
-        {
-        }
-
-        protected override void SetNodeCreator()
-        {
-            SetNodeCreator<TCollectionType, object>(
-                () => new TCollectionType(),
-                (collection, element) => collection.Add(element)
-                );
-        }
-
-        [Obsolete(typelessQErrorMessage, error: true)]
-        public new BnfExpression Q()
-        {
-            return base.Q();
-        }
-
-        public new BnfiExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
-    }
-
-    /*
-     * NOTE: TypeForCollection<TCollectionType, TElementType> cannot inherit from TypeForCollection<TCollectionType> because constraints on TCollectionType are incompatible
-     * since ICollection<T> (type constraint here) and IList/ICollection<object> (type constraint in TypeForCollection<TCollectionType>) are incompatible types.
-     * ICollection<T> has an 'Add' method, so using IList<T> would be an overkill, besides, it would not work either since IList<T> and IList are incompatible as well.
-     * 
-     * IList : ICollection, IEnumerable
-     * ICollection<T> : IEnumerable<T>, IEnumerable
-     * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
-     * */
     public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfiTermCollection<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {

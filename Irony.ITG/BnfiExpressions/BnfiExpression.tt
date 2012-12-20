@@ -59,12 +59,12 @@ namespace Irony.ITG
 		"BnfiExpressionTransient<T>",
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>", "BnfiTermCollection<TCollectionType>", "BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermValue<T>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>", "BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermValue<T>"},
 //		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
-		mixCoreTypesWithSideTypes: false,
-		filterOutCorePairs: (bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType, TElementType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType>"
-																				|| bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType, TElementType>"
+		mixCoreTypesWithSideTypes: false
+//		filterOutCorePairs: (bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType, TElementType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType>"
+//																				|| bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType, TElementType>"
 	);
 
 	GenerateBnfExpressionClassAndOperators(
