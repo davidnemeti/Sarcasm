@@ -33,6 +33,16 @@ namespace Irony.ITG
 
         private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
+        public BnfiTermCollection(Type collectionType, string errorAlias = null)
+            : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
+        {
+        }
+
+        public BnfiTermCollection(Type collectionType, Type elementType, string errorAlias = null)
+            : this(collectionType, elementType, errorAlias, runtimeCheck: true)
+        {
+        }
+
         protected BnfiTermCollection(Type collectionType, Type elementType, string errorAlias, bool runtimeCheck)
             : base(collectionType, errorAlias)
         {
@@ -57,28 +67,6 @@ namespace Irony.ITG
             SetNodeCreator();
         }
 
-        public static BnfiTermCollection<TCollectionType> Of<TCollectionType>(string errorAlias = null)
-            where TCollectionType : ICollection<object>, new()
-        {
-            return new BnfiTermCollection<TCollectionType>(errorAlias);
-        }
-
-        public static BnfiTermCollection<TCollectionType, TElementType> Of<TCollectionType, TElementType>(string errorAlias = null)
-            where TCollectionType : ICollection<TElementType>, new()
-        {
-            return new BnfiTermCollection<TCollectionType, TElementType>(errorAlias);
-        }
-
-        public static BnfiTermCollection Of(Type collectionType, string errorAlias = null)
-        {
-            return new BnfiTermCollection(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true);
-        }
-
-        public static BnfiTermCollection Of(Type collectionType, Type elementType, string errorAlias = null)
-        {
-            return new BnfiTermCollection(collectionType, elementType, errorAlias, runtimeCheck: true);
-        }
-
         #region StarList and PlusList
 
         #region Typesafe (TCollectionType, TElementType)
@@ -86,7 +74,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType, TElementType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, TElementType>();
             MakeStarRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -99,7 +87,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType, TElementType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, TElementType>();
             MakePlusRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -116,7 +104,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType, TElementType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, TElementType>();
             MakeStarRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -129,7 +117,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType, TElementType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType, TElementType>();
             MakePlusRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -146,7 +134,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType>();
             MakeStarRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -159,7 +147,7 @@ namespace Irony.ITG
         public static BnfiTermCollection<TCollectionType> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
-            var typeForCollection = BnfiTermCollection.Of<TCollectionType>();
+            var typeForCollection = new BnfiTermCollection<TCollectionType>();
             MakePlusRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -175,14 +163,14 @@ namespace Irony.ITG
 
         public static BnfiTermCollection StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var typeForCollection = BnfiTermCollection.Of(typeof(ICollection<object>));
+            var typeForCollection = new BnfiTermCollection(typeof(ICollection<object>));
             MakeStarRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
 
         public static BnfiTermCollection PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var typeForCollection = BnfiTermCollection.Of(typeof(ICollection<object>));
+            var typeForCollection = new BnfiTermCollection(typeof(ICollection<object>));
             MakePlusRule(typeForCollection, delimiter, bnfTermElement);
             return typeForCollection;
         }
@@ -289,7 +277,7 @@ namespace Irony.ITG
     public partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfiTermCollection<TCollectionType>
         where TCollectionType : ICollection<object>, new()
     {
-        internal BnfiTermCollection(string errorAlias)
+        public BnfiTermCollection(string errorAlias = null)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
         {
         }
@@ -323,7 +311,7 @@ namespace Irony.ITG
     public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfiTermCollection<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
-        internal BnfiTermCollection(string errorAlias)
+        public BnfiTermCollection(string errorAlias = null)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
         {
         }

@@ -15,19 +15,9 @@ namespace Irony.ITG
 {
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
     {
-        protected BnfiTermValue(Type type, string errorAlias)
+        public BnfiTermValue(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
-        }
-
-        public static BnfiTermValue<TType> Of<TType>(string errorAlias = null)
-        {
-            return new BnfiTermValue<TType>(errorAlias);
-        }
-
-        public static BnfiTermValue Of(Type type, string errorAlias = null)
-        {
-            return new BnfiTermValue(type, errorAlias);
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
@@ -166,7 +156,7 @@ namespace Irony.ITG
 
     public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>
     {
-        internal BnfiTermValue(string errorAlias)
+        public BnfiTermValue(string errorAlias = null)
             : base(typeof(T), errorAlias)
         {
         }

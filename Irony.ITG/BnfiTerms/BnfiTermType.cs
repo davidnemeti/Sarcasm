@@ -16,23 +16,11 @@ namespace Irony.ITG
 {
     public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm
     {
-        protected BnfiTermType(Type type, string errorAlias)
+        public BnfiTermType(Type type, string errorAlias = null)
             : base(type, errorAlias)
-        {
-        }
-
-        public static BnfiTermType<TType> Of<TType>(string errorAlias = null)
-            where TType : new()
-        {
-            return new BnfiTermType<TType>(errorAlias);
-        }
-
-        public static BnfiTermType Of(Type type, string errorAlias = null)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
-
-            return new BnfiTermType(type, errorAlias);
         }
 
         public new BnfiExpressionType Rule
@@ -107,7 +95,7 @@ namespace Irony.ITG
 
         public TType _ { get { return BnfiTermType<TType>.__; } }
 
-        internal BnfiTermType(string errorAlias)
+        public BnfiTermType(string errorAlias = null)
             : base(typeof(TType), errorAlias)
         {
         }

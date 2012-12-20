@@ -15,20 +15,10 @@ namespace Irony.ITG
 {
     public partial class BnfiTermTransient : BnfiTermNonTerminal, IBnfiTerm
     {
-        protected BnfiTermTransient(Type type, string errorAlias)
+        public BnfiTermTransient(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the child node already contains the created ast node
-        }
-
-        public static BnfiTermTransient<TType> Of<TType>(string errorAlias = null)
-        {
-            return new BnfiTermTransient<TType>(errorAlias);
-        }
-
-        public static BnfiTermTransient Of(Type type, string errorAlias = null)
-        {
-            return new BnfiTermTransient(type, errorAlias);
         }
 
         public new BnfiExpressionTransient Rule { set { base.Rule = value; } }
@@ -43,7 +33,7 @@ namespace Irony.ITG
 
     public partial class BnfiTermTransient<TType> : BnfiTermTransient, IBnfiTerm<TType>, ITransientWithMultipleTypesafeRule<TType>
     {
-        internal BnfiTermTransient(string errorAlias)
+        public BnfiTermTransient(string errorAlias = null)
             : base(typeof(TType), errorAlias)
         {
         }

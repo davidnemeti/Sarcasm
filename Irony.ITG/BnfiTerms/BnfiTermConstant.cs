@@ -10,22 +10,9 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public static class BnfiTermConstant
+    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IEnumerable<KeyValuePair<string, T>>
     {
-        public static BnfiTermConstant<T> Of<T>()
-        {
-            return new BnfiTermConstant<T>();
-        }
-
-        public static ConstantTerminal Of(Type type)
-        {
-            return new ConstantTerminal(GrammarHelper.TypeNameWithDeclaringTypes(type));
-        }
-    }
-
-    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>
-    {
-        internal BnfiTermConstant()
+        public BnfiTermConstant()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
         {
         }
@@ -44,6 +31,16 @@ namespace Irony.ITG
         public BnfTerm AsBnfTerm()
         {
             return this;
+        }
+
+        public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
+        {
+            return base.Constants.Select(keyValuePair => new KeyValuePair<string, T>(keyValuePair.Key, (T)keyValuePair.Value)).GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 }
