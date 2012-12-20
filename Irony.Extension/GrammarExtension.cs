@@ -6,12 +6,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
-using Irony.Extension.AstBinders;
+using Irony.ITG;
 using Irony.Parsing;
 
-namespace Irony.Extension
+namespace Irony.ITG
 {
-    public class GrammarExtension : Grammar
+    public partial class GrammarExtension : Grammar
     {
         #region Construction
 

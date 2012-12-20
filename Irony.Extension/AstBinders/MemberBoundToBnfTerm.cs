@@ -11,9 +11,9 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class MemberBoundToBnfTerm : NonTerminal
+    public partial class MemberBoundToBnfTerm : NonTerminal, IBnfTerm
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
@@ -23,7 +23,7 @@ namespace Irony.Extension.AstBinders
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
-            this.Rule = new BnfExpression(bnfTerm);
+            base.Rule = new BnfExpression(bnfTerm);
             this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the parent TypeForBoundMembers will take care of the child ast node
         }
 
@@ -43,7 +43,7 @@ namespace Irony.Extension.AstBinders
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new MemberBoundToBnfTerm(memberInfo, bnfTerm.AsTypeless());
+                return new MemberBoundToBnfTerm(memberInfo, bnfTerm.AsBnfTerm());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
@@ -55,7 +55,7 @@ namespace Irony.Extension.AstBinders
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new MemberBoundToBnfTerm<TDeclaringType>(memberInfo, bnfTerm.AsTypeless());
+                return new MemberBoundToBnfTerm<TDeclaringType>(memberInfo, bnfTerm.AsBnfTerm());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
@@ -82,106 +82,30 @@ namespace Irony.Extension.AstBinders
             return new MemberBoundToBnfTerm(memberInfo, bnfTerm);
         }
 
-        public static BnfExpressionWithMemberBoundToBnfTerm operator +(MemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
+        public static MemberBoundToBnfTerm BindToNone(BnfTerm bnfTerm)
         {
-            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+            return new MemberBoundToBnfTerm(memberInfo: null, bnfTerm: bnfTerm);
         }
 
-        public static BnfExpressionWithMemberBoundToBnfTerm operator +(MemberBoundToBnfTerm bnfTerm1, BnfExpression bnfTerm2)
+        public BnfTerm AsBnfTerm()
         {
-            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+            return this;
         }
 
-        public static BnfExpressionWithMemberBoundToBnfTerm operator +(BnfExpression bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
+        [Obsolete("Cannot use Rule method", error: true)]
+        public new BnfExpression Rule
         {
-            return new BnfExpressionWithMemberBoundToBnfTerm(Op_Plus(bnfTerm1, bnfTerm2));
+            get { return base.Rule; }
+            set { base.Rule = value; }
         }
     }
 
-    public class MemberBoundToBnfTerm<TDeclaringType> : MemberBoundToBnfTerm, IBnfTerm<TDeclaringType>
+    public partial class MemberBoundToBnfTerm<TDeclaringType> : MemberBoundToBnfTerm, IBnfTerm<TDeclaringType>
     {
         internal MemberBoundToBnfTerm(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(memberInfo, bnfTerm)
         {
         }
 
-        BnfTerm IBnfTerm<TDeclaringType>.AsTypeless()
-        {
-            return this;
-        }
-
-        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, BnfExpressionWithMemberBoundToBnfTerm bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
-        public static BnfExpression<TDeclaringType> operator +(BnfExpressionWithMemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        [Obsolete(TypeForNonTerminal.typelessMemberBoundErrorMessage, error: true)]
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, BnfExpression bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator +(BnfExpression bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator +(MemberBoundToBnfTerm<TDeclaringType> bnfTerm1, BnfExpression<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus(bnfTerm1, (BnfExpression)bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator +(BnfExpression<TDeclaringType> bnfTerm1, MemberBoundToBnfTerm<TDeclaringType> bnfTerm2)
-        {
-            return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator |(MemberBoundToBnfTerm<TDeclaringType> term1, MemberBoundToBnfTerm<TDeclaringType> term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        public static BnfExpression<TDeclaringType> operator |(MemberBoundToBnfTerm<TDeclaringType> term1, IBnfTerm<TDeclaringType> term2)
-        {
-            return Op_Pipe(term1, term2.AsTypeless());
-        }
-
-        public static BnfExpression<TDeclaringType> operator |(IBnfTerm<TDeclaringType> term1, MemberBoundToBnfTerm<TDeclaringType> term2)
-        {
-            return Op_Pipe(term1.AsTypeless(), term2);
-        }
-
-        protected new static BnfExpression<TDeclaringType> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return GrammarHelper.Op_Plus<TDeclaringType>(bnfTerm1, bnfTerm2);
-        }
-
-        protected new static BnfExpression<TDeclaringType> Op_Pipe(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return GrammarHelper.Op_Pipe<TDeclaringType>(bnfTerm1, bnfTerm2);
-        }
     }
 }

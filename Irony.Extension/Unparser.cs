@@ -8,7 +8,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.Unparsing
+namespace Irony.ITG.Unparsing
 {
     public class Unparser
     {

@@ -11,9 +11,12 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class TypeForCollection : TypeForNonTerminal
+    public interface IBnfTermCollection : IBnfTerm { }
+    public interface IBnfTermCollection<out TCollectionType> : IBnfTerm<TCollectionType> { }
+
+    public partial class TypeForCollection : TypeForNonTerminal, IBnfTermCollection
     {
         protected enum ListKind { Star, Plus }
 
@@ -207,28 +210,28 @@ namespace Irony.Extension.AstBinders
             return Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfExpression<TCollectionType> MakePlusRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfExpression<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return (BnfExpressionCollection<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfExpression<TCollectionType> MakeStarRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfExpression<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return (BnfExpressionCollection<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfExpression<TCollectionType> MakePlusRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
+        public static BnfExpressionCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfExpression<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+            return (BnfExpressionCollection<TCollectionType>)MakePlusRule(typeForCollection, delimiter, bnfTermElement.AsBnfTerm());
         }
 
-        public static BnfExpression<TCollectionType> MakeStarRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
+        public static BnfExpressionCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(TypeForCollection<TCollectionType, TElementType> typeForCollection, BnfTerm delimiter, IBnfTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfExpression<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsTypeless());
+            return (BnfExpressionCollection<TCollectionType>)MakeStarRule(typeForCollection, delimiter, bnfTermElement.AsBnfTerm());
         }
 
         protected virtual void SetNodeCreator()
@@ -272,9 +275,18 @@ namespace Irony.Extension.AstBinders
         {
             return string.Format("{0}List<{1}>", listKind, bnfTermElement.Name);
         }
+
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+
+        public new BnfExpressionCollection Rule { set { base.Rule = value; } }
+
+        public BnfTerm AsBnfTerm()
+        {
+            return this;
+        }
     }
 
-    public class TypeForCollection<TCollectionType> : TypeForCollection, IBnfTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
+    public partial class TypeForCollection<TCollectionType> : TypeForCollection, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfTermCollection<TCollectionType>
         where TCollectionType : ICollection<object>, new()
     {
         internal TypeForCollection(string errorAlias)
@@ -290,37 +302,13 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
-        {
-            return this;
-        }
-
         [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
         }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
-
-        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
-        public static BnfExpression operator |(TypeForCollection<TCollectionType> term1, BnfTerm term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
-        public static BnfExpression operator |(BnfTerm term1, TypeForCollection<TCollectionType> term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType> term1, TypeForCollection<TCollectionType> term2)
-        {
-            return GrammarHelper.Op_Pipe<TCollectionType>(term1, term2);
-        }
+        public new BnfExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
     }
 
     /*
@@ -332,11 +320,11 @@ namespace Irony.Extension.AstBinders
      * ICollection<T> : IEnumerable<T>, IEnumerable
      * IList<T> : ICollection<T>, IEnumerable<T>, IEnumerable
      * */
-    public class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
+    public partial class TypeForCollection<TCollectionType, TElementType> : TypeForCollection, IBnfTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfTermCollection<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         internal TypeForCollection(string errorAlias)
-            : base(typeof(TCollectionType), typeof(TElementType), errorAlias, runtimeCheck: false)
+            : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
         {
         }
 
@@ -348,36 +336,12 @@ namespace Irony.Extension.AstBinders
                 );
         }
 
-        BnfTerm IBnfTerm<TCollectionType>.AsTypeless()
-        {
-            return this;
-        }
-
         [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
         }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        public new IBnfTerm<TCollectionType> Rule { set { RuleTL = new BnfExpression(value.AsTypeless()); } }
-
-        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
-        public static BnfExpression operator |(TypeForCollection<TCollectionType, TElementType> term1, BnfTerm term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        [Obsolete(invalidUseOfNonExistingTypesafePipeOperatorErrorMessage, error: true)]
-        public static BnfExpression operator |(BnfTerm term1, TypeForCollection<TCollectionType, TElementType> term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        public static BnfExpression<TCollectionType> operator |(TypeForCollection<TCollectionType, TElementType> term1, TypeForCollection<TCollectionType, TElementType> term2)
-        {
-            return GrammarHelper.Op_Pipe<TCollectionType>(term1, term2);
-        }
+        public new BnfExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
     }
 }

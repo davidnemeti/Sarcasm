@@ -8,13 +8,13 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
     public static class TypeForConstant
     {
-        public static TypeForConstant<TType> Of<TType>()
+        public static TypeForConstant<T> Of<T>()
         {
-            return new TypeForConstant<TType>();
+            return new TypeForConstant<T>();
         }
 
         public static ConstantTerminal Of(Type type)
@@ -23,7 +23,7 @@ namespace Irony.Extension.AstBinders
         }
     }
 
-    public class TypeForConstant<T> : ConstantTerminal, IBnfTerm<T>
+    public partial class TypeForConstant<T> : ConstantTerminal, IBnfTerm<T>
     {
         internal TypeForConstant()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
@@ -41,7 +41,7 @@ namespace Irony.Extension.AstBinders
             base.Add(lexeme, value);
         }
 
-        BnfTerm IBnfTerm<T>.AsTypeless()
+        public BnfTerm AsBnfTerm()
         {
             return this;
         }

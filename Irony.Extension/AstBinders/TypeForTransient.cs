@@ -11,9 +11,9 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class TypeForTransient : TypeForNonTerminal
+    public partial class TypeForTransient : TypeForNonTerminal, IBnfTerm
     {
         protected TypeForTransient(Type type, string errorAlias)
             : base(type, errorAlias)
@@ -30,18 +30,22 @@ namespace Irony.Extension.AstBinders
         {
             return new TypeForTransient(type, errorAlias);
         }
+
+        public new BnfExpressionTransient Rule { set { base.Rule = value; } }
+
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+
+        public BnfTerm AsBnfTerm()
+        {
+            return this;
+        }
     }
 
-    public class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>, INonTerminalWithMultipleTypesafeRule<TType>
+    public partial class TypeForTransient<TType> : TypeForTransient, IBnfTerm<TType>, ITransientWithMultipleTypesafeRule<TType>
     {
         internal TypeForTransient(string errorAlias)
             : base(typeof(TType), errorAlias)
         {
-        }
-
-        BnfTerm IBnfTerm<TType>.AsTypeless()
-        {
-            return this;
         }
 
         [Obsolete(typelessQErrorMessage, error: true)]
@@ -50,29 +54,15 @@ namespace Irony.Extension.AstBinders
             return base.Q();
         }
 
-        public new IBnfTerm<TType> Rule { set { this.SetRule(value); } }
+        public new BnfExpressionTransient<TType> Rule { set { base.Rule = value; } }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        public static BnfExpressionTransient<TType> operator |(TypeForTransient<TType> term1, TypeForTransient<TType> term2)
+        public BnfExpressionTransient<TType> SetRuleOr(params IBnfTerm<TType>[] bnfTerms)
         {
-            return BnfExpressionTransient<TType>.Op_Pipe(term1, term2);
+            return (BnfExpressionTransient<TType>)bnfTerms
+                .Aggregate(
+                new BnfExpression(),
+                (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess.AsBnfTerm()
+                );
         }
-
-        public static BnfExpressionTransient<TType> operator +(TypeForTransient<TType> term1, KeyTermPunctuation term2)
-        {
-            return BnfExpressionTransient<TType>.Op_Plus(term1, term2);
-        }
-
-        public static BnfExpressionTransient<TType> operator +(KeyTermPunctuation term1, TypeForTransient<TType> term2)
-        {
-            return BnfExpressionTransient<TType>.Op_Plus(term1, term2);
-        }
-
-        /*
-         * public static BnfExpressionTransient<T> operator +(TypeForTransient<T> term1, TypeForTransient<T> term2)
-         * is not defined, because in a BnfExpressionTransient there can be only one TypeForTransient term,
-         * and the resulting BnfExpressionTransient would contain two of them
-         * */
     }
 }

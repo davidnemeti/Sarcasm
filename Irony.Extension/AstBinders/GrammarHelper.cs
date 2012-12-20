@@ -11,7 +11,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
     public static class GrammarHelper
     {
@@ -141,6 +141,11 @@ namespace Irony.Extension.AstBinders
         public static MemberBoundToBnfTerm BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
             return MemberBoundToBnfTerm.Bind(fieldInfo, bnfTerm);
+        }
+
+        public static MemberBoundToBnfTerm BindToNone(BnfTerm bnfTerm)
+        {
+            return MemberBoundToBnfTerm.BindToNone(bnfTerm);
         }
 
         #endregion
@@ -292,26 +297,6 @@ namespace Irony.Extension.AstBinders
 
         #region Misc
 
-        public static void SetRule<T>(this INonTerminalWithSingleTypesafeRule<T> nonTerminal, IBnfTerm<T> bnfTerm)
-        {
-            BnfTerm bnfTermTL = bnfTerm.AsTypeless();
-            BnfExpression bnfExpression = bnfTermTL as BnfExpression;
-
-            nonTerminal.RuleTL = bnfExpression != null
-                ? bnfExpression
-                : new BnfExpression(bnfTermTL);
-        }
-
-        // bnfTermFirst and bnfTermSecond is here in order to enforce that we have at least two bnfTerms
-        public static void SetRuleOr<T>(this INonTerminalWithMultipleTypesafeRule<T> nonTerminal, IBnfTerm<T> bnfTermFirst, IBnfTerm<T> bnfTermSecond, params IBnfTerm<T>[] bnfTerms)
-        {
-            nonTerminal.RuleTL = bnfTerms
-                .Aggregate(
-                bnfTermFirst.AsTypeless() | bnfTermSecond.AsTypeless(),
-                (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess.AsTypeless()
-                );
-        }
-
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {
             if (args.Length > 0)
@@ -335,16 +320,6 @@ namespace Irony.Extension.AstBinders
                 typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), typeName);
 
             return typeName;
-        }
-
-        internal static BnfExpression<T> Op_Plus<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return (BnfExpression<T>)BnfTerm.Op_Plus(bnfTerm1, bnfTerm2);
-        }
-
-        internal static BnfExpression<T> Op_Pipe<T>(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return (BnfExpression<T>)BnfTerm.Op_Pipe(bnfTerm1, bnfTerm2);
         }
 
         internal static IdentifierTerminal SetNodeCreator(this IdentifierTerminal identifierTerminal)

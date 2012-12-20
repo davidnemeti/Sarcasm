@@ -8,8 +8,7 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.Extension;
-using Irony.Extension.AstBinders;
+using Irony.ITG;
 
 using ETUS.DomainModel;
 using ETUS.Grammar;

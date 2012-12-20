@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class KeyTermPunctuation : KeyTerm
+    public partial class KeyTermPunctuation : KeyTerm
     {
         public KeyTermPunctuation(string text)
             : base(text, text)

@@ -11,9 +11,9 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class TypeForValue : TypeForNonTerminal
+    public partial class TypeForValue : TypeForNonTerminal, IBnfTerm
     {
         protected TypeForValue(Type type, string errorAlias)
             : base(type, errorAlias)
@@ -81,7 +81,7 @@ namespace Irony.Extension.AstBinders
         public static TypeForValue<TOut> Convert<TIn, TOut>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
             return new TypeForValue<TOut>(
-                bnfTerm.AsTypeless(),
+                bnfTerm.AsBnfTerm(),
                 (context, parseTreeNode) =>
                     {
                         if (parseTreeNode.ChildNodes.Count != 1)
@@ -133,7 +133,7 @@ namespace Irony.Extension.AstBinders
         private static TypeForValue<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
         {
             return new TypeForValue<TOutData>(
-                bnfTerm.AsTypeless(),
+                bnfTerm.AsBnfTerm(),
                 (context, parseNode) =>
                 {
                     TIn value = GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
@@ -157,9 +157,14 @@ namespace Irony.Extension.AstBinders
                 this.RuleTL = value.RuleTL;
             }
         }
+
+        public BnfTerm AsBnfTerm()
+        {
+            return this;
+        }
     }
 
-    public class TypeForValue<T> : TypeForValue, IBnfTerm<T>
+    public partial class TypeForValue<T> : TypeForValue, IBnfTerm<T>
     {
         internal TypeForValue(string errorAlias)
             : base(typeof(T), errorAlias)
@@ -181,88 +186,10 @@ namespace Irony.Extension.AstBinders
             }
         }
 
-        BnfTerm IBnfTerm<T>.AsTypeless()
-        {
-            return this;
-        }
-
         [Obsolete(TypeForNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
-        }
-
-        //[Obsolete("blabla", error: true)]
-        //public static BnfExpression<T> operator +(TypeForValue<T> bnfTerm1, TypeForValue<T> bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        //[Obsolete("blabla", error: true)]
-        //public static BnfExpression<T> operator +(BnfTerm bnfTerm1, TypeForValue<T> bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        //[Obsolete("blabla", error: true)]
-        //public static BnfExpression<T> operator +(TypeForValue<T> bnfTerm1, BnfTerm bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, IBnfTerm<T> bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, (BnfExpression)bnfTerm2);
-        //}
-
-        //public static BnfExpression<T> operator +(IBnfTerm<T> bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
-        //{
-        //    return Op_Plus((BnfExpression)bnfTerm1, bnfTerm2);
-        //}
-
-        //public static BnfExpression<T> operator +(ValueForBnfTerm<T> bnfTerm1, BnfExpression bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        //public static BnfExpression<T> operator +(BnfExpression bnfTerm1, ValueForBnfTerm<T> bnfTerm2)
-        //{
-        //    return Op_Plus(bnfTerm1, bnfTerm2);
-        //}
-
-        public static BnfExpression<T> operator |(TypeForValue<T> term1, TypeForValue<T> term2)
-        {
-            return GrammarHelper.Op_Pipe<T>(term1, term2);
-        }
-
-        //public static BnfExpression<T> operator |(ValueForBnfTerm<T> term1, IBnfTerm<T> term2)
-        //{
-        //    return Op_Pipe(term1, term2.AsTypeless());
-        //}
-
-        //public static BnfExpression<T> operator |(IBnfTerm<T> term1, ValueForBnfTerm<T> term2)
-        //{
-        //    return Op_Pipe(term1.AsTypeless(), term2);
-        //}
-
-        public static BnfExpression<T> operator |(TypeForValue<T> term1, BnfTerm term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        public static BnfExpression<T> operator |(BnfTerm term1, TypeForValue<T> term2)
-        {
-            return Op_Pipe(term1, term2);
-        }
-
-        protected new static BnfExpression<T> Op_Plus(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return GrammarHelper.Op_Plus<T>(bnfTerm1, bnfTerm2);
-        }
-
-        protected new static BnfExpression<T> Op_Pipe(BnfTerm bnfTerm1, BnfTerm bnfTerm2)
-        {
-            return GrammarHelper.Op_Pipe<T>(bnfTerm1, bnfTerm2);
         }
     }
 }

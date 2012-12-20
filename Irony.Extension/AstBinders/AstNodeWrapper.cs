@@ -8,7 +8,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
     public static class AstNodeWrapper
     {

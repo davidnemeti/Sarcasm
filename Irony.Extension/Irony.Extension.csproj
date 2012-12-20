@@ -46,6 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AstBinders\AstNodeWrapper.cs" />
+    <Compile Include="AstBinders\BnfExpressions.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BnfExpressions.tt</DependentUpon>
+    </Compile>
     <Compile Include="AstBinders\KeyTermPunctuation.cs" />
     <Compile Include="AstBinders\Common.cs" />
     <Compile Include="AstBinders\GrammarHelper.cs" />
@@ -61,6 +66,12 @@
     <Compile Include="Unparser.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="AstBinders\BnfExpressionGeneration.ttinclude" />
+    <None Include="AstBinders\BnfExpressions.tt">
+      <TransformOnBuild>False</TransformOnBuild>
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BnfExpressions.cs</LastGenOutput>
+    </None>
     <None Include="Irony.Extension.pub" />
     <None Include="Irony.Extension.snk" />
   </ItemGroup>
@@ -73,6 +84,9 @@
       <Name>010.Irony.2010</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -81,4 +95,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <PropertyGroup>
+    <TransformOnBuild>true</TransformOnBuild>
+    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
+  </PropertyGroup>
+  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />
 </Project>

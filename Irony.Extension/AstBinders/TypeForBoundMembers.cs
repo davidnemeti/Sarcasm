@@ -6,15 +6,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Diagnostics;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using System.IO;
 
-namespace Irony.Extension.AstBinders
+namespace Irony.ITG
 {
-    public class TypeForBoundMembers : TypeForNonTerminal
+    public partial class TypeForBoundMembers : TypeForNonTerminal, IBnfTerm
     {
         protected TypeForBoundMembers(Type type, string errorAlias)
             : base(type, errorAlias)
@@ -35,9 +35,9 @@ namespace Irony.Extension.AstBinders
             return new TypeForBoundMembers(type, errorAlias);
         }
 
-        public override BnfExpression Rule
+        public new BnfExpressionBoundMembers Rule
         {
-            get { return base.Rule; }
+            get { return (BnfExpressionBoundMembers)base.Rule; }
             set
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
@@ -61,7 +61,7 @@ namespace Irony.Extension.AstBinders
                     parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(obj, context, parseTreeNode);
                 };
 
-                foreach (var bnfTermList in value.Data)
+                foreach (var bnfTermList in ((BnfExpression)value).Data)
                 {
                     foreach (var bnfTerm in bnfTermList)
                     {
@@ -73,6 +73,8 @@ namespace Irony.Extension.AstBinders
                 base.Rule = value;
             }
         }
+
+        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
@@ -86,9 +88,14 @@ namespace Irony.Extension.AstBinders
 
             e.ResultNode.Tag = ((MemberBoundToBnfTerm)sender).MemberInfo;
         }
+
+        public BnfTerm AsBnfTerm()
+        {
+            return this;
+        }
     }
 
-    public class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>, INonTerminalWithMultipleTypesafeRule<TType>
+    public partial class TypeForBoundMembers<TType> : TypeForBoundMembers, IBnfTerm<TType>, INonTerminalWithMultipleTypesafeRule<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }
@@ -105,54 +112,13 @@ namespace Irony.Extension.AstBinders
         {
         }
 
-        BnfTerm IBnfTerm<TType>.AsTypeless()
-        {
-            return this;
-        }
-
         [Obsolete(typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
         {
             return base.Q();
         }
 
-        public new IBnfTerm<TType> Rule { set { this.SetRule(value); } }
+        public new BnfExpressionBoundMembers<TType> Rule { set { base.Rule = value; } }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        public static BnfExpression<TType> operator |(TypeForBoundMembers<TType> term1, TypeForBoundMembers<TType> term2)
-        {
-            return GrammarHelper.Op_Pipe<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator |(BnfExpression<TType> term1, TypeForBoundMembers<TType> term2)
-        {
-            return GrammarHelper.Op_Pipe<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator |(TypeForBoundMembers<TType> term1, BnfExpression<TType> term2)
-        {
-            return GrammarHelper.Op_Pipe<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator +(BnfExpression<TType> term1, TypeForBoundMembers<TType> term2)
-        {
-            return GrammarHelper.Op_Plus<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator +(TypeForBoundMembers<TType> term1, BnfExpression<TType> term2)
-        {
-            return GrammarHelper.Op_Plus<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator +(BnfExpression term1, TypeForBoundMembers<TType> term2)
-        {
-            return GrammarHelper.Op_Plus<TType>(term1, term2);
-        }
-
-        public static BnfExpression<TType> operator +(TypeForBoundMembers<TType> term1, BnfExpression term2)
-        {
-            return GrammarHelper.Op_Plus<TType>(term1, term2);
-        }
     }
 }
