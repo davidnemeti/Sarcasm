@@ -1,5 +1,5 @@
 ﻿<#@ template debug="true" hostSpecific="false" #>
-<#@ output extension=".cs" #>
+<#@ output extension="generated.cs" #>
 <#@ assembly Name="System.Core" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
@@ -21,59 +21,6 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public interface IBnfExpression : IBnfTerm
-    {
-        BnfExpression AsBnfExpression();
-    }
-
-    public interface IBnfExpression<out T> : IBnfExpression, IBnfTerm<T>
-    {
-    }
-
-	#region BnfExpressionCommon
-
-    public abstract class BnfExpressionCommon : IBnfExpression
-    {
-        protected readonly BnfExpression bnfExpression;
-
-        public BnfExpressionCommon()
-        {
-            this.bnfExpression = new BnfExpression();
-        }
-
-        public BnfExpressionCommon(BnfExpression bnfExpression)
-        {
-            this.bnfExpression = bnfExpression;
-        }
-
-        protected BnfExpressionCommon(BnfTerm bnfTerm)
-        {
-            this.bnfExpression = new BnfExpression(bnfTerm);
-        }
-
-        public static implicit operator BnfExpression(BnfExpressionCommon bnfExpression)
-		{
-            return bnfExpression.bnfExpression;
-		}
-
-        //public static implicit operator BnfTerm(BnfExpressionCommon bnfExpression)
-        //{
-        //    return bnfExpression.bnfExpression;
-        //}
-
-        BnfExpression IBnfExpression.AsBnfExpression()
-        {
-            return bnfExpression;
-        }
-
-        BnfTerm IBnfTerm.AsBnfTerm()
-        {
-            return bnfExpression;
-        }
-    }
-
-	#endregion
-
 <#
 	GenerateBnfExpressionClassAndOperators(
 		"BnfExpressionBoundMembers",

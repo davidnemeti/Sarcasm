@@ -46,7 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AstBinders\AstNodeWrapper.cs" />
-    <Compile Include="AstBinders\BnfExpressions.cs">
+    <Compile Include="AstBinders\BnfExpressions.cs" />
+    <Compile Include="AstBinders\BnfExpressions.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfExpressions.tt</DependentUpon>
@@ -70,7 +71,7 @@
     <None Include="AstBinders\BnfExpressions.tt">
       <TransformOnBuild>False</TransformOnBuild>
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BnfExpressions.cs</LastGenOutput>
+      <LastGenOutput>BnfExpressions.generated.cs</LastGenOutput>
     </None>
     <None Include="Irony.ITG.pub" />
     <None Include="Irony.ITG.snk" />
