@@ -27,7 +27,6 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember"},
-//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		bnfTermSideTypeNames: new[]{"BnfTerm"},
 		allowCorePlusCore: true
 	);
@@ -36,9 +35,7 @@ namespace Irony.ITG
 		"BnfExpressionBoundMembers<T>",
 		inheritFromBase: "BnfiExpressionType",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-//		constraints: new[]{"T : new()"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>"},
-//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		bnfTermSideTypeNames: new[]{"BnfTerm"},
 		allowCorePlusCore: true
 	);
@@ -86,6 +83,7 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
+		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		allowCorePlusCore: false
 	);
 
@@ -94,6 +92,7 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionValue",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
+		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		allowCorePlusCore: false
 	);*/
 #>
