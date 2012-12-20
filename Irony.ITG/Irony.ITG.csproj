@@ -62,7 +62,7 @@
     <Compile Include="BnfiTerms\BnfiTermCollection.cs" />
     <Compile Include="BnfiTerms\BnfiTermType.cs" />
     <Compile Include="BnfiTerms\BnfiTermMember.cs" />
-    <Compile Include="GrammarExtension.cs" />
+    <Compile Include="Grammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unparser.cs" />
   </ItemGroup>
