@@ -1,0 +1,140 @@
+﻿<#@ template debug="true" hostSpecific="false" #>
+<#@ output extension=".cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#@ include file="BnfExpressionGeneration.ttinclude" #> 
+<#
+	WriteLine("// GENERATED FILE");
+#>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Irony;
+using Irony.Ast;
+using Irony.Parsing;
+
+namespace Irony.ITG
+{
+    public interface IBnfExpression : IBnfTerm
+    {
+        BnfExpression AsBnfExpression();
+    }
+
+    public interface IBnfExpression<out T> : IBnfExpression, IBnfTerm<T>
+    {
+    }
+
+	#region BnfExpressionCommon
+
+    public abstract class BnfExpressionCommon : IBnfExpression
+    {
+        protected readonly BnfExpression bnfExpression;
+
+        public BnfExpressionCommon()
+        {
+            this.bnfExpression = new BnfExpression();
+        }
+
+        public BnfExpressionCommon(BnfExpression bnfExpression)
+        {
+            this.bnfExpression = bnfExpression;
+        }
+
+        protected BnfExpressionCommon(BnfTerm bnfTerm)
+        {
+            this.bnfExpression = new BnfExpression(bnfTerm);
+        }
+
+        public static implicit operator BnfExpression(BnfExpressionCommon bnfExpression)
+		{
+            return bnfExpression.bnfExpression;
+		}
+
+        //public static implicit operator BnfTerm(BnfExpressionCommon bnfExpression)
+        //{
+        //    return bnfExpression.bnfExpression;
+        //}
+
+        BnfExpression IBnfExpression.AsBnfExpression()
+        {
+            return bnfExpression;
+        }
+
+        BnfTerm IBnfTerm.AsBnfTerm()
+        {
+            return bnfExpression;
+        }
+    }
+
+	#endregion
+
+<#
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionBoundMembers",
+		inheritFromBase: "BnfExpressionCommon",
+		implementInterfaces: new[]{"IBnfExpression"},
+		bnfTermCoreTypeNames: new[]{"MemberBoundToBnfTerm"},
+//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
+		bnfTermSideTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: true
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionBoundMembers<T>",
+		inheritFromBase: "BnfExpressionBoundMembers",
+		implementInterfaces: new[]{"IBnfExpression<T>"},
+//		constraints: new[]{"T : new()"},
+		bnfTermCoreTypeNames: new[]{"MemberBoundToBnfTerm<TDeclaringType>"},
+//		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
+		bnfTermSideTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: true
+	);
+
+	// mixCoreTypesWithSideTypes is false e.g. for BnfExpressionTransient to achieve that only one non-(KeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionTransient",
+		inheritFromBase: "BnfExpressionCommon",
+		implementInterfaces: new[]{"IBnfExpression"},
+		bnfTermCoreTypeNames: new[]{"TypeForCollection", "TypeForBoundMembers", "TypeForTransient", "TypeForValue"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		bnfTermSideTypeNames: new[]{"KeyTermPunctuation", "GrammarHint"},
+		mixCoreTypesWithSideTypes: false
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionTransient<T>",
+		inheritFromBase: "BnfExpressionTransient",
+		implementInterfaces: new[]{"IBnfExpression<T>"},
+		bnfTermCoreTypeNames: new[]{"TypeForCollection<TCollectionType, TElementType>", "TypeForCollection<TCollectionType>", "TypeForBoundMembers<TType>", "TypeForConstant<T>", "TypeForTransient<TType>", "TypeForValue<T>"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		bnfTermSideTypeNames: new[]{"KeyTermPunctuation", "GrammarHint"},
+		mixCoreTypesWithSideTypes: false,
+		filterOutCorePairs: (bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => bnfTermCoreTypeNames1 == "TypeForCollection<TCollectionType, TElementType>" && bnfTermCoreTypeNames2 == "TypeForCollection<TCollectionType>"
+																				|| bnfTermCoreTypeNames1 == "TypeForCollection<TCollectionType>" && bnfTermCoreTypeNames2 == "TypeForCollection<TCollectionType, TElementType>"
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionCollection",
+		inheritFromBase: "BnfExpressionCommon",
+		implementInterfaces: new[]{"IBnfExpression"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: false
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfExpressionCollection<TCollectionType>",
+		inheritFromBase: "BnfExpressionCollection",
+		implementInterfaces: new[]{"IBnfExpression<TCollectionType>"},
+//		constraints: new[]{"TCollectionType : new()"},
+//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		mixCoreTypesWithSideTypes: false
+	);
+#>
+}
