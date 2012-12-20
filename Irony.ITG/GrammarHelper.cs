@@ -179,7 +179,7 @@ namespace Irony.ITG
 
         #endregion
 
-        #region Create/ConvertValue
+        #region Cast
 
         public static BnfiTermValue<TOut> Cast<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm)
         {
