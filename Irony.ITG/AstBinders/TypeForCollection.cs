@@ -201,13 +201,13 @@ namespace Irony.ITG
         public static BnfExpression MakePlusRule(TypeForCollection typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             typeForCollection.SetList(bnfTermElement, ListKind.Plus);
-            return Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
+            return Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(typeForCollection, delimiter, bnfTermElement);
         }
 
         public static BnfExpression MakeStarRule(TypeForCollection typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             typeForCollection.SetList(bnfTermElement, ListKind.Star);
-            return Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
+            return Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(typeForCollection, delimiter, bnfTermElement);
         }
 
         public static BnfExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(TypeForCollection<TCollectionType> typeForCollection, BnfTerm delimiter, BnfTerm bnfTermElement)

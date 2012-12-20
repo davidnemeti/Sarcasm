@@ -274,7 +274,7 @@ namespace Irony.ITG
 
         public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
         {
-            return ((GrammarExtension)context.Language.Grammar).BrowsableAstNodes && !(value is IBrowsableAstNode)
+            return ((Grammar)context.Language.Grammar).AutoBrowsableAstNodes && !(value is IBrowsableAstNode)
                 ? AstNodeWrapper.Create(value, context, parseTreeNode)
                 : value;
         }

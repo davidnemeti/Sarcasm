@@ -11,33 +11,42 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public partial class GrammarExtension : Grammar
+    public partial class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 
-        public GrammarExtension()
+        public Grammar(AstCreation astCreation)
             : base()
         {
-            Init();
+            Init(astCreation);
         }
 
-        public GrammarExtension(bool caseSensitive)
+        public Grammar(AstCreation astCreation, bool caseSensitive)
             : base(caseSensitive)
         {
-            Init();
+            Init(astCreation);
         }
 
-        void Init()
+        void Init(AstCreation astCreation)
         {
-            // default values for properties
-            BrowsableAstNodes = false;
+            LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
+                ? LanguageFlags.CreateAst
+                : LanguageFlags.Default;
+
+            AutoBrowsableAstNodes = astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes;
         }
+
+        #endregion
+
+        #region
+
+        public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
 
         #endregion
 
         #region Properties
 
-        public bool BrowsableAstNodes { get; set; }
+        public bool AutoBrowsableAstNodes { get; set; }
 
         #endregion
 

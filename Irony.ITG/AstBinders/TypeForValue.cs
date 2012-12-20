@@ -37,7 +37,7 @@ namespace Irony.ITG
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
 
             this.RuleTL = isOptionalData
-                ? bnfTerm | Grammar.CurrentGrammar.Empty
+                ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
         }
 
