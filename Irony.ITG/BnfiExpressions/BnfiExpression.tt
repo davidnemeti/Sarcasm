@@ -63,8 +63,6 @@ namespace Irony.ITG
 //		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
 		mixCoreTypesWithSideTypes: false
-//		filterOutCorePairs: (bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType, TElementType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType>"
-//																				|| bnfTermCoreTypeNames1 == "BnfiTermCollection<TCollectionType>" && bnfTermCoreTypeNames2 == "BnfiTermCollection<TCollectionType, TElementType>"
 	);
 
 	GenerateBnfExpressionClassAndOperators(
