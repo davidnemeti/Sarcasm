@@ -29,7 +29,7 @@ namespace Irony.ITG
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember"},
 //		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		bnfTermSideTypeNames: new[]{"BnfTerm"},
-		mixCoreTypesWithSideTypes: true
+		allowCorePlusCore: true
 	);
 
 	GenerateBnfExpressionClassAndOperators(
@@ -40,19 +40,19 @@ namespace Irony.ITG
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>"},
 //		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		bnfTermSideTypeNames: new[]{"BnfTerm"},
-		mixCoreTypesWithSideTypes: true
+		allowCorePlusCore: true
 	);
 
-	// mixCoreTypesWithSideTypes is false e.g. for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+	// allowCorePlusCore is false e.g. for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTransient",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermCollection", "BnfiTermType", "BnfiTermTransient", "BnfiTermValue"},
-		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+		bnfTermCoreExternTypeNames: new[]{"BnfTerm"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
-		mixCoreTypesWithSideTypes: false
+		allowCorePlusCore: false
 	);
 
 	GenerateBnfExpressionClassAndOperators(
@@ -60,26 +60,42 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>", "BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermValue<T>"},
-//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
+//		bnfTermCoreExternTypeNames: new[]{"BnfTerm"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
-		mixCoreTypesWithSideTypes: false
+		allowCorePlusCore: false
 	);
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
-		mixCoreTypesWithSideTypes: false
+//		bnfTermCoreExternTypeNames: new[]{"BnfiTermCollection"},
+		allowCorePlusCore: false
 	);
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection<TCollectionType>",
 		inheritFromBase: "BnfiExpressionCollection",
 		implementInterfaces: new[]{"IBnfiExpression<TCollectionType>"},
+//		bnfTermCoreExternTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>"},
 //		constraints: new[]{"TCollectionType : new()"},
-//		bnfTermCoreOuterTypeNames: new[]{"BnfTerm"},
-		mixCoreTypesWithSideTypes: false
+		allowCorePlusCore: false
 	);
+/*
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionValue",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+		bnfTermCoreExternTypeNames: new[]{"BnfiTermValue"},
+		allowCorePlusCore: false
+	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionValue<T>",
+		inheritFromBase: "BnfiExpressionValue",
+		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		bnfTermCoreExternTypeNames: new[]{"BnfiTermValue<T>"},
+		allowCorePlusCore: false
+	);*/
 #>
 }

@@ -9,13 +9,13 @@
 <#@ import namespace="System.Text.RegularExpressions" #> 
 <#+
 void GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null, IEnumerable<string> constraints = null,
-	IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreOuterTypeNames = null, IEnumerable<string> bnfTermSideTypeNames = null, bool mixCoreTypesWithSideTypes = true,
+	IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null, IEnumerable<string> bnfTermSideTypeNames = null, bool allowCorePlusCore = true,
 	Func<string, string, bool> filterOutCorePairs = null)
 {
 	implementInterfaces = implementInterfaces ?? new string[0];
 	constraints = constraints ?? new string[0];
 	bnfTermCoreTypeNames = bnfTermCoreTypeNames ?? new string[0];
-	bnfTermCoreOuterTypeNames = bnfTermCoreOuterTypeNames ?? new string[0];
+	bnfTermCoreExternTypeNames = bnfTermCoreExternTypeNames ?? new string[0];
 	bnfTermSideTypeNames = bnfTermSideTypeNames ?? new string[0];
 	filterOutCorePairs = filterOutCorePairs ?? ((bnfTermCoreTypeNames1, bnfTermCoreTypeNames2) => false);
 
@@ -23,20 +23,20 @@ void GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string
 
 	GenerateBnfExpressionClass(bnfExpressionTypeName, inheritFromBase, implementInterfaces, constraints);
 	GenerateBnfExpressionConversionsThere(bnfExpressionTypeName, bnfTermCoreTypeNames);
-	GenerateBnfExpressionConversionsHere(bnfExpressionTypeName, bnfTermCoreOuterTypeNames);
+	GenerateBnfExpressionConversionsHere(bnfExpressionTypeName, bnfTermCoreExternTypeNames);
 
-	if (mixCoreTypesWithSideTypes)
-		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(bnfTermCoreTypeNames).Concat(bnfTermCoreOuterTypeNames);
+	if (allowCorePlusCore)
+		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(bnfTermCoreTypeNames).Concat(bnfTermCoreExternTypeNames);
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfTermCoreTypeNames, bnfTermSideTypeNames, filterOutCorePairs);
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
-	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreOuterTypeNames, filterOutCorePairs);
+	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreExternTypeNames, filterOutCorePairs);
 
-	if (mixCoreTypesWithSideTypes)
+	if (allowCorePlusCore)
 		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(new[]{bnfExpressionTypeName});
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfExpressionTypeName, bnfTermSideTypeNames, filterOutCorePairs);
-	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfExpressionTypeName, bnfTermCoreOuterTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
+	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfExpressionTypeName, bnfTermCoreExternTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
 
 	EndRegion("\t");
 
