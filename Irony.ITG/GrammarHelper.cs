@@ -293,7 +293,7 @@ namespace Irony.ITG
         {
             AstNodeWrapper<T> astNodeWrapper = astNode as AstNodeWrapper<T>;
 
-            if (astNodeWrapper == null && astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>))
+            if (astNode != null && astNodeWrapper == null && astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>))
                 throw new ArgumentException(
                     string.Format("AstNodeWrapper with the wrong generic type argument: {0} was found, but {1} was expected",
                         astNode.GetType().GenericTypeArguments[0].FullName, typeof(T).FullName),
