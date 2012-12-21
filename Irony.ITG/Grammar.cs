@@ -134,6 +134,11 @@ namespace Irony.ITG
             return new NumberLiteral(name).CreateNumber<T>();
         }
 
+        public static BnfiTermValue CreateNumber(string name = "number")
+        {
+            return new NumberLiteral(name).CreateNumber();
+        }
+
         public static BnfiTermValue<T> CreateNumber<T>(string name, NumberOptions options)
         {
             return new NumberLiteral(name, options).CreateNumber<T>();

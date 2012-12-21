@@ -68,11 +68,21 @@ namespace Irony.ITG
             return Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
         }
 
-        public static BnfiTermValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
+        {
+            return Create(numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
+        }
+
+        public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        {
+            return Convert(typeof(object), bnfiTerm, valueConverter);
+        }
+
+        public static BnfiTermValue Convert(Type type, IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return new BnfiTermValue(
                 type,
-                bnfTerm,
+                bnfiTerm.AsBnfTerm(),
                 (context, parseTreeNode) =>
                     {
                         if (parseTreeNode.ChildNodes.Count != 1)
@@ -97,6 +107,23 @@ namespace Irony.ITG
 
                         return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeNode.ChildNodes[0].AstNode));
                     },
+                isOptionalData: false,
+                errorAlias: null,
+                astForChild: true
+                );
+        }
+
+        public static BnfiTermValue<TOut> Convert<TOut>(IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        {
+            return new BnfiTermValue<TOut>(
+                bnfiTerm.AsBnfTerm(),
+                (context, parseTreeNode) =>
+                {
+                    if (parseTreeNode.ChildNodes.Count != 1)
+                        throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+
+                    return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
+                },
                 isOptionalData: false,
                 errorAlias: null,
                 astForChild: true

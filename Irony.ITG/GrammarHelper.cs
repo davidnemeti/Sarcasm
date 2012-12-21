@@ -172,6 +172,11 @@ namespace Irony.ITG
             return BnfiTermValue.CreateNumber<T>(numberLiteral);
         }
 
+        public static BnfiTermValue CreateNumber(this NumberLiteral numberLiteral)
+        {
+            return BnfiTermValue.CreateNumber(numberLiteral);
+        }
+
         public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
             return BnfiTermValue.Create(terminal, value, astForChild);
@@ -182,9 +187,24 @@ namespace Irony.ITG
             return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
         }
 
-        public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return BnfiTermValue.Convert(bnfTerm, valueConverter);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
+        }
+
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        {
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
+        }
+
+        public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, Type type, ValueConverter<object, object> valueConverter)
+        {
+            return BnfiTermValue.Convert(type, bnfiTerm, valueConverter);
+        }
+
+        public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        {
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
         #endregion
