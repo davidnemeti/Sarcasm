@@ -244,7 +244,7 @@ namespace Irony.ITG
                 {
                     TElementStaticType element = GrammarHelper.AstNodeToValue<TElementStaticType>(parseTreeChild.AstNode);
 
-                    if (elementType.IsInstanceOfType(GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode)))
+                    if (elementType.IsInstanceOfType(GrammarHelper.AstNodeToValue(parseTreeChild.AstNode)))
                     {
                         addElementToCollection(collection, element);
                     }

@@ -289,14 +289,22 @@ namespace Irony.ITG
                 : value;
         }
 
+        public static object AstNodeToValue(object astNode)
+        {
+            IAstNodeWrapper iAstNodeWrapper = astNode as IAstNodeWrapper;
+            return iAstNodeWrapper != null ? iAstNodeWrapper.Value : astNode;
+        }
+
         public static T AstNodeToValue<T>(object astNode)
         {
             AstNodeWrapper<T> astNodeWrapper = astNode as AstNodeWrapper<T>;
+            IAstNodeWrapper iAstNodeWrapper = astNode as IAstNodeWrapper;
 
-            if (astNode != null && astNodeWrapper == null && astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>))
+            if (astNodeWrapper == null && iAstNodeWrapper != null)
                 throw new ArgumentException(
                     string.Format("AstNodeWrapper with the wrong generic type argument: {0} was found, but {1} was expected",
-                        astNode.GetType().GenericTypeArguments[0].FullName, typeof(T).FullName),
+                        astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>) ? astNode.GetType().GenericTypeArguments[0].FullName : "<<nothing>>",
+                        typeof(T).FullName),
                     "astNode"
                     );
 

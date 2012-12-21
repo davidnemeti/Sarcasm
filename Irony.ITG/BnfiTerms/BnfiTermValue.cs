@@ -65,7 +65,7 @@ namespace Irony.ITG
 
         public static BnfiTermValue<T> CreateNumber<T>(NumberLiteral numberLiteral)
         {
-            return Create<T>(numberLiteral, (context, parseNode) => (T)parseNode.FindToken().Value, astForChild: false);
+            return Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
         }
 
         public static BnfiTermValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
@@ -78,7 +78,7 @@ namespace Irony.ITG
                         if (parseTreeNode.ChildNodes.Count != 1)
                             throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
 
-                        return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
+                        return valueConverter(GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes[0].AstNode));
                     },
                 isOptionalData: false,
                 errorAlias: null,
@@ -110,7 +110,7 @@ namespace Irony.ITG
 
         public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
-            return Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue<object>(parseNode.Token.Value));
+            return Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
         }
 
         public static BnfiTermValue<T?> ConvertValueOptVal<T>(IBnfiTerm<T> bnfTerm)

@@ -18,9 +18,16 @@ namespace Irony.ITG
         }
     }
 
-    public class AstNodeWrapper<T> : IBrowsableAstNode
+    public interface IAstNodeWrapper : IBrowsableAstNode
+    {
+        object Value { get; }
+    }
+
+    public class AstNodeWrapper<T> : IAstNodeWrapper
     {
         public T Value { get; private set; }
+
+        object IAstNodeWrapper.Value { get { return this.Value; } }
 
         private readonly AstContext context;
         private readonly ParseTreeNode parseTreeNode;

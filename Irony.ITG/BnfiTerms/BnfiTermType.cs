@@ -38,11 +38,11 @@ namespace Irony.ITG
 
                         if (memberInfo is PropertyInfo)
                         {
-                            ((PropertyInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((PropertyInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue(parseTreeChild.AstNode));
                         }
                         else if (memberInfo is FieldInfo)
                         {
-                            ((FieldInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue<object>(parseTreeChild.AstNode));
+                            ((FieldInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue(parseTreeChild.AstNode));
                         }
                     }
 
