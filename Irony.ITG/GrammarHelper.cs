@@ -282,33 +282,23 @@ namespace Irony.ITG
 
         #region Value <-> AstNode conversion
 
-        public static object ValueToAstNode<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
+        public static object ValueToAstNode(object value, AstContext context, ParseTreeNode parseTreeNode)
         {
             return ((Grammar)context.Language.Grammar).AutoBrowsableAstNodes && !(value is IBrowsableAstNode)
-                ? AstNodeWrapper.Create(value, context, parseTreeNode)
+                ? new AstNodeWrapper(value, context, parseTreeNode)
                 : value;
         }
 
         public static object AstNodeToValue(object astNode)
         {
-            IAstNodeWrapper iAstNodeWrapper = astNode as IAstNodeWrapper;
-            return iAstNodeWrapper != null ? iAstNodeWrapper.Value : astNode;
+            AstNodeWrapper astNodeWrapper = astNode as AstNodeWrapper;
+            return astNodeWrapper != null ? astNodeWrapper.Value : astNode;
         }
 
         public static T AstNodeToValue<T>(object astNode)
         {
-            AstNodeWrapper<T> astNodeWrapper = astNode as AstNodeWrapper<T>;
-            IAstNodeWrapper iAstNodeWrapper = astNode as IAstNodeWrapper;
-
-            if (astNodeWrapper == null && iAstNodeWrapper != null)
-                throw new ArgumentException(
-                    string.Format("AstNodeWrapper with the wrong generic type argument: {0} was found, but {1} was expected",
-                        astNode.GetType().IsGenericType && astNode.GetType().GetGenericTypeDefinition() == typeof(AstNodeWrapper<>) ? astNode.GetType().GenericTypeArguments[0].FullName : "<<nothing>>",
-                        typeof(T).FullName),
-                    "astNode"
-                    );
-
-            return astNodeWrapper != null ? astNodeWrapper.Value : (T)astNode;
+            AstNodeWrapper astNodeWrapper = astNode as AstNodeWrapper;
+            return astNodeWrapper != null ? (T)astNodeWrapper.Value : (T)astNode;
         }
 
         #endregion

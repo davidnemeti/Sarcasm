@@ -10,38 +10,18 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public static class AstNodeWrapper
+    public class AstNodeWrapper : IBrowsableAstNode
     {
-        public static object Create<T>(T value, AstContext context, ParseTreeNode parseTreeNode)
-        {
-            return new AstNodeWrapper<T>(value, context, parseTreeNode);
-        }
-    }
-
-    public interface IAstNodeWrapper : IBrowsableAstNode
-    {
-        object Value { get; }
-    }
-
-    public class AstNodeWrapper<T> : IAstNodeWrapper
-    {
-        public T Value { get; private set; }
-
-        object IAstNodeWrapper.Value { get { return this.Value; } }
+        public object Value { get; private set; }
 
         private readonly AstContext context;
         private readonly ParseTreeNode parseTreeNode;
 
-        internal AstNodeWrapper(T value, AstContext context, ParseTreeNode parseTreeNode)
+        internal AstNodeWrapper(object value, AstContext context, ParseTreeNode parseTreeNode)
         {
             this.Value = value;
             this.context = context;
             this.parseTreeNode = parseTreeNode;
-        }
-
-        public static implicit operator T(AstNodeWrapper<T> astNode)
-        {
-            return astNode.Value;
         }
 
         System.Collections.IEnumerable IBrowsableAstNode.GetChildNodes()

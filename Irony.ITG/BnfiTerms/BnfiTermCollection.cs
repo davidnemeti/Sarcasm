@@ -236,7 +236,7 @@ namespace Irony.ITG
 
         protected void SetNodeCreator<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection)
         {
-            AstConfig.NodeCreator = (context, parseTreeNode) =>
+            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
                 TCollectionStaticType collection = createCollection();
 
