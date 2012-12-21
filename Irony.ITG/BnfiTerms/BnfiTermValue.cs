@@ -20,9 +20,12 @@ namespace Irony.ITG
         {
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias, bool astForChild)
             : this(type, errorAlias, astValueCreator)
         {
+            if (!astForChild)
+                bnfTerm.Flags |= TermFlags.NoAstNode;
+
             this.RuleTL = isOptionalData
                 ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
@@ -35,24 +38,24 @@ namespace Irony.ITG
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
         }
 
-        public static BnfiTermValue Create(Type type, Terminal terminal, object value)
+        public static BnfiTermValue Create(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null, astForChild: astForChild);
         }
 
-        public static BnfiTermValue Create(Type type, Terminal terminal, AstValueCreator<object> astValueCreator)
+        public static BnfiTermValue Create(Type type, Terminal terminal, AstValueCreator<object> astValueCreator, bool astForChild = true)
         {
-            return new BnfiTermValue(type, terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue(type, terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null, astForChild: astForChild);
         }
 
-        public static BnfiTermValue<T> Create<T>(Terminal terminal, T value)
+        public static BnfiTermValue<T> Create<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null, astForChild: astForChild);
         }
 
-        public static BnfiTermValue<T> Create<T>(Terminal terminal, AstValueCreator<T> astValueCreator)
+        public static BnfiTermValue<T> Create<T>(Terminal terminal, AstValueCreator<T> astValueCreator, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null, astForChild: astForChild);
         }
 
         public static BnfiTermValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
@@ -68,7 +71,8 @@ namespace Irony.ITG
                         return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
                     },
                 isOptionalData: false,
-                errorAlias: null
+                errorAlias: null,
+                astForChild: true
                 );
         }
 
@@ -84,7 +88,8 @@ namespace Irony.ITG
                         return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeNode.ChildNodes[0].AstNode));
                     },
                 isOptionalData: false,
-                errorAlias: null
+                errorAlias: null,
+                astForChild: true
                 );
         }
 
@@ -134,7 +139,8 @@ namespace Irony.ITG
                     return valueConverter(value);
                 },
                 isOptionalData: true,
-                errorAlias: null
+                errorAlias: null,
+                astForChild: true
                 );
         }
 
@@ -155,8 +161,8 @@ namespace Irony.ITG
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData, string errorAlias)
-            : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias)
+        internal BnfiTermValue(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData, string errorAlias, bool astForChild)
+            : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias, astForChild)
         {
         }
 

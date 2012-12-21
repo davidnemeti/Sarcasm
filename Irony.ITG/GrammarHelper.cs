@@ -152,24 +152,34 @@ namespace Irony.ITG
 
         #region Create/ConvertValue
 
-        public static BnfiTermValue CreateValue(this Terminal terminal, object value)
+        public static BnfiTermValue CreateValue(this Terminal terminal, object value, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, value);
+            return BnfiTermValue.Create(terminal, value, astForChild);
         }
 
-        public static BnfiTermValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator)
+        public static BnfiTermValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, astValueCreator);
+            return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
         }
 
-        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value)
+        internal static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifier)
         {
-            return BnfiTermValue.Create(terminal, value);
+            return identifier.CreateValue<string>((context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
         }
 
-        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator)
+        internal static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral identifier)
         {
-            return BnfiTermValue.Create(terminal, astValueCreator);
+            return identifier.CreateValue<T>((context, parseNode) => (T)parseNode.FindToken().Value, astForChild: false);
+        }
+
+        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
+        {
+            return BnfiTermValue.Create(terminal, value, astForChild);
+        }
+
+        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator, bool astForChild = true)
+        {
+            return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
         }
 
         public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
@@ -320,28 +330,6 @@ namespace Irony.ITG
                 typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), typeName);
 
             return typeName;
-        }
-
-        internal static IdentifierTerminal SetNoAstNode(this IdentifierTerminal identifierTerminal)
-        {
-            identifierTerminal.Flags |= TermFlags.NoAstNode;
-            return identifierTerminal;
-        }
-
-        internal static NumberLiteral SetNoAstNode(this NumberLiteral identifierTerminal)
-        {
-            identifierTerminal.Flags |= TermFlags.NoAstNode;
-            return identifierTerminal;
-        }
-
-        internal static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifier)
-        {
-            return identifier.SetNoAstNode().CreateValue<string>((context, parseNode) => parseNode.FindTokenAndGetText());
-        }
-
-        internal static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral identifier)
-        {
-            return identifier.SetNoAstNode().CreateValue<T>((context, parseNode) => (T)parseNode.FindToken().Value);
         }
 
         #endregion
