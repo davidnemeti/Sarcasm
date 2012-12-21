@@ -76,7 +76,7 @@ namespace Irony.ITG
                 (context, parseTreeNode) =>
                     {
                         if (parseTreeNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseTreeNode.Term.Name);
+                            throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
 
                         return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
                     },
@@ -93,7 +93,7 @@ namespace Irony.ITG
                 (context, parseTreeNode) =>
                     {
                         if (parseTreeNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a TypeForValue term: {0}", parseTreeNode.Term.Name);
+                            throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
 
                         return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeNode.ChildNodes[0].AstNode));
                     },
