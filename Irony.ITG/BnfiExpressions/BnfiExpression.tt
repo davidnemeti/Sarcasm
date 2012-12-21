@@ -51,13 +51,13 @@ namespace Irony.ITG
 		allowCorePlusCore: false
 	);
 
-	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric = new[]{"BnfiTermCollection<TCollectionType>"};
+	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric;
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection<TCollectionType>",
 		inheritFromBase: "BnfiExpressionCollection",
 		implementInterfaces: new[]{"IBnfiExpression<TCollectionType>"},
-		bnfTermCoreTypeNames: /*bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric =*/ new[]{"BnfiTermCollection<TCollectionType, TElementType>"}, // using BnfiTermCollection<TCollectionType> instead
+		bnfTermCoreTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric = new[]{"BnfiTermCollection<TCollectionType>"},
 		bnfTermSideTypeNames: new[]{"GrammarHint"},
 		allowCorePlusCore: false
 	);
@@ -101,7 +101,9 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>"},
-		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection<TCollectionType>", "BnfiExpressionValue<T>"}.Concat(bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric).Concat(bnfTermCoreTypeNamesForBnfiExpressionValueGeneric),
+		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection<TCollectionType>", "BnfiExpressionValue<T>"}
+										.Concat(bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric)
+										.Concat(bnfTermCoreTypeNamesForBnfiExpressionValueGeneric),
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
 		allowCorePlusCore: false
 	);
