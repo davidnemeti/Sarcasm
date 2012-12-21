@@ -33,5 +33,10 @@ namespace Irony.ITG
         {
             get { return parseTreeNode.Span.Location.Position; }
         }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }
