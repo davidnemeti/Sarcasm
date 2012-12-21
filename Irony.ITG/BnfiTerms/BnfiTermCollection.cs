@@ -274,11 +274,19 @@ namespace Irony.ITG
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>, IBnfiTermCollection<TCollectionType>
-        where TCollectionType : ICollection<TElementType>, new()
+    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermCollection<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
     {
         public BnfiTermCollection(string errorAlias = null)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
+        {
+        }
+    }
+
+    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>
+        where TCollectionType : ICollection<TElementType>, new()
+    {
+        public BnfiTermCollection(string errorAlias = null)
+            : base(errorAlias)
         {
         }
 
