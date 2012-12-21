@@ -104,6 +104,11 @@ namespace Irony.ITG
             return base.ToTerm(text, string.Format("\"{0}\"", text));
         }
 
+        public BnfiTermValue<T> ToTerm<T>(string text, T value)
+        {
+            return ToTerm(text).CreateValue(value);
+        }
+
         public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
         {
             return new IdentifierTerminal(name).CreateIdentifier();
