@@ -70,32 +70,32 @@ namespace Irony.ITG
             return base.ToTerm(text, string.Format("\"{0}\"", text));
         }
 
-        public static BnfiTermValue<string> ToIdentifier(string name = "identifier")
+        public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
         {
             return new IdentifierTerminal(name).CreateIdentifier();
         }
 
-        public static BnfiTermValue<string> ToIdentifier(string name, IdOptions options)
+        public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
         {
             return new IdentifierTerminal(name, options).CreateIdentifier();
         }
 
-        public static BnfiTermValue<string> ToIdentifier(string name, string extraChars)
+        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
         {
             return new IdentifierTerminal(name, extraChars).CreateIdentifier();
         }
 
-        public static BnfiTermValue<string> ToIdentifier(string name, string extraChars, string extraFirstChars = "")
+        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
             return new IdentifierTerminal(name, extraChars, extraFirstChars).CreateIdentifier();
         }
 
-        public static BnfiTermValue<T> ToNumber<T>(string name = "number")
+        public static BnfiTermValue<T> CreateNumber<T>(string name = "number")
         {
             return new NumberLiteral(name).CreateNumber<T>();
         }
 
-        public static BnfiTermValue<T> ToNumber<T>(string name, NumberOptions options)
+        public static BnfiTermValue<T> CreateNumber<T>(string name, NumberOptions options)
         {
             return new NumberLiteral(name, options).CreateNumber<T>();
         }

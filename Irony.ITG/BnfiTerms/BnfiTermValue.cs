@@ -58,6 +58,16 @@ namespace Irony.ITG
             return new BnfiTermValue<T>(terminal, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData: false, errorAlias: null, astForChild: astForChild);
         }
 
+        public static BnfiTermValue<string> CreateIdentifier(IdentifierTerminal identifierTerminal)
+        {
+            return Create<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
+        }
+
+        public static BnfiTermValue<T> CreateNumber<T>(NumberLiteral numberLiteral)
+        {
+            return Create<T>(numberLiteral, (context, parseNode) => (T)parseNode.FindToken().Value, astForChild: false);
+        }
+
         public static BnfiTermValue Convert(Type type, BnfTerm bnfTerm, ValueConverter<object, object> valueConverter)
         {
             return new BnfiTermValue(

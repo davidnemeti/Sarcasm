@@ -162,14 +162,14 @@ namespace Irony.ITG
             return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
         }
 
-        internal static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifier)
+        public static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifierTerminal)
         {
-            return identifier.CreateValue<string>((context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
+            return BnfiTermValue.CreateIdentifier(identifierTerminal);
         }
 
-        internal static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral identifier)
+        public static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral numberLiteral)
         {
-            return identifier.CreateValue<T>((context, parseNode) => (T)parseNode.FindToken().Value, astForChild: false);
+            return BnfiTermValue.CreateNumber<T>(numberLiteral);
         }
 
         public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
