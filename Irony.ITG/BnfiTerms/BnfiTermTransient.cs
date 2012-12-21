@@ -46,12 +46,18 @@ namespace Irony.ITG
 
         public new BnfiExpressionTransient<TType> Rule { set { base.Rule = value; } }
 
-        public BnfiExpressionTransient<TType> SetRuleOr(params IBnfiTerm<TType>[] bnfTerms)
+        public void SetRuleOr(params IBnfiTerm<TType>[] bnfiTerms)
         {
-            return (BnfiExpressionTransient<TType>)bnfTerms
+            this.Rule = Or(bnfiTerms);
+        }
+
+        public BnfiExpressionTransient<TType> Or(params IBnfiTerm<TType>[] bnfiTerms)
+        {
+            return (BnfiExpressionTransient<TType>)bnfiTerms
+                .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
                 new BnfExpression(),
-                (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess.AsBnfTerm()
+                (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess
                 );
         }
     }
