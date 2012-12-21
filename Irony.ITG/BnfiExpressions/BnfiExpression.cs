@@ -35,7 +35,9 @@ namespace Irony.ITG
 
         protected BnfiExpressionCommon(BnfTerm bnfTerm)
         {
-            this.bnfExpression = new BnfExpression(bnfTerm);
+            this.bnfExpression = bnfTerm is BnfExpression
+                ? (BnfExpression)bnfTerm
+                : new BnfExpression(bnfTerm);
         }
 
         public static implicit operator BnfExpression(BnfiExpressionCommon bnfExpression)
@@ -43,10 +45,10 @@ namespace Irony.ITG
             return bnfExpression.bnfExpression;
         }
 
-        //public static implicit operator BnfTerm(BnfiExpressionCommon bnfExpression)
-        //{
-        //    return bnfExpression.bnfExpression;
-        //}
+        public static implicit operator BnfTerm(BnfiExpressionCommon bnfExpression)
+        {
+            return bnfExpression.bnfExpression;
+        }
 
         BnfExpression IBnfiExpression.AsBnfExpression()
         {
