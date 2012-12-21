@@ -16,19 +16,23 @@ namespace Irony.ITG
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
     {
         public BnfiTermValue(Type type, string errorAlias = null)
-            : base(type, errorAlias)
+            : this(type, errorAlias, (context, parseTreeNode) => parseTreeNode.ChildNodes[0].AstNode)   // default "transient" astValueCreator
         {
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+            : this(type, errorAlias, astValueCreator)
+        {
+            this.RuleTL = isOptionalData
+                ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
+                : new BnfExpression(bnfTerm);
+        }
+
+        private BnfiTermValue(Type type, string errorAlias, AstValueCreator<object> astValueCreator)
             : base(type, errorAlias)
         {
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
-
-            this.RuleTL = isOptionalData
-                ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
-                : new BnfExpression(bnfTerm);
         }
 
         public static BnfiTermValue Create(Type type, Terminal terminal, object value)
@@ -136,17 +140,7 @@ namespace Irony.ITG
 
         protected BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new BnfiTermValue Rule
-        {
-            get { return this; }
-            set
-            {
-                // copy the TypeForValue object from 'value' to 'this'
-
-                this.AstConfig.NodeCreator = value.AstConfig.NodeCreator;
-                this.RuleTL = value.RuleTL;
-            }
-        }
+        public new BnfiExpressionValue Rule { set { base.Rule = value; } }
 
         public BnfTerm AsBnfTerm()
         {
@@ -161,20 +155,12 @@ namespace Irony.ITG
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias)
+        internal BnfiTermValue(BnfTerm bnfTerm, AstValueCreator<T> astValueCreator, bool isOptionalData, string errorAlias)
             : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias)
         {
         }
 
-        public new BnfiTermValue<T> Rule
-        {
-            get { return this; }
-            set
-            {
-                // copy the TypeForValue<T> object from 'value' to 'this'
-                base.Rule = value.Rule;
-            }
-        }
+        public new BnfiExpressionValue<T> Rule { set { base.Rule = value; } }
 
         [Obsolete(BnfiTermNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()

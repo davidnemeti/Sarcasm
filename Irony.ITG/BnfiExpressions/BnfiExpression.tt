@@ -46,8 +46,8 @@ namespace Irony.ITG
 		"BnfiExpressionTransient",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermTransient", "BnfiTermValue"},
-		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection", "BnfTerm"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermTransient"},
+		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection", "BnfiExpressionValue", "BnfTerm"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
 		allowCorePlusCore: false
 	);
@@ -56,8 +56,8 @@ namespace Irony.ITG
 		"BnfiExpressionTransient<T>",
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermValue<T>"},
-		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>"},
+		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection<TCollectionType>", "BnfiExpressionValue<T>"},
 		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
 		allowCorePlusCore: false
 	);
@@ -67,6 +67,7 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermCollection"},
+		bnfTermSideTypeNames: new[]{"GrammarHint"},
 		allowCorePlusCore: false
 	);
 
@@ -75,9 +76,10 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionCollection",
 		implementInterfaces: new[]{"IBnfiExpression<TCollectionType>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType, TElementType>"},
+		bnfTermSideTypeNames: new[]{"GrammarHint"},
 		allowCorePlusCore: false
 	);
-/*
+
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue",
 		inheritFromBase: "BnfiExpressionCommon",
@@ -94,6 +96,6 @@ namespace Irony.ITG
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
 		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
 		allowCorePlusCore: false
-	);*/
+	);
 #>
 }

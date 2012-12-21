@@ -23,12 +23,12 @@ namespace Irony.ITG
     {
         protected readonly BnfExpression bnfExpression;
 
-        public BnfiExpressionCommon()
+        protected BnfiExpressionCommon()
         {
             this.bnfExpression = new BnfExpression();
         }
 
-        public BnfiExpressionCommon(BnfExpression bnfExpression)
+        protected BnfiExpressionCommon(BnfExpression bnfExpression)
         {
             this.bnfExpression = bnfExpression;
         }

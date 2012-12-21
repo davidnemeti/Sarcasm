@@ -341,7 +341,7 @@ namespace Irony.ITG
 
 	#endregion
 
-	#region [BnfiTermType, BnfiTermTransient, BnfiTermValue]: implicit conversions from BnfiExpressionTransient
+	#region [BnfiTermType, BnfiTermTransient]: implicit conversions from BnfiExpressionTransient
 
 	public partial class BnfiTermType
 	{
@@ -359,21 +359,17 @@ namespace Irony.ITG
 		}
 	}
 
-	public partial class BnfiTermValue
-	{
-		public static implicit operator BnfiExpressionTransient(BnfiTermValue term)
-		{
-			return new BnfiExpressionTransient((BnfTerm)term);
-		}
-	}
-
 	#endregion
 
-	#region BnfiExpressionTransient: implicit conversions from [BnfiExpressionCollection, BnfTerm]
+	#region BnfiExpressionTransient: implicit conversions from [BnfiExpressionCollection, BnfiExpressionValue, BnfTerm]
 
 	public partial class BnfiExpressionTransient
 	{
 		public static implicit operator BnfiExpressionTransient(BnfiExpressionCollection term)
+		{
+			return new BnfiExpressionTransient((BnfTerm)term);
+		}
+		public static implicit operator BnfiExpressionTransient(BnfiExpressionValue term)
 		{
 			return new BnfiExpressionTransient((BnfTerm)term);
 		}
@@ -441,34 +437,6 @@ namespace Irony.ITG
 
 	#endregion
 
-	#region BnfiTermValue '+' operators for BnfExpression
-
-	public partial class BnfiTermValue
-	{
-        public static BnfiExpressionTransient operator +(BnfiTermValue term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator +(BnfiTermKeyTermPunctuation term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator +(BnfiTermValue term1, GrammarHint term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator +(GrammarHint term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
 	#region BnfiTermType '|' operators for BnfExpression
 
 	public partial class BnfiTermType
@@ -484,16 +452,6 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient operator |(BnfiTermTransient term1, BnfiTermType term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiTermType term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfiTermType term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -521,45 +479,12 @@ namespace Irony.ITG
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTransient operator |(BnfiTermTransient term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfiTermTransient term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionTransient operator |(BnfiTermTransient term1, BnfiExpressionTransient term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
         public static BnfiExpressionTransient operator |(BnfiExpressionTransient term1, BnfiTermTransient term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiTermValue '|' operators for BnfExpression
-
-	public partial class BnfiTermValue
-	{
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfiExpressionTransient term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiExpressionTransient term1, BnfiTermValue term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -578,6 +503,16 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient operator |(BnfiExpressionCollection term1, BnfiTermType term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient operator |(BnfiTermType term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient operator |(BnfiExpressionValue term1, BnfiTermType term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -610,40 +545,22 @@ namespace Irony.ITG
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTransient operator |(BnfiTermTransient term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient operator |(BnfiExpressionValue term1, BnfiTermTransient term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionTransient operator |(BnfiTermTransient term1, BnfTerm term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
         public static BnfiExpressionTransient operator |(BnfTerm term1, BnfiTermTransient term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiTermValue '|' operators for BnfExpression
-
-	public partial class BnfiTermValue
-	{
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfiExpressionCollection term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiExpressionCollection term1, BnfiTermValue term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfiTermValue term1, BnfTerm term2)
-        {
-            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient operator |(BnfTerm term1, BnfiTermValue term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -690,6 +607,16 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient operator |(BnfiExpressionCollection term1, BnfiExpressionTransient term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient operator |(BnfiExpressionTransient term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient operator |(BnfiExpressionValue term1, BnfiExpressionTransient term2)
         {
             return (BnfiExpressionTransient)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -753,7 +680,7 @@ namespace Irony.ITG
 
 	#endregion
 
-	#region [BnfiTermType<TType>, BnfiTermConstant<T>, BnfiTermTransient<TType>, BnfiTermValue<T>]: implicit conversions from BnfiExpressionTransient<T>
+	#region [BnfiTermType<TType>, BnfiTermConstant<T>, BnfiTermTransient<TType>]: implicit conversions from BnfiExpressionTransient<T>
 
 	public partial class BnfiTermType<TType>
 	{
@@ -779,21 +706,17 @@ namespace Irony.ITG
 		}
 	}
 
-	public partial class BnfiTermValue<T>
-	{
-		public static implicit operator BnfiExpressionTransient<T>(BnfiTermValue<T> term)
-		{
-			return new BnfiExpressionTransient<T>((BnfTerm)term);
-		}
-	}
-
 	#endregion
 
-	#region BnfiExpressionTransient<T>: implicit conversions from [BnfiExpressionCollection<TCollectionType>]
+	#region BnfiExpressionTransient<T>: implicit conversions from [BnfiExpressionCollection<TCollectionType>, BnfiExpressionValue<T>]
 
 	public partial class BnfiExpressionTransient<T>
 	{
 		public static implicit operator BnfiExpressionTransient<T>(BnfiExpressionCollection<T> term)
+		{
+			return new BnfiExpressionTransient<T>((BnfTerm)term);
+		}
+		public static implicit operator BnfiExpressionTransient<T>(BnfiExpressionValue<T> term)
 		{
 			return new BnfiExpressionTransient<T>((BnfTerm)term);
 		}
@@ -885,34 +808,6 @@ namespace Irony.ITG
 
 	#endregion
 
-	#region BnfiTermValue<T> '+' operators for BnfExpression
-
-	public partial class BnfiTermValue<T>
-	{
-        public static BnfiExpressionTransient<T> operator +(BnfiTermValue<T> term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator +(BnfiTermKeyTermPunctuation term1, BnfiTermValue<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator +(BnfiTermValue<T> term1, GrammarHint term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator +(GrammarHint term1, BnfiTermValue<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
 	#region BnfiTermType<TType> '|' operators for BnfExpression
 
 	public partial class BnfiTermType<TType>
@@ -938,16 +833,6 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient<TType> operator |(BnfiTermTransient<TType> term1, BnfiTermType<TType> term2)
-        {
-            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<TType> operator |(BnfiTermType<TType> term1, BnfiTermValue<TType> term2)
-        {
-            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<TType> operator |(BnfiTermValue<TType> term1, BnfiTermType<TType> term2)
         {
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -985,16 +870,6 @@ namespace Irony.ITG
             return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTransient<T> operator |(BnfiTermConstant<T> term1, BnfiTermValue<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator |(BnfiTermValue<T> term1, BnfiTermConstant<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionTransient<T> operator |(BnfiTermConstant<T> term1, BnfiExpressionTransient<T> term2)
         {
             return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
@@ -1018,16 +893,6 @@ namespace Irony.ITG
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTransient<TType> operator |(BnfiTermTransient<TType> term1, BnfiTermValue<TType> term2)
-        {
-            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<TType> operator |(BnfiTermValue<TType> term1, BnfiTermTransient<TType> term2)
-        {
-            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionTransient<TType> operator |(BnfiTermTransient<TType> term1, BnfiExpressionTransient<TType> term2)
         {
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
@@ -1036,29 +901,6 @@ namespace Irony.ITG
         public static BnfiExpressionTransient<TType> operator |(BnfiExpressionTransient<TType> term1, BnfiTermTransient<TType> term2)
         {
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiTermValue<T> '|' operators for BnfExpression
-
-	public partial class BnfiTermValue<T>
-	{
-        public static BnfiExpressionTransient<T> operator |(BnfiTermValue<T> term1, BnfiTermValue<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator |(BnfiTermValue<T> term1, BnfiExpressionTransient<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionTransient<T> operator |(BnfiExpressionTransient<T> term1, BnfiTermValue<T> term2)
-        {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1075,6 +917,16 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient<TType> operator |(BnfiExpressionCollection<TType> term1, BnfiTermType<TType> term2)
+        {
+            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient<TType> operator |(BnfiTermType<TType> term1, BnfiExpressionValue<TType> term2)
+        {
+            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient<TType> operator |(BnfiExpressionValue<TType> term1, BnfiTermType<TType> term2)
         {
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1097,6 +949,16 @@ namespace Irony.ITG
             return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTransient<T> operator |(BnfiTermConstant<T> term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient<T> operator |(BnfiExpressionValue<T> term1, BnfiTermConstant<T> term2)
+        {
+            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
 	}
 
 	#endregion
@@ -1115,22 +977,14 @@ namespace Irony.ITG
             return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-	}
-
-	#endregion
-
-	#region BnfiTermValue<T> '|' operators for BnfExpression
-
-	public partial class BnfiTermValue<T>
-	{
-        public static BnfiExpressionTransient<T> operator |(BnfiTermValue<T> term1, BnfiExpressionCollection<T> term2)
+        public static BnfiExpressionTransient<TType> operator |(BnfiTermTransient<TType> term1, BnfiExpressionValue<TType> term2)
         {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTransient<T> operator |(BnfiExpressionCollection<T> term1, BnfiTermValue<T> term2)
+        public static BnfiExpressionTransient<TType> operator |(BnfiExpressionValue<TType> term1, BnfiTermTransient<TType> term2)
         {
-            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionTransient<TType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1175,6 +1029,16 @@ namespace Irony.ITG
         }
 
         public static BnfiExpressionTransient<T> operator |(BnfiExpressionCollection<T> term1, BnfiExpressionTransient<T> term2)
+        {
+            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient<T> operator |(BnfiExpressionTransient<T> term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTransient<T> operator |(BnfiExpressionValue<T> term1, BnfiExpressionTransient<T> term2)
         {
             return (BnfiExpressionTransient<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1240,6 +1104,24 @@ namespace Irony.ITG
 
 	#endregion
 
+	#region BnfiTermCollection '+' operators for BnfExpression
+
+	public partial class BnfiTermCollection
+	{
+        public static BnfiExpressionCollection operator +(BnfiTermCollection term1, GrammarHint term2)
+        {
+            return (BnfiExpressionCollection)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionCollection operator +(GrammarHint term1, BnfiTermCollection term2)
+        {
+            return (BnfiExpressionCollection)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
 	#region BnfiTermCollection '|' operators for BnfExpression
 
 	public partial class BnfiTermCollection
@@ -1257,6 +1139,24 @@ namespace Irony.ITG
         public static BnfiExpressionCollection operator |(BnfiExpressionCollection term1, BnfiTermCollection term2)
         {
             return (BnfiExpressionCollection)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionCollection '+' operators for BnfExpression
+
+	public partial class BnfiExpressionCollection
+	{
+        public static BnfiExpressionCollection operator +(BnfiExpressionCollection term1, GrammarHint term2)
+        {
+            return (BnfiExpressionCollection)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionCollection operator +(GrammarHint term1, BnfiExpressionCollection term2)
+        {
+            return (BnfiExpressionCollection)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1328,6 +1228,24 @@ namespace Irony.ITG
 
 	#endregion
 
+	#region BnfiTermCollection<TCollectionType, TElementType> '+' operators for BnfExpression
+
+	public partial class BnfiTermCollection<TCollectionType, TElementType>
+	{
+        public static BnfiExpressionCollection<TCollectionType> operator +(BnfiTermCollection<TCollectionType, TElementType> term1, GrammarHint term2)
+        {
+            return (BnfiExpressionCollection<TCollectionType>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionCollection<TCollectionType> operator +(GrammarHint term1, BnfiTermCollection<TCollectionType, TElementType> term2)
+        {
+            return (BnfiExpressionCollection<TCollectionType>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
 	#region BnfiTermCollection<TCollectionType, TElementType> '|' operators for BnfExpression
 
 	public partial class BnfiTermCollection<TCollectionType, TElementType>
@@ -1351,6 +1269,24 @@ namespace Irony.ITG
 
 	#endregion
 
+	#region BnfiExpressionCollection<TCollectionType> '+' operators for BnfExpression
+
+	public partial class BnfiExpressionCollection<TCollectionType>
+	{
+        public static BnfiExpressionCollection<TCollectionType> operator +(BnfiExpressionCollection<TCollectionType> term1, GrammarHint term2)
+        {
+            return (BnfiExpressionCollection<TCollectionType>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionCollection<TCollectionType> operator +(GrammarHint term1, BnfiExpressionCollection<TCollectionType> term2)
+        {
+            return (BnfiExpressionCollection<TCollectionType>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
 	#region BnfiExpressionCollection<TCollectionType> '|' operators for BnfExpression
 
 	public partial class BnfiExpressionCollection<TCollectionType>
@@ -1358,6 +1294,294 @@ namespace Irony.ITG
         public static BnfiExpressionCollection<TCollectionType> operator |(BnfiExpressionCollection<TCollectionType> term1, BnfiExpressionCollection<TCollectionType> term2)
         {
             return (BnfiExpressionCollection<TCollectionType>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#endregion
+
+	#region BnfiExpressionValue definition and operators
+
+	public interface IBnfiExpressionValue : IBnfiExpression { }
+
+	#region BnfiExpressionValue definition
+
+	public partial class BnfiExpressionValue : BnfiExpressionCommon, IBnfiExpressionValue
+	{
+		#region Construction
+
+		public BnfiExpressionValue()
+		{
+		}
+
+		public BnfiExpressionValue(BnfExpression bnfExpression)
+			: base(bnfExpression)
+		{
+		}
+
+        public BnfiExpressionValue(BnfTerm bnfTerm)
+			: base(bnfTerm)
+        {
+        }
+
+		#endregion
+
+		#region Cast operators
+
+		public static explicit operator BnfiExpressionValue(BnfExpression bnfExpression)
+		{
+			return new BnfiExpressionValue(bnfExpression);
+		}
+
+		#endregion
+	}
+
+	#endregion
+
+	#region [BnfiTermValue]: implicit conversions from BnfiExpressionValue
+
+	public partial class BnfiTermValue
+	{
+		public static implicit operator BnfiExpressionValue(BnfiTermValue term)
+		{
+			return new BnfiExpressionValue((BnfTerm)term);
+		}
+	}
+
+	#endregion
+
+	#region BnfiTermValue '+' operators for BnfExpression
+
+	public partial class BnfiTermValue
+	{
+        public static BnfiExpressionValue operator +(BnfiTermValue term1, KeyTerm term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(KeyTerm term1, BnfiTermValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(BnfiTermValue term1, GrammarHint term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(GrammarHint term1, BnfiTermValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermValue '|' operators for BnfExpression
+
+	public partial class BnfiTermValue
+	{
+        public static BnfiExpressionValue operator |(BnfiTermValue term1, BnfiTermValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator |(BnfiTermValue term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator |(BnfiExpressionValue term1, BnfiTermValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionValue '+' operators for BnfExpression
+
+	public partial class BnfiExpressionValue
+	{
+        public static BnfiExpressionValue operator +(BnfiExpressionValue term1, KeyTerm term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(KeyTerm term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(BnfiExpressionValue term1, GrammarHint term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue operator +(GrammarHint term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionValue '|' operators for BnfExpression
+
+	public partial class BnfiExpressionValue
+	{
+        public static BnfiExpressionValue operator |(BnfiExpressionValue term1, BnfiExpressionValue term2)
+        {
+            return (BnfiExpressionValue)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#endregion
+
+	#region BnfiExpressionValue<T> definition and operators
+
+	public interface IBnfiExpressionValue<out T> : IBnfiExpression<T> { }
+
+	#region BnfiExpressionValue<T> definition
+
+	public partial class BnfiExpressionValue<T> : BnfiExpressionValue, IBnfiExpressionValue<T>
+	{
+		#region Construction
+
+		public BnfiExpressionValue()
+		{
+		}
+
+		public BnfiExpressionValue(BnfExpression bnfExpression)
+			: base(bnfExpression)
+		{
+		}
+
+        public BnfiExpressionValue(BnfTerm bnfTerm)
+			: base(bnfTerm)
+        {
+        }
+
+		#endregion
+
+		#region Cast operators
+
+		public static explicit operator BnfiExpressionValue<T>(BnfExpression bnfExpression)
+		{
+			return new BnfiExpressionValue<T>(bnfExpression);
+		}
+
+		#endregion
+	}
+
+	#endregion
+
+	#region [BnfiTermValue<T>]: implicit conversions from BnfiExpressionValue<T>
+
+	public partial class BnfiTermValue<T>
+	{
+		public static implicit operator BnfiExpressionValue<T>(BnfiTermValue<T> term)
+		{
+			return new BnfiExpressionValue<T>((BnfTerm)term);
+		}
+	}
+
+	#endregion
+
+	#region BnfiTermValue<T> '+' operators for BnfExpression
+
+	public partial class BnfiTermValue<T>
+	{
+        public static BnfiExpressionValue<T> operator +(BnfiTermValue<T> term1, KeyTerm term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(KeyTerm term1, BnfiTermValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(BnfiTermValue<T> term1, GrammarHint term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(GrammarHint term1, BnfiTermValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermValue<T> '|' operators for BnfExpression
+
+	public partial class BnfiTermValue<T>
+	{
+        public static BnfiExpressionValue<T> operator |(BnfiTermValue<T> term1, BnfiTermValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator |(BnfiTermValue<T> term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator |(BnfiExpressionValue<T> term1, BnfiTermValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionValue<T> '+' operators for BnfExpression
+
+	public partial class BnfiExpressionValue<T>
+	{
+        public static BnfiExpressionValue<T> operator +(BnfiExpressionValue<T> term1, KeyTerm term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(KeyTerm term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(BnfiExpressionValue<T> term1, GrammarHint term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionValue<T> operator +(GrammarHint term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionValue<T> '|' operators for BnfExpression
+
+	public partial class BnfiExpressionValue<T>
+	{
+        public static BnfiExpressionValue<T> operator |(BnfiExpressionValue<T> term1, BnfiExpressionValue<T> term2)
+        {
+            return (BnfiExpressionValue<T>)BnfTerm.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
