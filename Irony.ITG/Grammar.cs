@@ -52,7 +52,7 @@ namespace Irony.ITG
 
         #region Misc
 
-        public void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
+        public static void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
         {
             openBrace.SetFlag(TermFlags.IsOpenBrace);
             openBrace.IsPairFor = closeBrace;
@@ -60,7 +60,7 @@ namespace Irony.ITG
             closeBrace.IsPairFor = openBrace;
         }
 
-        public BnfiTermKeyTermPunctuation ToPunctuation(string text)
+        public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
         {
             return new BnfiTermKeyTermPunctuation(text);
         }
@@ -70,34 +70,34 @@ namespace Irony.ITG
             return base.ToTerm(text, string.Format("\"{0}\"", text));
         }
 
-        public IdentifierTerminal ToIdentifier(string name)
+        public static BnfiTermValue<string> ToIdentifier(string name = "identifier")
         {
-            return new IdentifierTerminal(name).SetNodeCreator();
+            return new IdentifierTerminal(name).CreateIdentifier();
         }
 
-        public IdentifierTerminal ToIdentifier(string name, IdOptions options)
+        public static BnfiTermValue<string> ToIdentifier(string name, IdOptions options)
         {
-            return new IdentifierTerminal(name, options).SetNodeCreator();
+            return new IdentifierTerminal(name, options).CreateIdentifier();
         }
 
-        public IdentifierTerminal ToIdentifier(string name, string extraChars)
+        public static BnfiTermValue<string> ToIdentifier(string name, string extraChars)
         {
-            return new IdentifierTerminal(name, extraChars).SetNodeCreator();
+            return new IdentifierTerminal(name, extraChars).CreateIdentifier();
         }
 
-        public IdentifierTerminal ToIdentifier(string name, string extraChars, string extraFirstChars = "")
+        public static BnfiTermValue<string> ToIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
-            return new IdentifierTerminal(name, extraChars, extraFirstChars).SetNodeCreator();
+            return new IdentifierTerminal(name, extraChars, extraFirstChars).CreateIdentifier();
         }
 
-        public NumberLiteral ToNumber(string name)
+        public static BnfiTermValue<T> ToNumber<T>(string name = "number")
         {
-            return new NumberLiteral(name).SetNodeCreator();
+            return new NumberLiteral(name).CreateNumber<T>();
         }
 
-        public NumberLiteral ToNumber(string name, NumberOptions options)
+        public static BnfiTermValue<T> ToNumber<T>(string name, NumberOptions options)
         {
-            return new NumberLiteral(name, options).SetNodeCreator();
+            return new NumberLiteral(name, options).CreateNumber<T>();
         }
 
         public string GetNonTerminalsAsText(bool omitBoundMembers = false)

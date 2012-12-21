@@ -322,16 +322,26 @@ namespace Irony.ITG
             return typeName;
         }
 
-        internal static IdentifierTerminal SetNodeCreator(this IdentifierTerminal identifierTerminal)
+        internal static IdentifierTerminal SetNoAstNode(this IdentifierTerminal identifierTerminal)
         {
             identifierTerminal.Flags |= TermFlags.NoAstNode;
             return identifierTerminal;
         }
 
-        internal static NumberLiteral SetNodeCreator(this NumberLiteral identifierTerminal)
+        internal static NumberLiteral SetNoAstNode(this NumberLiteral identifierTerminal)
         {
             identifierTerminal.Flags |= TermFlags.NoAstNode;
             return identifierTerminal;
+        }
+
+        internal static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifier)
+        {
+            return identifier.SetNoAstNode().CreateValue<string>((context, parseNode) => parseNode.FindTokenAndGetText());
+        }
+
+        internal static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral identifier)
+        {
+            return identifier.SetNoAstNode().CreateValue<T>((context, parseNode) => (T)parseNode.FindToken().Value);
         }
 
         #endregion
