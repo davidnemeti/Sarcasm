@@ -139,14 +139,16 @@ namespace Irony.ITG
             return ConvertValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
         }
 
-        private static BnfiTermValue<TOutData> ConvertValueOpt<TIn, TOutData>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOutData> valueConverter)
+        private static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
         {
-            return new BnfiTermValue<TOutData>(
+            return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
                 (context, parseNode) =>
                 {
-                    TIn value = GrammarHelper.AstNodeToValue<TIn>(parseNode.ChildNodes.FirstOrDefault(parseTreeChild => parseTreeChild.Term == bnfTerm).AstNode);
-                    return valueConverter(value);
+                    ParseTreeNode parseTreeChild = parseNode.ChildNodes.FirstOrDefault();
+                    return parseTreeChild != null
+                        ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
+                        : default(TOut);
                 },
                 isOptionalData: true,
                 errorAlias: null,
