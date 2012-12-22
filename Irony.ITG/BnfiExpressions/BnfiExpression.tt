@@ -32,7 +32,7 @@ namespace Irony.ITG
 	);
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfExpressionBoundMembers<T>",
+		"BnfiExpressionType<T>",
 		inheritFromBase: "BnfiExpressionType",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>"},

@@ -30,31 +30,38 @@ namespace Irony.ITG
             {
                 AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    object obj = Activator.CreateInstance(type, nonPublic: true);
+                    object objValue = Activator.CreateInstance(type, nonPublic: true);
 
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes)
+                    //foreach (var parseTreeChild in parseTreeNode.ChildNodes.Where(childNode => childNode.Tag is BnfiTermType))
+                    //{
+                    //    BnfiTermType sourceBnfiTermType = (BnfiTermType)parseTreeChild.Tag;
+                    //    object sourceObjValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
+
+
+                    //}
+
+                    foreach (var parseTreeChild in parseTreeNode.ChildNodes.Where(childNode => childNode.Tag is BnfiTermMember))
                     {
-                        MemberInfo memberInfo = parseTreeChild.Tag as MemberInfo;
+                        MemberInfo memberInfo = ((BnfiTermMember)parseTreeChild.Tag).MemberInfo;
+                        object memberValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
 
                         if (memberInfo is PropertyInfo)
-                        {
-                            ((PropertyInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue(parseTreeChild.AstNode));
-                        }
+                            ((PropertyInfo)memberInfo).SetValue(objValue, memberValue);
                         else if (memberInfo is FieldInfo)
-                        {
-                            ((FieldInfo)memberInfo).SetValue(obj, GrammarHelper.AstNodeToValue(parseTreeChild.AstNode));
-                        }
+                            ((FieldInfo)memberInfo).SetValue(objValue, memberValue);
+                        else
+                            throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
                     }
 
-                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(obj, context, parseTreeNode);
+                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
                 };
 
                 foreach (var bnfTermList in ((BnfExpression)value).Data)
                 {
                     foreach (var bnfTerm in bnfTermList)
                     {
-                        if (bnfTerm is BnfiTermMember)
-                            ((BnfiTermMember)bnfTerm).Reduced += nonTerminal_Reduced;
+                        if (bnfTerm is BnfiTermMember || bnfTerm is BnfiTermType)
+                            ((NonTerminal)bnfTerm).Reduced += nonTerminal_Reduced;
                     }
                 }
 
@@ -66,15 +73,7 @@ namespace Irony.ITG
 
         void nonTerminal_Reduced(object sender, ReducedEventArgs e)
         {
-            if (e.ResultNode.Tag != null && !object.Equals(e.ResultNode.Tag, ((BnfiTermMember)sender).MemberInfo))
-            {
-                throw new ApplicationException(string.Format("Internal error in binding framework. Reduce of {0} was bound to {1} and now to {2}",
-                    ((BnfiTermMember)sender).Name,
-                    ((MemberInfo)e.ResultNode.Tag).Name,
-                    ((BnfiTermMember)sender).MemberInfo.Name));
-            }
-
-            e.ResultNode.Tag = ((BnfiTermMember)sender).MemberInfo;
+            e.ResultNode.Tag = sender;
         }
 
         public BnfTerm AsBnfTerm()
@@ -106,7 +105,7 @@ namespace Irony.ITG
             return base.Q();
         }
 
-        public new BnfExpressionBoundMembers<TType> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
 
     }
 }
