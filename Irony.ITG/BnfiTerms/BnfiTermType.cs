@@ -40,41 +40,24 @@ namespace Irony.ITG
 
                     //}
 
-                    foreach (var parseTreeChild in parseTreeNode.ChildNodes.Where(childNode => childNode.Tag is BnfiTermMember))
+                    foreach (var memberValue in parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).OfType<MemberValue>())
                     {
-                        MemberInfo memberInfo = ((BnfiTermMember)parseTreeChild.Tag).MemberInfo;
-                        object memberValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
-
-                        if (memberInfo is PropertyInfo)
-                            ((PropertyInfo)memberInfo).SetValue(objValue, memberValue);
-                        else if (memberInfo is FieldInfo)
-                            ((FieldInfo)memberInfo).SetValue(objValue, memberValue);
+                        if (memberValue.MemberInfo is PropertyInfo)
+                            ((PropertyInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
+                        else if (memberValue.MemberInfo is FieldInfo)
+                            ((FieldInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
                         else
-                            throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
+                            throw new ApplicationException("Object with wrong type in memberinfo: " + memberValue.MemberInfo.Name);
                     }
 
                     parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
                 };
-
-                foreach (var bnfTermList in ((BnfExpression)value).Data)
-                {
-                    foreach (var bnfTerm in bnfTermList)
-                    {
-                        if (bnfTerm is BnfiTermMember || bnfTerm is BnfiTermType)
-                            ((NonTerminal)bnfTerm).Reduced += nonTerminal_Reduced;
-                    }
-                }
 
                 base.Rule = value;
             }
         }
 
         public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
-
-        void nonTerminal_Reduced(object sender, ReducedEventArgs e)
-        {
-            e.ResultNode.Tag = sender;
-        }
 
         public BnfTerm AsBnfTerm()
         {

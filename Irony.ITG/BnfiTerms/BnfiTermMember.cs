@@ -13,6 +13,18 @@ using System.IO;
 
 namespace Irony.ITG
 {
+    internal class MemberValue
+    {
+        public MemberInfo MemberInfo { get; private set; }
+        public object Value { get; private set; }
+
+        public MemberValue(MemberInfo MemberInfo, object Value)
+        {
+            this.MemberInfo = MemberInfo;
+            this.Value = Value;
+        }
+    }
+
     public partial class BnfiTermMember : NonTerminal, IBnfiTerm
     {
         public MemberInfo MemberInfo { get; private set; }
@@ -25,8 +37,13 @@ namespace Irony.ITG
             this.BnfTerm = bnfTerm;
             base.Rule = new BnfExpression(bnfTerm);
 
-            // see example on MarkTransientForced which explains why don't we use MarkTransient here
-            GrammarHelper.MarkTransientForced(this);    // the parent BnfiTermType will take care of the child ast node
+            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
+                {
+                    if (parseTreeNode.ChildNodes.Count != 1)
+                        throw new ArgumentException("Only one child is allowed for a BnfiTermMember node: {0}", parseTreeNode.Term.Name);
+
+                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(new MemberValue(memberInfo, GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes[0].AstNode)), context, parseTreeNode);
+                };
         }
 
         public static BnfiTermMember Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
