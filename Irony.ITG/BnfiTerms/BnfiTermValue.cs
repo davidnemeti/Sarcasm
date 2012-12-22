@@ -160,10 +160,36 @@ namespace Irony.ITG
             where TIn : class
             where TOut : class
         {
-            return ConvertValueOpt<TIn, TOut>(bnfTerm, value => valueConverter(value));
+            return ConvertValueOpt<TIn, TOut>(bnfTerm, valueConverter);
         }
 
-        private static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermValue<T> ConvertValueOptVal<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+            where T : struct
+        {
+            return ConvertValueOptVal(bnfiTerm, value => value, defaultValue);
+        }
+
+        public static BnfiTermValue<TOut> ConvertValueOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+            where TIn : struct
+            where TOut : struct
+        {
+            return ConvertValueOpt<TIn, TOut>(bnfiTerm, valueConverter, defaultValue);
+        }
+
+        public static BnfiTermValue<T> ConvertValueOptRef<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+            where T : class
+        {
+            return ConvertValueOptRef(bnfiTerm, value => value, defaultValue);
+        }
+
+        public static BnfiTermValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+            where TIn : class
+            where TOut : class
+        {
+            return ConvertValueOptRef(bnfiTerm, valueConverter, defaultValue);
+        }
+
+        private static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue = default(TOut))
         {
             return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
@@ -172,7 +198,7 @@ namespace Irony.ITG
                     ParseTreeNode parseTreeChild = parseNode.ChildNodes.FirstOrDefault();
                     return parseTreeChild != null
                         ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
-                        : default(TOut);
+                        : defaultValue;
                 },
                 isOptionalData: true,
                 errorAlias: null,

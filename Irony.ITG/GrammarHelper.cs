@@ -252,6 +252,18 @@ namespace Irony.ITG
             return BnfiTermValue.ConvertValueOptRef(bnfTerm);
         }
 
+        public static BnfiTermValue<T> QVal<T>(this IBnfiTerm<T> bnfTerm, T defaultValue)
+            where T : struct
+        {
+            return BnfiTermValue.ConvertValueOptVal(bnfTerm, defaultValue);
+        }
+
+        public static BnfiTermValue<T> QRef<T>(this IBnfiTerm<T> bnfTerm, T defaultValue)
+            where T : class
+        {
+            return BnfiTermValue.ConvertValueOptRef(bnfTerm, defaultValue);
+        }
+
         #endregion
 
         #region GetMember
