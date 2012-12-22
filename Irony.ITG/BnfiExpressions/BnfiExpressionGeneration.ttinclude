@@ -8,8 +8,8 @@
 <#@ import namespace="System.Text" #> 
 <#@ import namespace="System.Text.RegularExpressions" #> 
 <#+
-void GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null, IEnumerable<string> constraints = null,
-	IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null, IEnumerable<string> bnfTermSideTypeNames = null, bool allowCorePlusCore = true,
+IEnumerable<string> GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null, IEnumerable<string> constraints = null,
+	IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null, IEnumerable<string> bnfTermSideTypeNames = null, bool multiCore = true,
 	Func<string, string, bool> filterOutCorePairs = null)
 {
 	implementInterfaces = implementInterfaces ?? new string[0];
@@ -25,14 +25,14 @@ void GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string
 	GenerateBnfExpressionConversionsThere(bnfExpressionTypeName, bnfTermCoreTypeNames);
 	GenerateBnfExpressionConversionsHere(bnfExpressionTypeName, bnfTermCoreExternTypeNames);
 
-	if (allowCorePlusCore)
+	if (multiCore)
 		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(bnfTermCoreTypeNames).Concat(bnfTermCoreExternTypeNames);
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfTermCoreTypeNames, bnfTermSideTypeNames, filterOutCorePairs);
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreExternTypeNames, filterOutCorePairs);
 
-	if (allowCorePlusCore)
+	if (multiCore)
 		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(new[]{bnfExpressionTypeName});
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfExpressionTypeName, bnfTermSideTypeNames, filterOutCorePairs);
@@ -41,6 +41,8 @@ void GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string
 	EndRegion("\t");
 
 	PopIndent();
+
+	return bnfTermCoreTypeNames.Concat(bnfTermCoreExternTypeNames).Concat(new[]{bnfExpressionTypeName});
 }
 
 void GenerateBnfExpressionClass(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null, IEnumerable<string> constraints = null)
@@ -121,6 +123,8 @@ void GenerateBnfExpressionConversionsHere(string bnfExpressionTypeName, IEnumera
 
     foreach (string bnfTermTypeNameForConversion in bnfTermTypeNamesForConversion)
     {
+		if (bnfTermTypeNameForConversion.StartsWith("IBnfiTerm"))
+			continue;
 #>
 		public static implicit operator <#= bnfExpressionTypeName #>(<#= GetTypeNameWithReplacedTypeParameterName(bnfTermTypeNameForConversion, typeParameterName) #> term)
 		{
@@ -146,6 +150,9 @@ void GenerateBnfExpressionConversionsThere(string bnfExpressionTypeName, IEnumer
 <#+
     foreach (string bnfTermTypeNameForConversion in bnfTermTypeNamesForConversion)
     {
+		if (bnfTermTypeNameForConversion.StartsWith("IBnfiTerm"))
+			continue;
+
 		string typeParameterName = ExtractFirstTypeParameterName(bnfTermTypeNameForConversion);
 		string bnfExpressionTypeNameReplaced = GetTypeNameWithReplacedTypeParameterName(bnfExpressionTypeName, typeParameterName);
 #>

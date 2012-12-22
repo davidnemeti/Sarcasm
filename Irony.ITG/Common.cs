@@ -25,6 +25,14 @@ namespace Irony.ITG
     {
     }
 
+    public interface IBnfiTermCopyable
+    {
+    }
+
+    public interface IBnfiTermCopyable<in T> : IBnfiTermCopyable
+    {
+    }
+
     public interface INonTerminalWithSingleTypesafeRule<T>
     {
         //BnfExpression RuleTL { get; set; }

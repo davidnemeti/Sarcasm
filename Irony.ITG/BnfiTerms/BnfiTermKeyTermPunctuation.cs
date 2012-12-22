@@ -9,17 +9,12 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public partial class BnfiTermKeyTermPunctuation : KeyTerm, IBnfiTerm
+    public partial class BnfiTermKeyTermPunctuation : BnfiTermKeyTerm
     {
         public BnfiTermKeyTermPunctuation(string text)
             : base(text, text)
         {
             this.SetFlag(TermFlags.IsPunctuation | TermFlags.NoAstNode);
-        }
-
-        public BnfTerm AsBnfTerm()
-        {
-            return this;
         }
     }
 }

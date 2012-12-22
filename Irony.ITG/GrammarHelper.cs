@@ -238,6 +238,20 @@ namespace Irony.ITG
 
         #endregion
 
+        #region Copy
+
+        public static BnfiTermCopyable Copy(this IBnfiTerm bnfiTerm)
+        {
+            return BnfiTermCopyable.Copy(bnfiTerm);
+        }
+
+        public static BnfiTermCopyable<T> Copy<T>(this IBnfiTerm<T> bnfiTerm)
+        {
+            return BnfiTermCopyable.Copy<T>(bnfiTerm);
+        }
+
+        #endregion
+
         #region Typesafe Q
 
         public static BnfiTermValue<T?> QVal<T>(this IBnfiTerm<T> bnfTerm)
@@ -365,12 +379,28 @@ namespace Irony.ITG
         internal static void MarkTransientForced(NonTerminal nonTerminal)
         {
             nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    if (parseTreeNode.ChildNodes.Count != 1)
-                        throw new ArgumentException("Only one child is allowed for a forced transient node: {0}", parseTreeNode.Term.Name);
+            {
+                if (parseTreeNode.ChildNodes.Count != 1)
+                    throw new ArgumentException(string.Format("Only one child is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal");
 
-                    parseTreeNode.AstNode = parseTreeNode.ChildNodes[0].AstNode;
-                };
+                parseTreeNode.AstNode = parseTreeNode.ChildNodes[0].AstNode;
+            };
+        }
+
+        internal static void MarkTransientForced<TBnfiTerm>(NonTerminal nonTerminal)
+            where TBnfiTerm : IBnfiTerm
+        {
+            nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
+            {
+                try
+                {
+                    parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.Term is TBnfiTerm).AstNode;
+                }
+                catch (InvalidOperationException)
+                {
+                    throw new ArgumentException(string.Format("Only one child with term '{0}' is allowed for a forced transient node: {1}", typeof(TBnfiTerm).Name, parseTreeNode.Term.Name), "nonTerminal");
+                }
+            };
         }
 
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)

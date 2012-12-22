@@ -52,6 +52,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiExpression.tt</DependentUpon>
     </Compile>
+    <Compile Include="BnfiTerms\BnfiTermCopyable.cs" />
+    <Compile Include="BnfiTerms\BnfiTermKeyTerm.cs" />
     <Compile Include="BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
     <Compile Include="Common.cs" />
     <Compile Include="GrammarHelper.cs" />

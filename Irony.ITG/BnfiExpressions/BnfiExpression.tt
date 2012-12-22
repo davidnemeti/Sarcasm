@@ -22,78 +22,96 @@ using Irony.Parsing;
 namespace Irony.ITG
 {
 <#
+	var bnfTermCoreTypeNamesForBnfiExpressionKeyTerms =
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionKeyTerms",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTerm"},
+		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
+		multiCore: true
+	);
+
+	var bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations =
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionKeyTermPunctuations",
+		inheritFromBase: "BnfiExpressionCommon",
+		implementInterfaces: new[]{"IBnfiExpression"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTermPunctuation"},
+		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
+		multiCore: true
+	);
+
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermMember"},
-		bnfTermSideTypeNames: new[]{"BnfTerm"},
-		allowCorePlusCore: true
+		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyable"},
+		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable"},
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		multiCore: true
 	);
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType<T>",
 		inheritFromBase: "BnfiExpressionType",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>"},
-		bnfTermSideTypeNames: new[]{"BnfTerm"},
-		allowCorePlusCore: true
+		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>", "BnfiTermCopyable<T>"},
+		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable<T>"},
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		multiCore: true
 	);
 
-	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionCollection;
-
+	var bnfTermCoreTypeNamesForBnfiExpressionCollection =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollection = new[]{"BnfiTermCollection"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermCollection"},
 		bnfTermSideTypeNames: new[]{"GrammarHint"},
-		allowCorePlusCore: false
+		multiCore: false
 	);
 
-	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric;
-
+	var bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection<TCollectionType>",
 		inheritFromBase: "BnfiExpressionCollection",
 		implementInterfaces: new[]{"IBnfiExpression<TCollectionType>"},
-		bnfTermCoreTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric = new[]{"BnfiTermCollection<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermCollection<TCollectionType>"},
 		bnfTermSideTypeNames: new[]{"GrammarHint"},
-		allowCorePlusCore: false
+		multiCore: false
 	);
 
-	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionValue;
-
+	var bnfTermCoreTypeNamesForBnfiExpressionValue =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue = new[]{"BnfiTermValue"},
-		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
-		allowCorePlusCore: false
+		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		multiCore: false
 	);
 
-	IEnumerable<string> bnfTermCoreTypeNamesForBnfiExpressionValueGeneric;
-
+	var bnfTermCoreTypeNamesForBnfiExpressionValueGeneric =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue<T>",
 		inheritFromBase: "BnfiExpressionValue",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric = new[]{"BnfiTermValue<T>"},
-		bnfTermSideTypeNames: new[]{"KeyTerm", "GrammarHint"},
-		allowCorePlusCore: false
+		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		multiCore: false
 	);
 
-	// allowCorePlusCore is false for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+	// multiCore is false for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTransient",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermTransient"},
-		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection", "BnfiExpressionValue", "BnfTerm"}.Concat(bnfTermCoreTypeNamesForBnfiExpressionCollection).Concat(bnfTermCoreTypeNamesForBnfiExpressionValue),
-		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
-		allowCorePlusCore: false
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollection.Concat(bnfTermCoreTypeNamesForBnfiExpressionValue),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
+		multiCore: false
 	);
 
 	GenerateBnfExpressionClassAndOperators(
@@ -101,11 +119,9 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>"},
-		bnfTermCoreExternTypeNames: new[]{"BnfiExpressionCollection<TCollectionType>", "BnfiExpressionValue<T>"}
-										.Concat(bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric)
-										.Concat(bnfTermCoreTypeNamesForBnfiExpressionValueGeneric),
-		bnfTermSideTypeNames: new[]{"BnfiTermKeyTermPunctuation", "GrammarHint"},
-		allowCorePlusCore: false
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollectionGeneric.Concat(bnfTermCoreTypeNamesForBnfiExpressionValueGeneric),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
+		multiCore: false
 	);
 #>
 }

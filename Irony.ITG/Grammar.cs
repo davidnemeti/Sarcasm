@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,7 +39,7 @@ namespace Irony.ITG
 
         #endregion
 
-        #region
+        #region Types
 
         public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
 
@@ -99,9 +100,32 @@ namespace Irony.ITG
             return new BnfiTermKeyTermPunctuation(text);
         }
 
-        public new KeyTerm ToTerm(string text)
+        public new BnfiTermKeyTerm ToTerm(string text)
         {
-            return base.ToTerm(text, string.Format("\"{0}\"", text));
+            return ToTerm(text, string.Format("\"{0}\"", text));
+        }
+
+        public new BnfiTermKeyTerm ToTerm(string text, string name)
+        {
+            #region Copied from Irony.Parsing.Grammar.ToTerm(string text, string name)
+
+            KeyTerm term;
+            if (KeyTerms.TryGetValue(text, out term))
+            {
+                //update name if it was specified now and not before
+                if (string.IsNullOrEmpty(term.Name) && !string.IsNullOrEmpty(name))
+                    term.Name = name;
+                return (BnfiTermKeyTerm)term;
+            }
+            //create new term
+            if (!CaseSensitive)
+                text = text.ToLower(CultureInfo.InvariantCulture);
+            string.Intern(text);
+            term = new BnfiTermKeyTerm(text, name);
+            KeyTerms[text] = term;
+            return (BnfiTermKeyTerm)term;
+
+            #endregion
         }
 
         public BnfiTermValue<T> ToTerm<T>(string text, T value)
