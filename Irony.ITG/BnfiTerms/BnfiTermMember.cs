@@ -24,7 +24,9 @@ namespace Irony.ITG
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
             base.Rule = new BnfExpression(bnfTerm);
-            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the parent BnfiTermType will take care of the child ast node
+
+            // see example on MarkTransientForced which explains why don't we use MarkTransient here
+            GrammarHelper.MarkTransientForced(this);    // the parent BnfiTermType will take care of the child ast node
         }
 
         public static BnfiTermMember Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)

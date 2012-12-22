@@ -325,6 +325,32 @@ namespace Irony.ITG
 
         #region Misc
 
+        internal static void MarkTransient(NonTerminal nonTerminal)
+        {
+            nonTerminal.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+        }
+
+        /// <summary>
+        /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues.
+        /// </summary>
+        /// <example>
+        /// When creating a BnfiTermMember we should not use MarkTransient, because under this BnfiTermMember there can be a list (TermFlags.IsList),
+        /// which makes this term to become a list container (TermFlags.IsListContainer), and this causes ReduceParserActionCreate to process this term
+        /// with ReduceListContainerParserAction instead of the desired ReduceTransientParserAction, which causes the parseTreeNode of this term
+        /// to remain in the parseTree despite it is being transient (TermFlags.IsTransient), and this results bad behavior when building the AST tree,
+        /// because this term will not produce an ast node (TermFlags.NoAstNode), and therefore the AST builder will not process its children.
+        /// </example>
+        internal static void MarkTransientForced(NonTerminal nonTerminal)
+        {
+            nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
+                {
+                    if (parseTreeNode.ChildNodes.Count != 1)
+                        throw new ArgumentException("Only one child is allowed for a forced transient node: {0}", parseTreeNode.Term.Name);
+
+                    parseTreeNode.AstNode = parseTreeNode.ChildNodes[0].AstNode;
+                };
+        }
+
         public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
         {
             if (args.Length > 0)

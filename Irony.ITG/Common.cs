@@ -13,7 +13,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG
 {
-    public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseNode);
+    public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
 
     public interface IBnfiTerm
@@ -53,14 +53,6 @@ namespace Irony.ITG
             : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
         {
             this.type = type;
-        }
-
-        protected static BnfExpression GetRuleWithOrBetweenTypesafeExpressions<T>(params IBnfiTerm<T>[] bnfExpressions)
-        {
-            return bnfExpressions.Cast<BnfExpression>().Aggregate(
-                (BnfExpression)bnfExpressions[0],
-                (bnfExpressionProcessed, bnfExpressionToBeProcess) => bnfExpressionProcessed | bnfExpressionToBeProcess
-                );
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";

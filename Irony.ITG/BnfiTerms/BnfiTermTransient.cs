@@ -18,7 +18,7 @@ namespace Irony.ITG
         public BnfiTermTransient(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
-            this.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;      // the child node already contains the created ast node
+            GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
         }
 
         public new BnfiExpressionTransient Rule { set { base.Rule = value; } }

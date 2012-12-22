@@ -16,12 +16,13 @@ namespace Irony.ITG
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
     {
         public BnfiTermValue(Type type, string errorAlias = null)
-            : this(type, errorAlias, (context, parseTreeNode) => parseTreeNode.ChildNodes[0].AstNode)   // default "transient" astValueCreator
+            : base(type, errorAlias)
         {
+            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias, bool astForChild)
-            : this(type, errorAlias, astValueCreator)
+            : base(type, errorAlias)
         {
             if (!astForChild)
                 bnfTerm.Flags |= TermFlags.NoAstNode;
@@ -29,11 +30,7 @@ namespace Irony.ITG
             this.RuleTL = isOptionalData
                 ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
-        }
 
-        private BnfiTermValue(Type type, string errorAlias, AstValueCreator<object> astValueCreator)
-            : base(type, errorAlias)
-        {
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
         }
