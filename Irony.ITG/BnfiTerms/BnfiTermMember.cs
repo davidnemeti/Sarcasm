@@ -39,34 +39,34 @@ namespace Irony.ITG
             return new BnfiTermMember(fieldInfo, bnfTerm);
         }
 
-        public static BnfiTermMember Bind<TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TBnfTermType> bnfTerm)
+        public static BnfiTermMember Bind<TMemberType, TBnfTermType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TBnfTermType> bnfiTerm)
             where TBnfTermType : TMemberType
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new BnfiTermMember(memberInfo, bnfTerm.AsBnfTerm());
+                return new BnfiTermMember(memberInfo, bnfiTerm.AsBnfTerm());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
         public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
-            IBnfiTerm<TBnfTermType> bnfTerm)
+            IBnfiTerm<TBnfTermType> bnfiTerm)
             where TBnfTermType : TMemberType
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new BnfiTermMember<TDeclaringType>(memberInfo, bnfTerm.AsBnfTerm());
+                return new BnfiTermMember<TDeclaringType>(memberInfo, bnfiTerm.AsBnfTerm());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
-        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(IBnfiTerm<TDeclaringType> dummyBnfTerm,
-            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TBnfTermType> bnfTerm)
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TBnfTermType> bnfiTerm)
             where TBnfTermType : TMemberType
         {
-            return Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfTerm);
+            return Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
         public static BnfiTermMember Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
@@ -87,6 +87,16 @@ namespace Irony.ITG
         public static BnfiTermMember BindToNone(BnfTerm bnfTerm)
         {
             return new BnfiTermMember(memberInfo: null, bnfTerm: bnfTerm);
+        }
+
+        public static BnfiTermMember BindToNone<TBnfTermType>(IBnfiTerm<TBnfTermType> bnfiTerm)
+        {
+            return BindToNone(bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> BindToNone<TDeclaringType, TBnfTermType>(IBnfiTerm<TBnfTermType> bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm)
+        {
+            return new BnfiTermMember<TDeclaringType>(memberInfo: null, bnfTerm: bnfTerm.AsBnfTerm());
         }
 
         public BnfTerm AsBnfTerm()
