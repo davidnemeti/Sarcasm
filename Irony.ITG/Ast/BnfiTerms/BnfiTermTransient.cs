@@ -46,17 +46,17 @@ namespace Irony.ITG.Ast
 
         public new BnfiExpressionTransient<TType> Rule { set { base.Rule = value; } }
 
-        public void SetRuleOr(params IBnfiTerm<TType>[] bnfiTerms)
+        public void SetRuleOr(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
         {
-            this.Rule = Or(bnfiTerms);
+            this.Rule = Or(bnfiTermFirst, bnfiTerms);
         }
 
-        public BnfiExpressionTransient<TType> Or(params IBnfiTerm<TType>[] bnfiTerms)
+        public BnfiExpressionTransient<TType> Or(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
         {
             return (BnfiExpressionTransient<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
-                new BnfExpression(),
+                new BnfExpression(bnfiTermFirst.AsBnfTerm()),
                 (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess
                 );
         }
