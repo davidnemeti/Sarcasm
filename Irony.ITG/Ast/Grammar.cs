@@ -16,13 +16,13 @@ namespace Irony.ITG.Ast
     {
         #region Construction
 
-        public Grammar(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection = ReturnNullInsteadOfEmptyCollectionDefault)
+        public Grammar(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection)
             : base()
         {
             Init(astCreation, returnNullInsteadOfEmptyCollection);
         }
 
-        public Grammar(AstCreation astCreation, bool caseSensitive, bool returnNullInsteadOfEmptyCollection = ReturnNullInsteadOfEmptyCollectionDefault)
+        public Grammar(AstCreation astCreation, bool caseSensitive, bool returnNullInsteadOfEmptyCollection)
             : base(caseSensitive)
         {
             Init(astCreation, returnNullInsteadOfEmptyCollection);
@@ -47,8 +47,6 @@ namespace Irony.ITG.Ast
         #endregion
 
         #region Properties
-
-        private const bool ReturnNullInsteadOfEmptyCollectionDefault = true;
 
         public bool AutoBrowsableAstNodes { get; set; }
         public bool ReturnNullInsteadOfEmptyCollection { get; set; }
