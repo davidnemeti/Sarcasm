@@ -15,6 +15,11 @@ namespace Irony.ITG.Ast
 {
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
     {
+        public BnfiTermValue(string errorAlias = null)
+            : this(typeof(object), errorAlias)
+        {
+        }
+
         public BnfiTermValue(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
