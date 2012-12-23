@@ -109,32 +109,6 @@ namespace Irony.ITG.Ast
 
         #endregion
 
-        public static BnfiTermCollection ReturnNullInsteadOfEmptyCollection(this BnfiTermCollection bnfiTermCollection)
-        {
-            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
-            return bnfiTermCollection;
-        }
-
-        public static BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection<TCollectionType, TElementType>(this BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection)
-            where TCollectionType : ICollection<TElementType>, new()
-        {
-            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
-            return bnfiTermCollection;
-        }
-
-        public static BnfiTermCollection ReturnEmptyCollectionInsteadOfNull(this BnfiTermCollection bnfiTermCollection)
-        {
-            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
-            return bnfiTermCollection;
-        }
-
-        public static BnfiTermCollection<TCollectionType, TElementType> ReturnEmptyCollectionInsteadOfNull<TCollectionType, TElementType>(this BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection)
-            where TCollectionType : ICollection<TElementType>, new()
-        {
-            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
-            return bnfiTermCollection;
-        }
-
         #endregion
 
         #region BindMember

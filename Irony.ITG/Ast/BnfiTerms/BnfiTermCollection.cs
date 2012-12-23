@@ -303,6 +303,18 @@ namespace Irony.ITG.Ast
         {
             return this;
         }
+
+        public BnfiTermCollection ReturnNullInsteadOfEmptyCollection()
+        {
+            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
+            return this;
+        }
+
+        public BnfiTermCollection ReturnEmptyCollectionInsteadOfNull()
+        {
+            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
+            return this;
+        }
     }
 
     public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermCollection<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
@@ -336,5 +348,17 @@ namespace Irony.ITG.Ast
         }
 
         public new BnfiExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
+
+        public new BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection()
+        {
+            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
+            return this;
+        }
+
+        public new BnfiTermCollection<TCollectionType, TElementType> ReturnEmptyCollectionInsteadOfNull()
+        {
+            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
+            return this;
+        }
     }
 }
