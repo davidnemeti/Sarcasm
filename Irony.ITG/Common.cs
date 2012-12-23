@@ -58,7 +58,7 @@ namespace Irony.ITG
         protected Type type { get; private set; }
 
         protected BnfiTermNonTerminal(Type type, string errorAlias)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias)
+            : base(name: GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias: errorAlias)
         {
             this.type = type;
         }

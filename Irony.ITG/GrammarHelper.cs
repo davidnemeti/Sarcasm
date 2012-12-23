@@ -143,19 +143,9 @@ namespace Irony.ITG
             return BnfiTermMember.Bind(fieldInfo, bnfTerm);
         }
 
-        public static BnfiTermMember BindToNone(this BnfTerm bnfTerm)
+        public static BnfiTermNoAst NoAst(this BnfTerm bnfTerm)
         {
-            return BnfiTermMember.BindToNone(bnfTerm);
-        }
-
-        public static BnfiTermMember BindToNone<TBnfTermType>(this IBnfiTerm<TBnfTermType> bnfiTerm)
-        {
-            return BnfiTermMember.BindToNone(bnfiTerm);
-        }
-
-        public static BnfiTermMember<TDeclaringType> BindToNone<TDeclaringType, TBnfTermType>(this IBnfiTerm<TBnfTermType> bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm)
-        {
-            return BnfiTermMember.BindToNone(bnfiTerm, dummyBnfiTerm);
+            return BnfiTermNoAst.Create(bnfTerm);
         }
 
         #endregion
@@ -362,7 +352,7 @@ namespace Irony.ITG
 
         internal static void MarkTransient(NonTerminal nonTerminal)
         {
-            nonTerminal.Flags |= TermFlags.IsTransient | TermFlags.NoAstNode;
+            nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);
         }
 
         /// <summary>

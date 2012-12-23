@@ -27,7 +27,7 @@ namespace Irony.ITG
 		"BnfiExpressionTerminals",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTerm"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
 		bnfTermCoreExternTypeNames: new[]{"Terminal", "GrammarHint"},
 		multiCore: true
 	);

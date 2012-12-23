@@ -64,6 +64,18 @@ namespace Irony.ITG
 
         #endregion
 
+        private BnfiTermNoAst empty = null;
+        public new BnfiTermNoAst Empty
+        {
+            get
+            {
+                if (empty == null)
+                    empty = base.Empty.NoAst();
+
+                return empty;
+            }
+        }
+
         #region Misc
 
         public static BnfExpression MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
