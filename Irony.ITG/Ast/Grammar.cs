@@ -12,44 +12,41 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
+    public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
+    public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
+
     public class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 
-        public Grammar(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection)
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling)
             : base()
         {
-            Init(astCreation, returnNullInsteadOfEmptyCollection);
+            Init(astCreation, emptyCollectionHandling);
         }
 
-        public Grammar(AstCreation astCreation, bool caseSensitive, bool returnNullInsteadOfEmptyCollection)
+        public Grammar(AstCreation astCreation, bool caseSensitive, EmptyCollectionHandling emptyCollectionHandling)
             : base(caseSensitive)
         {
-            Init(astCreation, returnNullInsteadOfEmptyCollection);
+            Init(astCreation, emptyCollectionHandling);
         }
 
-        void Init(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection)
+        void Init(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling)
         {
             this.LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
                 ? LanguageFlags.CreateAst
                 : LanguageFlags.Default;
 
             this.AutoBrowsableAstNodes = astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes;
-            this.ReturnNullInsteadOfEmptyCollection = returnNullInsteadOfEmptyCollection;
+            this.EmptyCollectionHandling = emptyCollectionHandling;
         }
-
-        #endregion
-
-        #region Types
-
-        public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
 
         #endregion
 
         #region Properties
 
         public bool AutoBrowsableAstNodes { get; set; }
-        public bool ReturnNullInsteadOfEmptyCollection { get; set; }
+        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
         #endregion
 

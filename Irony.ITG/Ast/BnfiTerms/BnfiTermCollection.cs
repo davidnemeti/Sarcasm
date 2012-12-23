@@ -18,7 +18,7 @@ namespace Irony.ITG.Ast
 
     public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection
     {
-        public bool ReturnNullInsteadOfEmptyCollection { get; set; }
+        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
         protected enum ListKind { Star, Plus }
 
@@ -68,7 +68,7 @@ namespace Irony.ITG.Ast
 
             SetNodeCreator();
 
-            this.ReturnNullInsteadOfEmptyCollection = Irony.ITG.Ast.Grammar.CurrentGrammar.ReturnNullInsteadOfEmptyCollection;
+            this.EmptyCollectionHandling = Irony.ITG.Ast.Grammar.CurrentGrammar.EmptyCollectionHandling;
         }
 
         #region StarList and PlusList
@@ -251,7 +251,9 @@ namespace Irony.ITG.Ast
                     addElementToCollection(collection.Value, element);
                 }
 
-                TCollectionStaticType astValue = !collectionHasElements && this.ReturnNullInsteadOfEmptyCollection ? default(TCollectionStaticType) : collection.Value;
+                TCollectionStaticType astValue = !collectionHasElements && this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull
+                    ? default(TCollectionStaticType)
+                    : collection.Value;
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };

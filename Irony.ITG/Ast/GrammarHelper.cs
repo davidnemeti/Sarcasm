@@ -111,27 +111,27 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermCollection ReturnNullInsteadOfEmptyCollection(this BnfiTermCollection bnfiTermCollection)
         {
-            bnfiTermCollection.ReturnNullInsteadOfEmptyCollection = true;
+            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection<TCollectionType, TElementType>(this BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            bnfiTermCollection.ReturnNullInsteadOfEmptyCollection = true;
+            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollection ReturnEmptyCollectionInsteadOfNull(this BnfiTermCollection bnfiTermCollection)
         {
-            bnfiTermCollection.ReturnNullInsteadOfEmptyCollection = false;
+            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollection<TCollectionType, TElementType> ReturnEmptyCollectionInsteadOfNull<TCollectionType, TElementType>(this BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            bnfiTermCollection.ReturnNullInsteadOfEmptyCollection = false;
+            bnfiTermCollection.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
             return bnfiTermCollection;
         }
 
