@@ -317,7 +317,7 @@ namespace Irony.ITG.Ast
         }
     }
 
-    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermCollection<TCollectionType>, INonTerminalWithSingleTypesafeRule<TCollectionType>
+    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermCollection<TCollectionType>
     {
         public BnfiTermCollection(string errorAlias = null)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)

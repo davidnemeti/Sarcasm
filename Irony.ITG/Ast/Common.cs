@@ -33,27 +33,6 @@ namespace Irony.ITG.Ast
     {
     }
 
-    public interface INonTerminalWithSingleTypesafeRule<T>
-    {
-        //BnfExpression RuleTypeless { get; set; }
-        //BnfExpression<T> Rule { set; }
-    }
-
-    public interface INonTerminalWithMultipleTypesafeRule<T> : INonTerminalWithSingleTypesafeRule<T>
-    {
-    }
-
-    public interface ITransientWithSingleTypesafeRule<T>
-    {
-        BnfExpression RuleRaw { get; set; }
-        BnfiExpressionTransient RuleTypeless { set; }
-        BnfiExpressionTransient<T> Rule { set; }
-    }
-
-    public interface ITransientWithMultipleTypesafeRule<T> : ITransientWithSingleTypesafeRule<T>
-    {
-    }
-
     public abstract class BnfiTermNonTerminal : NonTerminal
     {
         protected Type type { get; private set; }

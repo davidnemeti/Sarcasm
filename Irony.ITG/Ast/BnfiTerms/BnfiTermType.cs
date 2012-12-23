@@ -91,7 +91,7 @@ namespace Irony.ITG.Ast
         }
     }
 
-    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, INonTerminalWithMultipleTypesafeRule<TType>
+    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }

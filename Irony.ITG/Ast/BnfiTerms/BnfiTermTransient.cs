@@ -31,7 +31,7 @@ namespace Irony.ITG.Ast
         }
     }
 
-    public partial class BnfiTermTransient<TType> : BnfiTermTransient, IBnfiTerm<TType>, ITransientWithMultipleTypesafeRule<TType>
+    public partial class BnfiTermTransient<TType> : BnfiTermTransient, IBnfiTerm<TType>
     {
         public BnfiTermTransient(string errorAlias = null)
             : base(typeof(TType), errorAlias)
