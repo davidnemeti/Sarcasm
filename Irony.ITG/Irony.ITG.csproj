@@ -41,7 +41,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Irony.ITG.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Signature\Irony.ITG.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,39 +53,39 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AstBuilder.cs" />
-    <Compile Include="AstNodeWrapper.cs" />
-    <Compile Include="BnfiExpressions\BnfiExpression.cs" />
-    <Compile Include="BnfiExpressions\BnfiExpression.generated.cs">
+    <Compile Include="Ast2\AstBuilder.cs" />
+    <Compile Include="Ast2\AstNodeWrapper.cs" />
+    <Compile Include="Ast2\BnfiExpressions\BnfiExpression.cs" />
+    <Compile Include="Ast2\BnfiExpressions\BnfiExpression.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiExpression.tt</DependentUpon>
     </Compile>
-    <Compile Include="BnfiTerms\BnfiTermCopyable.cs" />
-    <Compile Include="BnfiTerms\BnfiTermKeyTerm.cs" />
-    <Compile Include="BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
-    <Compile Include="BnfiTerms\BnfiTermNoAst.cs" />
-    <Compile Include="Common.cs" />
-    <Compile Include="GrammarHelper.cs" />
-    <Compile Include="BnfiTerms\BnfiTermConstant.cs" />
-    <Compile Include="BnfiTerms\BnfiTermValue.cs" />
-    <Compile Include="ParseTreeNodeWithOutAst.cs" />
-    <Compile Include="BnfiTerms\BnfiTermTransient.cs" />
-    <Compile Include="BnfiTerms\BnfiTermCollection.cs" />
-    <Compile Include="BnfiTerms\BnfiTermType.cs" />
-    <Compile Include="BnfiTerms\BnfiTermMember.cs" />
-    <Compile Include="Grammar.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermCopyable.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermKeyTerm.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermNoAst.cs" />
+    <Compile Include="Ast2\Common.cs" />
+    <Compile Include="Ast2\GrammarHelper.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermConstant.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermValue.cs" />
+    <Compile Include="Ast2\ParseTreeNodeWithOutAst.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermTransient.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermCollection.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermType.cs" />
+    <Compile Include="Ast2\BnfiTerms\BnfiTermMember.cs" />
+    <Compile Include="Ast2\Grammar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unparser.cs" />
+    <Compile Include="Unparsing\Unparser.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
-    <None Include="BnfiExpressions\BnfiExpression.tt">
+    <None Include="Ast2\BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
+    <None Include="Ast2\BnfiExpressions\BnfiExpression.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
     </None>
-    <None Include="Irony.ITG.pub" />
-    <None Include="Irony.ITG.snk" />
+    <None Include="Signature\Irony.ITG.pub" />
+    <None Include="Signature\Irony.ITG.snk" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
