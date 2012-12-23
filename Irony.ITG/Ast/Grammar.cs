@@ -25,7 +25,7 @@ namespace Irony.ITG.Ast
             Init(astCreation, emptyCollectionHandling);
         }
 
-        public Grammar(AstCreation astCreation, bool caseSensitive, EmptyCollectionHandling emptyCollectionHandling)
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, bool caseSensitive)
             : base(caseSensitive)
         {
             Init(astCreation, emptyCollectionHandling);
