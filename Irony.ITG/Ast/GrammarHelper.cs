@@ -356,7 +356,8 @@ namespace Irony.ITG.Ast
         }
 
         /// <summary>
-        /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues.
+        /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues,
+        /// or when there are multiple children and only one of them has ast node.
         /// </summary>
         /// <example>
         /// When creating a BnfiTermMember we should not use MarkTransient, because under this BnfiTermMember there can be a list (TermFlags.IsList),
@@ -369,25 +370,13 @@ namespace Irony.ITG.Ast
         {
             nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
-                if (parseTreeNode.ChildNodes.Count != 1)
-                    throw new ArgumentException(string.Format("Only one child is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal");
-
-                parseTreeNode.AstNode = parseTreeNode.ChildNodes[0].AstNode;
-            };
-        }
-
-        internal static void MarkTransientForced<TBnfiTerm>(NonTerminal nonTerminal)
-            where TBnfiTerm : IBnfiTerm
-        {
-            nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
-            {
                 try
                 {
-                    parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.Term is TBnfiTerm).AstNode;
+                    parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.AstNode != null).AstNode;
                 }
                 catch (InvalidOperationException)
                 {
-                    throw new ArgumentException(string.Format("Only one child with term '{0}' is allowed for a forced transient node: {1}", typeof(TBnfiTerm).Name, parseTreeNode.Term.Name), "nonTerminal");
+                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal");
                 }
             };
         }

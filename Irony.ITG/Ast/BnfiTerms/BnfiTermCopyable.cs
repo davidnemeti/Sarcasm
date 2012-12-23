@@ -16,7 +16,7 @@ namespace Irony.ITG.Ast
             : base(type, errorAlias)
         {
             this.Rule = new BnfExpression(bnfTerm);
-            GrammarHelper.MarkTransientForced<BnfiTermCopyable>(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTermValue which actually does something)
+            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTermValue which actually does something)
         }
 
         public static BnfiTermCopyable Copy(IBnfiTerm bnfiTerm)

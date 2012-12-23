@@ -18,7 +18,7 @@ namespace Irony.ITG.Ast
         public BnfiTermValue(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
-            GrammarHelper.MarkTransientForced<BnfiTermValue>(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
+            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, AstValueCreator<object> astValueCreator, bool isOptionalData, string errorAlias, bool astForChild)
