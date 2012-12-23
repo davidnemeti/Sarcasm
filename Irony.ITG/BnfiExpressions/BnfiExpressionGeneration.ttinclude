@@ -1,6 +1,4 @@
-﻿<#@ IntelliSenseLanguage processor="tangibleT4Editor" language="C#" #>
-<#@ assemblyForIntellisenseOnly processor="tangibleT4Editor" Name="System.Core" #>
-<#@ import namespace="System" #>
+﻿<#@ import namespace="System" #>
 <#@ import namespace="System.IO" #>
 <#@ import namespace="System.Diagnostics" #>
 <#@ import namespace="System.Linq" #>
@@ -282,7 +280,7 @@ void GenerateOneWayExpressionOperatorMethod(string returnTypeName, BnfExprOp op,
 #>
         public static <#= returnTypeName #> operator <#= BnfExprOpToSign(op) #>(<#= paramTypeName1 #> term1, <#= paramTypeName2 #> term2)
         {
-            return (<#= returnTypeName #>)BnfTerm.<#= BnfExprOpToMethodName(op) #>((BnfTerm)term1, (BnfTerm)term2);
+            return (<#= returnTypeName #>)BnfiExpressionCommon.<#= BnfExprOpToMethodName(op) #>((BnfTerm)term1, (BnfTerm)term2);
         }
 <#+
     }

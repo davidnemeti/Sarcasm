@@ -59,6 +59,16 @@ namespace Irony.ITG
         {
             return bnfExpression;
         }
+
+        internal static BnfExpression Op_Plus(BnfTerm term1, BnfTerm term2)
+        {
+            return BnfTerm.Op_Plus(term1, term2);
+        }
+
+        internal static BnfExpression Op_Pipe(BnfTerm term1, BnfTerm term2)
+        {
+            return BnfTerm.Op_Pipe(term1, term2);
+        }
     }
 
     #endregion
