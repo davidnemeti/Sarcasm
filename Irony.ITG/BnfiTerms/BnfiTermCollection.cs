@@ -240,23 +240,42 @@ namespace Irony.ITG
             {
                 TCollectionStaticType collection = createCollection();
 
-                foreach (var parseTreeChild in parseTreeNode.ChildNodes)
-                {
-                    TElementStaticType element = GrammarHelper.AstNodeToValue<TElementStaticType>(parseTreeChild.AstNode);
-
-                    if (elementType.IsInstanceOfType(GrammarHelper.AstNodeToValue(parseTreeChild.AstNode)))
-                    {
-                        addElementToCollection(collection, element);
-                    }
-                    else if (!parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
-                    {
-                        context.AddMessage(ErrorLevel.Error, parseTreeChild.Span.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                            parseTreeChild.Term, elementType.FullName, element.GetType().FullName);
-                    }
-                }
+                foreach (var element in GetFlattenedElements<TElementStaticType>(parseTreeNode, context))
+                    addElementToCollection(collection, element);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(collection, context, parseTreeNode);
             };
+        }
+
+        protected IEnumerable<TElementStaticType> GetFlattenedElements<TElementStaticType>(ParseTreeNode parseTreeNode, AstContext context)
+        {
+            foreach (var parseTreeChild in parseTreeNode.ChildNodes)
+            {
+                /*
+                 * The type of childValue is 'object' because childValue can be other than an element, which causes error,
+                 * but we want to give a proper error message (see below) instead of throwin a cast exception
+                 * */
+                object childValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
+
+                if (elementType.IsInstanceOfType(childValue))
+                {
+                    yield return (TElementStaticType)childValue;
+                }
+                else if (parseTreeChild.Term.Flags.IsSet(TermFlags.IsList))
+                {
+                    foreach (var descendantElement in GetFlattenedElements<TElementStaticType>(parseTreeChild, context))
+                        yield return descendantElement;
+                }
+                else if (parseTreeChild.Term.Flags.IsSet(TermFlags.NoAstNode))
+                {
+                    // simply omit children with no ast (they are probably delimiters)
+                }
+                else
+                {
+                    context.AddMessage(ErrorLevel.Error, parseTreeChild.Span.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
+                        parseTreeChild.Term, elementType.FullName, childValue.GetType().FullName);
+                }
+            }
         }
 
         protected string GetName()

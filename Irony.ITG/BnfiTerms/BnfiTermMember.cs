@@ -23,6 +23,18 @@ namespace Irony.ITG
             this.MemberInfo = MemberInfo;
             this.Value = Value;
         }
+
+        public override string ToString()
+        {
+            return string.Format(".{{{0}}} : {1}", MemberInfo.Name, ToStringValue(Value));
+        }
+
+        protected static string ToStringValue(object value)
+        {
+            return value is System.Collections.IEnumerable
+                ? GrammarHelper.TypeNameWithDeclaringTypes(value.GetType())
+                : value.ToString();
+        }
     }
 
     public partial class BnfiTermMember : NonTerminal, IBnfiTerm
