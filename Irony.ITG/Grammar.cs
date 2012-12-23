@@ -64,28 +64,11 @@ namespace Irony.ITG
 
         #endregion
 
-        private BnfiTermNoAst empty = null;
-        public new BnfiTermNoAst Empty
-        {
-            get
-            {
-                if (empty == null)
-                    empty = base.Empty.NoAst();
-
-                return empty;
-            }
-        }
-
-        #region Misc
+        #region MakePlusRule
 
         public static BnfExpression MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
-        }
-
-        public static BnfExpression MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
-        {
-            return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
@@ -94,16 +77,25 @@ namespace Irony.ITG
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
-            where TCollectionType : ICollection<object>, new()
-        {
-            return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
-        }
-
         public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
+        }
+
+        #endregion
+
+        #region MakeStarRule
+
+        public static BnfExpression MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        {
+            return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
+        }
+
+        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+            where TCollectionType : ICollection<object>, new()
+        {
+            return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
@@ -112,18 +104,9 @@ namespace Irony.ITG
             return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
-        {
-            openBrace.SetFlag(TermFlags.IsOpenBrace);
-            openBrace.IsPairFor = closeBrace;
-            closeBrace.SetFlag(TermFlags.IsCloseBrace);
-            closeBrace.IsPairFor = openBrace;
-        }
+        #endregion
 
-        public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
-        {
-            return new BnfiTermKeyTermPunctuation(text);
-        }
+        #region KeyTerms
 
         public new BnfiTermKeyTerm ToTerm(string text)
         {
@@ -158,6 +141,39 @@ namespace Irony.ITG
             return ToTerm(text).CreateValue(value);
         }
 
+        public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
+        {
+            return new BnfiTermKeyTermPunctuation(text);
+        }
+
+        public static void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
+        {
+            openBrace.SetFlag(TermFlags.IsOpenBrace);
+            openBrace.IsPairFor = closeBrace;
+            closeBrace.SetFlag(TermFlags.IsCloseBrace);
+            closeBrace.IsPairFor = openBrace;
+        }
+
+        #endregion
+
+        #region Empty
+
+        private BnfiTermNoAst empty = null;
+        public new BnfiTermNoAst Empty
+        {
+            get
+            {
+                if (empty == null)
+                    empty = base.Empty.NoAst();
+
+                return empty;
+            }
+        }
+
+        #endregion
+
+        #region Identifiers
+
         public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
         {
             return new IdentifierTerminal(name).CreateIdentifier();
@@ -178,6 +194,10 @@ namespace Irony.ITG
             return new IdentifierTerminal(name, extraChars, extraFirstChars).CreateIdentifier();
         }
 
+        #endregion
+
+        #region Numbers
+
         public static BnfiTermValue<T> CreateNumber<T>(string name = "number")
         {
             return new NumberLiteral(name).CreateNumber<T>();
@@ -192,6 +212,10 @@ namespace Irony.ITG
         {
             return new NumberLiteral(name, options).CreateNumber<T>();
         }
+
+        #endregion
+
+        #region Misc
 
         public string GetNonTerminalsAsText(bool omitBoundMembers = false)
         {
