@@ -15,6 +15,7 @@ namespace Irony.ITG
         protected BnfiTermNoAst(BnfTerm bnfTerm)
             : base(string.Format("{0}->no_ast", bnfTerm.Name))
         {
+            this.Rule = new BnfExpression(bnfTerm);
             this.SetFlag(TermFlags.NoAstNode);
         }
 
