@@ -11,7 +11,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.ITG
+namespace Irony.ITG.Ast
 {
     public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);

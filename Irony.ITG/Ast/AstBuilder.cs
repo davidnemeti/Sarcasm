@@ -8,7 +8,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.ITG
+namespace Irony.ITG.Ast
 {
     public class AstBuilder : Irony.Ast.AstBuilder
     {

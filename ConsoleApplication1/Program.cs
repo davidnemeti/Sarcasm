@@ -9,6 +9,8 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Irony.ITG;
+using Irony.ITG.Ast;
+using Irony.ITG.Unparsing;
 
 using ETUS.DomainModel;
 using ETUS.Grammar;

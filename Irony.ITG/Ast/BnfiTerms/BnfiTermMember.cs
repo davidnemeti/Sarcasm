@@ -11,7 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.ITG
+namespace Irony.ITG.Ast
 {
     internal class MemberValue
     {

@@ -6,7 +6,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.ITG
+namespace Irony.ITG.Ast
 {
     public interface IBnfiExpression : IBnfiTerm
     {

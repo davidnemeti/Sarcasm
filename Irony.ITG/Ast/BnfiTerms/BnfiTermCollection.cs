@@ -11,7 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using System.IO;
 
-namespace Irony.ITG
+namespace Irony.ITG.Ast
 {
     public interface IBnfiTermCollection : IBnfiTerm { }
     public interface IBnfiTermCollection<out TCollectionType> : IBnfiTerm<TCollectionType> { }
