@@ -32,7 +32,7 @@ namespace Irony.ITG.Ast
             if (!astForChild)
                 bnfTerm.Flags |= TermFlags.NoAstNode;
 
-            this.RuleTL = isOptionalData
+            this.RuleRaw = isOptionalData
                 ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : new BnfExpression(bnfTerm);
 
@@ -211,7 +211,7 @@ namespace Irony.ITG.Ast
                 );
         }
 
-        protected BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+        protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         public new BnfiExpressionValue Rule { set { base.Rule = value; } }
 
@@ -232,6 +232,8 @@ namespace Irony.ITG.Ast
             : base(typeof(T), bnfTerm, (context, parseNode) => astValueCreator(context, parseNode), isOptionalData, errorAlias, astForChild)
         {
         }
+
+        public BnfiExpressionValue RuleTL { set { base.Rule = value; } }
 
         public new BnfiExpressionValue<T> Rule { set { base.Rule = value; } }
 

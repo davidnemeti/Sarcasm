@@ -295,7 +295,7 @@ namespace Irony.ITG.Ast
             return string.Format("{0}List<{1}>", listKind, bnfTermElement.Name);
         }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+        public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         public new BnfiExpressionCollection Rule { set { base.Rule = value; } }
 
@@ -346,6 +346,8 @@ namespace Irony.ITG.Ast
         {
             return base.Q();
         }
+
+        public BnfiExpressionCollection RuleTL { set { base.Rule = value; } }
 
         public new BnfiExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
 

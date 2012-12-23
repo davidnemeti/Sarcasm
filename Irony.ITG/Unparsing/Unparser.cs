@@ -12,5 +12,10 @@ namespace Irony.ITG.Unparsing
 {
     public class Unparser
     {
+        public Grammar Grammar { get; private set; }
+
+        public Unparser(Grammar grammar)
+        {
+        }
     }
 }

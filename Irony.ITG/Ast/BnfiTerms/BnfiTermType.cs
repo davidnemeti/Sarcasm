@@ -83,7 +83,7 @@ namespace Irony.ITG.Ast
                     : new FieldInfo[0]);
         }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+        public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         public BnfTerm AsBnfTerm()
         {
@@ -114,7 +114,8 @@ namespace Irony.ITG.Ast
             return base.Q();
         }
 
-        public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
+        public BnfiExpressionType RuleTL { set { base.Rule = value; } }
 
+        public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
     }
 }

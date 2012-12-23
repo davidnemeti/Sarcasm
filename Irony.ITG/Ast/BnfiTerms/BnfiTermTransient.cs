@@ -23,7 +23,7 @@ namespace Irony.ITG.Ast
 
         public new BnfiExpressionTransient Rule { set { base.Rule = value; } }
 
-        public BnfExpression RuleTL { get { return base.Rule; } set { base.Rule = value; } }
+        public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         public BnfTerm AsBnfTerm()
         {
@@ -43,6 +43,8 @@ namespace Irony.ITG.Ast
         {
             return base.Q();
         }
+
+        public BnfiExpressionTransient RuleTL { set { base.Rule = value; } }
 
         public new BnfiExpressionTransient<TType> Rule { set { base.Rule = value; } }
 
