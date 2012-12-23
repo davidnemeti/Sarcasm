@@ -25,7 +25,7 @@ namespace Irony.ITG
 	var bnfTermCoreTypeNamesForBnfiExpressionTerminals =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTerminals",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
 		bnfTermCoreExternTypeNames: new[]{"Terminal", "GrammarHint"},
@@ -35,7 +35,7 @@ namespace Irony.ITG
 	var bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionKeyTermPunctuations",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTermPunctuation"},
 		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
@@ -44,7 +44,7 @@ namespace Irony.ITG
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyable"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable"},
@@ -65,7 +65,7 @@ namespace Irony.ITG
 	var bnfTermCoreTypeNamesForBnfiExpressionCollection =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionCollection",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermCollection"},
 		bnfTermSideTypeNames: new[]{"GrammarHint"},
@@ -85,7 +85,7 @@ namespace Irony.ITG
 	var bnfTermCoreTypeNamesForBnfiExpressionValue =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
@@ -106,7 +106,7 @@ namespace Irony.ITG
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTransient",
-		inheritFromBase: "BnfiExpressionCommon",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermTransient"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionCollection.Concat(bnfTermCoreTypeNamesForBnfiExpressionValue),

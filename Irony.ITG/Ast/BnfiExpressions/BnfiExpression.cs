@@ -17,35 +17,35 @@ namespace Irony.ITG
     {
     }
 
-    #region BnfiExpressionCommon
+    #region BnfiExpression
 
-    public abstract class BnfiExpressionCommon : IBnfiExpression
+    public abstract class BnfiExpression : IBnfiExpression
     {
         protected readonly BnfExpression bnfExpression;
 
-        protected BnfiExpressionCommon()
+        protected BnfiExpression()
         {
             this.bnfExpression = new BnfExpression();
         }
 
-        protected BnfiExpressionCommon(BnfExpression bnfExpression)
+        protected BnfiExpression(BnfExpression bnfExpression)
         {
             this.bnfExpression = bnfExpression;
         }
 
-        protected BnfiExpressionCommon(BnfTerm bnfTerm)
+        protected BnfiExpression(BnfTerm bnfTerm)
         {
             this.bnfExpression = bnfTerm is BnfExpression
                 ? (BnfExpression)bnfTerm
                 : new BnfExpression(bnfTerm);
         }
 
-        public static implicit operator BnfExpression(BnfiExpressionCommon bnfExpression)
+        public static implicit operator BnfExpression(BnfiExpression bnfExpression)
         {
             return bnfExpression.bnfExpression;
         }
 
-        public static implicit operator BnfTerm(BnfiExpressionCommon bnfExpression)
+        public static implicit operator BnfTerm(BnfiExpression bnfExpression)
         {
             return bnfExpression.bnfExpression;
         }

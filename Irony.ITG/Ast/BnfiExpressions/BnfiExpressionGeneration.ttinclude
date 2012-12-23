@@ -280,7 +280,7 @@ void GenerateOneWayExpressionOperatorMethod(string returnTypeName, BnfExprOp op,
 #>
         public static <#= returnTypeName #> operator <#= BnfExprOpToSign(op) #>(<#= paramTypeName1 #> term1, <#= paramTypeName2 #> term2)
         {
-            return (<#= returnTypeName #>)BnfiExpressionCommon.<#= BnfExprOpToMethodName(op) #>((BnfTerm)term1, (BnfTerm)term2);
+            return (<#= returnTypeName #>)BnfiExpression.<#= BnfExprOpToMethodName(op) #>((BnfTerm)term1, (BnfTerm)term2);
         }
 <#+
     }
