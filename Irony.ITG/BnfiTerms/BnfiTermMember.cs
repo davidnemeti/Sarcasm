@@ -45,7 +45,7 @@ namespace Irony.ITG
         protected BnfiTermMember(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(name: memberInfo != null
                             ? string.Format("{0}.{1}", GrammarHelper.TypeNameWithDeclaringTypes(memberInfo.DeclaringType), memberInfo.Name.ToLower())
-                            : "<<member_none>>")
+                            : string.Format("{0}->no_ast", bnfTerm.Name))
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
