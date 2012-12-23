@@ -12,7 +12,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class Grammar : Irony.Parsing.Grammar
+    public class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 

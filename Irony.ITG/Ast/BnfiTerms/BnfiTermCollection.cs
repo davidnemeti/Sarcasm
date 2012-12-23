@@ -18,6 +18,9 @@ namespace Irony.ITG.Ast
 
     public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection
     {
+        public static bool ReturnNullInsteadOfEmptyCollection { get; set; }
+        public bool _ReturnNullInsteadOfEmptyCollection { get; set; }
+
         protected enum ListKind { Star, Plus }
 
         private ListKind? listKind = null;
@@ -32,6 +35,11 @@ namespace Irony.ITG.Ast
         protected new Type type { get { return base.type; } }
 
         private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+
+        static BnfiTermCollection()
+        {
+            ReturnNullInsteadOfEmptyCollection = true;
+        }
 
         public BnfiTermCollection(Type collectionType, string errorAlias = null)
             : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
@@ -65,6 +73,8 @@ namespace Irony.ITG.Ast
             }
 
             SetNodeCreator();
+
+            this._ReturnNullInsteadOfEmptyCollection = BnfiTermCollection.ReturnNullInsteadOfEmptyCollection;
         }
 
         #region StarList and PlusList
@@ -238,12 +248,18 @@ namespace Irony.ITG.Ast
         {
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
-                TCollectionStaticType collection = createCollection();
+                Lazy<TCollectionStaticType> collection = new Lazy<TCollectionStaticType>(() => createCollection());
 
+                bool collectionHasElements = false;
                 foreach (var element in GetFlattenedElements<TElementStaticType>(parseTreeNode, context))
-                    addElementToCollection(collection, element);
+                {
+                    collectionHasElements = true;
+                    addElementToCollection(collection.Value, element);
+                }
 
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(collection, context, parseTreeNode);
+                TCollectionStaticType astValue = !collectionHasElements && this._ReturnNullInsteadOfEmptyCollection ? default(TCollectionStaticType) : collection.Value;
+
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
         }
 
@@ -273,7 +289,7 @@ namespace Irony.ITG.Ast
                 else
                 {
                     context.AddMessage(ErrorLevel.Error, parseTreeChild.Span.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                        parseTreeChild.Term, elementType.FullName, childValue.GetType().FullName);
+                        parseTreeChild.Term, elementType.FullName, childValue != null ? childValue.GetType().FullName : "<<NULL>>");
                 }
             }
         }
