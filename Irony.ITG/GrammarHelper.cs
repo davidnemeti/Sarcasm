@@ -353,8 +353,7 @@ namespace Irony.ITG
 
         public static T AstNodeToValue<T>(object astNode)
         {
-            AstNodeWrapper astNodeWrapper = astNode as AstNodeWrapper;
-            return astNodeWrapper != null ? (T)astNodeWrapper.Value : (T)astNode;
+            return (T)AstNodeToValue(astNode);
         }
 
         #endregion
