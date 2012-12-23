@@ -16,25 +16,26 @@ namespace Irony.ITG.Ast
     {
         #region Construction
 
-        public Grammar(AstCreation astCreation)
+        public Grammar(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection = ReturnNullInsteadOfEmptyCollectionDefault)
             : base()
         {
-            Init(astCreation);
+            Init(astCreation, returnNullInsteadOfEmptyCollection);
         }
 
-        public Grammar(AstCreation astCreation, bool caseSensitive)
+        public Grammar(AstCreation astCreation, bool caseSensitive, bool returnNullInsteadOfEmptyCollection = ReturnNullInsteadOfEmptyCollectionDefault)
             : base(caseSensitive)
         {
-            Init(astCreation);
+            Init(astCreation, returnNullInsteadOfEmptyCollection);
         }
 
-        void Init(AstCreation astCreation)
+        void Init(AstCreation astCreation, bool returnNullInsteadOfEmptyCollection)
         {
-            LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
+            this.LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
                 ? LanguageFlags.CreateAst
                 : LanguageFlags.Default;
 
-            AutoBrowsableAstNodes = astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes;
+            this.AutoBrowsableAstNodes = astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes;
+            this.ReturnNullInsteadOfEmptyCollection = returnNullInsteadOfEmptyCollection;
         }
 
         #endregion
@@ -47,7 +48,10 @@ namespace Irony.ITG.Ast
 
         #region Properties
 
+        private const bool ReturnNullInsteadOfEmptyCollectionDefault = true;
+
         public bool AutoBrowsableAstNodes { get; set; }
+        public bool ReturnNullInsteadOfEmptyCollection { get; set; }
 
         #endregion
 
@@ -252,6 +256,11 @@ namespace Irony.ITG.Ast
                 sw.Write("{0} ", bnfTermToWrite.Name);
             }
             return sw.ToString();
+        }
+
+        public static new Grammar CurrentGrammar
+        {
+            get { return (Grammar)Irony.Parsing.Grammar.CurrentGrammar; }
         }
 
         #endregion

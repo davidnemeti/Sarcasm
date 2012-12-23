@@ -5,11 +5,11 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using System.IO;
 
 namespace Irony.ITG.Ast
 {
@@ -18,8 +18,7 @@ namespace Irony.ITG.Ast
 
     public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection
     {
-        public static bool ReturnNullInsteadOfEmptyCollection { get; set; }
-        public bool _ReturnNullInsteadOfEmptyCollection { get; set; }
+        public bool ReturnNullInsteadOfEmptyCollection { get; set; }
 
         protected enum ListKind { Star, Plus }
 
@@ -35,11 +34,6 @@ namespace Irony.ITG.Ast
         protected new Type type { get { return base.type; } }
 
         private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
-        static BnfiTermCollection()
-        {
-            ReturnNullInsteadOfEmptyCollection = true;
-        }
 
         public BnfiTermCollection(Type collectionType, string errorAlias = null)
             : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
@@ -74,7 +68,7 @@ namespace Irony.ITG.Ast
 
             SetNodeCreator();
 
-            this._ReturnNullInsteadOfEmptyCollection = BnfiTermCollection.ReturnNullInsteadOfEmptyCollection;
+            this.ReturnNullInsteadOfEmptyCollection = Irony.ITG.Ast.Grammar.CurrentGrammar.ReturnNullInsteadOfEmptyCollection;
         }
 
         #region StarList and PlusList
@@ -257,7 +251,7 @@ namespace Irony.ITG.Ast
                     addElementToCollection(collection.Value, element);
                 }
 
-                TCollectionStaticType astValue = !collectionHasElements && this._ReturnNullInsteadOfEmptyCollection ? default(TCollectionStaticType) : collection.Value;
+                TCollectionStaticType astValue = !collectionHasElements && this.ReturnNullInsteadOfEmptyCollection ? default(TCollectionStaticType) : collection.Value;
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
