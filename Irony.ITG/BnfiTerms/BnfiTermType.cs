@@ -47,11 +47,7 @@ namespace Irony.ITG
             };
         }
 
-        public new BnfiExpressionType Rule
-        {
-            get { return (BnfiExpressionType)base.Rule; }
-            set { base.Rule = value; }
-        }
+        public new BnfiExpressionType Rule { set { base.Rule = value; } }
 
         protected static void MemberwiseCopyExceptNullValues(object destination, object source)
         {
