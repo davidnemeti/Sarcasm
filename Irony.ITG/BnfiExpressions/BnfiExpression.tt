@@ -22,13 +22,13 @@ using Irony.Parsing;
 namespace Irony.ITG
 {
 <#
-	var bnfTermCoreTypeNamesForBnfiExpressionKeyTerms =
+	var bnfTermCoreTypeNamesForBnfiExpressionTerminals =
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionKeyTerms",
+		"BnfiExpressionTerminals",
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTerm"},
-		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
+		bnfTermCoreExternTypeNames: new[]{"Terminal", "GrammarHint"},
 		multiCore: true
 	);
 
@@ -48,7 +48,7 @@ namespace Irony.ITG
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyable"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
 	);
 
@@ -58,7 +58,7 @@ namespace Irony.ITG
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>", "BnfiTermCopyable<T>"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable<T>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
 	);
 
@@ -88,7 +88,7 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionCommon",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
 	);
 
@@ -98,7 +98,7 @@ namespace Irony.ITG
 		inheritFromBase: "BnfiExpressionValue",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTerms,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
 	);
 
