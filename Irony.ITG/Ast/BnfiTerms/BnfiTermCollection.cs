@@ -13,10 +13,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public interface IBnfiTermCollection : IBnfiTerm { }
-    public interface IBnfiTermCollection<out TCollectionType> : IBnfiTerm<TCollectionType> { }
-
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection
+    public partial class BnfiTermCollection : BnfiTermNonTerminal
     {
         public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
@@ -317,7 +314,7 @@ namespace Irony.ITG.Ast
         }
     }
 
-    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermCollection<TCollectionType>
+    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>
     {
         public BnfiTermCollection(string errorAlias = null)
             : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
