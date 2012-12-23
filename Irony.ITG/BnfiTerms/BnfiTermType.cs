@@ -21,39 +21,36 @@ namespace Irony.ITG
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
+
+            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
+            {
+                object objValue = Activator.CreateInstance(type, nonPublic: true);
+
+                var childValues = parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).Where(childNode => childNode != null);
+
+                // 1. memberwise copy for ast values
+                foreach (var childValue in childValues.Where(childValue => objValue.GetType().IsAssignableFrom(childValue.GetType())))
+                    MemberwiseCopyExceptNullValues(objValue, childValue);
+
+                // 2. set member values by MemberValues (so that we can overwrite the copied members if we want)
+                foreach (var memberValue in childValues.OfType<MemberValue>())
+                {
+                    if (memberValue.MemberInfo is PropertyInfo)
+                        ((PropertyInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
+                    else if (memberValue.MemberInfo is FieldInfo)
+                        ((FieldInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
+                    else
+                        throw new ApplicationException("Object with wrong type in memberinfo: " + memberValue.MemberInfo.Name);
+                }
+
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
+            };
         }
 
         public new BnfiExpressionType Rule
         {
             get { return (BnfiExpressionType)base.Rule; }
-            set
-            {
-                AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    object objValue = Activator.CreateInstance(type, nonPublic: true);
-
-                    var childValues = parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).Where(childNode => childNode != null);
-
-                    // 1. memberwise copy for ast values
-                    foreach (var childValue in childValues.Where(childValue => objValue.GetType().IsAssignableFrom(childValue.GetType())))
-                        MemberwiseCopyExceptNullValues(objValue, childValue);
-
-                    // 2. set member values by MemberValues (so that we can overwrite the copied members if we want)
-                    foreach (var memberValue in childValues.OfType<MemberValue>())
-                    {
-                        if (memberValue.MemberInfo is PropertyInfo)
-                            ((PropertyInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
-                        else if (memberValue.MemberInfo is FieldInfo)
-                            ((FieldInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
-                        else
-                            throw new ApplicationException("Object with wrong type in memberinfo: " + memberValue.MemberInfo.Name);
-                    }
-
-                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
-                };
-
-                base.Rule = value;
-            }
+            set { base.Rule = value; }
         }
 
         protected static void MemberwiseCopyExceptNullValues(object destination, object source)
