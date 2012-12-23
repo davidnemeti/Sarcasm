@@ -44,7 +44,7 @@ namespace Irony.ITG.Ast
             return base.Q();
         }
 
-        public BnfiExpressionTransient RuleTL { set { base.Rule = value; } }
+        public BnfiExpressionTransient RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionTransient<TType> Rule { set { base.Rule = value; } }
 

@@ -233,7 +233,7 @@ namespace Irony.ITG.Ast
         {
         }
 
-        public BnfiExpressionValue RuleTL { set { base.Rule = value; } }
+        public BnfiExpressionValue RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionValue<T> Rule { set { base.Rule = value; } }
 

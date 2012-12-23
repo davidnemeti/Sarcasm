@@ -347,7 +347,7 @@ namespace Irony.ITG.Ast
             return base.Q();
         }
 
-        public BnfiExpressionCollection RuleTL { set { base.Rule = value; } }
+        public BnfiExpressionCollection RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
 

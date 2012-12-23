@@ -35,7 +35,7 @@ namespace Irony.ITG.Ast
 
     public interface INonTerminalWithSingleTypesafeRule<T>
     {
-        //BnfExpression RuleTL { get; set; }
+        //BnfExpression RuleTypeless { get; set; }
         //BnfExpression<T> Rule { set; }
     }
 
@@ -46,7 +46,7 @@ namespace Irony.ITG.Ast
     public interface ITransientWithSingleTypesafeRule<T>
     {
         BnfExpression RuleRaw { get; set; }
-        BnfiExpressionTransient RuleTL { set; }
+        BnfiExpressionTransient RuleTypeless { set; }
         BnfiExpressionTransient<T> Rule { set; }
     }
 
