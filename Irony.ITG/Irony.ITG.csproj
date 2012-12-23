@@ -53,6 +53,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AstBuilder.cs" />
     <Compile Include="AstNodeWrapper.cs" />
     <Compile Include="BnfiExpressions\BnfiExpression.cs" />
     <Compile Include="BnfiExpressions\BnfiExpression.generated.cs">

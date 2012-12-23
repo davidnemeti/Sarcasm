@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using Irony;
 using Irony.Ast;
-using Irony.ITG;
 using Irony.Parsing;
 
 namespace Irony.ITG
@@ -48,6 +48,19 @@ namespace Irony.ITG
         #region Properties
 
         public bool AutoBrowsableAstNodes { get; set; }
+
+        #endregion
+
+        #region AST construction
+
+        public override void BuildAst(LanguageData language, ParseTree parseTree)
+        {
+            if (!LanguageFlags.IsSet(LanguageFlags.CreateAst))
+                return;
+            var astContext = new AstContext(language);
+            var astBuilder = new AstBuilder(astContext);
+            astBuilder.BuildAst(parseTree);
+        }
 
         #endregion
 
