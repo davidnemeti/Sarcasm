@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define IRONY_INTERNALS_VISIBLE
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -216,6 +218,8 @@ namespace Irony.ITG.Ast
 
         #region Misc
 
+#if IRONY_INTERNALS_VISIBLE
+
         public string GetNonTerminalsAsText(bool omitBoundMembers = false)
         {
             return GetNonTerminalsAsText(new LanguageData(this), omitBoundMembers);
@@ -252,6 +256,8 @@ namespace Irony.ITG.Ast
             }
             return sw.ToString();
         }
+
+#endif
 
         public static new Grammar CurrentGrammar
         {
