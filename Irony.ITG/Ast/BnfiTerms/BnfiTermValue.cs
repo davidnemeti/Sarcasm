@@ -40,9 +40,19 @@ namespace Irony.ITG.Ast
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
         }
 
+        public static BnfiTermValue Create(Terminal terminal, object value, bool astForChild = true)
+        {
+            return Create(typeof(object), terminal, value, astForChild);
+        }
+
         public static BnfiTermValue Create(Type type, Terminal terminal, object value, bool astForChild = true)
         {
             return new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalData: false, errorAlias: null, astForChild: astForChild);
+        }
+
+        public static BnfiTermValue Create(Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
+        {
+            return Create(typeof(object), terminal, valueCreator, astForChild);
         }
 
         public static BnfiTermValue Create(Type type, Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)

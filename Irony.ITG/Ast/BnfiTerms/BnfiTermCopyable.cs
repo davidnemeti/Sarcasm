@@ -21,7 +21,12 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermCopyable Copy(IBnfiTerm bnfiTerm)
         {
-            return new BnfiTermCopyable(typeof(object), bnfiTerm.AsBnfTerm());
+            return Copy(typeof(object), bnfiTerm);
+        }
+
+        public static BnfiTermCopyable Copy(Type type, IBnfiTerm bnfiTerm)
+        {
+            return new BnfiTermCopyable(type, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermCopyable<T> Copy<T>(IBnfiTerm<T> bnfiTerm)
