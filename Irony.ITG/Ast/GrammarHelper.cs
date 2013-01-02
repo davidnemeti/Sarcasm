@@ -197,11 +197,6 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, Type type, ValueConverter<object, object> valueConverter)
-        {
-            return BnfiTermValue.Convert(type, bnfiTerm, valueConverter);
-        }
-
         public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return BnfiTermValue.Convert(bnfiTerm, valueConverter);
