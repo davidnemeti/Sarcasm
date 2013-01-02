@@ -13,7 +13,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermCollection : BnfiTermNonTerminal
+    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTerm
     {
         #region Types
 
