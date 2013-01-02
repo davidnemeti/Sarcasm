@@ -65,9 +65,9 @@ namespace Irony.ITG.Ast
 
         #endregion
 
-        #region MakePlusRule
+        #region MakePlusRule and MakeStarRule
 
-        public static BnfExpression MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
@@ -84,11 +84,7 @@ namespace Irony.ITG.Ast
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        #endregion
-
-        #region MakeStarRule
-
-        public static BnfExpression MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
