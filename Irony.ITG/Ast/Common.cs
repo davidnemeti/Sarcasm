@@ -13,7 +13,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public delegate T AstValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
+    public delegate T ValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
 
     public interface IBnfiTerm

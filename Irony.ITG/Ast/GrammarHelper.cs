@@ -157,9 +157,9 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.Create(terminal, value, astForChild);
         }
 
-        public static BnfiTermValue CreateValue(this Terminal terminal, AstValueCreator<object> astValueCreator, bool astForChild = true)
+        public static BnfiTermValue CreateValue(this Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
+            return BnfiTermValue.Create(terminal, valueCreator, astForChild);
         }
 
         public static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifierTerminal)
@@ -182,9 +182,9 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.Create(terminal, value, astForChild);
         }
 
-        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, AstValueCreator<TOut> astValueCreator, bool astForChild = true)
+        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, ValueCreator<TOut> valueCreator, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, astValueCreator, astForChild);
+            return BnfiTermValue.Create(terminal, valueCreator, astForChild);
         }
 
         public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)
