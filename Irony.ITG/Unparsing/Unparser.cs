@@ -34,7 +34,7 @@ namespace Irony.ITG.Unparsing
             if (bnfTerm is KeyTerm)
                 yield return ((KeyTerm)bnfTerm).Text;
             else if (bnfTerm is Terminal)
-                yield return bnfTerm.ToString();
+                yield return obj.ToString();
             else if (bnfTerm is NonTerminal)
             {
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
