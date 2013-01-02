@@ -72,7 +72,7 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
         {
-            return Create(numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
+            return Create(typeof(object), numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
         }
 
         public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
