@@ -113,7 +113,7 @@ namespace Irony.ITG.Ast
             return new BnfiTermMember(memberInfo, bnfTerm);
         }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

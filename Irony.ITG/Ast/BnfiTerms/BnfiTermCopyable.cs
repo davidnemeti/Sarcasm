@@ -34,7 +34,7 @@ namespace Irony.ITG.Ast
             return new BnfiTermCopyable<T>(bnfiTerm.AsBnfTerm());
         }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

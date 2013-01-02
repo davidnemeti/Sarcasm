@@ -25,7 +25,7 @@ namespace Irony.ITG.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

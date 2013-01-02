@@ -28,7 +28,7 @@ namespace Irony.ITG.Ast
             base.Add(lexeme, value);
         }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

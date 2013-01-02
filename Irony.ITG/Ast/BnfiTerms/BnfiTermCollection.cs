@@ -313,7 +313,7 @@ namespace Irony.ITG.Ast
 
         public new BnfiExpressionCollection Rule { set { base.Rule = value; } }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

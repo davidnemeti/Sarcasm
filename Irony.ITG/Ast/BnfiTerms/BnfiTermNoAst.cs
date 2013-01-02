@@ -24,7 +24,7 @@ namespace Irony.ITG.Ast
             return new BnfiTermNoAst(bnfTerm);
         }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }

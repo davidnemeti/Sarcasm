@@ -225,7 +225,7 @@ namespace Irony.ITG.Ast
 
         public new BnfiExpressionValue Rule { set { base.Rule = value; } }
 
-        public BnfTerm AsBnfTerm()
+        BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
         }
