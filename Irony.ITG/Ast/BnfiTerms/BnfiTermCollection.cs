@@ -259,40 +259,50 @@ namespace Irony.ITG.Ast
 
         #region MakePlusRule and MakeStarRule
 
-        public static BnfExpression MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
-            bnfiTermCollection.SetList(bnfTermElement, ListKind.Plus);
-            return Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return (BnfiExpressionCollection)_MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfExpression MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiExpressionCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
-            bnfiTermCollection.SetList(bnfTermElement, ListKind.Star);
-            return Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return (BnfiExpressionCollection)_MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return (BnfiExpressionCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return (BnfiExpressionCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement.AsBnfTerm());
+            return (BnfiExpressionCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement.AsBnfTerm());
         }
 
         public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement.AsBnfTerm());
+            return (BnfiExpressionCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement.AsBnfTerm());
+        }
+
+        protected static BnfExpression _MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        {
+            bnfiTermCollection.SetList(bnfTermElement, ListKind.Plus);
+            return Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
+        }
+
+        protected static BnfExpression _MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        {
+            bnfiTermCollection.SetList(bnfTermElement, ListKind.Star);
+            return Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
         protected void SetList(BnfTerm bnfTermElement, ListKind listKind)
