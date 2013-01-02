@@ -25,7 +25,7 @@ namespace Irony.ITG.Unparsing
 
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
         {
-            BnfTerm bnfTerm = BnfTermByObject(obj, context);
+            BnfTerm bnfTerm = GetBnfTerm(obj, context);
             return Unparse(obj, bnfTerm);
         }
 
@@ -41,7 +41,7 @@ namespace Irony.ITG.Unparsing
                 Unparsable unparsable = nonTerminal as Unparsable;
 
                 if (unparsable == null)
-                    throw new UnparsableException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not unparsable", obj, obj.GetType().Name, nonTerminal.Name));
+                    throw new UnparsableException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not unparsable.", obj, obj.GetType().Name, nonTerminal.Name));
 
                 Production production = unparsable.ChooseProduction(nonTerminal.Productions, obj);
 
@@ -55,9 +55,10 @@ namespace Irony.ITG.Unparsing
             }
         }
 
-        private BnfTerm BnfTermByObject(object obj, Context context)
+        private BnfTerm GetBnfTerm(object obj, Context context)
         {
-            throw new NotImplementedException();
+            return Grammar.Root;
+            // TODO: do this by choosing by context
         }
     }
 
