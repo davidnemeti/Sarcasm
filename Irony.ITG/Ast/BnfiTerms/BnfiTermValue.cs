@@ -296,6 +296,12 @@ namespace Irony.ITG.Ast
 
                 utokens = unparser.Unparse(childObj, childBnfTerm);
             }
+            else if (this.bnfTerm == null)
+            {
+                // "transient" unparse with the actual BnfiTermValue under the current one (set by Rule)
+                BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
+                utokens = unparser.Unparse(obj, childBnfTerm);
+            }
             else
                 throw new CannotUnparseException(string.Format("BnfiTermValue '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
 
