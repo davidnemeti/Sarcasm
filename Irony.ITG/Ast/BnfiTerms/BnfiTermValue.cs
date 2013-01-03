@@ -19,7 +19,7 @@ namespace Irony.ITG.Ast
         private readonly BnfTerm bnfTerm;
 
         private ValueConverter<object, object> _inverseValueConverterForUnparse;
-        internal ValueConverter<object, object> InverseValueConverterForUnparse
+        public ValueConverter<object, object> InverseValueConverterForUnparse
         {
             private get { return _inverseValueConverterForUnparse; }
             set
@@ -32,7 +32,7 @@ namespace Irony.ITG.Ast
         }
 
         private Func<object, IEnumerable<Utoken>> _utokenizerForUnparse;
-        internal Func<object, IEnumerable<Utoken>> UtokenizerForUnparse
+        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse
         {
             private get { return _utokenizerForUnparse; }
             set
