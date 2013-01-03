@@ -18,29 +18,29 @@ namespace Irony.ITG.Ast
     {
         private readonly BnfTerm bnfTerm;
 
-        private ValueConverter<object, object> valueConverterForUnparse;
-        internal ValueConverter<object, object> ValueConverterForUnparse
+        private ValueConverter<object, object> _inverseValueConverterForUnparse;
+        internal ValueConverter<object, object> InverseValueConverterForUnparse
         {
-            private get { return valueConverterForUnparse; }
+            private get { return _inverseValueConverterForUnparse; }
             set
             {
                 if (value != null && UtokenizerForUnparse != null)
                     throw new InvalidOperationException("Cannot set ValueConverterForUnparse because UtokenizerForUnparse has been already set.");
 
-                valueConverterForUnparse = value;
+                _inverseValueConverterForUnparse = value;
             }
         }
 
-        private Func<object, IEnumerable<Utoken>> utokenizerForUnparse;
+        private Func<object, IEnumerable<Utoken>> _utokenizerForUnparse;
         internal Func<object, IEnumerable<Utoken>> UtokenizerForUnparse
         {
-            private get { return utokenizerForUnparse; }
+            private get { return _utokenizerForUnparse; }
             set
             {
-                if (value != null && ValueConverterForUnparse != null)
+                if (value != null && InverseValueConverterForUnparse != null)
                     throw new InvalidOperationException("Cannot set UtokenizerForUnparse because ValueConverterForUnparse has been already set.");
 
-                utokenizerForUnparse = value;
+                _utokenizerForUnparse = value;
             }
         }
 
@@ -78,7 +78,9 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue Create(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            BnfiTermValue bnfiTermValue = new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue Create(Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
@@ -93,7 +95,9 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<T> Create<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            BnfiTermValue<T> bnfiTermValue = new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue<T> Create<T>(Terminal terminal, ValueCreator<T> valueCreator, bool astForChild = true)
@@ -103,17 +107,21 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<string> CreateIdentifier(IdentifierTerminal identifierTerminal)
         {
-            return Create<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
+            BnfiTermValue<string> bnfiTermValue = Create<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue<T> CreateNumber<T>(NumberLiteral numberLiteral)
         {
-            return Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
+            BnfiTermValue<T> bnfiTermValue = Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
         {
-            return Create(typeof(object), numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
+            return CreateNumber<object>(numberLiteral);
         }
 
         public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
@@ -157,12 +165,16 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
         {
-            return Convert(bnfTerm, inValue => (TOut)(object)inValue);
+            BnfiTermValue<TOut> bnfiTermValue = Convert(bnfTerm, inValue => (TOut)(object)inValue);
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
-            return Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
+            BnfiTermValue<TOut> bnfiTermValue = Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
+            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            return bnfiTermValue;
         }
 
         public static BnfiTermValue<T?> ConvertValueOptVal<T>(IBnfiTerm<T> bnfTerm)
@@ -255,6 +267,11 @@ namespace Irony.ITG.Ast
             };
         }
 
+        protected static ValueConverter<object, object> GetIdentityValueConverter()
+        {
+            return obj => obj;
+        }
+
         protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         public new BnfiExpressionValue Rule { set { base.Rule = value; } }
@@ -272,10 +289,10 @@ namespace Irony.ITG.Ast
             {
                 utokens = this.UtokenizerForUnparse(obj);
             }
-            else if (this.ValueConverterForUnparse != null)
+            else if (this.InverseValueConverterForUnparse != null)
             {
                 BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
-                object childObj = this.ValueConverterForUnparse(obj);
+                object childObj = this.InverseValueConverterForUnparse(obj);
 
                 utokens = unparser.Unparse(childObj, childBnfTerm);
             }
