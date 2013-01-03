@@ -33,6 +33,7 @@ namespace ConsoleApplication1
 
             Unparser unparser = new Unparser(grammar);
             string str = unparser.Unparse(parseTree.Root).AsString();
+            Console.WriteLine(str);
         }
     }
 }
