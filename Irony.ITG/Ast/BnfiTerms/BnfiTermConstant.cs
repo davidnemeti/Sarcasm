@@ -10,7 +10,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IEnumerable<KeyValuePair<string, T>>
+    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>
     {
         public BnfiTermConstant()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
@@ -31,6 +31,11 @@ namespace Irony.ITG.Ast
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
+        }
+
+        Type IHasType.Type
+        {
+            get { return typeof(T); }
         }
 
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()

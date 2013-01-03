@@ -25,6 +25,11 @@ namespace Irony.ITG.Ast
     {
     }
 
+    public interface IHasType
+    {
+        Type Type { get; }
+    }
+
     public interface IBnfiTermCopyable
     {
     }
@@ -33,9 +38,9 @@ namespace Irony.ITG.Ast
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal
+    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType
     {
-        public Type Type { get; private set; }
+        protected Type Type { get; private set; }
 
         protected BnfiTermNonTerminal(Type type, string errorAlias)
             : base(name: GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias: errorAlias)
@@ -46,5 +51,10 @@ namespace Irony.ITG.Ast
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
         internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
         internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use 'SetRuleOr' or 'Or' method instead.";
+
+        Type IHasType.Type
+        {
+            get { return this.Type; }
+        }
     }
 }

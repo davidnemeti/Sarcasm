@@ -54,18 +54,18 @@ namespace Irony.ITG.Ast
                 }
                 else
                 {
-                    BnfiTermNonTerminal childBnfiTermCandidate = childBnfTermCandidate as BnfiTermNonTerminal;
+                    IHasType childCandidateWithType = childBnfTermCandidate as IHasType;
 
-                    if (childBnfiTermCandidate == null)
+                    if (childCandidateWithType == null)
                         throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.", obj, obj.GetType().Name, childBnfTermCandidate.Name));
 
-                    if (!childBnfiTermCandidate.Type.IsInstanceOfType(obj))
+                    if (!childCandidateWithType.Type.IsInstanceOfType(obj))
                     {
                         // keep trying with the others...
                         continue;
                     }
 
-                    utokens = unparser.Unparse(obj, childBnfiTermCandidate);
+                    utokens = unparser.Unparse(obj, childBnfTermCandidate);
                 }
 
                 foreach (Utoken utoken in utokens)
