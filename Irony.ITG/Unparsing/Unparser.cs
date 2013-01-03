@@ -110,7 +110,7 @@ namespace Irony.ITG.Unparsing
         {
             StringBuilder sb = new StringBuilder();
             foreach (Utoken utoken in utokens)
-                sb.Append(utokens.ToString());
+                sb.Append(utoken.ToString());
             return sb.ToString();
         }
 
