@@ -32,7 +32,7 @@ namespace ConsoleApplication1
             ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
 
             Unparser unparser = new Unparser(grammar);
-            string str = unparser.Unparse(parseTree.Root).AsString();
+            string str = unparser.Unparse(parseTree.Root.AstNode).AsString();
             Console.WriteLine(str);
         }
     }
