@@ -7,16 +7,20 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermCopyable : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable
+    public partial class BnfiTermCopyable : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
+        private readonly BnfTerm childBnfTerm;
+
         protected BnfiTermCopyable(Type type, BnfTerm bnfTerm, string errorAlias = null)
             : base(type, errorAlias)
         {
+            this.childBnfTerm = bnfTerm;
             this.Rule = new BnfExpression(bnfTerm);
-            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTermValue which actually does something)
+            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)
         }
 
         public static BnfiTermCopyable Copy(IBnfiTerm bnfiTerm)
@@ -37,6 +41,12 @@ namespace Irony.ITG.Ast
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
+        }
+
+        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        {
+            foreach (Utoken utoken in unparser.Unparse(obj, childBnfTerm))
+                yield return utoken;
         }
     }
 

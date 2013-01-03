@@ -369,9 +369,9 @@ namespace Irony.ITG.Ast
                 {
                     parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.AstNode != null).AstNode;
                 }
-                catch (InvalidOperationException)
+                catch (InvalidOperationException e)
                 {
-                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal");
+                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
                 }
             };
         }

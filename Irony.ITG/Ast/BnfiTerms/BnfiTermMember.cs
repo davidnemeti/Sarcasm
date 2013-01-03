@@ -5,39 +5,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using System.IO;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    internal class MemberValue
-    {
-        public MemberInfo MemberInfo { get; private set; }
-        public object Value { get; private set; }
-
-        public MemberValue(MemberInfo MemberInfo, object Value)
-        {
-            this.MemberInfo = MemberInfo;
-            this.Value = Value;
-        }
-
-        public override string ToString()
-        {
-            return string.Format(".{{{0}}} : {1}", MemberInfo.Name, ToStringValue(Value));
-        }
-
-        protected static string ToStringValue(object value)
-        {
-            return value is System.Collections.IEnumerable
-                ? GrammarHelper.TypeNameWithDeclaringTypes(value.GetType())
-                : value.ToString();
-        }
-    }
-
-    public partial class BnfiTermMember : NonTerminal, IBnfiTerm
+    public partial class BnfiTermMember : NonTerminal, IBnfiTerm, IUnparsable
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
@@ -124,6 +101,12 @@ namespace Irony.ITG.Ast
             get { return base.Rule; }
             set { base.Rule = value; }
         }
+
+        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        {
+            foreach (Utoken utoken in unparser.Unparse(obj, this.BnfTerm))
+                yield return utoken;
+        }
     }
 
     public partial class BnfiTermMember<TDeclaringType> : BnfiTermMember, IBnfiTerm<TDeclaringType>
@@ -133,5 +116,29 @@ namespace Irony.ITG.Ast
         {
         }
 
+    }
+
+    internal class MemberValue
+    {
+        public MemberInfo MemberInfo { get; private set; }
+        public object Value { get; private set; }
+
+        public MemberValue(MemberInfo MemberInfo, object Value)
+        {
+            this.MemberInfo = MemberInfo;
+            this.Value = Value;
+        }
+
+        public override string ToString()
+        {
+            return string.Format(".{{{0}}} : {1}", MemberInfo.Name, ToStringValue(Value));
+        }
+
+        protected static string ToStringValue(object value)
+        {
+            return value is System.Collections.IEnumerable
+                ? GrammarHelper.TypeNameWithDeclaringTypes(value.GetType())
+                : value.ToString();
+        }
     }
 }

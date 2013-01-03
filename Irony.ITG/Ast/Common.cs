@@ -35,12 +35,12 @@ namespace Irony.ITG.Ast
 
     public abstract class BnfiTermNonTerminal : NonTerminal
     {
-        protected Type type { get; private set; }
+        public Type Type { get; private set; }
 
         protected BnfiTermNonTerminal(Type type, string errorAlias)
             : base(name: GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias: errorAlias)
         {
-            this.type = type;
+            this.Type = type;
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";

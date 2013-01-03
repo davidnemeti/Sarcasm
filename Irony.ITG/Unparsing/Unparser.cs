@@ -21,6 +21,7 @@ namespace Irony.ITG.Unparsing
 
         public Unparser(Grammar grammar)
         {
+            this.Grammar = grammar;
         }
 
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
@@ -38,21 +39,19 @@ namespace Irony.ITG.Unparsing
             else if (bnfTerm is NonTerminal)
             {
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
-                Unparsable unparsable = nonTerminal as Unparsable;
+                IUnparsable unparsable = nonTerminal as IUnparsable;
 
                 if (unparsable == null)
-                    throw new UnparsableException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not unparsable.", obj, obj.GetType().Name, nonTerminal.Name));
+                    throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
 
-                Production production = unparsable.ChooseProduction(nonTerminal.Productions, obj);
-
-                foreach (BnfTerm childBnfTerm in production.RValues)
-                {
-                    foreach (Utoken utoken in Unparse(unparsable.GetObjectForChildBnfTerm(childBnfTerm)))
-                    {
-                        yield return utoken;
-                    }
-                }
+                foreach (Utoken utoken in unparsable.Unparse(this, obj))
+                    yield return utoken;
             }
+        }
+
+        internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
+        {
+            return nonTerminal.Productions.Select(production => production.RValues);
         }
 
         private BnfTerm GetBnfTerm(object obj, Context context)
@@ -72,10 +71,9 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    public interface Unparsable
+    public interface IUnparsable
     {
-        Production ChooseProduction(IEnumerable<Production> productions, object obj);
-        object GetObjectForChildBnfTerm(BnfTerm childBnfTerm);
+        IEnumerable<Utoken> Unparse(Unparser unparser, object obj);
     }
 
     public class Utoken
@@ -105,13 +103,37 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    public class UnparsableException : Exception
+    public abstract class UnparseException : Exception
     {
-        public UnparsableException()
+        public UnparseException()
         {
         }
 
-        public UnparsableException(string message)
+        public UnparseException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    public class CannotUnparseException : UnparseException
+    {
+        public CannotUnparseException()
+        {
+        }
+
+        public CannotUnparseException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    internal class ValueMismatchException : UnparseException
+    {
+        public ValueMismatchException()
+        {
+        }
+
+        public ValueMismatchException(string message)
             : base(message)
         {
         }

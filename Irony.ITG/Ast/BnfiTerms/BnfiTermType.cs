@@ -11,10 +11,11 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm
+    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
         public BnfiTermType(Type type, string errorAlias = null)
             : base(type, errorAlias)
@@ -34,14 +35,7 @@ namespace Irony.ITG.Ast
 
                 // 2. set member values by MemberValues (so that we can overwrite the copied members if we want)
                 foreach (var memberValue in childValues.OfType<MemberValue>())
-                {
-                    if (memberValue.MemberInfo is PropertyInfo)
-                        ((PropertyInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
-                    else if (memberValue.MemberInfo is FieldInfo)
-                        ((FieldInfo)memberValue.MemberInfo).SetValue(objValue, memberValue.Value);
-                    else
-                        throw new ApplicationException("Object with wrong type in memberinfo: " + memberValue.MemberInfo.Name);
-                }
+                    SetValue(memberValue, objValue);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
             };
@@ -83,11 +77,59 @@ namespace Irony.ITG.Ast
                     : new FieldInfo[0]);
         }
 
+        protected static void SetValue(MemberInfo memberInfo, object obj, object value)
+        {
+            if (memberInfo is PropertyInfo)
+                ((PropertyInfo)memberInfo).SetValue(obj, value);
+            else if (memberInfo is FieldInfo)
+                ((FieldInfo)memberInfo).SetValue(obj, value);
+            else
+                throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
+        }
+
+        private static void SetValue(MemberValue memberValue, object obj)
+        {
+            SetValue(memberValue.MemberInfo, obj, memberValue.Value);
+        }
+
+        protected static object GetValue(MemberInfo memberInfo, object obj)
+        {
+            if (memberInfo is PropertyInfo)
+                return ((PropertyInfo)memberInfo).GetValue(obj);
+            else if (memberInfo is FieldInfo)
+                return ((FieldInfo)memberInfo).GetValue(obj);
+            else
+                throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
+        }
+
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
+        }
+
+        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        {
+            // TODO: we should process the first one which has some UnparseHint...
+            BnfTermList childBnfTerms = Unparser.GetChildBnfTermLists(this).First();
+            foreach (BnfTerm childBnfTerm in childBnfTerms)
+            {
+                object childObj;
+
+                if (childBnfTerm is BnfiTermMember)
+                {
+                    BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
+                    childObj = GetValue(bnfiTermMember.MemberInfo, obj);
+                }
+                else if (childBnfTerm is BnfiTermCopyable)
+                    childObj = obj;
+                else
+                    childObj = null;
+
+                foreach (Utoken utoken in unparser.Unparse(childObj, childBnfTerm))
+                    yield return utoken;
+            }
         }
     }
 

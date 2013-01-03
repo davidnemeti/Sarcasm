@@ -5,16 +5,45 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using System.IO;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm
+    public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
+        private readonly BnfTerm bnfTerm;
+
+        private ValueConverter<object, object> valueConverterForUnparse;
+        internal ValueConverter<object, object> ValueConverterForUnparse
+        {
+            private get { return valueConverterForUnparse; }
+            set
+            {
+                if (value != null && UtokenizerForUnparse != null)
+                    throw new InvalidOperationException("Cannot set ValueConverterForUnparse because UtokenizerForUnparse has been already set.");
+
+                valueConverterForUnparse = value;
+            }
+        }
+
+        private Func<object, IEnumerable<Utoken>> utokenizerForUnparse;
+        internal Func<object, IEnumerable<Utoken>> UtokenizerForUnparse
+        {
+            private get { return utokenizerForUnparse; }
+            set
+            {
+                if (value != null && ValueConverterForUnparse != null)
+                    throw new InvalidOperationException("Cannot set UtokenizerForUnparse because ValueConverterForUnparse has been already set.");
+
+                utokenizerForUnparse = value;
+            }
+        }
+
         public BnfiTermValue(string errorAlias = null)
             : this(typeof(object), errorAlias)
         {
@@ -29,6 +58,8 @@ namespace Irony.ITG.Ast
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueCreator<object> valueCreator, bool isOptionalData, string errorAlias, bool astForChild)
             : base(type, errorAlias)
         {
+            this.bnfTerm = bnfTerm;
+
             if (!astForChild)
                 bnfTerm.Flags |= TermFlags.NoAstNode;
 
@@ -95,13 +126,7 @@ namespace Irony.ITG.Ast
             return new BnfiTermValue(
                 type,
                 bnfiTerm.AsBnfTerm(),
-                (context, parseTreeNode) =>
-                    {
-                        if (parseTreeNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
-
-                        return valueConverter(GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes[0].AstNode));
-                    },
+                ConvertValueConverterToValueCreator(valueConverter),
                 isOptionalData: false,
                 errorAlias: null,
                 astForChild: true
@@ -112,13 +137,7 @@ namespace Irony.ITG.Ast
         {
             return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
-                (context, parseTreeNode) =>
-                    {
-                        if (parseTreeNode.ChildNodes.Count != 1)
-                            throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
-
-                        return valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeNode.ChildNodes[0].AstNode));
-                    },
+                ConvertValueConverterToValueCreator(valueConverter),
                 isOptionalData: false,
                 errorAlias: null,
                 astForChild: true
@@ -129,13 +148,7 @@ namespace Irony.ITG.Ast
         {
             return new BnfiTermValue<TOut>(
                 bnfiTerm.AsBnfTerm(),
-                (context, parseTreeNode) =>
-                {
-                    if (parseTreeNode.ChildNodes.Count != 1)
-                        throw new ArgumentException("Only one child is allowed for a BnfiTermValue term: {0}", parseTreeNode.Term.Name);
-
-                    return valueConverter(GrammarHelper.AstNodeToValue<object>(parseTreeNode.ChildNodes[0].AstNode));
-                },
+                ConvertValueConverterToValueCreator(valueConverter),
                 isOptionalData: false,
                 errorAlias: null,
                 astForChild: true
@@ -204,21 +217,42 @@ namespace Irony.ITG.Ast
             return ConvertValueOptRef(bnfiTerm, valueConverter, defaultValue);
         }
 
-        private static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue = default(TOut))
+        protected static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue = default(TOut))
         {
             return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
-                (context, parseNode) =>
-                {
-                    ParseTreeNode parseTreeChild = parseNode.ChildNodes.FirstOrDefault();
-                    return parseTreeChild != null
-                        ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
-                        : defaultValue;
-                },
+                ConvertValueConverterToValueCreatorOpt(valueConverter, defaultValue),
                 isOptionalData: true,
                 errorAlias: null,
                 astForChild: true
                 );
+        }
+
+        protected static ValueCreator<TOut> ConvertValueConverterToValueCreator<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter)
+        {
+            return ConvertValueConverterToValueCreator(valueConverter, optional: false, defaultValue: default(TOut));   // defaultValue won't be used
+        }
+
+        protected static ValueCreator<TOut> ConvertValueConverterToValueCreatorOpt<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+        {
+            return ConvertValueConverterToValueCreator(valueConverter, optional: true, defaultValue: defaultValue);
+        }
+
+        private static ValueCreator<TOut> ConvertValueConverterToValueCreator<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, bool optional, TOut defaultValue)
+        {
+            return (context, parseTreeNode) =>
+            {
+                if (!optional && parseTreeNode.ChildNodes.Count != 1)
+                    throw new ArgumentException("Only one child is allowed for a non-optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                else if (optional && parseTreeNode.ChildNodes.Count > 1)
+                    throw new ArgumentException("Only zero or one child is allowed for an optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+
+                ParseTreeNode parseTreeChild = parseTreeNode.ChildNodes.SingleOrDefault();
+
+                return parseTreeChild != null
+                    ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
+                    : defaultValue;
+            };
         }
 
         protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
@@ -228,6 +262,28 @@ namespace Irony.ITG.Ast
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
+        }
+
+        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        {
+            IEnumerable<Utoken> utokens;
+
+            if (this.UtokenizerForUnparse != null)
+            {
+                utokens = this.UtokenizerForUnparse(obj);
+            }
+            else if (this.ValueConverterForUnparse != null)
+            {
+                BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
+                object childObj = this.ValueConverterForUnparse(obj);
+
+                utokens = unparser.Unparse(childObj, childBnfTerm);
+            }
+            else
+                throw new CannotUnparseException(string.Format("BnfiTermValue '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
+
+            foreach (Utoken utoken in utokens)
+                yield return utoken;
         }
     }
 

@@ -10,10 +10,11 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermTransient : BnfiTermNonTerminal, IBnfiTerm
+    public partial class BnfiTermTransient : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
         public BnfiTermTransient(Type type, string errorAlias = null)
             : base(type, errorAlias)
@@ -28,6 +29,50 @@ namespace Irony.ITG.Ast
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
             return this;
+        }
+
+        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        {
+            foreach (BnfTermList childBnfTerms in Unparser.GetChildBnfTermLists(this))
+            {
+                BnfTerm childBnfTermCandidate = childBnfTerms.Single(bnfTerm => !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint));
+
+                IEnumerable<Utoken> utokens;
+
+                if (obj.GetType() == this.Type)
+                {
+                    try
+                    {
+                        // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
+                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                    }
+                    catch (ValueMismatchException)
+                    {
+                        // it is okay, keep trying with the others...
+                        continue;
+                    }
+                }
+                else
+                {
+                    BnfiTermNonTerminal childBnfiTermCandidate = childBnfTermCandidate as BnfiTermNonTerminal;
+
+                    if (childBnfiTermCandidate == null)
+                        throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.", obj, obj.GetType().Name, childBnfTermCandidate.Name));
+
+                    if (!childBnfiTermCandidate.Type.IsInstanceOfType(obj))
+                    {
+                        // keep trying with the others...
+                        continue;
+                    }
+
+                    utokens = unparser.Unparse(obj, childBnfiTermCandidate);
+                }
+
+                foreach (Utoken utoken in utokens)
+                    yield return utoken;
+
+                yield break;
+            }
         }
     }
 
