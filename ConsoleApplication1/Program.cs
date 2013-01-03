@@ -27,8 +27,12 @@ namespace ConsoleApplication1
             Console.WriteLine(grammar.GetNonTerminalsAsText());
             Console.WriteLine();
             Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
+
             var parser = new Parser(grammar);
             ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
+
+            Unparser unparser = new Unparser(grammar);
+            string str = unparser.Unparse(parseTree.Root).AsString();
         }
     }
 }

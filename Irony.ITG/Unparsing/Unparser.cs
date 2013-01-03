@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using System.IO;
 
 using Irony;
 using Irony.Ast;
@@ -100,6 +101,26 @@ namespace Irony.ITG.Unparsing
         public override string ToString()
         {
             return this.Text;
+        }
+    }
+
+    public static class UnparserExtensions
+    {
+        public static string AsString(this IEnumerable<Utoken> utokens)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (Utoken utoken in utokens)
+                sb.Append(utokens.ToString());
+            return sb.ToString();
+        }
+
+        public static async void WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream)
+        {
+            using (StreamWriter sw = new StreamWriter(stream))
+            {
+                foreach (Utoken utoken in utokens)
+                    await sw.WriteAsync(utokens.ToString());
+            }
         }
     }
 
