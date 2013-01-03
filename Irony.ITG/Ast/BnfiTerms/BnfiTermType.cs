@@ -121,6 +121,9 @@ namespace Irony.ITG.Ast
                 {
                     BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
                     childObj = GetValue(bnfiTermMember.MemberInfo, obj);
+
+                    if (childObj == null)
+                        continue;
                 }
                 else if (childBnfTerm is BnfiTermCopyable)
                     childObj = obj;
