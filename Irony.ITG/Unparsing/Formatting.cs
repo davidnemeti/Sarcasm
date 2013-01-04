@@ -18,7 +18,7 @@ namespace Irony.ITG.Unparsing
 {
     public class Formatting
     {
-        const int defaultPriority = 0;
+        private const int defaultPriority = 0;
 
         private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensBefore = new Dictionary<BnfTerm, InsertedUtokens>();
         private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensAfter = new Dictionary<BnfTerm, InsertedUtokens>();
