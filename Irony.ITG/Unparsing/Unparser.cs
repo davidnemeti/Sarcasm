@@ -19,6 +19,9 @@ namespace Irony.ITG.Unparsing
     public class Unparser
     {
         public Grammar Grammar { get; private set; }
+        public Formatting Formatting { get { return this.Grammar.Formatting; } }
+
+        private int indentLevel = 0;
 
         public Unparser(Grammar grammar)
         {
@@ -33,10 +36,24 @@ namespace Irony.ITG.Unparsing
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
+            BnfTerm prevBnfTerm = null;
+            foreach (var item in UnparseUnfiltered(obj, bnfTerm))
+            {
+                yield return item.Item1;
+                prevBnfTerm = item.Item2;
+            }
+        }
+
+        private IEnumerable<Tuple<Utoken, BnfTerm>> UnparseUnfiltered(object obj, BnfTerm bnfTerm)
+        {
+            InsertedUtokens insertedUtokensBefore;
+            if (Formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
+                yield return new Tuple<Utoken, BnfTerm>(insertedUtokensBefore, bnfTerm);
+
             if (bnfTerm is KeyTerm)
-                yield return ((KeyTerm)bnfTerm).Text;
+                yield return new Tuple<Utoken, BnfTerm>(((KeyTerm)bnfTerm).Text, bnfTerm);
             else if (bnfTerm is Terminal)
-                yield return obj.ToString();
+                yield return new Tuple<Utoken, BnfTerm>(obj.ToString(), bnfTerm);
             else if (bnfTerm is NonTerminal)
             {
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
@@ -46,8 +63,12 @@ namespace Irony.ITG.Unparsing
                     throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
 
                 foreach (Utoken utoken in unparsable.Unparse(this, obj))
-                    yield return utoken;
+                    yield return Tuple.Create(utoken, bnfTerm);
             }
+
+            InsertedUtokens insertedUtokensAfter;
+            if (Formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
+                yield return new Tuple<Utoken, BnfTerm>(insertedUtokensAfter, bnfTerm);
         }
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
@@ -59,6 +80,28 @@ namespace Irony.ITG.Unparsing
         {
             return Grammar.Root;
             // TODO: do this by choosing by context
+        }
+
+        private Utoken GetIndent()
+        {
+            return Utoken.GetIndent(Formatting, indentLevel);
+        }
+    }
+
+    public static class UnparserExtensions
+    {
+        public static string AsString(this IEnumerable<Utoken> utokens, Unparser unparser)
+        {
+            return string.Join(separator: null, values: utokens.Select(utoken => utoken.ToString(unparser.Formatting)));
+        }
+
+        public static async void WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
+        {
+            using (StreamWriter sw = new StreamWriter(stream))
+            {
+                foreach (Utoken utoken in utokens)
+                    await sw.WriteAsync(utoken.ToString(unparser.Formatting));
+            }
         }
     }
 
@@ -75,88 +118,5 @@ namespace Irony.ITG.Unparsing
     public interface IUnparsable
     {
         IEnumerable<Utoken> Unparse(Unparser unparser, object obj);
-    }
-
-    public class Utoken
-    {
-        public string Text { get; private set; }
-        public object Reference { get; private set; }
-
-        public Utoken(string text, object reference = null)
-        {
-            this.Text = text;
-            this.Reference = reference;
-        }
-
-        public static explicit operator string(Utoken utoken)
-        {
-            return utoken.Text;
-        }
-
-        public static implicit operator Utoken(string text)
-        {
-            return new Utoken(text);
-        }
-
-        public override string ToString()
-        {
-            return this.Text;
-        }
-    }
-
-    public static class UnparserExtensions
-    {
-        public static string AsString(this IEnumerable<Utoken> utokens)
-        {
-            StringBuilder sb = new StringBuilder();
-            foreach (Utoken utoken in utokens)
-                sb.Append(utoken.ToString());
-            return sb.ToString();
-        }
-
-        public static async void WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream)
-        {
-            using (StreamWriter sw = new StreamWriter(stream))
-            {
-                foreach (Utoken utoken in utokens)
-                    await sw.WriteAsync(utokens.ToString());
-            }
-        }
-    }
-
-    public abstract class UnparseException : Exception
-    {
-        public UnparseException()
-        {
-        }
-
-        public UnparseException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    public class CannotUnparseException : UnparseException
-    {
-        public CannotUnparseException()
-        {
-        }
-
-        public CannotUnparseException(string message)
-            : base(message)
-        {
-        }
-    }
-
-    internal class ValueMismatchException : UnparseException
-    {
-        public ValueMismatchException()
-        {
-        }
-
-        public ValueMismatchException(string message)
-            : base(message)
-        {
-        }
     }
 }

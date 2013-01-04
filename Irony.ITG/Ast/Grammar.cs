@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
@@ -258,6 +259,22 @@ namespace Irony.ITG.Ast
         public static new Grammar CurrentGrammar
         {
             get { return (Grammar)Irony.Parsing.Grammar.CurrentGrammar; }
+        }
+
+        #endregion
+
+        #region Unparsing
+
+        private Formatting _formatting;
+        public Formatting Formatting
+        {
+            get
+            {
+                if (_formatting == null)
+                    _formatting = new Formatting();
+
+                return _formatting;
+            }
         }
 
         #endregion
