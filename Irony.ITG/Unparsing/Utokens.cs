@@ -35,9 +35,9 @@ namespace Irony.ITG.Unparsing
         public static readonly Utoken Space = UtokenPrimitive.Space;
         public static readonly Utoken Tab = UtokenPrimitive.Tab;
 
-        public static Utoken GetIndent(Formatting formatting, int indentLevel)
+        public static Utoken GetIndent(int indentLevel)
         {
-            return new UtokenRepeat(new UtokenText(formatting.IndentUnit), indentLevel);
+            return new UtokenRepeat(UtokenPrimitive.IndentUnit, indentLevel);
         }
 
         public static readonly Utoken IncreaseIndentLevel = new UtokenControl();
@@ -74,10 +74,11 @@ namespace Irony.ITG.Unparsing
     {
         private UtokenPrimitive() { }
 
-        internal static new readonly Utoken NewLine = new UtokenPrimitive();
-        internal static new readonly Utoken EmptyLine = new UtokenPrimitive();
-        internal static new readonly Utoken Space = new UtokenPrimitive();
-        internal static new readonly Utoken Tab = new UtokenPrimitive();
+        internal static new readonly UtokenPrimitive NewLine = new UtokenPrimitive();
+        internal static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive();
+        internal static new readonly UtokenPrimitive Space = new UtokenPrimitive();
+        internal static new readonly UtokenPrimitive Tab = new UtokenPrimitive();
+        internal static readonly UtokenPrimitive IndentUnit = new UtokenPrimitive();
 
         public override string ToString(Formatting formatting)
         {
@@ -89,12 +90,14 @@ namespace Irony.ITG.Unparsing
                 return formatting.Space;
             else if (this == Tab)
                 return formatting.Tab;
+            else if (this == IndentUnit)
+                return formatting.IndentUnit;
             else
                 throw new InvalidOperationException("Unknown utoken primitive");
         }
     }
 
-    public class UtokenControl : Utoken
+    internal class UtokenControl : Utoken
     {
         public override string ToString(Formatting formatting)
         {
@@ -102,7 +105,7 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    public class UtokenRepeat : Utoken
+    internal class UtokenRepeat : Utoken
     {
         private readonly Utoken utoken;
         private readonly int count;

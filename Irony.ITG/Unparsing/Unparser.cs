@@ -84,7 +84,7 @@ namespace Irony.ITG.Unparsing
 
         private Utoken GetIndent()
         {
-            return Utoken.GetIndent(Formatting, indentLevel);
+            return Utoken.GetIndent(indentLevel);
         }
     }
 
