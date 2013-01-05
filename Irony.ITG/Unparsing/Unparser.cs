@@ -47,9 +47,13 @@ namespace Irony.ITG.Unparsing
                 yield return utoken;
 
             if (bnfTerm is KeyTerm)
+            {
                 yield return ((KeyTerm)bnfTerm).Text;
+            }
             else if (bnfTerm is Terminal)
+            {
                 yield return obj.ToString();
+            }
             else if (bnfTerm is NonTerminal)
             {
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
