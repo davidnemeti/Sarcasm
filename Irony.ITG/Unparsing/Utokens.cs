@@ -30,15 +30,20 @@ namespace Irony.ITG.Unparsing
             return (UtokenText)text;
         }
 
+        public static Utoken CreateText(string text, object reference = null)
+        {
+            return new UtokenText(text, reference);
+        }
+
+        public static Utoken CreateIndent(int indentLevel)
+        {
+            return new UtokenRepeat(UtokenPrimitive.IndentUnit, indentLevel);
+        }
+
         public static readonly Utoken NewLine = UtokenPrimitive.NewLine;
         public static readonly Utoken EmptyLine = UtokenPrimitive.EmptyLine;
         public static readonly Utoken Space = UtokenPrimitive.Space;
         public static readonly Utoken Tab = UtokenPrimitive.Tab;
-
-        public static Utoken GetIndent(int indentLevel)
-        {
-            return new UtokenRepeat(UtokenPrimitive.IndentUnit, indentLevel);
-        }
 
         public static readonly Utoken IncreaseIndentLevel = new UtokenControl();
         public static readonly Utoken DecreaseIndentLevel = new UtokenControl();
@@ -70,15 +75,15 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    public class UtokenPrimitive : Utoken
+    internal class UtokenPrimitive : Utoken
     {
         private UtokenPrimitive() { }
 
-        internal static new readonly UtokenPrimitive NewLine = new UtokenPrimitive();
-        internal static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive();
-        internal static new readonly UtokenPrimitive Space = new UtokenPrimitive();
-        internal static new readonly UtokenPrimitive Tab = new UtokenPrimitive();
-        internal static readonly UtokenPrimitive IndentUnit = new UtokenPrimitive();
+        public static new readonly UtokenPrimitive NewLine = new UtokenPrimitive();
+        public static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive();
+        public static new readonly UtokenPrimitive Space = new UtokenPrimitive();
+        public static new readonly UtokenPrimitive Tab = new UtokenPrimitive();
+        public static readonly UtokenPrimitive IndentUnit = new UtokenPrimitive();
 
         public override string ToString(Formatting formatting)
         {
