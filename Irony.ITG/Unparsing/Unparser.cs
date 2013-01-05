@@ -43,8 +43,8 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseUnfiltered(object obj, BnfTerm bnfTerm)
         {
-            foreach (var item in formatter.Begin(bnfTerm))
-                yield return item;
+            foreach (var utoken in formatter.Begin(bnfTerm))
+                yield return utoken;
 
             if (bnfTerm is KeyTerm)
                 yield return ((KeyTerm)bnfTerm).Text;
@@ -62,8 +62,8 @@ namespace Irony.ITG.Unparsing
                     yield return utoken;
             }
 
-            foreach (var item in formatter.End(bnfTerm))
-                yield return item;
+            foreach (var utoken in formatter.End(bnfTerm))
+                yield return utoken;
         }
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
