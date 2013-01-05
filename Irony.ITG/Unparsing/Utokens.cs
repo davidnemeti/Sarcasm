@@ -20,6 +20,11 @@ namespace Irony.ITG.Unparsing
     {
         public abstract string ToString(Formatting formatting);
 
+        public virtual IEnumerable<Utoken> Flatten()
+        {
+            yield return this;
+        }
+
         public override string ToString()
         {
             throw new InvalidOperationException("Use 'ToString(Formatting formatting)' instead");
@@ -123,28 +128,63 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString(Formatting formatting)
         {
-            return string.Join(separator: null, values: Enumerable.Repeat(utoken, count).Select(_utoken => _utoken.ToString(formatting)));
+            return string.Join(
+                separator: null,
+                values: Enumerable.Repeat(utoken, count).Select(_utoken => _utoken.ToString(formatting))
+                );
+        }
+
+        public override IEnumerable<Utoken> Flatten()
+        {
+            return Enumerable.Repeat(utoken, count).SelectMany(_utoken => _utoken.Flatten());
         }
     }
 
-    internal class InsertedUtokens : Utoken
+    internal class InsertedUtokens : Utoken, IComparable<InsertedUtokens>
     {
-        public enum _Kind { Before, After, Between }
+        public enum Kind { Before, After, Between }
 
-        public IEnumerable<Utoken> Utokens { get; private set; }
-        public int Priority { get; private set; }
-        public _Kind Kind { get; private set; }
+        public readonly Kind kind;
+        public readonly int priority;
+        public readonly bool overridable;
+        public readonly IEnumerable<Utoken> utokens;
 
-        public InsertedUtokens(IEnumerable<Utoken> utokens, int priority, _Kind kind)
+        public InsertedUtokens(Kind kind, int priority, bool overridable, IEnumerable<Utoken> utokens)
         {
-            this.Utokens = utokens;
-            this.Priority = priority;
-            this.Kind = kind;
+            this.utokens = utokens.ToList();
+            this.priority = priority;
+            this.kind = kind;
+            this.overridable = overridable;
         }
 
         public override string ToString(Formatting formatting)
         {
-            throw new InvalidOperationException("Cannot convert an InsertedUtokens to string");
+            throw new InvalidOperationException("Should not convert an InsertedUtokens to string");
+        }
+
+        public override IEnumerable<Utoken> Flatten()
+        {
+            return utokens.SelectMany(utoken => utoken.Flatten());
+        }
+
+        public int CompareTo(InsertedUtokens that)
+        {
+            if (that == null || this.priority > that.priority)
+                return 1;
+            else if (this.priority < that.priority)
+                return -1;
+            else
+                return 0;
+        }
+
+        public static int Compare(InsertedUtokens insertedUtokens1, InsertedUtokens insertedUtokens2)
+        {
+            if (insertedUtokens1 == null && insertedUtokens2 == null)
+                return 0;
+            else if (insertedUtokens1 == null && insertedUtokens2 != null)
+                return -1;
+            else
+                return insertedUtokens1.CompareTo(insertedUtokens2);
         }
     }
 }
