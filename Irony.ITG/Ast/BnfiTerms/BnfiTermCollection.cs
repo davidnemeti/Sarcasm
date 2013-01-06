@@ -343,7 +343,7 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 

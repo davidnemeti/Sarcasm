@@ -149,7 +149,7 @@ namespace Irony.ITG.Unparsing
         public readonly bool overridable;
         public readonly IEnumerable<Utoken> utokens;
 
-        public InsertedUtokens(Kind kind, int priority, bool overridable, IEnumerable<Utoken> utokens)
+        internal InsertedUtokens(Kind kind, int priority, bool overridable, IEnumerable<Utoken> utokens)
         {
             this.utokens = utokens.ToList();
             this.priority = priority;

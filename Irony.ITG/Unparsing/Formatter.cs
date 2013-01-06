@@ -22,7 +22,6 @@ namespace Irony.ITG.Unparsing
 
         private readonly Formatting formatting;
 
-        private int indentLevel = 0;
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
         State lastState = State.Begin;
 
@@ -62,9 +61,9 @@ namespace Irony.ITG.Unparsing
                 yield return insertedUtokensAfter;
         }
 
-        public Utoken GetIndent()
+        public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
         {
-            return Utoken.CreateIndent(indentLevel);
+            return InsertIndents(FilterInsertedUtokens(utokens));
         }
 
         #region FilterInsertedUtokens
@@ -82,7 +81,7 @@ namespace Irony.ITG.Unparsing
          * Since "Between" and "Before" InsertedUtokens are handled in the same way, we can handle them mixed.
          * */
 
-        public static IEnumerable<Utoken> FilterInsertedUtokens(IEnumerable<Utoken> utokens)
+        private static IEnumerable<Utoken> FilterInsertedUtokens(IEnumerable<Utoken> utokens)
         {
             InsertedUtokens leftInsertedUtokensToBeYield = null;
 
@@ -129,5 +128,12 @@ namespace Irony.ITG.Unparsing
         }
 
         #endregion
+
+        private static IEnumerable<Utoken> InsertIndents(IEnumerable<Utoken> utokens)
+        {
+            throw new NotImplementedException();
+            //int indentLevel = 0;
+            //Utoken.CreateIndent(indentLevel);
+        }
     }
 }

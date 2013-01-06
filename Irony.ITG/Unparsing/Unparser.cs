@@ -16,7 +16,7 @@ using Grammar = Irony.ITG.Ast.Grammar;
 
 namespace Irony.ITG.Unparsing
 {
-    public class Unparser
+    public class Unparser : IUnparser
     {
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
@@ -36,12 +36,12 @@ namespace Irony.ITG.Unparsing
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
-            return UnparseUnfiltered(obj, bnfTerm)
-                .FilterInsertedUtokens()
-                .FlattenUtokens();
+            return UnparseRaw(obj, bnfTerm)
+                .Cook()
+                .Flatten();
         }
 
-        private IEnumerable<Utoken> UnparseUnfiltered(object obj, BnfTerm bnfTerm)
+        private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
@@ -80,6 +80,11 @@ namespace Irony.ITG.Unparsing
             return Grammar.Root;
             // TODO: do this by choosing by context
         }
+
+        IEnumerable<Utoken> IUnparser.Unparse(object obj, BnfTerm bnfTerm)
+        {
+            return UnparseRaw(obj, bnfTerm);
+        }
     }
 
     public static class UnparserExtensions
@@ -98,12 +103,12 @@ namespace Irony.ITG.Unparsing
             }
         }
 
-        internal static IEnumerable<Utoken> FilterInsertedUtokens(this IEnumerable<Utoken> utokens)
+        internal static IEnumerable<Utoken> Cook(this IEnumerable<Utoken> utokens)
         {
-            return Formatter.FilterInsertedUtokens(utokens);
+            return Formatter.PostProcess(utokens);
         }
 
-        internal static IEnumerable<Utoken> FlattenUtokens(this IEnumerable<Utoken> utokens)
+        internal static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
             return utokens.SelectMany(utoken => utoken.Flatten());
         }
@@ -121,6 +126,11 @@ namespace Irony.ITG.Unparsing
 
     public interface IUnparsable
     {
-        IEnumerable<Utoken> Unparse(Unparser unparser, object obj);
+        IEnumerable<Utoken> Unparse(IUnparser unparser, object obj);
+    }
+
+    public interface IUnparser
+    {
+        IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
     }
 }

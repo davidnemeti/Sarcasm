@@ -109,7 +109,7 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
             // TODO: we should process the first one which has some UnparseHint...
             BnfTermList childBnfTerms = Unparser.GetChildBnfTermLists(this).First();

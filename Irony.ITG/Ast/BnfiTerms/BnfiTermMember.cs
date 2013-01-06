@@ -102,7 +102,7 @@ namespace Irony.ITG.Ast
             set { base.Rule = value; }
         }
 
-        public IEnumerable<Utoken> Unparse(Unparser unparser, object obj)
+        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
             foreach (Utoken utoken in unparser.Unparse(obj, this.BnfTerm))
                 yield return utoken;
