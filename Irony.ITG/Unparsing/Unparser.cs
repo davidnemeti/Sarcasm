@@ -37,8 +37,7 @@ namespace Irony.ITG.Unparsing
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm)
-                .Cook()
-                .Flatten();
+                .Cook();
         }
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
@@ -106,11 +105,6 @@ namespace Irony.ITG.Unparsing
         internal static IEnumerable<Utoken> Cook(this IEnumerable<Utoken> utokens)
         {
             return Formatter.PostProcess(utokens);
-        }
-
-        internal static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
-        {
-            return utokens.SelectMany(utoken => utoken.Flatten());
         }
     }
 

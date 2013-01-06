@@ -63,9 +63,15 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
         {
-            return InsertIndents(FilterInsertedUtokens(utokens));
+            return utokens
+                .FilterInsertedUtokens()
+                .Flatten()
+                .ProcessControls();
         }
+    }
 
+    internal static class FormatterExtensions
+    {
         #region FilterInsertedUtokens
 
         /*
@@ -81,7 +87,7 @@ namespace Irony.ITG.Unparsing
          * Since "Between" and "Before" InsertedUtokens are handled in the same way, we can handle them mixed.
          * */
 
-        private static IEnumerable<Utoken> FilterInsertedUtokens(IEnumerable<Utoken> utokens)
+        public static IEnumerable<Utoken> FilterInsertedUtokens(this IEnumerable<Utoken> utokens)
         {
             InsertedUtokens leftInsertedUtokensToBeYield = null;
 
@@ -129,7 +135,12 @@ namespace Irony.ITG.Unparsing
 
         #endregion
 
-        private static IEnumerable<Utoken> InsertIndents(IEnumerable<Utoken> utokens)
+        public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
+        {
+            return utokens.SelectMany(utoken => utoken.Flatten());
+        }
+
+        public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
         {
             throw new NotImplementedException();
             //int indentLevel = 0;
