@@ -40,11 +40,6 @@ namespace Irony.ITG.Unparsing
             return new UtokenText(text, reference);
         }
 
-        public static Utoken CreateIndent(int indentLevel)
-        {
-            return new UtokenRepeat(UtokenPrimitive.IndentUnit, indentLevel);
-        }
-
         public static readonly Utoken NewLine = UtokenPrimitive.NewLine;
         public static readonly Utoken EmptyLine = UtokenPrimitive.EmptyLine;
         public static readonly Utoken Space = UtokenPrimitive.Space;
@@ -80,7 +75,7 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    internal class UtokenPrimitive : Utoken
+    public class UtokenPrimitive : Utoken
     {
         private UtokenPrimitive() { }
 
@@ -88,7 +83,6 @@ namespace Irony.ITG.Unparsing
         public static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive();
         public static new readonly UtokenPrimitive Space = new UtokenPrimitive();
         public static new readonly UtokenPrimitive Tab = new UtokenPrimitive();
-        public static readonly UtokenPrimitive IndentUnit = new UtokenPrimitive();
 
         public override string ToString(Formatting formatting)
         {
@@ -100,10 +94,23 @@ namespace Irony.ITG.Unparsing
                 return formatting.Space;
             else if (this == Tab)
                 return formatting.Tab;
-            else if (this == IndentUnit)
-                return formatting.IndentUnit;
             else
                 throw new InvalidOperationException("Unknown utoken primitive");
+        }
+    }
+
+    public class UtokenIndent : Utoken
+    {
+        public int IndentLevel { get; private set; }
+
+        internal UtokenIndent(int indentLevel)
+        {
+            this.IndentLevel = indentLevel;
+        }
+
+        public override string ToString(Formatting formatting)
+        {
+            return string.Join(string.Empty, Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
         }
     }
 

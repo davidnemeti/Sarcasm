@@ -142,9 +142,18 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
         {
-            throw new NotImplementedException();
-            //int indentLevel = 0;
-            //Utoken.CreateIndent(indentLevel);
+            int indentLevel = 0;
+            foreach (Utoken utoken in utokens)
+            {
+                if (utoken is UtokenControl)
+                {
+                    UtokenControl utokenControl = (UtokenControl)utoken;
+
+//                    Utoken.CreateIndent(indentLevel);
+                }
+                else
+                    yield return utoken;
+            }
         }
     }
 }
