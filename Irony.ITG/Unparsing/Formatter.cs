@@ -150,41 +150,7 @@ namespace Irony.ITG.Unparsing
             {
                 if (utoken is UtokenControl)
                 {
-                    #region UtokenControl
-
-                    UtokenControl utokenControl = (UtokenControl)utoken;
-
-                    switch (utokenControl.kind)
-                    {
-                        case UtokenControl.Kind.IncreaseIndentLevel:
-                            indentLevel++;
-                            break;
-
-                        case UtokenControl.Kind.DecreaseIndentLevel:
-                            indentLevel--;
-                            break;
-
-                        case UtokenControl.Kind.SetIndentLevelToNone:
-                            indentLevel = 0;
-                            break;
-
-                        case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
-                            temporaryIndentLevel = indentLevel + 1;
-                            break;
-
-                        case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
-                            temporaryIndentLevel = indentLevel - 1;
-                            break;
-
-                        case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
-                            temporaryIndentLevel = 0;
-                            break;
-
-                        default:
-                            throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
-                    }
-
-                    #endregion
+                    ProcessControl((UtokenControl)utoken, ref indentLevel, ref temporaryIndentLevel);
                 }
                 else
                 {
@@ -206,8 +172,37 @@ namespace Irony.ITG.Unparsing
             }
         }
 
-        //private void ProcessIndent(int indentLevel, int? temporaryIndentLevel)
-        //{
-        //}
+        private static void ProcessControl(UtokenControl utokenControl, ref int indentLevel, ref int? temporaryIndentLevel)
+        {
+            switch (utokenControl.kind)
+            {
+                case UtokenControl.Kind.IncreaseIndentLevel:
+                    indentLevel++;
+                    break;
+
+                case UtokenControl.Kind.DecreaseIndentLevel:
+                    indentLevel--;
+                    break;
+
+                case UtokenControl.Kind.SetIndentLevelToNone:
+                    indentLevel = 0;
+                    break;
+
+                case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
+                    temporaryIndentLevel = indentLevel + 1;
+                    break;
+
+                case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
+                    temporaryIndentLevel = indentLevel - 1;
+                    break;
+
+                case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
+                    temporaryIndentLevel = 0;
+                    break;
+
+                default:
+                    throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
+            }
+        }
     }
 }
