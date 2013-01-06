@@ -45,12 +45,12 @@ namespace Irony.ITG.Unparsing
         public static readonly Utoken Space = UtokenPrimitive.Space;
         public static readonly Utoken Tab = UtokenPrimitive.Tab;
 
-        public static readonly Utoken IncreaseIndentLevel = new UtokenControl();
-        public static readonly Utoken DecreaseIndentLevel = new UtokenControl();
-        public static readonly Utoken IncreaseIndentLevelForThisLine = new UtokenControl();
-        public static readonly Utoken DecreaseIndentLevelForThisLine = new UtokenControl();
-        public static readonly Utoken SetIndentLevelToNone = new UtokenControl();
-        public static readonly Utoken SetIndentLevelToNoneForThisLine = new UtokenControl();
+        public static readonly Utoken IncreaseIndentLevel = UtokenControl.IncreaseIndentLevel;
+        public static readonly Utoken DecreaseIndentLevel = UtokenControl.DecreaseIndentLevel;
+        public static readonly Utoken IncreaseIndentLevelForThisLine = UtokenControl.IncreaseIndentLevelForThisLine;
+        public static readonly Utoken DecreaseIndentLevelForThisLine = UtokenControl.DecreaseIndentLevelForThisLine;
+        public static readonly Utoken SetIndentLevelToNone = UtokenControl.SetIndentLevelToNone;
+        public static readonly Utoken SetIndentLevelToNoneForThisLine = UtokenControl.SetIndentLevelToNoneForThisLine;
     }
 
     public class UtokenText : Utoken
@@ -116,6 +116,13 @@ namespace Irony.ITG.Unparsing
 
     internal class UtokenControl : Utoken
     {
+        public static new readonly UtokenControl IncreaseIndentLevel = new UtokenControl();
+        public static new readonly UtokenControl DecreaseIndentLevel = new UtokenControl();
+        public static new readonly UtokenControl IncreaseIndentLevelForThisLine = new UtokenControl();
+        public static new readonly UtokenControl DecreaseIndentLevelForThisLine = new UtokenControl();
+        public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl();
+        public static new readonly UtokenControl SetIndentLevelToNoneForThisLine = new UtokenControl();
+
         public override string ToString(Formatting formatting)
         {
             throw new InvalidOperationException("Cannot convert an UtokenControl to string");
