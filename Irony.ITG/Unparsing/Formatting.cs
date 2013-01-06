@@ -18,10 +18,26 @@ namespace Irony.ITG.Unparsing
 {
     public class Formatting
     {
+        #region Types
+
+        private class DefaultBnfTerm : BnfTerm
+        {
+            private DefaultBnfTerm()
+                : base("DefaultBnfTerm")
+            {
+            }
+
+            public static readonly DefaultBnfTerm Instance = new DefaultBnfTerm();
+        }
+
+        #endregion
+
         #region Constants
 
         private const int defaultPriority = 0;
         private const bool defaultOverridable = true;
+
+        public BnfTerm Default { get { return DefaultBnfTerm.Instance; } }
 
         #endregion
 
@@ -97,17 +113,22 @@ namespace Irony.ITG.Unparsing
 
         internal bool HasUtokensBefore(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensBefore)
         {
-            return bnfTermToUtokensBefore.TryGetValue(bnfTerm, out insertedUtokensBefore);
+            return bnfTermToUtokensBefore.TryGetValue(bnfTerm, out insertedUtokensBefore)
+                || bnfTermToUtokensBefore.TryGetValue(Default, out insertedUtokensBefore);
         }
 
         internal bool HasUtokensAfter(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensAfter)
         {
-            return bnfTermToUtokensAfter.TryGetValue(bnfTerm, out insertedUtokensAfter);
+            return bnfTermToUtokensAfter.TryGetValue(bnfTerm, out insertedUtokensAfter)
+                || bnfTermToUtokensAfter.TryGetValue(Default, out insertedUtokensAfter);
         }
 
         internal bool HasUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, out InsertedUtokens insertedUtokensBetween)
         {
-            return bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, rightBnfTerm), out insertedUtokensBetween);
+            return bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, rightBnfTerm), out insertedUtokensBetween)
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, Default), out insertedUtokensBetween)
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(Default, rightBnfTerm), out insertedUtokensBetween)
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(Default, Default), out insertedUtokensBetween);
         }
 
         internal bool IsLeftBnfTermOfABetweenPair(BnfTerm leftBnfTerm)
