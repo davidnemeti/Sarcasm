@@ -77,12 +77,19 @@ namespace Irony.ITG.Unparsing
 
     public class UtokenPrimitive : Utoken
     {
-        private UtokenPrimitive() { }
+        internal enum Kind { NewLine, EmptyLine, Space, Tab }
 
-        public static new readonly UtokenPrimitive NewLine = new UtokenPrimitive();
-        public static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive();
-        public static new readonly UtokenPrimitive Space = new UtokenPrimitive();
-        public static new readonly UtokenPrimitive Tab = new UtokenPrimitive();
+        internal readonly Kind kind;
+
+        private UtokenPrimitive(Kind kind)
+        {
+            this.kind = kind;
+        }
+
+        internal static new readonly UtokenPrimitive NewLine = new UtokenPrimitive(Kind.NewLine);
+        internal static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive(Kind.EmptyLine);
+        internal static new readonly UtokenPrimitive Space = new UtokenPrimitive(Kind.Space);
+        internal static new readonly UtokenPrimitive Tab = new UtokenPrimitive(Kind.Tab);
 
         public override string ToString(Formatting formatting)
         {
@@ -96,6 +103,11 @@ namespace Irony.ITG.Unparsing
                 return formatting.Tab;
             else
                 throw new InvalidOperationException("Unknown utoken primitive");
+        }
+
+        public override string ToString()
+        {
+            return kind.ToString();
         }
     }
 
@@ -116,16 +128,38 @@ namespace Irony.ITG.Unparsing
 
     internal class UtokenControl : Utoken
     {
-        public static new readonly UtokenControl IncreaseIndentLevel = new UtokenControl();
-        public static new readonly UtokenControl DecreaseIndentLevel = new UtokenControl();
-        public static new readonly UtokenControl IncreaseIndentLevelForThisLine = new UtokenControl();
-        public static new readonly UtokenControl DecreaseIndentLevelForThisLine = new UtokenControl();
-        public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl();
-        public static new readonly UtokenControl SetIndentLevelToNoneForThisLine = new UtokenControl();
+        internal enum Kind
+        {
+            IncreaseIndentLevel,
+            DecreaseIndentLevel,
+            IncreaseIndentLevelForThisLine,
+            DecreaseIndentLevelForThisLine,
+            SetIndentLevelToNone,
+            SetIndentLevelToNoneForThisLine
+        }
+
+        internal readonly Kind kind;
+
+        private UtokenControl(Kind kind)
+        {
+            this.kind = kind;
+        }
+
+        public static new readonly UtokenControl IncreaseIndentLevel = new UtokenControl(Kind.IncreaseIndentLevel);
+        public static new readonly UtokenControl DecreaseIndentLevel = new UtokenControl(Kind.DecreaseIndentLevel);
+        public static new readonly UtokenControl IncreaseIndentLevelForThisLine = new UtokenControl(Kind.IncreaseIndentLevelForThisLine);
+        public static new readonly UtokenControl DecreaseIndentLevelForThisLine = new UtokenControl(Kind.DecreaseIndentLevelForThisLine);
+        public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl(Kind.SetIndentLevelToNone);
+        public static new readonly UtokenControl SetIndentLevelToNoneForThisLine = new UtokenControl(Kind.SetIndentLevelToNoneForThisLine);
 
         public override string ToString(Formatting formatting)
         {
             throw new InvalidOperationException("Cannot convert an UtokenControl to string");
+        }
+
+        public override string ToString()
+        {
+            return kind.ToString();
         }
     }
 

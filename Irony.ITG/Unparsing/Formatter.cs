@@ -142,19 +142,72 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
         {
+            bool firstUtokenInLine = true;
             int indentLevel = 0;
+            int? temporaryIndentLevel = null;
+
             foreach (Utoken utoken in utokens)
             {
                 if (utoken is UtokenControl)
                 {
+                    #region UtokenControl
+
                     UtokenControl utokenControl = (UtokenControl)utoken;
 
-//                    if (utokenControl == )
-//                    Utoken.CreateIndent(indentLevel);
+                    switch (utokenControl.kind)
+                    {
+                        case UtokenControl.Kind.IncreaseIndentLevel:
+                            indentLevel++;
+                            break;
+
+                        case UtokenControl.Kind.DecreaseIndentLevel:
+                            indentLevel--;
+                            break;
+
+                        case UtokenControl.Kind.SetIndentLevelToNone:
+                            indentLevel = 0;
+                            break;
+
+                        case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
+                            temporaryIndentLevel = indentLevel + 1;
+                            break;
+
+                        case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
+                            temporaryIndentLevel = indentLevel - 1;
+                            break;
+
+                        case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
+                            temporaryIndentLevel = 0;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
+                    }
+
+                    #endregion
                 }
                 else
+                {
+                    if (utoken == UtokenPrimitive.NewLine || utoken == UtokenPrimitive.EmptyLine)
+                    {
+                        firstUtokenInLine = true;
+                        temporaryIndentLevel = null;
+                    }
+                    else
+                    {
+                        if (firstUtokenInLine)
+                            yield return new UtokenIndent(temporaryIndentLevel ?? indentLevel);
+
+                        firstUtokenInLine = false;
+                    }
+
                     yield return utoken;
+                }
             }
         }
+
+        //private void ProcessIndent(int indentLevel, int? temporaryIndentLevel)
+        //{
+        //}
     }
 }
