@@ -142,9 +142,9 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
         {
-            bool firstUtokenInLine = true;
             int indentLevel = 0;
             int? temporaryIndentLevel = null;
+            bool firstUtokenInLine = true;
 
             foreach (Utoken utoken in utokens)
             {
