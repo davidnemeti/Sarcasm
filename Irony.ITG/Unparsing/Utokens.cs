@@ -193,14 +193,16 @@ namespace Irony.ITG.Unparsing
         public enum Kind { Before, After, Between }
 
         public readonly Kind kind;
-        public readonly int priority;
+        public readonly double priority;
+        public readonly int anyCount;
         public readonly bool overridable;
         public readonly IEnumerable<Utoken> utokens;
 
-        internal InsertedUtokens(Kind kind, int priority, bool overridable, IEnumerable<Utoken> utokens)
+        internal InsertedUtokens(Kind kind, double priority, int anyCount, bool overridable, IEnumerable<Utoken> utokens)
         {
             this.utokens = utokens.ToList();
             this.priority = priority;
+            this.anyCount = anyCount;
             this.kind = kind;
             this.overridable = overridable;
         }
@@ -217,9 +219,9 @@ namespace Irony.ITG.Unparsing
 
         public int CompareTo(InsertedUtokens that)
         {
-            if (that == null || this.priority > that.priority)
+            if (that == null || this.priority > that.priority || this.anyCount < that.anyCount)
                 return 1;
-            else if (this.priority < that.priority)
+            else if (this.priority < that.priority || this.anyCount > that.anyCount)
                 return -1;
             else
                 return 0;

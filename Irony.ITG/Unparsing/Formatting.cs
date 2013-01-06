@@ -20,24 +20,26 @@ namespace Irony.ITG.Unparsing
     {
         #region Types
 
-        private class DefaultBnfTerm : BnfTerm
+        private class _AnyBnfTerm : BnfTerm
         {
-            private DefaultBnfTerm()
-                : base("DefaultBnfTerm")
+            private _AnyBnfTerm()
+                : base("AnyBnfTerm")
             {
             }
 
-            public static readonly DefaultBnfTerm Instance = new DefaultBnfTerm();
+            public static readonly _AnyBnfTerm Instance = new _AnyBnfTerm();
         }
 
         #endregion
 
         #region Constants
 
-        private const int defaultPriority = 0;
+        private const double defaultPriority = 0;
+        private const double defaultAnyPriority = double.NegativeInfinity;
         private const bool defaultOverridable = true;
+        private const bool defaultAnyOverridable = true;
 
-        public BnfTerm Default { get { return DefaultBnfTerm.Instance; } }
+        internal static BnfTerm AnyBnfTerm { get { return _AnyBnfTerm.Instance; } }
 
         #endregion
 
@@ -63,14 +65,24 @@ namespace Irony.ITG.Unparsing
 
         #region Insert utokens
 
+        public void InsertUtokensBeforeAny(params Utoken[] utokensBefore)
+        {
+            InsertUtokensBefore(AnyBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensBefore: utokensBefore);
+        }
+
         public void InsertUtokensBefore(BnfTerm bnfTerm, params Utoken[] utokensBefore)
         {
             InsertUtokensBefore(bnfTerm, priority: defaultPriority, overridable: defaultOverridable, utokensBefore: utokensBefore);
         }
 
-        public void InsertUtokensBefore(BnfTerm bnfTerm, int priority, bool overridable, params Utoken[] utokensBefore)
+        public void InsertUtokensBefore(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensBefore)
         {
-            bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore));
+            bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, GetAnyCount(bnfTerm), overridable, utokensBefore));
+        }
+
+        public void InsertUtokensAfterAny(params Utoken[] utokensAfter)
+        {
+            InsertUtokensAfter(AnyBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensAfter: utokensAfter);
         }
 
         public void InsertUtokensAfter(BnfTerm bnfTerm, params Utoken[] utokensAfter)
@@ -78,9 +90,14 @@ namespace Irony.ITG.Unparsing
             InsertUtokensAfter(bnfTerm, priority: defaultPriority, overridable: defaultOverridable, utokensAfter: utokensAfter);
         }
 
-        public void InsertUtokensAfter(BnfTerm bnfTerm, int priority, bool overridable, params Utoken[] utokensAfter)
+        public void InsertUtokensAfter(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensAfter)
         {
-            bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter));
+            bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, GetAnyCount(bnfTerm), overridable, utokensAfter));
+        }
+
+        public void InsertUtokensAroundAny(params Utoken[] utokensAround)
+        {
+            InsertUtokensAround(AnyBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensAround: utokensAround);
         }
 
         public void InsertUtokensAround(BnfTerm bnfTerm, params Utoken[] utokensAround)
@@ -88,10 +105,25 @@ namespace Irony.ITG.Unparsing
             InsertUtokensAround(bnfTerm, priority: defaultPriority, overridable: defaultOverridable, utokensAround: utokensAround);
         }
 
-        public void InsertUtokensAround(BnfTerm bnfTerm, int priority, bool overridable, params Utoken[] utokensAround)
+        public void InsertUtokensAround(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensAround)
         {
             InsertUtokensBefore(bnfTerm, priority, overridable, utokensAround);
             InsertUtokensAfter(bnfTerm, priority, overridable, utokensAround);
+        }
+
+        public void InsertUtokensBetweenLeftAndAny(BnfTerm leftBnfTerm, params Utoken[] utokensBetween)
+        {
+            InsertUtokensBetween(leftBnfTerm, AnyBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensBetween: utokensBetween);
+        }
+
+        public void InsertUtokensBetweenAnyAndRight(BnfTerm rightBnfTerm, params Utoken[] utokensBetween)
+        {
+            InsertUtokensBetween(AnyBnfTerm, rightBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensBetween: utokensBetween);
+        }
+
+        public void InsertUtokensBetweenAny(params Utoken[] utokensBetween)
+        {
+            InsertUtokensBetween(AnyBnfTerm, AnyBnfTerm, priority: defaultAnyPriority, overridable: defaultAnyOverridable, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, params Utoken[] utokensBetween)
@@ -99,10 +131,19 @@ namespace Irony.ITG.Unparsing
             InsertUtokensBetween(leftBnfTerm, rightBnfTerm, priority: defaultPriority, overridable: defaultOverridable, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, int priority, bool overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, double priority, bool overridable, params Utoken[] utokensBetween)
         {
-            bnfTermToUtokensBetween.Add(Tuple.Create(leftBnfTerm, rightBnfTerm), new InsertedUtokens(InsertedUtokens.Kind.Between, priority, overridable, utokensBetween));
+            bnfTermToUtokensBetween.Add(
+                Tuple.Create(leftBnfTerm, rightBnfTerm),
+                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, GetAnyCount(leftBnfTerm, rightBnfTerm), overridable, utokensBetween)
+                );
+
             leftBnfTerms.Add(leftBnfTerm);
+        }
+
+        private static int GetAnyCount(params BnfTerm[] bnfTerms)
+        {
+            return bnfTerms.Count(bnfTerm => bnfTerm == AnyBnfTerm);
         }
 
         #endregion
@@ -114,21 +155,21 @@ namespace Irony.ITG.Unparsing
         internal bool HasUtokensBefore(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensBefore)
         {
             return bnfTermToUtokensBefore.TryGetValue(bnfTerm, out insertedUtokensBefore)
-                || bnfTermToUtokensBefore.TryGetValue(Default, out insertedUtokensBefore);
+                || bnfTermToUtokensBefore.TryGetValue(AnyBnfTerm, out insertedUtokensBefore);
         }
 
         internal bool HasUtokensAfter(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensAfter)
         {
             return bnfTermToUtokensAfter.TryGetValue(bnfTerm, out insertedUtokensAfter)
-                || bnfTermToUtokensAfter.TryGetValue(Default, out insertedUtokensAfter);
+                || bnfTermToUtokensAfter.TryGetValue(AnyBnfTerm, out insertedUtokensAfter);
         }
 
         internal bool HasUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, out InsertedUtokens insertedUtokensBetween)
         {
             return bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, rightBnfTerm), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, Default), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(Default, rightBnfTerm), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(Default, Default), out insertedUtokensBetween);
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, AnyBnfTerm), out insertedUtokensBetween)
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(AnyBnfTerm, rightBnfTerm), out insertedUtokensBetween)
+                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(AnyBnfTerm, AnyBnfTerm), out insertedUtokensBetween);
         }
 
         internal bool IsLeftBnfTermOfABetweenPair(BnfTerm leftBnfTerm)

@@ -80,11 +80,17 @@ namespace Irony.ITG.Unparsing
          * 
          * Note that "Between" and "Before" InsertedUtokens are mixed with each other.
          * 
-         * "After" InsertedUtokens are handled so that in case of equal priority we will choose the right one.
-         * "Between" InsertedUtokens are handled so that in case of equal priority we will choose the left one.
-         * "Before" InsertedUtokens are handled so that in case of equal priority we will choose the left one.
+         * "After" InsertedUtokens are handled so that in case of equal priorities we will choose the right one.
+         * "Between" InsertedUtokens are handled so that in case of equal priorities we will choose the left one.
+         * "Before" InsertedUtokens are handled so that in case of equal priorities we will choose the left one.
          * 
          * Since "Between" and "Before" InsertedUtokens are handled in the same way, we can handle them mixed.
+         * 
+         * We handle the InsertedUtokens like this in order to ensure that the InsertedUtokens belonging to the
+         * outer bnfterms always being preferred against inner bnfterms in case of equal priorities.
+         * 
+         * InsertedUtokens belonging to the same bnfterm with equal priorities are handled so that the several kind
+         * of InsertedUtokens have strength in descending order: Between, Before, After
          * */
 
         public static IEnumerable<Utoken> FilterInsertedUtokens(this IEnumerable<Utoken> utokens)
@@ -97,7 +103,7 @@ namespace Irony.ITG.Unparsing
                 {
                     InsertedUtokens rightInsertedUtokens = (InsertedUtokens)utoken;
 
-                    bool switchToNewInsertedUtokens = SwitchToRight(leftInsertedUtokensToBeYield, rightInsertedUtokens);
+                    bool switchToNewInsertedUtokens = IsRightStronger(leftInsertedUtokensToBeYield, rightInsertedUtokens);
 
                     if (rightInsertedUtokens.overridable)
                         leftInsertedUtokensToBeYield = switchToNewInsertedUtokens ? rightInsertedUtokens : leftInsertedUtokensToBeYield;
@@ -123,7 +129,7 @@ namespace Irony.ITG.Unparsing
                 yield return leftInsertedUtokensToBeYield;
         }
 
-        private static bool SwitchToRight(InsertedUtokens leftInsertedUtokens, InsertedUtokens rightInsertedUtokens)
+        private static bool IsRightStronger(InsertedUtokens leftInsertedUtokens, InsertedUtokens rightInsertedUtokens)
         {
             int compareResult = InsertedUtokens.Compare(leftInsertedUtokens, rightInsertedUtokens);
 
