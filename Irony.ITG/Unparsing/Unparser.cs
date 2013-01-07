@@ -73,7 +73,7 @@ namespace Irony.ITG.Unparsing
             }
             else if (bnfTerm is Terminal)
             {
-                Unparser.tsUnparse.Debug("terminal: \"{0}\"", obj.ToString());
+                Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
                 yield return obj.ToString();
             }
             else if (bnfTerm is NonTerminal)
@@ -94,7 +94,7 @@ namespace Irony.ITG.Unparsing
                     yield return utoken;
 
                 if (!steppedIntoUnparseRaw)
-                    Unparser.tsUnparse.Debug("utokenized: \"{0}\"", obj.ToString());
+                    Unparser.tsUnparse.Debug("utokenized: [\"{0}\"]", obj.ToString());
 
                 steppedIntoUnparseRaw = true;
 

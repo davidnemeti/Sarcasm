@@ -20,6 +20,21 @@ namespace Irony.ITG.Unparsing
     {
         public abstract string ToString(Formatting formatting);
 
+        protected string ToString(object obj)
+        {
+            return ToString(obj.ToString());
+        }
+
+        protected string ToString(string str)
+        {
+            return string.Format("[{0}]", str);
+        }
+
+        protected string ToString(string format, params object[] args)
+        {
+            return ToString(string.Format(format, args));
+        }
+
         public virtual IEnumerable<Utoken> Flatten()
         {
             yield return this;
@@ -76,7 +91,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return string.Format("\"{0}\"{1}", Text, Reference != null ? " (with ref)" : string.Empty);
+            return ToString("\"{0}\"{1}", Text, Reference != null ? " (with ref)" : string.Empty);
         }
     }
 
@@ -112,7 +127,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return kind.ToString();
+            return ToString("." + kind);
         }
     }
 
@@ -132,7 +147,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return string.Format("indent level: {0}", IndentLevel);
+            return ToString("indent level: {0}", IndentLevel);
         }
     }
 
@@ -169,7 +184,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return kind.ToString();
+            return ToString("." + kind);
         }
     }
 
@@ -196,7 +211,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return string.Format("repeat {0} {1} times", utoken, count);
+            return ToString("repeat {0} {1} times", utoken, count);
         }
     }
 
