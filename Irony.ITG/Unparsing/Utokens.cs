@@ -73,6 +73,11 @@ namespace Irony.ITG.Unparsing
         {
             return this.Text;
         }
+
+        public override string ToString()
+        {
+            return string.Format("\"{0}\"{1}", Text, Reference != null ? " (with ref)" : string.Empty);
+        }
     }
 
     public class UtokenPrimitive : Utoken
@@ -123,6 +128,11 @@ namespace Irony.ITG.Unparsing
         public override string ToString(Formatting formatting)
         {
             return string.Join(string.Empty, Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
+        }
+
+        public override string ToString()
+        {
+            return string.Format("indent level: {0}", IndentLevel);
         }
     }
 
@@ -186,6 +196,11 @@ namespace Irony.ITG.Unparsing
         {
             return Enumerable.Repeat(utoken, count).SelectMany(_utoken => _utoken.Flatten());
         }
+
+        public override string ToString()
+        {
+            return string.Format("repeat {0} {1} times", utoken, count);
+        }
     }
 
     internal class InsertedUtokens : Utoken, IComparable<InsertedUtokens>
@@ -210,6 +225,17 @@ namespace Irony.ITG.Unparsing
         public override string ToString(Formatting formatting)
         {
             throw new InvalidOperationException("Should not convert an InsertedUtokens to string");
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0}{1}, priority {2}, anyCount {3}: {{ {4} }}",
+                kind,
+                overridable ? ", overridable" : string.Empty,
+                priority,
+                anyCount,
+                string.Join(", ", utokens)
+                );
         }
 
         public override IEnumerable<Utoken> Flatten()

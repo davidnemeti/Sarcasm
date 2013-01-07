@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Irony.ITG
 {
@@ -29,5 +30,25 @@ namespace Irony.ITG
         {
             return candidateValues.Contains(value);
         }
+
+        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, string category = null)
+        {
+            foreach (T item in items)
+            {
+                Trace.WriteLine(item, category);
+                yield return item;
+            }
+        }
+
+#if DEBUG
+        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, string category = null)
+        {
+            foreach (T item in items)
+            {
+                Debug.WriteLine(item, category);
+                yield return item;
+            }
+        }
+#endif
     }
 }

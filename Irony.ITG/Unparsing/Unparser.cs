@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
 
 using Irony;
 using Irony.Ast;
@@ -18,6 +19,9 @@ namespace Irony.ITG.Unparsing
 {
     public class Unparser : IUnparser
     {
+//        readonly static internal TraceSource tsUnparse = new TraceSource("unparse");
+        internal const string unparseDebugCategory = "UNPARSE";
+
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
         private readonly Formatter formatter;
@@ -42,8 +46,12 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
+            Debug.Indent();
+
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
+
+            Debug.WriteLine(string.Format("bnfterm: {0}", bnfTerm.Name), unparseDebugCategory);
 
             if (bnfTerm is KeyTerm)
             {
@@ -67,6 +75,8 @@ namespace Irony.ITG.Unparsing
 
             foreach (var utoken in formatter.End(bnfTerm))
                 yield return utoken;
+
+            Debug.Unindent();
         }
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)

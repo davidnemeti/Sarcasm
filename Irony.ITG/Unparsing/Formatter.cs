@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
 
 using Irony;
 using Irony.Ast;
@@ -18,6 +19,11 @@ namespace Irony.ITG.Unparsing
 {
     internal class Formatter
     {
+        internal const string unfilteredDebugCategory = "UNFILTERED";
+        internal const string filteredDebugCategory = "FILTERED";
+        internal const string flattenedDebugCategory = "FLATTENED";
+        internal const string processedDebugCategory = "PROCESSED";
+
         private enum State { Begin, End }
 
         private readonly Formatting formatting;
@@ -38,12 +44,18 @@ namespace Irony.ITG.Unparsing
             {
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
+                {
                     yield return insertedUtokensBetween;
+                    Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensBetween), Unparser.unparseDebugCategory);
+                }
             }
 
             InsertedUtokens insertedUtokensBefore;
             if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
+            {
                 yield return insertedUtokensBefore;
+                Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensBefore), Unparser.unparseDebugCategory);
+            }
         }
 
         public IEnumerable<Utoken> End(BnfTerm bnfTerm)
@@ -58,7 +70,10 @@ namespace Irony.ITG.Unparsing
 
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
+            {
                 yield return insertedUtokensAfter;
+                Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensAfter), Unparser.unparseDebugCategory);
+            }
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
@@ -66,7 +81,11 @@ namespace Irony.ITG.Unparsing
             return utokens
                 .FilterInsertedUtokens()
                 .Flatten()
-                .ProcessControls();
+                .ProcessControls()
+#if DEBUG
+                .DebugWriteLines(Formatter.processedDebugCategory)
+#endif
+                ;
         }
     }
 
@@ -99,6 +118,8 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
+                Debug.WriteLine(utoken, Formatter.unfilteredDebugCategory);
+
                 if (utoken is InsertedUtokens)
                 {
                     InsertedUtokens rightInsertedUtokens = (InsertedUtokens)utoken;
@@ -143,7 +164,9 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
-            return utokens.SelectMany(utoken => utoken.Flatten());
+            return utokens
+                .DebugWriteLines(Formatter.filteredDebugCategory)
+                .SelectMany(utoken => utoken.Flatten());
         }
 
         public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
@@ -154,6 +177,8 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
+                Debug.WriteLine(utoken, Formatter.flattenedDebugCategory);
+
                 if (utoken is UtokenControl)
                 {
                     ProcessControl((UtokenControl)utoken, ref indentLevel, ref temporaryIndentLevel);
