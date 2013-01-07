@@ -33,8 +33,10 @@ namespace ConsoleApplication1
             ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
 
             Unparser unparser = new Unparser(grammar);
-            string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
-            Console.WriteLine(str);
+//            string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
+            var stream = File.Create(@"unparse_logs\unparsed_text");
+            unparser.Unparse(parseTree.Root.AstNode).WriteToStreamAsync(stream, unparser);
+//            Console.WriteLine(str);
         }
     }
 }

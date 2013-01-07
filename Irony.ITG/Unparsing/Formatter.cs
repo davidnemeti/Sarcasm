@@ -19,10 +19,25 @@ namespace Irony.ITG.Unparsing
 {
     internal class Formatter
     {
-        readonly static internal TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
-        readonly static internal TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
-        readonly static internal TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
-        readonly static internal TraceSource tsProcessed = new TraceSource("PROCESSED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsProcessed = new TraceSource("PROCESSED", SourceLevels.Verbose);
+
+        static Formatter()
+        {
+            tsUnfiltered.Listeners.Clear();
+            tsUnfiltered.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "01_unfiltered.log")));
+
+            tsFiltered.Listeners.Clear();
+            tsFiltered.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "02_filtered.log")));
+
+            tsFlattened.Listeners.Clear();
+            tsFlattened.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "03_flattened.log")));
+
+            tsProcessed.Listeners.Clear();
+            tsProcessed.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "04_processed.log")));
+        }
 
         private enum State { Begin, End }
 

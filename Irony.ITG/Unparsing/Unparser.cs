@@ -19,7 +19,19 @@ namespace Irony.ITG.Unparsing
 {
     public class Unparser : IUnparser
     {
-        readonly static internal TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
+        internal const string logDirectoryName = "unparse_logs";
+
+        internal readonly static TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
+
+        static Unparser()
+        {
+            Directory.CreateDirectory(logDirectoryName);
+
+            Trace.AutoFlush = true;
+
+            tsUnparse.Listeners.Clear();
+            tsUnparse.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(logDirectoryName, "00_unparse.log"))));
+        }
 
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
@@ -45,12 +57,11 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
-            Unparser.tsUnparse.Indent();
-
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
 
             Unparser.tsUnparse.Debug("bnfterm: {0}", bnfTerm.Name);
+            Unparser.tsUnparse.Indent();
 
             if (bnfTerm is KeyTerm)
             {
@@ -72,10 +83,10 @@ namespace Irony.ITG.Unparsing
                     yield return utoken;
             }
 
+            Unparser.tsUnparse.UnIndent();
+
             foreach (var utoken in formatter.End(bnfTerm))
                 yield return utoken;
-
-            Unparser.tsUnparse.UnIndent();
         }
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
