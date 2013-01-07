@@ -18,31 +18,8 @@ namespace Irony.ITG.Ast
     {
         private readonly BnfTerm bnfTerm;
 
-        private ValueConverter<object, object> _inverseValueConverterForUnparse;
-        public ValueConverter<object, object> InverseValueConverterForUnparse
-        {
-            private get { return _inverseValueConverterForUnparse; }
-            set
-            {
-                if (value != null && UtokenizerForUnparse != null)
-                    throw new InvalidOperationException("Cannot set ValueConverterForUnparse because UtokenizerForUnparse has been already set.");
-
-                _inverseValueConverterForUnparse = value;
-            }
-        }
-
-        private Func<object, IEnumerable<Utoken>> _utokenizerForUnparse;
-        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse
-        {
-            private get { return _utokenizerForUnparse; }
-            set
-            {
-                if (value != null && InverseValueConverterForUnparse != null)
-                    throw new InvalidOperationException("Cannot set UtokenizerForUnparse because ValueConverterForUnparse has been already set.");
-
-                _utokenizerForUnparse = value;
-            }
-        }
+        public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
+        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
 
         public BnfiTermValue(string errorAlias = null)
             : this(typeof(object), errorAlias)
@@ -53,6 +30,7 @@ namespace Irony.ITG.Ast
             : base(type, errorAlias)
         {
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
+            this.InverseValueConverterForUnparse = GetIdentityValueConverter();
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueCreator<object> valueCreator, bool isOptionalValue, string errorAlias, bool astForChild)
