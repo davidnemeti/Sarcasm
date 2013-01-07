@@ -148,14 +148,18 @@ namespace Irony.ITG.Unparsing
                         if (!switchToNewInsertedUtokens)
                             yield return leftInsertedUtokensToBeYield;
 
-                        yield return rightInsertedUtokens;
                         leftInsertedUtokensToBeYield = null;
+
+                        yield return rightInsertedUtokens;
                     }
                 }
                 else
                 {
                     if (leftInsertedUtokensToBeYield != null)
+                    {
                         yield return leftInsertedUtokensToBeYield;
+                        leftInsertedUtokensToBeYield = null;
+                    }
 
                     yield return utoken;
                 }
