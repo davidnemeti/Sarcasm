@@ -19,8 +19,7 @@ namespace Irony.ITG.Unparsing
 {
     public class Unparser : IUnparser
     {
-//        readonly static internal TraceSource tsUnparse = new TraceSource("unparse");
-        internal const string unparseDebugCategory = "UNPARSE";
+        readonly static internal TraceSource tsUnparse = new TraceSource("unparse", SourceLevels.Verbose);
 
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
@@ -46,12 +45,12 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
-            Debug.Indent();
+            Unparser.tsUnparse.Indent();
 
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
 
-            Debug.WriteLine(string.Format("bnfterm: {0}", bnfTerm.Name), unparseDebugCategory);
+            Unparser.tsUnparse.Debug("bnfterm: {0}", bnfTerm.Name);
 
             if (bnfTerm is KeyTerm)
             {
@@ -76,7 +75,7 @@ namespace Irony.ITG.Unparsing
             foreach (var utoken in formatter.End(bnfTerm))
                 yield return utoken;
 
-            Debug.Unindent();
+            Unparser.tsUnparse.UnIndent();
         }
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)

@@ -46,7 +46,7 @@ namespace Irony.ITG.Unparsing
                 if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
                 {
                     yield return insertedUtokensBetween;
-                    Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensBetween), Unparser.unparseDebugCategory);
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
                 }
             }
 
@@ -54,7 +54,7 @@ namespace Irony.ITG.Unparsing
             if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
             {
                 yield return insertedUtokensBefore;
-                Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensBefore), Unparser.unparseDebugCategory);
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
             }
         }
 
@@ -72,7 +72,7 @@ namespace Irony.ITG.Unparsing
             if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
             {
                 yield return insertedUtokensAfter;
-                Debug.WriteLine(string.Format("inserted utokens: {0}", insertedUtokensAfter), Unparser.unparseDebugCategory);
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
             }
         }
 
@@ -82,9 +82,7 @@ namespace Irony.ITG.Unparsing
                 .FilterInsertedUtokens()
                 .Flatten()
                 .ProcessControls()
-#if DEBUG
                 .DebugWriteLines(Formatter.processedDebugCategory)
-#endif
                 ;
         }
     }
@@ -165,9 +163,7 @@ namespace Irony.ITG.Unparsing
         public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
             return utokens
-#if DEBUG
                 .DebugWriteLines(Formatter.filteredDebugCategory)
-#endif
                 .SelectMany(utoken => utoken.Flatten());
         }
 
