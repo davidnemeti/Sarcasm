@@ -23,6 +23,7 @@ namespace Irony.ITG.Unparsing
 
         internal readonly static TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
 
+#if DEBUG
         static Unparser()
         {
             Directory.CreateDirectory(logDirectoryName);
@@ -32,6 +33,7 @@ namespace Irony.ITG.Unparsing
             tsUnparse.Listeners.Clear();
             tsUnparse.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(logDirectoryName, "00_unparse.log"))));
         }
+#endif
 
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }

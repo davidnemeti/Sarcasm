@@ -24,6 +24,7 @@ namespace Irony.ITG.Unparsing
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
         internal readonly static TraceSource tsProcessed = new TraceSource("PROCESSED", SourceLevels.Verbose);
 
+#if DEBUG
         static Formatter()
         {
             tsUnfiltered.Listeners.Clear();
@@ -38,6 +39,7 @@ namespace Irony.ITG.Unparsing
             tsProcessed.Listeners.Clear();
             tsProcessed.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "04_processed.log")));
         }
+#endif
 
         private enum State { Begin, End }
 
