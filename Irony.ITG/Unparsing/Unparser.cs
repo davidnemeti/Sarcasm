@@ -57,10 +57,14 @@ namespace Irony.ITG.Unparsing
                 .Cook();
         }
 
+        bool steppedIntoUnparseRaw = false;
+
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
+
+            steppedIntoUnparseRaw = true;
 
             if (bnfTerm is KeyTerm)
             {
@@ -84,8 +88,13 @@ namespace Irony.ITG.Unparsing
                 if (unparsable == null)
                     throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
 
+                steppedIntoUnparseRaw = false;
+
                 foreach (Utoken utoken in unparsable.Unparse(this, obj))
                     yield return utoken;
+
+                if (!steppedIntoUnparseRaw)
+                    Unparser.tsUnparse.Debug("utokenized: {0}", obj.ToString());
 
                 Unparser.tsUnparse.UnIndent();
             }
