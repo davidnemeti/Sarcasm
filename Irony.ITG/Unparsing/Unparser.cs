@@ -112,7 +112,7 @@ namespace Irony.ITG.Unparsing
     {
         public static string AsString(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return string.Join(separator: null, values: utokens.Select(utoken => utoken.ToString(unparser.Formatting)));
+            return string.Concat(utokens.Select(utoken => utoken.ToString(unparser.Formatting)));
         }
 
         public static async void WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)

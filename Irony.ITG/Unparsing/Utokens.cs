@@ -127,7 +127,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString(Formatting formatting)
         {
-            return string.Join(string.Empty, Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
+            return string.Concat(Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
         }
 
         public override string ToString()
@@ -186,10 +186,7 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString(Formatting formatting)
         {
-            return string.Join(
-                separator: null,
-                values: Enumerable.Repeat(utoken, count).Select(_utoken => _utoken.ToString(formatting))
-                );
+            return string.Concat(Enumerable.Repeat(utoken, count).Select(_utoken => _utoken.ToString(formatting)));
         }
 
         public override IEnumerable<Utoken> Flatten()
