@@ -64,12 +64,12 @@ namespace Irony.ITG.Unparsing
 
             if (bnfTerm is KeyTerm)
             {
-                Unparser.tsUnparse.Debug("keyterm: {0}", ((KeyTerm)bnfTerm).Text);
+                Unparser.tsUnparse.Debug("keyterm: \"{0}\"", ((KeyTerm)bnfTerm).Text);
                 yield return ((KeyTerm)bnfTerm).Text;
             }
             else if (bnfTerm is Terminal)
             {
-                Unparser.tsUnparse.Debug("terminal: {0}", obj.ToString());
+                Unparser.tsUnparse.Debug("terminal: [{0}]", obj.ToString());
                 yield return obj.ToString();
             }
             else if (bnfTerm is NonTerminal)
