@@ -96,6 +96,8 @@ namespace Irony.ITG.Unparsing
                 if (!steppedIntoUnparseRaw)
                     Unparser.tsUnparse.Debug("utokenized: \"{0}\"", obj.ToString());
 
+                steppedIntoUnparseRaw = true;
+
                 Unparser.tsUnparse.UnIndent();
             }
 
