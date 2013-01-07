@@ -414,7 +414,13 @@ namespace Irony.ITG.Ast
         }
 
         [DebuggerStepThrough()]
-        private static void ThrowGrammarErrorException(GrammarErrorLevel grammarErrorLevel, string message)
+        public static void ThrowGrammarErrorException(GrammarErrorLevel grammarErrorLevel, string format, params object[] args)
+        {
+            ThrowGrammarErrorException(grammarErrorLevel, string.Format(format, args));
+        }
+
+        [DebuggerStepThrough()]
+        public static void ThrowGrammarErrorException(GrammarErrorLevel grammarErrorLevel, string message)
         {
             throw new GrammarErrorException(message, new GrammarError(grammarErrorLevel, null, message));
         }

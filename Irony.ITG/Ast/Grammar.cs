@@ -71,35 +71,35 @@ namespace Irony.ITG.Ast
 
         #region MakePlusRule and MakeStarRule
 
-        public static BnfiExpressionCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiTermCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
+        public static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiTermCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
         {
             return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
+        public static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm bnfTermElement)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
         }
 
-        public static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
+        public static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> bnfTermElement)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);

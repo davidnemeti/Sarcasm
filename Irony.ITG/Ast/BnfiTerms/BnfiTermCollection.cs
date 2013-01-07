@@ -264,58 +264,68 @@ namespace Irony.ITG.Ast
 
         #region MakePlusRule and MakeStarRule
 
-        internal static BnfiExpressionCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static BnfiTermCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiExpressionCollection)_MakePlusRule(bnfiTermCollection, delimiter, element);
+            return (BnfiTermCollection)_MakePlusRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiExpressionCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static BnfiTermCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiExpressionCollection)_MakeStarRule(bnfiTermCollection, delimiter, element);
+            return (BnfiTermCollection)_MakeStarRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element);
+            return (BnfiTermCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
             where TCollectionType : ICollection<object>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element);
+            return (BnfiTermCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiExpressionCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
+        internal static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
+            return (BnfiTermCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
         }
 
-        internal static BnfiExpressionCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
+        internal static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            return (BnfiExpressionCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
+            return (BnfiTermCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
         }
 
-        protected static BnfExpression _MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        protected static BnfiTermCollection _MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetList(ListKind.Plus, element, delimiter);
-            return Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.SetListTerms(ListKind.Plus, element, delimiter);
+            Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, element);
+            return bnfiTermCollection;
         }
 
-        protected static BnfExpression _MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        protected static BnfiTermCollection _MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetList(ListKind.Star, element, delimiter);
-            return Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.SetListTerms(ListKind.Star, element, delimiter);
+            Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, element);
+            return bnfiTermCollection;
         }
 
-        protected void SetList(ListKind listKind, BnfTerm element, BnfTerm delimiter)
+        protected void SetListTerms(ListKind listKind, BnfTerm element, BnfTerm delimiter)
         {
             this.listKind = listKind;
             this.element = element;
             this.delimiter = delimiter;
             this.Name = GetName();
+        }
+
+        protected void ClearListTerms()
+        {
+            this.listKind = null;
+            this.element = null;
+            this.delimiter = null;
+            this.Name = "<<null list>>";
         }
 
         protected string GetName()
@@ -327,7 +337,20 @@ namespace Irony.ITG.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new BnfiExpressionCollection Rule { set { base.Rule = value; } }
+        public new BnfiTermCollection Rule
+        {
+            set
+            {
+                if (!value.listKind.HasValue)
+                    GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Right value collection has not been initialized: {0}", value.Name);
+
+                this.SetListTerms(value.listKind.Value, value.element, value.delimiter);
+                base.Rule = value.RuleRaw;
+
+                value.ClearListTerms();
+                value.RuleRaw = null;
+            }
+        }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
@@ -400,9 +423,9 @@ namespace Irony.ITG.Ast
             return base.Q();
         }
 
-        public BnfiExpressionCollection RuleTypeless { set { base.Rule = value; } }
+        public BnfiTermCollection RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionCollection<TCollectionType> Rule { set { base.Rule = value; } }
+        public new BnfiTermCollection<TCollectionType> Rule { set { base.Rule = value; } }
 
         public new BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection()
         {
