@@ -369,8 +369,8 @@ namespace Irony.ITG.Ast
 
     public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>
     {
-        public BnfiTermCollection(string errorAlias = null)
-            : base(typeof(TCollectionType), typeof(object), errorAlias: errorAlias, runtimeCheck: false)
+        protected BnfiTermCollection(Type elementType, string errorAlias = null)
+            : base(typeof(TCollectionType), elementType, errorAlias: errorAlias, runtimeCheck: false)
         {
         }
     }
@@ -379,7 +379,7 @@ namespace Irony.ITG.Ast
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string errorAlias = null)
-            : base(errorAlias)
+            : base(typeof(TElementType), errorAlias)
         {
         }
 
