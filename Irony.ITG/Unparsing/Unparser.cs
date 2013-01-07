@@ -62,19 +62,22 @@ namespace Irony.ITG.Unparsing
             foreach (var utoken in formatter.Begin(bnfTerm))
                 yield return utoken;
 
-            Unparser.tsUnparse.Debug("bnfterm: {0}", bnfTerm.Name);
-            Unparser.tsUnparse.Indent();
-
             if (bnfTerm is KeyTerm)
             {
+                Unparser.tsUnparse.Debug("keyterm: {0}", ((KeyTerm)bnfTerm).Text);
                 yield return ((KeyTerm)bnfTerm).Text;
             }
             else if (bnfTerm is Terminal)
             {
+                Unparser.tsUnparse.Debug("terminal: {0}", obj.ToString());
                 yield return obj.ToString();
             }
             else if (bnfTerm is NonTerminal)
             {
+                Unparser.tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
+
+                Unparser.tsUnparse.Indent();
+
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
                 IUnparsable unparsable = nonTerminal as IUnparsable;
 
@@ -83,9 +86,9 @@ namespace Irony.ITG.Unparsing
 
                 foreach (Utoken utoken in unparsable.Unparse(this, obj))
                     yield return utoken;
-            }
 
-            Unparser.tsUnparse.UnIndent();
+                Unparser.tsUnparse.UnIndent();
+            }
 
             foreach (var utoken in formatter.End(bnfTerm))
                 yield return utoken;
