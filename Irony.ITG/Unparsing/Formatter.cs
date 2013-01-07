@@ -165,7 +165,9 @@ namespace Irony.ITG.Unparsing
         public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
             return utokens
+#if DEBUG
                 .DebugWriteLines(Formatter.filteredDebugCategory)
+#endif
                 .SelectMany(utoken => utoken.Flatten());
         }
 
