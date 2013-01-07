@@ -139,8 +139,11 @@ namespace Irony.ITG.Ast
                 }
                 else
                 {
-                    context.AddMessage(ErrorLevel.Error, parseTreeChild.Span.Location, "Term '{0}' should be type of '{1}' but found '{2}' instead",
-                        parseTreeChild.Term, elementType.FullName, childValue != null ? childValue.GetType().FullName : "<<NULL>>");
+                    GrammarHelper.GrammarError(
+                        context,
+                        parseTreeChild.Span.Location,
+                        ErrorLevel.Error,
+                        "Term '{0}' should be type of '{1}' but found '{2}' instead", parseTreeChild.Term, elementType.FullName, childValue != null ? childValue.GetType().FullName : "<<NULL>>");
                 }
             }
         }

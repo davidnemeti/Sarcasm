@@ -325,7 +325,7 @@ namespace Irony.ITG.Ast
 
         public static object ValueToAstNode(object value, AstContext context, ParseTreeNode parseTreeNode)
         {
-            return ((Grammar)context.Language.Grammar).AutoBrowsableAstNodes && !(value is IBrowsableAstNode)
+            return ((Grammar)context.Language.Grammar).AstCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes && !(value is IBrowsableAstNode)
                 ? new AstNodeWrapper(value, context, parseTreeNode)
                 : value;
         }
@@ -376,11 +376,42 @@ namespace Irony.ITG.Ast
             };
         }
 
-        public static void ThrowGrammarError(GrammarErrorLevel grammarErrorLevel, string message, params object[] args)
+        public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string format, params object[] args)
         {
-            if (args.Length > 0)
-                message = string.Format(message, args);
+            GrammarError(context, location, errorLevel, string.Format(format, args));
+        }
 
+        public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string message)
+        {
+            context.AddMessage(errorLevel, location, message);
+
+            if (((Grammar)context.Language.Grammar).ErrorHandling == ErrorHandling.ThrowException)
+            {
+                GrammarErrorLevel grammarErrorLevel;
+                switch (errorLevel)
+                {
+                    case ErrorLevel.Error:
+                        grammarErrorLevel = GrammarErrorLevel.Error;
+                        break;
+
+                    case ErrorLevel.Warning:
+                        grammarErrorLevel = GrammarErrorLevel.Warning;
+                        break;
+
+                    case ErrorLevel.Info:
+                        grammarErrorLevel = GrammarErrorLevel.Info;
+                        break;
+
+                    default:
+                        throw new ArgumentException(string.Format("Unknown errorLevel", errorLevel), "errorLevel");
+                }
+
+                ThrowGrammarErrorException(grammarErrorLevel, message);
+            }
+        }
+
+        private static void ThrowGrammarErrorException(GrammarErrorLevel grammarErrorLevel, string message)
+        {
             throw new GrammarErrorException(message, new GrammarError(grammarErrorLevel, null, message));
         }
 

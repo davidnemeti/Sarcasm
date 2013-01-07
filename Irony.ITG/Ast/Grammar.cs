@@ -17,39 +17,42 @@ namespace Irony.ITG.Ast
 {
     public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
+    public enum ErrorHandling { ThrowException, ErrorMessage }
 
     public class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling)
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
             : base()
         {
-            Init(astCreation, emptyCollectionHandling);
+            Init(astCreation, emptyCollectionHandling, errorHandling);
         }
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, bool caseSensitive)
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling, bool caseSensitive)
             : base(caseSensitive)
         {
-            Init(astCreation, emptyCollectionHandling);
+            Init(astCreation, emptyCollectionHandling, errorHandling);
         }
 
-        void Init(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling)
+        void Init(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
         {
             this.LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
                 ? LanguageFlags.CreateAst
                 : LanguageFlags.Default;
 
-            this.AutoBrowsableAstNodes = astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes;
+            this.AstCreation = astCreation;
             this.EmptyCollectionHandling = emptyCollectionHandling;
+            this.ErrorHandling = errorHandling;
         }
 
         #endregion
 
         #region Properties
 
-        public bool AutoBrowsableAstNodes { get; set; }
+        public AstCreation AstCreation { get; set; }
         public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
+        public ErrorHandling ErrorHandling { get; set; }
 
         #endregion
 
