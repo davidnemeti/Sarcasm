@@ -120,7 +120,7 @@ namespace Irony.ITG.Ast
             {
                 /*
                  * The type of childValue is 'object' because childValue can be other than an element, which causes error,
-                 * but we want to give a proper error message (see below) instead of throwing a cast exception
+                 * but we want to give a proper error message (see below) instead of throwing a simple cast exception
                  * */
                 object childValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
 
