@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.IO;
+using System.Diagnostics;
 
 using Irony;
 using Irony.Ast;
@@ -376,11 +377,13 @@ namespace Irony.ITG.Ast
             };
         }
 
+        [DebuggerStepThrough()]
         public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string format, params object[] args)
         {
             GrammarError(context, location, errorLevel, string.Format(format, args));
         }
 
+        [DebuggerStepThrough()]
         public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string message)
         {
             context.AddMessage(errorLevel, location, message);
@@ -410,6 +413,7 @@ namespace Irony.ITG.Ast
             }
         }
 
+        [DebuggerStepThrough()]
         private static void ThrowGrammarErrorException(GrammarErrorLevel grammarErrorLevel, string message)
         {
             throw new GrammarErrorException(message, new GrammarError(grammarErrorLevel, null, message));
