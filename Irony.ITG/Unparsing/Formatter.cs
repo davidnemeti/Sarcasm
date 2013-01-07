@@ -19,10 +19,10 @@ namespace Irony.ITG.Unparsing
 {
     internal class Formatter
     {
-        internal const string unfilteredDebugCategory = "UNFILTERED";
-        internal const string filteredDebugCategory = "FILTERED";
-        internal const string flattenedDebugCategory = "FLATTENED";
-        internal const string processedDebugCategory = "PROCESSED";
+        readonly static internal TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
+        readonly static internal TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
+        readonly static internal TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
+        readonly static internal TraceSource tsProcessed = new TraceSource("PROCESSED", SourceLevels.Verbose);
 
         private enum State { Begin, End }
 
@@ -82,7 +82,7 @@ namespace Irony.ITG.Unparsing
                 .FilterInsertedUtokens()
                 .Flatten()
                 .ProcessControls()
-                .DebugWriteLines(Formatter.processedDebugCategory)
+                .DebugWriteLines(Formatter.tsProcessed)
                 ;
         }
     }
@@ -116,7 +116,7 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                Debug.WriteLine(utoken, Formatter.unfilteredDebugCategory);
+                Formatter.tsUnfiltered.Debug(utoken);
 
                 if (utoken is InsertedUtokens)
                 {
@@ -163,7 +163,7 @@ namespace Irony.ITG.Unparsing
         public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
             return utokens
-                .DebugWriteLines(Formatter.filteredDebugCategory)
+                .DebugWriteLines(Formatter.tsFiltered)
                 .SelectMany(utoken => utoken.Flatten());
         }
 
@@ -175,7 +175,7 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                Debug.WriteLine(utoken, Formatter.flattenedDebugCategory);
+                Formatter.tsFlattened.Debug(utoken);
 
                 if (utoken is UtokenControl)
                 {

@@ -19,7 +19,7 @@ namespace Irony.ITG.Unparsing
 {
     public class Unparser : IUnparser
     {
-        readonly static internal TraceSource tsUnparse = new TraceSource("unparse", SourceLevels.Verbose);
+        readonly static internal TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
 
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
