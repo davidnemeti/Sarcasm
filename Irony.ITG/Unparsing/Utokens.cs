@@ -235,17 +235,19 @@ namespace Irony.ITG.Unparsing
 
         public readonly Kind kind;
         public readonly double priority;
-        public readonly int anyCount;
         public readonly bool overridable;
         public readonly IEnumerable<Utoken> utokens;
 
-        internal InsertedUtokens(Kind kind, double priority, int anyCount, bool overridable, IEnumerable<Utoken> utokens)
+        private readonly IEnumerable<BnfTerm> affectedBnfTerms;
+
+        internal InsertedUtokens(Kind kind, double priority, bool overridable, IEnumerable<Utoken> utokens, params BnfTerm[] affectedBnfTerms)
         {
-            this.utokens = utokens.ToList();
             this.priority = priority;
-            this.anyCount = anyCount;
             this.kind = kind;
             this.overridable = overridable;
+            this.utokens = utokens.ToList();
+
+            this.affectedBnfTerms = affectedBnfTerms;
         }
 
         public override string ToString(Formatting formatting)
@@ -255,12 +257,12 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString()
         {
-            return string.Format("{0}{1}, priority {2}, anyCount {3}: {{ {4} }}",
+            return string.Format("{0}{1}, priority {2}: {{ {3} }}; affected bnfTerms: {{ {4} }}",
                 kind,
                 overridable ? ", overridable" : string.Empty,
                 priority,
-                anyCount,
-                string.Join(", ", utokens)
+                string.Join(", ", utokens),
+                string.Join(", ", affectedBnfTerms)
                 );
         }
 
@@ -287,6 +289,18 @@ namespace Irony.ITG.Unparsing
                 return -1;
             else
                 return insertedUtokens1.CompareTo(insertedUtokens2);
+        }
+
+        private int? _anyCount;
+        private int anyCount
+        {
+            get
+            {
+                if (!_anyCount.HasValue)
+                    _anyCount = affectedBnfTerms.Count(bnfTerm => bnfTerm == Formatting.AnyBnfTerm);
+
+                return _anyCount.Value;
+            }
         }
     }
 }

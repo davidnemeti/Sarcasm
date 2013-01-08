@@ -98,7 +98,7 @@ namespace Irony.ITG.Unparsing
 
         public void InsertUtokensBefore(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensBefore)
         {
-            bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, GetAnyCount(bnfTerm), overridable, utokensBefore));
+            bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore, bnfTerm));
         }
 
         public void InsertUtokensAfterAny(params Utoken[] utokensAfter)
@@ -113,7 +113,7 @@ namespace Irony.ITG.Unparsing
 
         public void InsertUtokensAfter(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensAfter)
         {
-            bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, GetAnyCount(bnfTerm), overridable, utokensAfter));
+            bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter, bnfTerm));
         }
 
         public void InsertUtokensAroundAny(params Utoken[] utokensAround)
@@ -156,15 +156,10 @@ namespace Irony.ITG.Unparsing
         {
             bnfTermToUtokensBetween.Add(
                 Tuple.Create(leftBnfTerm, rightBnfTerm),
-                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, GetAnyCount(leftBnfTerm, rightBnfTerm), overridable, utokensBetween)
+                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, overridable, utokensBetween, leftBnfTerm, rightBnfTerm)
                 );
 
             leftBnfTerms.Add(leftBnfTerm);
-        }
-
-        private static int GetAnyCount(params BnfTerm[] bnfTerms)
-        {
-            return bnfTerms.Count(bnfTerm => bnfTerm == AnyBnfTerm);
         }
 
         #endregion
