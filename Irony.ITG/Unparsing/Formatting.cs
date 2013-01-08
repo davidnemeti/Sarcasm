@@ -169,7 +169,7 @@ namespace Irony.ITG.Unparsing
 
         public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenUnordered(bnfTerm1, bnfTerm2, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenUnordered(bnfTerm1, bnfTerm2, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, double priority, bool overridable, params Utoken[] utokensBetween)
