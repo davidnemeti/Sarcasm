@@ -50,7 +50,7 @@ namespace Irony.ITG.Unparsing
         private readonly Formatting formatting;
 
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
-        Stack<List<Utoken>> indentsStack = new Stack<List<Utoken>>();
+        Stack<List<UtokenControl>> indentsStack = new Stack<List<UtokenControl>>();
         State lastState = State.Begin;
 
         public Formatter(Formatting formatting)
@@ -61,7 +61,7 @@ namespace Irony.ITG.Unparsing
         public IEnumerable<Utoken> Begin(BnfTerm bnfTerm)
         {
             lastState = State.Begin;
-            List<Utoken> indents = new List<Utoken>();
+            List<UtokenControl> indents = new List<UtokenControl>();
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
@@ -114,7 +114,15 @@ namespace Irony.ITG.Unparsing
 
             var indents = indentsStack.Pop();
             foreach (var indent in indents)
+            {
                 yield return new UtokenDependent(UtokenControl.DecreaseIndentLevel, indent);
+                //yield return new InsertedUtokens(
+                //    InsertedUtokens.Kind.After,
+                //    double.NegativeInfinity,
+                //    overridable: false,
+                //    utokens: new Utoken[] { new UtokenDependent(UtokenControl.DecreaseIndentLevel, indent) },
+                //    affectedBnfTerms: bnfTerm);
+            }
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
@@ -132,16 +140,16 @@ namespace Irony.ITG.Unparsing
                 ;
         }
 
-        private static IList<Utoken> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndents)
+        private static IList<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndents)
         {
-            IList<Utoken> indents = CollectIndents(insertedUtokens).ToList();
+            IList<UtokenControl> indents = CollectIndents(insertedUtokens).ToList();
             existIndents = indents.Count > 0;
             return indents;
         }
 
-        private static IEnumerable<Utoken> CollectIndents(InsertedUtokens insertedUtokens)
+        private static IEnumerable<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens)
         {
-            return insertedUtokens.utokens.Where(utoken => utoken == UtokenControl.Indent);
+            return insertedUtokens.utokens.Where(utoken => utoken == UtokenControl.Indent).Cast<UtokenControl>();
         }
     }
 
@@ -192,6 +200,8 @@ namespace Irony.ITG.Unparsing
                         yield return rightInsertedUtokens;
                     }
                 }
+                else if (utoken is UtokenDependent)
+                    yield return utoken;
                 else
                 {
                     if (leftInsertedUtokensToBeYield != null)

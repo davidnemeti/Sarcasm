@@ -213,10 +213,10 @@ namespace Irony.ITG.Unparsing
 
     internal class UtokenDependent : Utoken
     {
-        public readonly Utoken utoken;
-        public readonly Utoken depender;
+        public readonly UtokenControl utoken;
+        public readonly UtokenControl depender;
 
-        public UtokenDependent(Utoken utoken, Utoken depender)
+        public UtokenDependent(UtokenControl utoken, UtokenControl depender)
         {
             this.utoken = utoken;
             this.depender = depender;
