@@ -73,6 +73,8 @@ namespace Irony.ITG.Ast
 
                 yield break;
             }
+
+            throw new CannotUnparseException(string.Format("BnfiTermTransient '{0}' cannot be unparsed.", this.Name));
         }
     }
 

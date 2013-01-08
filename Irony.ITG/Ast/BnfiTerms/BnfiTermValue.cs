@@ -17,9 +17,7 @@ namespace Irony.ITG.Ast
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
         private readonly BnfTerm bnfTerm;
-
-        public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
-        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
+        private readonly object value;
 
         public BnfiTermValue(string errorAlias = null)
             : this(typeof(object), errorAlias)
@@ -30,7 +28,13 @@ namespace Irony.ITG.Ast
             : base(type, errorAlias)
         {
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
-            this.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            this.InverseValueConverterForUnparse = IdentityFunction;
+        }
+
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string errorAlias, bool astForChild)
+            : this(type, bnfTerm, (context, parseNode) => value, isOptionalValue, errorAlias, astForChild)
+        {
+            this.value = value;
         }
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueCreator<object> valueCreator, bool isOptionalValue, string errorAlias, bool astForChild)
@@ -56,8 +60,8 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue Create(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            BnfiTermValue bnfiTermValue = new BnfiTermValue(type, terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            BnfiTermValue bnfiTermValue = new BnfiTermValue(type, terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
             return bnfiTermValue;
         }
 
@@ -73,8 +77,8 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<T> Create<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            BnfiTermValue<T> bnfiTermValue = new BnfiTermValue<T>(terminal, (context, parseNode) => value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            BnfiTermValue<T> bnfiTermValue = new BnfiTermValue<T>(terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<T, object>;
             return bnfiTermValue;
         }
 
@@ -86,14 +90,14 @@ namespace Irony.ITG.Ast
         public static BnfiTermValue<string> CreateIdentifier(IdentifierTerminal identifierTerminal)
         {
             BnfiTermValue<string> bnfiTermValue = Create<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<string, object>;
             return bnfiTermValue;
         }
 
         public static BnfiTermValue<T> CreateNumber<T>(NumberLiteral numberLiteral)
         {
             BnfiTermValue<T> bnfiTermValue = Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<T, object>;
             return bnfiTermValue;
         }
 
@@ -143,15 +147,15 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
         {
-            BnfiTermValue<TOut> bnfiTermValue = Convert(bnfTerm, inValue => (TOut)(object)inValue);
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            BnfiTermValue<TOut> bnfiTermValue = Convert(bnfTerm, value => IdentityFunctionForceCast<TIn, TOut>(value));
+            bnfiTermValue.InverseValueConverterForUnparse = value => IdentityFunctionForceCast<TOut, TIn>(value);
             return bnfiTermValue;
         }
 
         public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
             BnfiTermValue<TOut> bnfiTermValue = Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
-            bnfiTermValue.InverseValueConverterForUnparse = GetIdentityValueConverter();
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<TOut, object>;
             return bnfiTermValue;
         }
 
@@ -245,9 +249,17 @@ namespace Irony.ITG.Ast
             };
         }
 
-        protected static ValueConverter<object, object> GetIdentityValueConverter()
+        public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
+        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
+
+        protected static object IdentityFunction(object obj)
         {
-            return obj => obj;
+            return obj;
+        }
+
+        protected static TOut IdentityFunctionForceCast<TIn, TOut>(TIn obj)
+        {
+            return (TOut)(object)obj;
         }
 
         protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
@@ -261,30 +273,51 @@ namespace Irony.ITG.Ast
 
         public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
-            IEnumerable<Utoken> utokens;
+            if (this.value != null && !this.value.Equals(obj))
+                throw new ValueMismatchException(string.Format("BnfiTermValue has value '{0}' which is not equal to the to-be-unparsed object '{1}'", this.value, obj));
 
             if (this.UtokenizerForUnparse != null)
             {
-                utokens = this.UtokenizerForUnparse(obj);
+                foreach (Utoken utoken in this.UtokenizerForUnparse(obj))
+                    yield return utoken;
             }
             else if (this.InverseValueConverterForUnparse != null)
             {
                 BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
                 object childObj = this.InverseValueConverterForUnparse(obj);
 
-                utokens = unparser.Unparse(childObj, childBnfTerm);
+                foreach (Utoken utoken in unparser.Unparse(childObj, childBnfTerm))
+                    yield return utoken;
             }
             else if (this.bnfTerm == null)
             {
-                // "transient" unparse with the actual BnfiTermValue under the current one (set by Rule)
-                BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
-                utokens = unparser.Unparse(obj, childBnfTerm);
+                // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+                foreach (BnfTermList childBnfTerms in Unparser.GetChildBnfTermLists(this))
+                {
+                    BnfTerm childBnfTermCandidate = childBnfTerms.Single(bnfTerm => bnfTerm is BnfiTermValue);
+
+                    IList<Utoken> utokens;
+                    try
+                    {
+                        // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
+                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                    }
+                    catch (ValueMismatchException)
+                    {
+                        // it is okay, keep trying with the others...
+                        continue;
+                    }
+
+                    foreach (Utoken utoken in utokens)
+                        yield return utoken;
+
+                    yield break;
+                }
+
+                throw new CannotUnparseException();
             }
             else
                 throw new CannotUnparseException(string.Format("BnfiTermValue '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
-
-            foreach (Utoken utoken in utokens)
-                yield return utoken;
         }
     }
 
@@ -293,11 +326,33 @@ namespace Irony.ITG.Ast
         public BnfiTermValue(string errorAlias = null)
             : base(typeof(T), errorAlias)
         {
+            this.InverseValueConverterForUnparse = IdentityFunctionForceCast<T, object>;
+        }
+
+        internal BnfiTermValue(BnfTerm bnfTerm, T value, bool isOptionalValue, string errorAlias, bool astForChild)
+            : base(typeof(T), bnfTerm, value, isOptionalValue, errorAlias, astForChild)
+        {
         }
 
         internal BnfiTermValue(BnfTerm bnfTerm, ValueCreator<T> valueCreator, bool isOptionalValue, string errorAlias, bool astForChild)
             : base(typeof(T), bnfTerm, (context, parseNode) => valueCreator(context, parseNode), isOptionalValue, errorAlias, astForChild)
         {
+        }
+
+        public new ValueConverter<T, object> InverseValueConverterForUnparse
+        {
+            set
+            {
+                base.InverseValueConverterForUnparse = obj => value((T)obj);
+            }
+        }
+
+        public new Func<T, IEnumerable<Utoken>> UtokenizerForUnparse
+        {
+            set
+            {
+                base.UtokenizerForUnparse = obj => value((T)obj);
+            }
         }
 
         public BnfiExpressionValue RuleTypeless { set { base.Rule = value; } }
