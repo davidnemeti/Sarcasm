@@ -114,15 +114,7 @@ namespace Irony.ITG.Unparsing
 
             var indents = indentsStack.Pop();
             foreach (var indent in indents)
-            {
                 yield return new UtokenDependent(UtokenControl.DecreaseIndentLevel, indent);
-                //yield return new InsertedUtokens(
-                //    InsertedUtokens.Kind.After,
-                //    double.NegativeInfinity,
-                //    overridable: false,
-                //    utokens: new Utoken[] { new UtokenDependent(UtokenControl.DecreaseIndentLevel, indent) },
-                //    affectedBnfTerms: bnfTerm);
-            }
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
