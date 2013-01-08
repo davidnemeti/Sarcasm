@@ -98,7 +98,7 @@ namespace Irony.ITG.Unparsing
 
                 steppedIntoUnparseRaw = true;
 
-                Unparser.tsUnparse.UnIndent();
+                Unparser.tsUnparse.Unindent();
             }
 
             foreach (var utoken in formatter.End(bnfTerm))

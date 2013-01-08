@@ -60,12 +60,16 @@ namespace Irony.ITG.Unparsing
         public static readonly Utoken Space = UtokenWhitespace.Space;
         public static readonly Utoken Tab = UtokenWhitespace.Tab;
 
+        public static readonly Utoken Indent = UtokenControl.Indent;
+
+        public static readonly Utoken IndentThisLine = UtokenControl.IndentThisLine;
+        public static readonly Utoken UnindentThisLine = UtokenControl.UnindentThisLine;
+        public static readonly Utoken NoIndentForThisLine = UtokenControl.NoIndentForThisLine;
+
         public static readonly Utoken IncreaseIndentLevel = UtokenControl.IncreaseIndentLevel;
         public static readonly Utoken DecreaseIndentLevel = UtokenControl.DecreaseIndentLevel;
-        public static readonly Utoken IncreaseIndentLevelForThisLine = UtokenControl.IncreaseIndentLevelForThisLine;
-        public static readonly Utoken DecreaseIndentLevelForThisLine = UtokenControl.DecreaseIndentLevelForThisLine;
         public static readonly Utoken SetIndentLevelToNone = UtokenControl.SetIndentLevelToNone;
-        public static readonly Utoken SetIndentLevelToNoneForThisLine = UtokenControl.SetIndentLevelToNoneForThisLine;
+
         public static readonly Utoken NoWhitespace = UtokenControl.NoWhitespace;
     }
 
@@ -167,12 +171,13 @@ namespace Irony.ITG.Unparsing
     {
         internal enum Kind
         {
+            Indent,
+            IndentThisLine,
+            UnindentThisLine,
+            NoIndentForThisLine,
             IncreaseIndentLevel,
             DecreaseIndentLevel,
-            IncreaseIndentLevelForThisLine,
-            DecreaseIndentLevelForThisLine,
             SetIndentLevelToNone,
-            SetIndentLevelToNoneForThisLine,
             NoWhitespace
         }
 
@@ -183,12 +188,16 @@ namespace Irony.ITG.Unparsing
             this.kind = kind;
         }
 
+        public static new readonly UtokenControl Indent = new UtokenControl(Kind.Indent);
+
+        public static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
+        public static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);
+        public static new readonly UtokenControl NoIndentForThisLine = new UtokenControl(Kind.NoIndentForThisLine);
+
         public static new readonly UtokenControl IncreaseIndentLevel = new UtokenControl(Kind.IncreaseIndentLevel);
         public static new readonly UtokenControl DecreaseIndentLevel = new UtokenControl(Kind.DecreaseIndentLevel);
-        public static new readonly UtokenControl IncreaseIndentLevelForThisLine = new UtokenControl(Kind.IncreaseIndentLevelForThisLine);
-        public static new readonly UtokenControl DecreaseIndentLevelForThisLine = new UtokenControl(Kind.DecreaseIndentLevelForThisLine);
         public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl(Kind.SetIndentLevelToNone);
-        public static new readonly UtokenControl SetIndentLevelToNoneForThisLine = new UtokenControl(Kind.SetIndentLevelToNoneForThisLine);
+
         public static new readonly UtokenControl NoWhitespace = new UtokenControl(Kind.NoWhitespace);
 
         public override string ToString(Formatting formatting)
@@ -199,6 +208,58 @@ namespace Irony.ITG.Unparsing
         public override string ToString()
         {
             return ToString("." + kind);
+        }
+    }
+
+    internal class UtokenDependent : Utoken
+    {
+        public readonly Utoken utoken;
+        public readonly Utoken depender;
+
+        public UtokenDependent(Utoken utoken, Utoken depender)
+        {
+            this.utoken = utoken;
+            this.depender = depender;
+        }
+
+        public override string ToString(Formatting formatting)
+        {
+            throw new InvalidOperationException("Should not convert an UtokenDependent to string");
+        }
+
+        public override string ToString()
+        {
+            return ToString("{0} depends on {1}", utoken, depender);
+        }
+
+        public override IEnumerable<Utoken> Flatten()
+        {
+            return utoken.Flatten();
+        }
+    }
+
+    internal class UtokenDepender : Utoken
+    {
+        public readonly Utoken utoken;
+
+        public UtokenDepender(Utoken utoken)
+        {
+            this.utoken = utoken;
+        }
+
+        public override string ToString(Formatting formatting)
+        {
+            throw new InvalidOperationException("Should not convert an UtokenDepender to string");
+        }
+
+        public override string ToString()
+        {
+            return ToString("{0} (depender)", utoken);
+        }
+
+        public override IEnumerable<Utoken> Flatten()
+        {
+            return utoken.Flatten().Select(_utoken => new UtokenDepender(_utoken));
         }
     }
 

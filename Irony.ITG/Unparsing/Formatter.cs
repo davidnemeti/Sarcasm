@@ -22,7 +22,8 @@ namespace Irony.ITG.Unparsing
         internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsProcessed = new TraceSource("PROCESSED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsProcessedDependents = new TraceSource("PROCESSED_DEPENDENTS", SourceLevels.Verbose);
+        internal readonly static TraceSource tsProcessedControls = new TraceSource("PROCESSED_CONTROLS", SourceLevels.Verbose);
 
 #if DEBUG
         static Formatter()
@@ -36,8 +37,11 @@ namespace Irony.ITG.Unparsing
             tsFlattened.Listeners.Clear();
             tsFlattened.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "03_flattened.log"))));
 
-            tsProcessed.Listeners.Clear();
-            tsProcessed.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_processed.log"))));
+            tsProcessedDependents.Listeners.Clear();
+            tsProcessedDependents.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_processed_dependents.log"))));
+
+            tsProcessedControls.Listeners.Clear();
+            tsProcessedControls.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "05_processed_controls.log"))));
         }
 #endif
 
@@ -46,6 +50,7 @@ namespace Irony.ITG.Unparsing
         private readonly Formatting formatting;
 
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
+        Stack<List<Utoken>> indentsStack = new Stack<List<Utoken>>();
         State lastState = State.Begin;
 
         public Formatter(Formatting formatting)
@@ -56,13 +61,20 @@ namespace Irony.ITG.Unparsing
         public IEnumerable<Utoken> Begin(BnfTerm bnfTerm)
         {
             lastState = State.Begin;
+            List<Utoken> indents = new List<Utoken>();
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
                 {
-                    yield return insertedUtokensBetween;
+                    bool existIndents;
+                    indents.AddRange(CollectIndents(insertedUtokensBetween, out existIndents));
+
+                    yield return existIndents
+                        ? (Utoken)new UtokenDepender(insertedUtokensBetween)
+                        : (Utoken)insertedUtokensBetween;
+
                     Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
                 }
             }
@@ -70,9 +82,17 @@ namespace Irony.ITG.Unparsing
             InsertedUtokens insertedUtokensBefore;
             if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
             {
-                yield return insertedUtokensBefore;
+                bool existIndents;
+                indents.AddRange(CollectIndents(insertedUtokensBefore, out existIndents));
+
+                yield return existIndents
+                    ? (Utoken)new UtokenDepender(insertedUtokensBefore)
+                    : (Utoken)insertedUtokensBefore;
+
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
             }
+
+            indentsStack.Push(indents);
         }
 
         public IEnumerable<Utoken> End(BnfTerm bnfTerm)
@@ -91,16 +111,37 @@ namespace Irony.ITG.Unparsing
                 yield return insertedUtokensAfter;
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
             }
+
+            var indents = indentsStack.Pop();
+            foreach (var indent in indents)
+                yield return new UtokenDependent(UtokenControl.DecreaseIndentLevel, indent);
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
         {
             return utokens
+                .DebugWriteLines(Formatter.tsUnfiltered)
                 .FilterInsertedUtokens()
+                .DebugWriteLines(Formatter.tsFiltered)
                 .Flatten()
+                .DebugWriteLines(Formatter.tsFlattened)
+                .ProcessDependents()
+                .DebugWriteLines(Formatter.tsProcessedDependents)
                 .ProcessControls()
-                .DebugWriteLines(Formatter.tsProcessed)
+                .DebugWriteLines(Formatter.tsProcessedControls)
                 ;
+        }
+
+        private static IList<Utoken> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndents)
+        {
+            IList<Utoken> indents = CollectIndents(insertedUtokens).ToList();
+            existIndents = indents.Count > 0;
+            return indents;
+        }
+
+        private static IEnumerable<Utoken> CollectIndents(InsertedUtokens insertedUtokens)
+        {
+            return insertedUtokens.utokens.Where(utoken => utoken == UtokenControl.Indent);
         }
     }
 
@@ -133,8 +174,6 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                Formatter.tsUnfiltered.Debug(utoken);
-
                 if (utoken is InsertedUtokens)
                 {
                     InsertedUtokens rightInsertedUtokens = (InsertedUtokens)utoken;
@@ -183,9 +222,43 @@ namespace Irony.ITG.Unparsing
 
         public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
         {
-            return utokens
-                .DebugWriteLines(Formatter.tsFiltered)
-                .SelectMany(utoken => utoken.Flatten());
+            return utokens.SelectMany(utoken => utoken.Flatten());
+        }
+
+        public static IEnumerable<Utoken> ProcessDependents(this IEnumerable<Utoken> utokens)
+        {
+            ISet<Utoken> seenDependers = new HashSet<Utoken>();
+
+            foreach (Utoken _utoken in utokens)
+            {
+                Utoken utoken = _utoken;
+
+            LProcessUtoken:
+
+                if (utoken is UtokenDepender)
+                {
+                    UtokenDepender utokenDepender = (UtokenDepender)utoken;
+
+                    seenDependers.Add(utokenDepender.utoken);
+
+                    // handle depender tokens recursively (utokenDepender.utoken might be a dependent, a depender or a normal utoken as well)
+                    utoken = utokenDepender.utoken;
+                    goto LProcessUtoken;
+                }
+                else if (utoken is UtokenDependent)
+                {
+                    UtokenDependent utokenDependent = (UtokenDependent)utoken;
+
+                    if (seenDependers.Contains(utokenDependent.depender))
+                    {
+                        // handle dependent tokens recursively (utokenDependent.utoken might be a dependent, a depender or a normal utoken as well)
+                        utoken = utokenDependent.utoken;
+                        goto LProcessUtoken;
+                    }
+                }
+                else
+                    yield return utoken;
+            }
         }
 
         public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
@@ -197,14 +270,13 @@ namespace Irony.ITG.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                Formatter.tsFlattened.Debug(utoken);
-
                 if (utoken is UtokenControl)
                 {
                     UtokenControl utokenControl = (UtokenControl)utoken;
 
                     switch (utokenControl.kind)
                     {
+                        case UtokenControl.Kind.Indent:
                         case UtokenControl.Kind.IncreaseIndentLevel:
                             indentLevel++;
                             break;
@@ -217,15 +289,15 @@ namespace Irony.ITG.Unparsing
                             indentLevel = 0;
                             break;
 
-                        case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
+                        case UtokenControl.Kind.IndentThisLine:
                             temporaryIndentLevel = indentLevel + 1;
                             break;
 
-                        case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
+                        case UtokenControl.Kind.UnindentThisLine:
                             temporaryIndentLevel = indentLevel - 1;
                             break;
 
-                        case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
+                        case UtokenControl.Kind.NoIndentForThisLine:
                             temporaryIndentLevel = 0;
                             break;
 

@@ -83,7 +83,7 @@ namespace Irony.ITG
         }
 
         [Conditional("TRACE")]
-        public static void UnIndent(this TraceSource ts)
+        public static void Unindent(this TraceSource ts)
         {
             foreach (TraceListener listener in ts.Listeners)
                 listener.IndentLevel--;
