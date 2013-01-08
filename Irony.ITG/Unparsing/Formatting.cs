@@ -32,7 +32,7 @@ namespace Irony.ITG.Unparsing
 
         #endregion
 
-        #region Constants
+        #region Default values
 
         private const double priorityDefault = 0;
         private const double anyPriorityDefault = double.NegativeInfinity;
@@ -44,6 +44,7 @@ namespace Irony.ITG.Unparsing
         private const string spaceDefault = " ";
         private const string tabDefault = "\t";
         private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));
+        private const string whiteSpaceBetweenUtokensDefault = spaceDefault;
 
         internal static BnfTerm AnyBnfTerm { get { return _AnyBnfTerm.Instance; } }
 
@@ -66,6 +67,7 @@ namespace Irony.ITG.Unparsing
             this.Space = spaceDefault;
             this.Tab = tabDefault;
             this.IndentUnit = indentUnitDefault;
+            this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
         }
 
         #endregion
@@ -78,6 +80,7 @@ namespace Irony.ITG.Unparsing
         public string Space { get; set; }
         public string Tab { get; set; }
         public string IndentUnit { get; set; }
+        public string WhiteSpaceBetweenUtokens { get; set; }
 
         #endregion
 

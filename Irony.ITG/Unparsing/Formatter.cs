@@ -28,16 +28,16 @@ namespace Irony.ITG.Unparsing
         static Formatter()
         {
             tsUnfiltered.Listeners.Clear();
-            tsUnfiltered.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "01_unfiltered.log")));
+            tsUnfiltered.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_unfiltered.log"))));
 
             tsFiltered.Listeners.Clear();
-            tsFiltered.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "02_filtered.log")));
+            tsFiltered.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "02_filtered.log"))));
 
             tsFlattened.Listeners.Clear();
-            tsFlattened.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "03_flattened.log")));
+            tsFlattened.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "03_flattened.log"))));
 
             tsProcessed.Listeners.Clear();
-            tsProcessed.Listeners.Add(new TextWriterTraceListener(Path.Combine(Unparser.logDirectoryName, "04_processed.log")));
+            tsProcessed.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_processed.log"))));
         }
 #endif
 
@@ -193,6 +193,7 @@ namespace Irony.ITG.Unparsing
             int indentLevel = 0;
             int? temporaryIndentLevel = null;
             bool firstUtokenInLine = true;
+            bool allowedWhitespaceBetweenUtokens = true;
 
             foreach (Utoken utoken in utokens)
             {
@@ -200,11 +201,45 @@ namespace Irony.ITG.Unparsing
 
                 if (utoken is UtokenControl)
                 {
-                    ProcessControl((UtokenControl)utoken, ref indentLevel, ref temporaryIndentLevel);
+                    UtokenControl utokenControl = (UtokenControl)utoken;
+
+                    switch (utokenControl.kind)
+                    {
+                        case UtokenControl.Kind.IncreaseIndentLevel:
+                            indentLevel++;
+                            break;
+
+                        case UtokenControl.Kind.DecreaseIndentLevel:
+                            indentLevel--;
+                            break;
+
+                        case UtokenControl.Kind.SetIndentLevelToNone:
+                            indentLevel = 0;
+                            break;
+
+                        case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
+                            temporaryIndentLevel = indentLevel + 1;
+                            break;
+
+                        case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
+                            temporaryIndentLevel = indentLevel - 1;
+                            break;
+
+                        case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
+                            temporaryIndentLevel = 0;
+                            break;
+
+                        case UtokenControl.Kind.NoWhitespace:
+                            allowedWhitespaceBetweenUtokens = false;
+                            break;
+
+                        default:
+                            throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
+                    }
                 }
                 else
                 {
-                    if (utoken == UtokenPrimitive.NewLine || utoken == UtokenPrimitive.EmptyLine)
+                    if (utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine)
                     {
                         firstUtokenInLine = true;
                         temporaryIndentLevel = null;
@@ -213,45 +248,15 @@ namespace Irony.ITG.Unparsing
                     {
                         if (firstUtokenInLine)
                             yield return new UtokenIndent(temporaryIndentLevel ?? indentLevel);
+                        else if (allowedWhitespaceBetweenUtokens)
+                            yield return UtokenWhitespace.BetweenUtokens;
 
                         firstUtokenInLine = false;
                     }
 
                     yield return utoken;
+                    allowedWhitespaceBetweenUtokens = true;
                 }
-            }
-        }
-
-        private static void ProcessControl(UtokenControl utokenControl, ref int indentLevel, ref int? temporaryIndentLevel)
-        {
-            switch (utokenControl.kind)
-            {
-                case UtokenControl.Kind.IncreaseIndentLevel:
-                    indentLevel++;
-                    break;
-
-                case UtokenControl.Kind.DecreaseIndentLevel:
-                    indentLevel--;
-                    break;
-
-                case UtokenControl.Kind.SetIndentLevelToNone:
-                    indentLevel = 0;
-                    break;
-
-                case UtokenControl.Kind.IncreaseIndentLevelForThisLine:
-                    temporaryIndentLevel = indentLevel + 1;
-                    break;
-
-                case UtokenControl.Kind.DecreaseIndentLevelForThisLine:
-                    temporaryIndentLevel = indentLevel - 1;
-                    break;
-
-                case UtokenControl.Kind.SetIndentLevelToNoneForThisLine:
-                    temporaryIndentLevel = 0;
-                    break;
-
-                default:
-                    throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
             }
         }
     }

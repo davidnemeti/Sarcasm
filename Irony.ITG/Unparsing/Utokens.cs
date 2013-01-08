@@ -55,10 +55,10 @@ namespace Irony.ITG.Unparsing
             return new UtokenText(text, reference);
         }
 
-        public static readonly Utoken NewLine = UtokenPrimitive.NewLine;
-        public static readonly Utoken EmptyLine = UtokenPrimitive.EmptyLine;
-        public static readonly Utoken Space = UtokenPrimitive.Space;
-        public static readonly Utoken Tab = UtokenPrimitive.Tab;
+        public static readonly Utoken NewLine = UtokenWhitespace.NewLine;
+        public static readonly Utoken EmptyLine = UtokenWhitespace.EmptyLine;
+        public static readonly Utoken Space = UtokenWhitespace.Space;
+        public static readonly Utoken Tab = UtokenWhitespace.Tab;
 
         public static readonly Utoken IncreaseIndentLevel = UtokenControl.IncreaseIndentLevel;
         public static readonly Utoken DecreaseIndentLevel = UtokenControl.DecreaseIndentLevel;
@@ -66,6 +66,7 @@ namespace Irony.ITG.Unparsing
         public static readonly Utoken DecreaseIndentLevelForThisLine = UtokenControl.DecreaseIndentLevelForThisLine;
         public static readonly Utoken SetIndentLevelToNone = UtokenControl.SetIndentLevelToNone;
         public static readonly Utoken SetIndentLevelToNoneForThisLine = UtokenControl.SetIndentLevelToNoneForThisLine;
+        public static readonly Utoken NoWhitespace = UtokenControl.NoWhitespace;
     }
 
     public class UtokenText : Utoken
@@ -95,34 +96,45 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    public class UtokenPrimitive : Utoken
+    public class UtokenWhitespace : Utoken
     {
-        internal enum Kind { NewLine, EmptyLine, Space, Tab }
+        internal enum Kind { NewLine, EmptyLine, Space, Tab, BetweenUtokens }
 
         internal readonly Kind kind;
 
-        private UtokenPrimitive(Kind kind)
+        private UtokenWhitespace(Kind kind)
         {
             this.kind = kind;
         }
 
-        internal static new readonly UtokenPrimitive NewLine = new UtokenPrimitive(Kind.NewLine);
-        internal static new readonly UtokenPrimitive EmptyLine = new UtokenPrimitive(Kind.EmptyLine);
-        internal static new readonly UtokenPrimitive Space = new UtokenPrimitive(Kind.Space);
-        internal static new readonly UtokenPrimitive Tab = new UtokenPrimitive(Kind.Tab);
+        internal static new readonly UtokenWhitespace NewLine = new UtokenWhitespace(Kind.NewLine);
+        internal static new readonly UtokenWhitespace EmptyLine = new UtokenWhitespace(Kind.EmptyLine);
+        internal static new readonly UtokenWhitespace Space = new UtokenWhitespace(Kind.Space);
+        internal static new readonly UtokenWhitespace Tab = new UtokenWhitespace(Kind.Tab);
+        internal static readonly UtokenWhitespace BetweenUtokens = new UtokenWhitespace(Kind.BetweenUtokens);
 
         public override string ToString(Formatting formatting)
         {
-            if (this == NewLine)
-                return formatting.NewLine;
-            else if (this == EmptyLine)
-                return formatting.NewLine + formatting.NewLine;
-            else if (this == Space)
-                return formatting.Space;
-            else if (this == Tab)
-                return formatting.Tab;
-            else
-                throw new InvalidOperationException("Unknown utoken primitive");
+            switch (kind)
+            {
+                case Kind.NewLine:
+                    return formatting.NewLine;
+
+                case Kind.EmptyLine:
+                    return formatting.NewLine + formatting.NewLine;
+
+                case Kind.Space:
+                    return formatting.Space;
+
+                case Kind.Tab:
+                    return formatting.Tab;
+
+                case Kind.BetweenUtokens:
+                    return formatting.WhiteSpaceBetweenUtokens;
+
+                default:
+                    throw new InvalidOperationException("Unknown UtokenWhitespace");
+            }
         }
 
         public override string ToString()
@@ -160,7 +172,8 @@ namespace Irony.ITG.Unparsing
             IncreaseIndentLevelForThisLine,
             DecreaseIndentLevelForThisLine,
             SetIndentLevelToNone,
-            SetIndentLevelToNoneForThisLine
+            SetIndentLevelToNoneForThisLine,
+            NoWhitespace
         }
 
         internal readonly Kind kind;
@@ -176,6 +189,7 @@ namespace Irony.ITG.Unparsing
         public static new readonly UtokenControl DecreaseIndentLevelForThisLine = new UtokenControl(Kind.DecreaseIndentLevelForThisLine);
         public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl(Kind.SetIndentLevelToNone);
         public static new readonly UtokenControl SetIndentLevelToNoneForThisLine = new UtokenControl(Kind.SetIndentLevelToNoneForThisLine);
+        public static new readonly UtokenControl NoWhitespace = new UtokenControl(Kind.NoWhitespace);
 
         public override string ToString(Formatting formatting)
         {
