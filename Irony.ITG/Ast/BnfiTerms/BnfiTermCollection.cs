@@ -328,6 +328,27 @@ namespace Irony.ITG.Ast
             this.Name = "<<null list>>";
         }
 
+        protected void ClearRule()
+        {
+            ClearListTerms();
+            RuleRaw = null;
+        }
+
+        protected void MoveTo(BnfiTermCollection target)
+        {
+            if (!this.listKind.HasValue)
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Right-value collection has not been initialized: {0}", this.Name);
+
+            if (this.listKind == ListKind.Plus)
+                _MakePlusRule(target, this.delimiter, this.element);
+            else if (this.listKind == ListKind.Star)
+                _MakeStarRule(target, this.delimiter, this.element);
+            else
+                throw new InvalidOperationException(string.Format("Unknown listKind: {0}", this.listKind));
+
+            this.ClearRule();
+        }
+
         protected string GetName()
         {
             return string.Format("{0}List<{1}>", listKind, element.Name);
@@ -341,14 +362,7 @@ namespace Irony.ITG.Ast
         {
             set
             {
-                if (!value.listKind.HasValue)
-                    GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Right value collection has not been initialized: {0}", value.Name);
-
-                this.SetListTerms(value.listKind.Value, value.element, value.delimiter);
-                base.Rule = value.RuleRaw;
-
-                value.ClearListTerms();
-                value.RuleRaw = null;
+                value.MoveTo(this);
             }
         }
 
