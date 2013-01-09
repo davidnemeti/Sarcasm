@@ -19,6 +19,31 @@ namespace Irony.ITG.Unparsing
 {
     internal class Formatter
     {
+        #region Types
+
+        /*
+         * BeginParams and EndParams exist for passing parameters and for enforcing the proper calling order for Begin-YieldBefore and YieldAfter-End
+         * */
+
+        public class BeginParams
+        {
+            public readonly IEnumerable<Utoken> utokensBetweenAndBefore;
+
+            public BeginParams(IList<Utoken> utokensBetweenAndBefore)
+            {
+                this.utokensBetweenAndBefore = utokensBetweenAndBefore;
+            }
+        }
+
+        public class EndParams
+        {
+            public EndParams()
+            {
+            }
+        }
+
+        #endregion
+
         internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
@@ -58,9 +83,9 @@ namespace Irony.ITG.Unparsing
             this.formatting = formatting;
         }
 
-        public void BeginState(BnfTerm bnfTerm, out IList<Utoken> utokensBetweenAndBefore)
+        public void Begin(BnfTerm bnfTerm, out BeginParams beginParams)
         {
-            utokensBetweenAndBefore = new List<Utoken>();
+            IList<Utoken> utokensBetweenAndBefore = new List<Utoken>();
 
             lastState = State.Begin;
             List<UtokenControl> dependers = new List<UtokenControl>();
@@ -93,19 +118,20 @@ namespace Irony.ITG.Unparsing
             }
 
             dependersStack.Push(dependers);
+
+            beginParams = new BeginParams(utokensBetweenAndBefore);
         }
 
-        public IEnumerable<Utoken> BeginYield(BnfTerm bnfTerm, IEnumerable<Utoken> utokensBetweenAndBefore)
+        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, BeginParams beginParams)
         {
-            foreach (Utoken utokenBetweenOrBefore in utokensBetweenAndBefore)
+            foreach (Utoken utokenBetweenOrBefore in beginParams.utokensBetweenAndBefore)
             {
-                yield return utokenBetweenOrBefore;
-
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
+                yield return utokenBetweenOrBefore;
             }
         }
 
-        public void EndState(BnfTerm bnfTerm)
+        public void End(BnfTerm bnfTerm, EndParams endParams)
         {
             if (lastState != State.End)
                 leftBnfTermsFromTopToBottom.Clear();
@@ -118,20 +144,30 @@ namespace Irony.ITG.Unparsing
             dependersStack.Pop();
         }
 
-        public IEnumerable<Utoken> EndYield(BnfTerm bnfTerm)
+        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm, out EndParams endParams)
+        {
+            endParams = new EndParams();
+            return _YieldAfter(bnfTerm);
+        }
+
+        private IEnumerable<Utoken> _YieldAfter(BnfTerm bnfTerm)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
             {
-                yield return insertedUtokensAfter;
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
+                yield return insertedUtokensAfter;
             }
 
             var dependers = dependersStack.Peek();
             foreach (UtokenControl depender in dependers)
             {
                 if (depender == UtokenControl.IndentBlock)
-                    yield return new UtokenDependent(UtokenControl.DecreaseIndentLevel, depender);
+                {
+                    UtokenDependent utokenDependent = new UtokenDependent(UtokenControl.DecreaseIndentLevel, depender);
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenDependent);
+                    yield return utokenDependent;
+                }
                 else
                     throw new InvalidOperationException("Unknown depender utoken: " + depender.ToString());
             }

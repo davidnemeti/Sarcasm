@@ -61,13 +61,14 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
-            IList<Utoken> utokensBetweenAndBefore;
+            Formatter.BeginParams beginParams;
+            Formatter.EndParams endParams = null;
 
-            formatter.BeginState(bnfTerm, out utokensBetweenAndBefore);
+            formatter.Begin(bnfTerm, out beginParams);
 
             try
             {
-                foreach (var utoken in formatter.BeginYield(bnfTerm, utokensBetweenAndBefore))
+                foreach (var utoken in formatter.YieldBefore(bnfTerm, beginParams))
                     yield return utoken;
 
                 steppedIntoUnparseRaw = true;
@@ -111,13 +112,13 @@ namespace Irony.ITG.Unparsing
                         Unparser.tsUnparse.Unindent();
                     }
 
-                    foreach (var utoken in formatter.EndYield(bnfTerm))
+                    foreach (var utoken in formatter.YieldAfter(bnfTerm, out endParams))
                         yield return utoken;
                 }
             }
             finally
             {
-                formatter.EndState(bnfTerm);
+                formatter.End(bnfTerm, endParams);
             }
         }
 
