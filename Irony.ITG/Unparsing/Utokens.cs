@@ -40,11 +40,6 @@ namespace Irony.ITG.Unparsing
             yield return this;
         }
 
-        public override string ToString()
-        {
-            throw new InvalidOperationException("Use 'ToString(Formatting formatting)' instead");
-        }
-
         public static implicit operator Utoken(string text)
         {
             return (UtokenText)text;
