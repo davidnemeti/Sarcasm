@@ -22,7 +22,7 @@ namespace Irony.ITG.Ast
             GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
         }
 
-        public new BnfiExpressionTransient Rule { set { base.Rule = value; } }
+        public new BnfiExpressionChoice Rule { set { base.Rule = value; } }
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
@@ -91,18 +91,18 @@ namespace Irony.ITG.Ast
             return base.Q();
         }
 
-        public BnfiExpressionTransient RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionChoice RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionTransient<TType> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
 
         public void SetRuleOr(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
         {
             this.Rule = Or(bnfiTermFirst, bnfiTerms);
         }
 
-        public BnfiExpressionTransient<TType> Or(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
+        public BnfiExpressionChoice<TType> Or(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
         {
-            return (BnfiExpressionTransient<TType>)bnfiTerms
+            return (BnfiExpressionChoice<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
                 new BnfExpression(bnfiTermFirst.AsBnfTerm()),

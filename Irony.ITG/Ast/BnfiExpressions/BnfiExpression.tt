@@ -82,10 +82,10 @@ namespace Irony.ITG.Ast
 		multiCore: false
 	);
 
-	// multiCore is false for BnfiExpressionTransient to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+	// multiCore is false for BnfiExpressionChoice to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionTransient",
+		"BnfiExpressionChoice",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollection"},
@@ -95,8 +95,8 @@ namespace Irony.ITG.Ast
 	);
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionTransient<T>",
-		inheritFromBase: "BnfiExpressionTransient",
+		"BnfiExpressionChoice<T>",
+		inheritFromBase: "BnfiExpressionChoice",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollection<TCollectionType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
