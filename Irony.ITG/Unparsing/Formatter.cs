@@ -58,10 +58,10 @@ namespace Irony.ITG.Unparsing
             this.formatting = formatting;
         }
 
-        public void BeginState(BnfTerm bnfTerm, out ISet<BnfTerm> leftBnfTermWithDependerInsertedUtokensBetween, out bool isDependerInsertedUtokensBefore)
+        public void BeginState(BnfTerm bnfTerm, out IList<Utoken> utokensBetweenAndBefore)
         {
-            leftBnfTermWithDependerInsertedUtokensBetween = new HashSet<BnfTerm>();
-            isDependerInsertedUtokensBefore = false;
+            utokensBetweenAndBefore = new List<Utoken>();
+
             lastState = State.Begin;
             List<UtokenControl> dependers = new List<UtokenControl>();
 
@@ -70,48 +70,38 @@ namespace Irony.ITG.Unparsing
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
                 {
-                    bool isDependerInsertedUtokensBetween;
-                    dependers.AddRange(CollectIndents(insertedUtokensBetween, out isDependerInsertedUtokensBetween));
+                    bool existIndent;
+                    dependers.AddRange(CollectIndents(insertedUtokensBetween, out existIndent));
 
-                    if (isDependerInsertedUtokensBetween)
-                        leftBnfTermWithDependerInsertedUtokensBetween.Add(leftBnfTerm);
+                    if (existIndent)
+                        utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBetween));
+                    else
+                        utokensBetweenAndBefore.Add((Utoken)insertedUtokensBetween);
                 }
             }
 
             InsertedUtokens insertedUtokensBefore;
             if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
-                dependers.AddRange(CollectIndents(insertedUtokensBefore, out isDependerInsertedUtokensBefore));
+            {
+                bool existIndent;
+                dependers.AddRange(CollectIndents(insertedUtokensBefore, out existIndent));
+
+                if (existIndent)
+                    utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBefore));
+                else
+                    utokensBetweenAndBefore.Add((Utoken)insertedUtokensBefore);
+            }
 
             dependersStack.Push(dependers);
         }
 
-        public IEnumerable<Utoken> BeginYield(BnfTerm bnfTerm, ISet<BnfTerm> leftBnfTermWithDependerInsertedUtokensBetween, bool isDependerInsertedUtokensBefore)
+        public IEnumerable<Utoken> BeginYield(BnfTerm bnfTerm, IEnumerable<Utoken> utokensBetweenAndBefore)
         {
-            foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
+            foreach (Utoken utokenBetweenOrBefore in utokensBetweenAndBefore)
             {
-                InsertedUtokens insertedUtokensBetween;
-                if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
-                {
-                    Utoken yieldUtokensBetween = leftBnfTermWithDependerInsertedUtokensBetween.Contains(leftBnfTerm)
-                        ? (Utoken)new UtokenDepender(insertedUtokensBetween)
-                        : (Utoken)insertedUtokensBetween;
+                yield return utokenBetweenOrBefore;
 
-                    yield return yieldUtokensBetween;
-
-                    Unparser.tsUnparse.Debug("inserted utokens: {0}", yieldUtokensBetween);
-                }
-            }
-
-            InsertedUtokens insertedUtokensBefore;
-            if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
-            {
-                Utoken yieldUtokensBefore = isDependerInsertedUtokensBefore
-                    ? (Utoken)new UtokenDepender(insertedUtokensBefore)
-                    : (Utoken)insertedUtokensBefore;
-
-                yield return yieldUtokensBefore;
-
-                Unparser.tsUnparse.Debug("inserted utokens: {0}", yieldUtokensBefore);
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
             }
         }
 
@@ -162,10 +152,10 @@ namespace Irony.ITG.Unparsing
                 ;
         }
 
-        private static IList<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndents)
+        private static IList<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndent)
         {
             IList<UtokenControl> indents = CollectIndents(insertedUtokens).ToList();
-            existIndents = indents.Count > 0;
+            existIndent = indents.Count > 0;
             return indents;
         }
 
