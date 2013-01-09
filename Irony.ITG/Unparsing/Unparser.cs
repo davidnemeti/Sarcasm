@@ -65,43 +65,51 @@ namespace Irony.ITG.Unparsing
                 yield return utoken;
 
             steppedIntoUnparseRaw = true;
+            IList<Utoken> utokenAfter;
 
-            if (bnfTerm is KeyTerm)
+            try
             {
-                Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                yield return ((KeyTerm)bnfTerm).Text;
+                if (bnfTerm is KeyTerm)
+                {
+                    Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
+                    yield return ((KeyTerm)bnfTerm).Text;
+                }
+                else if (bnfTerm is Terminal)
+                {
+                    Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
+                    yield return obj.ToString();
+                }
+                else if (bnfTerm is NonTerminal)
+                {
+                    Unparser.tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
+
+                    Unparser.tsUnparse.Indent();
+
+                    NonTerminal nonTerminal = (NonTerminal)bnfTerm;
+                    IUnparsable unparsable = nonTerminal as IUnparsable;
+
+                    if (unparsable == null)
+                        throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
+
+                    steppedIntoUnparseRaw = false;
+
+                    foreach (Utoken utoken in unparsable.Unparse(this, obj))
+                        yield return utoken;
+
+                    if (!steppedIntoUnparseRaw)
+                        Unparser.tsUnparse.Debug("utokenized: [\"{0}\"]", obj.ToString());
+
+                    steppedIntoUnparseRaw = true;
+
+                    Unparser.tsUnparse.Unindent();
+                }
             }
-            else if (bnfTerm is Terminal)
+            finally
             {
-                Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                yield return obj.ToString();
-            }
-            else if (bnfTerm is NonTerminal)
-            {
-                Unparser.tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
-
-                Unparser.tsUnparse.Indent();
-
-                NonTerminal nonTerminal = (NonTerminal)bnfTerm;
-                IUnparsable unparsable = nonTerminal as IUnparsable;
-
-                if (unparsable == null)
-                    throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
-
-                steppedIntoUnparseRaw = false;
-
-                foreach (Utoken utoken in unparsable.Unparse(this, obj))
-                    yield return utoken;
-
-                if (!steppedIntoUnparseRaw)
-                    Unparser.tsUnparse.Debug("utokenized: [\"{0}\"]", obj.ToString());
-
-                steppedIntoUnparseRaw = true;
-
-                Unparser.tsUnparse.Unindent();
+                utokenAfter = formatter.End(bnfTerm).ToList();
             }
 
-            foreach (var utoken in formatter.End(bnfTerm))
+            foreach (var utoken in utokenAfter)
                 yield return utoken;
         }
 
