@@ -10,6 +10,7 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG;
 using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
@@ -33,48 +34,41 @@ namespace Irony.ITG.Ast
 
         public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
-            foreach (BnfTermList childBnfTerms in Unparser.GetChildBnfTermLists(this))
+            BnfTermListToPriority bnfTermListToPriority;
+            if (obj.GetType() == this.Type)
             {
-                BnfTerm childBnfTermCandidate = childBnfTerms.Single(bnfTerm => !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint));
-
-                IEnumerable<Utoken> utokens;
-
-                if (obj.GetType() == this.Type)
+                bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
                 {
                     try
                     {
                         // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
-                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                        preYieldedUtokens = bnfTerms.SelectMany(bnfTerm => unparser.Unparse(obj, bnfTerm)).ToList();
+                        return int.MaxValue;
                     }
                     catch (ValueMismatchException)
                     {
-                        // it is okay, keep trying with the others...
-                        continue;
+                        preYieldedUtokens = null;
+                        return null;
                     }
-                }
-                else
+                };
+            }
+            else
+            {
+                bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
                 {
-                    IHasType childCandidateWithType = childBnfTermCandidate as IHasType;
+                    preYieldedUtokens = null;
 
-                    if (childCandidateWithType == null)
-                        throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.", obj, obj.GetType().Name, childBnfTermCandidate.Name));
+                    BnfTerm bnfTermCandidate = bnfTerms.Single(bnfTerm => !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint));
+                    IHasType bnfTermCandidateWithType = bnfTermCandidate as IHasType;
 
-                    if (!childCandidateWithType.Type.IsInstanceOfType(obj))
-                    {
-                        // keep trying with the others...
-                        continue;
-                    }
+                    if (bnfTermCandidateWithType == null)
+                        throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.", obj, obj.GetType().Name, bnfTermCandidate.Name));
 
-                    utokens = unparser.Unparse(obj, childBnfTermCandidate);
-                }
-
-                foreach (Utoken utoken in utokens)
-                    yield return utoken;
-
-                yield break;
+                    return -bnfTermCandidateWithType.Type.GetInheritanceDistance(obj);
+                };
             }
 
-            throw new CannotUnparseException(string.Format("'{0}' cannot be unparsed.", this.Name));
+            return Unparser.UnparseBestChildBnfTermList(this, unparser, obj, bnfTermListToPriority);
         }
     }
 

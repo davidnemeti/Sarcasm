@@ -9,6 +9,30 @@ namespace Irony.ITG
 {
     public static class Util
     {
+        public static int? GetInheritanceDistance(this Type ancestor, object descendantObj)
+        {
+            return GetInheritanceDistance(ancestor, descendantObj.GetType());
+        }
+
+        public static int? GetInheritanceDistance(this Type ancestor, Type descendant)
+        {
+            if (ancestor == null)
+                throw new ArgumentNullException("ancestor");
+
+            if (descendant == null)
+                return null;
+            else if (descendant == ancestor)
+                return 0;
+            else
+            {
+                return new[] { descendant.BaseType }.Concat(descendant.GetInterfaces())
+                    .Select(parentType => GetInheritanceDistance(ancestor, parentType))
+                    .FirstOrDefault(distance => distance != null);
+            }
+        }
+
+        #region EqualToAny
+
         public static bool EqualToAny<T>(this T value, T candidateValue)
         {
             return EqualityComparer<T>.Default.Equals(value, candidateValue);
@@ -31,49 +55,9 @@ namespace Irony.ITG
             return candidateValues.Contains(value);
         }
 
-        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, string category = null)
-        {
-            foreach (T item in items)
-            {
-                System.Diagnostics.Trace.WriteLine(item, category);
-                yield return item;
-            }
-        }
+        #endregion
 
-        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType)
-        {
-            foreach (T item in items)
-            {
-                ts.Trace(traceEventType, item);
-                yield return item;
-            }
-        }
-
-        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, TraceSource ts)
-        {
-#if DEBUG
-            foreach (T item in items)
-            {
-                ts.Debug(item);
-                yield return item;
-            }
-#else
-            return items;
-#endif
-        }
-
-        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, string category = null)
-        {
-#if DEBUG
-            foreach (T item in items)
-            {
-                System.Diagnostics.Debug.WriteLine(item, category);
-                yield return item;
-            }
-#else
-            return items;
-#endif
-        }
+        #region Trace and Debug
 
         [Conditional("TRACE")]
         public static void Indent(this TraceSource ts)
@@ -124,5 +108,51 @@ namespace Irony.ITG
         {
             ts.TraceEvent(TraceEventType.Verbose, 0, format, args);
         }
+
+        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, string category = null)
+        {
+            foreach (T item in items)
+            {
+                System.Diagnostics.Trace.WriteLine(item, category);
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType)
+        {
+            foreach (T item in items)
+            {
+                ts.Trace(traceEventType, item);
+                yield return item;
+            }
+        }
+
+        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, TraceSource ts)
+        {
+#if DEBUG
+            foreach (T item in items)
+            {
+                ts.Debug(item);
+                yield return item;
+            }
+#else
+            return items;
+#endif
+        }
+
+        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, string category = null)
+        {
+#if DEBUG
+            foreach (T item in items)
+            {
+                System.Diagnostics.Debug.WriteLine(item, category);
+                yield return item;
+            }
+#else
+            return items;
+#endif
+        }
+
+        #endregion
     }
 }

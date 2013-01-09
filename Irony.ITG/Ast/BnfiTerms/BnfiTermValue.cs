@@ -278,46 +278,38 @@ namespace Irony.ITG.Ast
 
             if (this.UtokenizerForUnparse != null)
             {
-                foreach (Utoken utoken in this.UtokenizerForUnparse(obj))
-                    yield return utoken;
+                return this.UtokenizerForUnparse(obj);
             }
             else if (this.InverseValueConverterForUnparse != null)
             {
                 BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
                 object childObj = this.InverseValueConverterForUnparse(obj);
 
-                foreach (Utoken utoken in unparser.Unparse(childObj, childBnfTerm))
-                    yield return utoken;
+                return unparser.Unparse(childObj, childBnfTerm);
             }
             else if (this.bnfTerm == null)
             {
                 // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
-                foreach (BnfTermList childBnfTerms in Unparser.GetChildBnfTermLists(this))
-                {
-                    BnfTerm childBnfTermCandidate = childBnfTerms.Single(bnfTerm => bnfTerm is BnfiTermValue);
 
-                    IList<Utoken> utokens;
+                BnfTermListToPriority bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
+                {
                     try
                     {
                         // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
-                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                        preYieldedUtokens = bnfTerms.SelectMany(bnfTerm => unparser.Unparse(obj, bnfTerm)).ToList();
+                        return int.MaxValue;
                     }
                     catch (ValueMismatchException)
                     {
-                        // it is okay, keep trying with the others...
-                        continue;
+                        preYieldedUtokens = null;
+                        return null;
                     }
+                };
 
-                    foreach (Utoken utoken in utokens)
-                        yield return utoken;
-
-                    yield break;
-                }
-
-                throw new CannotUnparseException();
+                return Unparser.UnparseBestChildBnfTermList(this, unparser, obj, bnfTermListToPriority);
             }
             else
-                throw new CannotUnparseException(string.Format("'{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
+                throw new CannotUnparseException(string.Format("'{0}' has no UtokenizerForUnparse, no ValueConverterForUnparse, and no other BnfiTermValue under", this.Name));
         }
     }
 
