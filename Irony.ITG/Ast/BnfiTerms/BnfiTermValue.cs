@@ -250,7 +250,7 @@ namespace Irony.ITG.Ast
         }
 
         public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
-        public Func<object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
+        public Func<IFormatProvider, object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
 
         protected static object IdentityFunction(object obj)
         {
@@ -278,7 +278,7 @@ namespace Irony.ITG.Ast
 
             if (this.UtokenizerForUnparse != null)
             {
-                return this.UtokenizerForUnparse(obj);
+                return this.UtokenizerForUnparse(unparser.FormatProvider, obj);
             }
             else if (this.InverseValueConverterForUnparse != null)
             {
@@ -339,11 +339,11 @@ namespace Irony.ITG.Ast
             }
         }
 
-        public new Func<T, IEnumerable<Utoken>> UtokenizerForUnparse
+        public new Func<IFormatProvider, T, IEnumerable<Utoken>> UtokenizerForUnparse
         {
             set
             {
-                base.UtokenizerForUnparse = obj => value((T)obj);
+                base.UtokenizerForUnparse = (formatProvider, obj) => value(formatProvider, (T)obj);
             }
         }
 

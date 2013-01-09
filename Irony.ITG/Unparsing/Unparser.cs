@@ -226,5 +226,6 @@ namespace Irony.ITG.Unparsing
     public interface IUnparser
     {
         IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
+        IFormatProvider FormatProvider { get; }
     }
 }
