@@ -25,7 +25,7 @@ namespace Irony.ITG.Unparsing
         {
             public readonly IEnumerable<Utoken> utokensBetweenAndBefore;
 
-            public BeginParams(IList<Utoken> utokensBetweenAndBefore)
+            public BeginParams(ICollection<Utoken> utokensBetweenAndBefore)
             {
                 this.utokensBetweenAndBefore = utokensBetweenAndBefore;
             }
@@ -74,7 +74,7 @@ namespace Irony.ITG.Unparsing
 
         public void Begin(BnfTerm bnfTerm, out BeginParams beginParams)
         {
-            IList<Utoken> utokensBetweenAndBefore = new List<Utoken>();
+            ICollection<Utoken> utokensBetweenAndBefore = new List<Utoken>();
 
             lastState = State.Begin;
             List<UtokenControl> dependers = new List<UtokenControl>();
