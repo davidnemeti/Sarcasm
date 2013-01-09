@@ -41,16 +41,16 @@ namespace Irony.ITG.Ast
 
                 if (obj.GetType() == this.Type)
                 {
-                    // we need to do the full unparse non-lazy in order to catch ValueMismatch error if any (that's why we use ToList here)
-                    utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
-
-                    if (unparser.GetError() == Error.ValueMismatch)
+                    try
+                    {
+                        // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
+                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                    }
+                    catch (ValueMismatchException)
                     {
                         // it is okay, keep trying with the others...
-                        unparser.ClearError();
                         continue;
                     }
-                    unparser.AssumeNoError();
                 }
                 else
                 {

@@ -48,15 +48,13 @@ namespace Irony.ITG.Unparsing
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
         {
             BnfTerm bnfTerm = GetBnfTerm(obj, context);
-            return Unparse(obj, bnfTerm)
-                .ConvertToUtokens(this);
+            return Unparse(obj, bnfTerm);
         }
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm)
-                .Cook()
-                .ConvertToUtokens(this);
+                .Cook();
         }
 
         bool steppedIntoUnparseRaw = false;
@@ -118,59 +116,11 @@ namespace Irony.ITG.Unparsing
             // TODO: do this by choosing by context
         }
 
-        #region IUnparser implementations
-
         IEnumerable<Utoken> IUnparser.Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm);
         }
-
-        #region Error handling
-
-        Error error = Error.None;
-        string errorMessage;
-
-        void IUnparser.RaiseError(Error error, string message)
-        {
-            this.error = error;
-            this.errorMessage = message;
-        }
-
-        void IUnparser.ClearError()
-        {
-            this.error = Error.None;
-            this.errorMessage = null;
-        }
-
-        bool IUnparser.HasError()
-        {
-            return this.error != Error.None;
-        }
-
-        Error IUnparser.GetError()
-        {
-            return this.error;
-        }
-
-        [DebuggerStepThrough()]
-        void IUnparser.AssumeNoError()
-        {
-            if (((IUnparser)this).HasError())
-                ((IUnparser)this).ThrowUnhandledErrorException(error, errorMessage);
-        }
-
-        [DebuggerStepThrough()]
-        void IUnparser.ThrowUnhandledErrorException(Error error, string message)
-        {
-            throw new UnhandledInternalUnparseErrorException(error, errorMessage);
-        }
-
-        #endregion
-
-        #endregion
     }
-
-    public enum Error { None, ValueMismatch }
 
     public static class UnparserExtensions
     {
@@ -192,11 +142,6 @@ namespace Irony.ITG.Unparsing
         {
             return Formatter.PostProcess(utokens);
         }
-
-        internal static Utokens ConvertToUtokens(this IEnumerable<Utoken> utokens, IUnparser unparser)
-        {
-            return new Utokens(utokens, unparser);
-        }
     }
 
     public class Context
@@ -217,84 +162,5 @@ namespace Irony.ITG.Unparsing
     public interface IUnparser
     {
         IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
-
-        #region Error handling
-
-		void RaiseError(Error error, string message);
-        void ClearError();
-        bool HasError();
-        Error GetError();
-        void AssumeNoError();
-        void ThrowUnhandledErrorException(Error error, string message);
-
-    	#endregion
-    }
-
-    public static class IUnparserExtensions
-    {
-        public static void RaiseError(this IUnparser unparser, Error error, string format, params object[] args)
-        {
-            unparser.RaiseError(error, string.Format(format, args));
-        }
-    }
-
-    public class Utokens : IEnumerable<Utoken>
-    {
-        private readonly IEnumerable<Utoken> utokens;
-        private readonly IUnparser unparser;
-
-        public Utokens(IEnumerable<Utoken> utokens, IUnparser unparser)
-        {
-            this.utokens = utokens;
-            this.unparser = unparser;
-        }
-
-        public IEnumerator<Utoken> GetEnumerator()
-        {
-            return new UtokensEnumerator(utokens.GetEnumerator(), unparser);
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-    }
-
-    public class UtokensEnumerator : IEnumerator<Utoken>
-    {
-        private readonly IEnumerator<Utoken> utokenEnumerator;
-        private readonly IUnparser unparser;
-
-        public UtokensEnumerator(IEnumerator<Utoken> utokenEnumerator, IUnparser unparser)
-        {
-            this.utokenEnumerator = utokenEnumerator;
-            this.unparser = unparser;
-        }
-
-        public void Dispose()
-        {
-            utokenEnumerator.Dispose();
-            unparser.AssumeNoError();   // this will throw exception if there are any errors left in the unparser
-        }
-
-        public Utoken Current
-        {
-            get { return utokenEnumerator.Current; }
-        }
-
-        object System.Collections.IEnumerator.Current
-        {
-            get { return Current; }
-        }
-
-        public bool MoveNext()
-        {
-            return utokenEnumerator.MoveNext();
-        }
-
-        public void Reset()
-        {
-            utokenEnumerator.Reset();
-        }
     }
 }

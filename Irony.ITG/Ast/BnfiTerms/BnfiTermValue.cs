@@ -274,10 +274,7 @@ namespace Irony.ITG.Ast
         public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
             if (this.value != null && !this.value.Equals(obj))
-            {
-                unparser.RaiseError(Error.ValueMismatch, "BnfiTermValue has value '{0}' which is not equal to the to-be-unparsed object '{1}'", this.value, obj);
-                yield break;
-            }
+                throw new ValueMismatchException(string.Format("BnfiTermValue has value '{0}' which is not equal to the to-be-unparsed object '{1}'", this.value, obj));
 
             if (this.UtokenizerForUnparse != null)
             {
@@ -299,15 +296,17 @@ namespace Irony.ITG.Ast
                 {
                     BnfTerm childBnfTermCandidate = childBnfTerms.Single(bnfTerm => bnfTerm is BnfiTermValue);
 
-                    // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
-                    IList<Utoken> utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
-                    if (unparser.GetError() == Error.ValueMismatch)
+                    IList<Utoken> utokens;
+                    try
+                    {
+                        // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
+                        utokens = unparser.Unparse(obj, childBnfTermCandidate).ToList();
+                    }
+                    catch (ValueMismatchException)
                     {
                         // it is okay, keep trying with the others...
-                        unparser.ClearError();
                         continue;
                     }
-                    unparser.AssumeNoError();
 
                     foreach (Utoken utoken in utokens)
                         yield return utoken;
