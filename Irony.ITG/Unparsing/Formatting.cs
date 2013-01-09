@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Globalization;
 
 using Irony;
 using Irony.Ast;
@@ -52,6 +53,8 @@ namespace Irony.ITG.Unparsing
 
         #region State
 
+        private readonly Grammar grammar;
+
         private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensBefore = new Dictionary<BnfTerm, InsertedUtokens>();
         private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensAfter = new Dictionary<BnfTerm, InsertedUtokens>();
         private IDictionary<Tuple<BnfTerm, BnfTerm>, InsertedUtokens> bnfTermToUtokensBetween = new Dictionary<Tuple<BnfTerm, BnfTerm>, InsertedUtokens>();
@@ -61,8 +64,10 @@ namespace Irony.ITG.Unparsing
 
         #region Construction
 
-        public Formatting()
+        public Formatting(Grammar grammar)
         {
+            this.grammar = grammar;
+
             this.NewLine = newLineDefault;
             this.Space = spaceDefault;
             this.Tab = tabDefault;
@@ -81,6 +86,18 @@ namespace Irony.ITG.Unparsing
         public string Tab { get; set; }
         public string IndentUnit { get; set; }
         public string WhiteSpaceBetweenUtokens { get; set; }
+
+        public CultureInfo DefaultCulture
+        {
+            get
+            {
+                return grammar.DefaultCulture;
+            }
+            set
+            {
+                grammar.DefaultCulture = value;
+            }
+        }
 
         #endregion
 

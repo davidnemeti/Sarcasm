@@ -274,7 +274,7 @@ namespace Irony.ITG.Ast
             get
             {
                 if (_formatting == null)
-                    _formatting = new Formatting();
+                    _formatting = new Formatting(this);
 
                 return _formatting;
             }

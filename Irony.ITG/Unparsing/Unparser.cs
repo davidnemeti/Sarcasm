@@ -37,11 +37,19 @@ namespace Irony.ITG.Unparsing
 
         public Grammar Grammar { get; private set; }
         public Formatting Formatting { get { return Grammar.Formatting; } }
+        public IFormatProvider FormatProvider { get; set; }
+
         private readonly Formatter formatter;
 
         public Unparser(Grammar grammar)
+            : this(grammar, grammar.Formatting.DefaultCulture)
+        {
+        }
+
+        public Unparser(Grammar grammar, IFormatProvider formatProvider)
         {
             this.Grammar = grammar;
+            this.FormatProvider = formatProvider;
             this.formatter = new Formatter(grammar.Formatting);
         }
 
@@ -75,12 +83,12 @@ namespace Irony.ITG.Unparsing
                 if (bnfTerm is KeyTerm)
                 {
                     Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                    yield return ((KeyTerm)bnfTerm).Text;
+                    yield return ToString(this.FormatProvider, ((KeyTerm)bnfTerm).Text);
                 }
                 else if (bnfTerm is Terminal)
                 {
                     Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                    yield return obj.ToString();
+                    yield return ToString(this.FormatProvider, obj);
                 }
                 else if (bnfTerm is NonTerminal)
                 {
@@ -113,6 +121,9 @@ namespace Irony.ITG.Unparsing
 
                     foreach (var utoken in formatter.YieldAfter(bnfTerm))
                         yield return utoken;
+                }
+                else
+                {
                 }
             }
             finally
@@ -165,6 +176,11 @@ namespace Irony.ITG.Unparsing
             {
                 throw new CannotUnparseException(string.Format("'{0}' cannot be unparsed (none of its child bnftermlists is appropriate)", nonTerminal.Name));
             }
+        }
+
+        public static string ToString(IFormatProvider formatProvider, object obj)
+        {
+            return string.Format(formatProvider, "{0}", obj);
         }
     }
 
