@@ -162,7 +162,7 @@ namespace Irony.ITG.Unparsing
          * Since "Between" and "Before" InsertedUtokens are handled in the same way, we can handle them mixed.
          * 
          * We handle the InsertedUtokens like this in order to ensure that the InsertedUtokens belonging to the
-         * outer bnfterms always being preferred against inner bnfterms in case of equal priorities.
+         * outer (in sense of structure) bnfterms always being preferred against inner bnfterms in case of equal priorities.
          * 
          * InsertedUtokens belonging to the same bnfterm with equal priorities are handled so that the several kind
          * of InsertedUtokens have strength in descending order: Between, Before, After
