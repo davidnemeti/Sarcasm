@@ -48,13 +48,15 @@ namespace Irony.ITG.Unparsing
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
         {
             BnfTerm bnfTerm = GetBnfTerm(obj, context);
-            return Unparse(obj, bnfTerm);
+            return Unparse(obj, bnfTerm)
+                .ConvertToUtokens(this);
         }
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm)
-                .Cook();
+                .Cook()
+                .ConvertToUtokens(this);
         }
 
         bool steppedIntoUnparseRaw = false;
@@ -188,6 +190,11 @@ namespace Irony.ITG.Unparsing
         {
             return Formatter.PostProcess(utokens);
         }
+
+        internal static Utokens ConvertToUtokens(this IEnumerable<Utoken> utokens, IUnparser unparser)
+        {
+            return new Utokens(utokens, unparser);
+        }
     }
 
     public class Context
@@ -229,7 +236,63 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    //public class Utokens : IEnumerable<Utoken>
-    //{
-    //}
+    public class Utokens : IEnumerable<Utoken>
+    {
+        private readonly IEnumerable<Utoken> utokens;
+        private readonly IUnparser unparser;
+
+        public Utokens(IEnumerable<Utoken> utokens, IUnparser unparser)
+        {
+            this.utokens = utokens;
+            this.unparser = unparser;
+        }
+
+        public IEnumerator<Utoken> GetEnumerator()
+        {
+            return new UtokensEnumerator(utokens.GetEnumerator(), unparser);
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    public class UtokensEnumerator : IEnumerator<Utoken>
+    {
+        private readonly IEnumerator<Utoken> utokenEnumerator;
+        private readonly IUnparser unparser;
+
+        public UtokensEnumerator(IEnumerator<Utoken> utokenEnumerator, IUnparser unparser)
+        {
+            this.utokenEnumerator = utokenEnumerator;
+            this.unparser = unparser;
+        }
+
+        public void Dispose()
+        {
+            utokenEnumerator.Dispose();
+            unparser.AssumeNoError();   // this will throw exception if there are any errors left in the unparser
+        }
+
+        public Utoken Current
+        {
+            get { return utokenEnumerator.Current; }
+        }
+
+        object System.Collections.IEnumerator.Current
+        {
+            get { return Current; }
+        }
+
+        public bool MoveNext()
+        {
+            return utokenEnumerator.MoveNext();
+        }
+
+        public void Reset()
+        {
+            utokenEnumerator.Reset();
+        }
+    }
 }
