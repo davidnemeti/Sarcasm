@@ -116,11 +116,49 @@ namespace Irony.ITG.Unparsing
             // TODO: do this by choosing by context
         }
 
+        Error error = Error.None;
+        string errorMessage;
+
         IEnumerable<Utoken> IUnparser.Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm);
         }
+
+        void IUnparser.RaiseError(Error error, string message)
+        {
+            this.error = error;
+            this.errorMessage = message;
+        }
+
+        void IUnparser.ClearError()
+        {
+            this.error = Error.None;
+            this.errorMessage = null;
+        }
+
+        bool IUnparser.HasError()
+        {
+            return this.error != Error.None;
+        }
+
+        Error IUnparser.GetError()
+        {
+            return this.error;
+        }
+
+        void IUnparser.AssumeNoError()
+        {
+            if (((IUnparser)this).HasError())
+                ((IUnparser)this).ThrowUnhandledErrorException(error, errorMessage);
+        }
+
+        void IUnparser.ThrowUnhandledErrorException(Error error, string message)
+        {
+            throw new UnhandledInternalUnparseErrorException(error, errorMessage);
+        }
     }
+
+    public enum Error { None, ValueMismatch }
 
     public static class UnparserExtensions
     {
@@ -162,5 +200,24 @@ namespace Irony.ITG.Unparsing
     public interface IUnparser
     {
         IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
+
+        void RaiseError(Error error, string message);
+        void ClearError();
+        bool HasError();
+        Error GetError();
+        void AssumeNoError();
+        void ThrowUnhandledErrorException(Error error, string message);
     }
+
+    public static class IUnparserExtensions
+    {
+        public static void RaiseError(this IUnparser unparser, Error error, string format, params object[] args)
+        {
+            unparser.RaiseError(error, string.Format(format, args));
+        }
+    }
+
+    //public class Utokens : IEnumerable<Utoken>
+    //{
+    //}
 }

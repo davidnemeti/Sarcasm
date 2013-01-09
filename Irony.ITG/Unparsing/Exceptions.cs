@@ -40,14 +40,10 @@ namespace Irony.ITG.Unparsing
         }
     }
 
-    internal class ValueMismatchException : UnparseException
+    public class UnhandledInternalUnparseErrorException : UnparseException
     {
-        public ValueMismatchException()
-        {
-        }
-
-        public ValueMismatchException(string message)
-            : base(message)
+        public UnhandledInternalUnparseErrorException(Error error, string message)
+            : base(string.Format("Unhandled internal unparse error: {0}, \"{1}\"", error, message))
         {
         }
     }
