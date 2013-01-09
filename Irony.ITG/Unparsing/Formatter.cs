@@ -71,9 +71,11 @@ namespace Irony.ITG.Unparsing
                     bool existIndents;
                     indents.AddRange(CollectIndents(insertedUtokensBetween, out existIndents));
 
-                    yield return existIndents
+                    Utoken yieldUtokensBetween = existIndents
                         ? (Utoken)new UtokenDepender(insertedUtokensBetween)
                         : (Utoken)insertedUtokensBetween;
+
+                    yield return yieldUtokensBetween;
 
                     Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
                 }
@@ -85,11 +87,13 @@ namespace Irony.ITG.Unparsing
                 bool existIndents;
                 indents.AddRange(CollectIndents(insertedUtokensBefore, out existIndents));
 
-                yield return existIndents
+                Utoken yieldUtokensBefore = existIndents
                     ? (Utoken)new UtokenDepender(insertedUtokensBefore)
                     : (Utoken)insertedUtokensBefore;
 
-                Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
+                yield return yieldUtokensBefore;
+
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", yieldUtokensBefore);
             }
 
             indentsStack.Push(indents);
