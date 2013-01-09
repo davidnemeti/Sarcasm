@@ -60,7 +60,7 @@ namespace Irony.ITG.Unparsing
         public static readonly Utoken Space = UtokenWhitespace.Space;
         public static readonly Utoken Tab = UtokenWhitespace.Tab;
 
-        public static readonly Utoken Indent = UtokenControl.Indent;
+        public static readonly Utoken IndentBlock = UtokenControl.IndentBlock;
 
         public static readonly Utoken IndentThisLine = UtokenControl.IndentThisLine;
         public static readonly Utoken UnindentThisLine = UtokenControl.UnindentThisLine;
@@ -171,7 +171,7 @@ namespace Irony.ITG.Unparsing
     {
         internal enum Kind
         {
-            Indent,
+            IndentBlock,
             IndentThisLine,
             UnindentThisLine,
             NoIndentForThisLine,
@@ -188,7 +188,7 @@ namespace Irony.ITG.Unparsing
             this.kind = kind;
         }
 
-        public static new readonly UtokenControl Indent = new UtokenControl(Kind.Indent);
+        public static new readonly UtokenControl IndentBlock = new UtokenControl(Kind.IndentBlock);
 
         public static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
         public static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);

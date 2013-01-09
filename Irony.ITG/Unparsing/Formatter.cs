@@ -141,7 +141,7 @@ namespace Irony.ITG.Unparsing
 
         private static IEnumerable<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens)
         {
-            return insertedUtokens.utokens.Where(utoken => utoken == UtokenControl.Indent).Cast<UtokenControl>();
+            return insertedUtokens.utokens.Where(utoken => utoken == UtokenControl.IndentBlock).Cast<UtokenControl>();
         }
     }
 
@@ -278,7 +278,7 @@ namespace Irony.ITG.Unparsing
 
                     switch (utokenControl.kind)
                     {
-                        case UtokenControl.Kind.Indent:
+                        case UtokenControl.Kind.IndentBlock:
                         case UtokenControl.Kind.IncreaseIndentLevel:
                             indentLevel++;
                             break;
