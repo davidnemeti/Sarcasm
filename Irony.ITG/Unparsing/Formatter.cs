@@ -77,7 +77,7 @@ namespace Irony.ITG.Unparsing
 
                     yield return yieldUtokensBetween;
 
-                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", yieldUtokensBetween);
                 }
             }
 
