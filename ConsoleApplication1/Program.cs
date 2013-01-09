@@ -34,6 +34,7 @@ namespace ConsoleApplication1
 
             Unparser unparser = new Unparser(grammar);
 //            string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
+            Directory.CreateDirectory("unparse_logs");
             var stream = File.Create(@"unparse_logs\unparsed_text");
             unparser.Unparse(parseTree.Root.AstNode).WriteToStreamAsync(stream, unparser);
 //            Console.WriteLine(str);
