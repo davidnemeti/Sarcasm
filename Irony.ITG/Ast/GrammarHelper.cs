@@ -406,7 +406,7 @@ namespace Irony.ITG.Ast
                         break;
 
                     default:
-                        throw new ArgumentException(string.Format("Unknown errorLevel", errorLevel), "errorLevel");
+                        throw new ArgumentException(string.Format("Unknown errorLevel: {0}", errorLevel), "errorLevel");
                 }
 
                 ThrowGrammarErrorException(grammarErrorLevel, message);
