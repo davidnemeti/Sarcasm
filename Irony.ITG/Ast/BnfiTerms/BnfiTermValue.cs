@@ -317,7 +317,7 @@ namespace Irony.ITG.Ast
                 throw new CannotUnparseException();
             }
             else
-                throw new CannotUnparseException(string.Format("BnfiTermValue '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
+                throw new CannotUnparseException(string.Format("'{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse set.", this.Name));
         }
     }
 

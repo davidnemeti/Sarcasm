@@ -88,7 +88,7 @@ namespace Irony.ITG.Ast
 		"BnfiExpressionTransient",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermTransient", "BnfiTermCollection"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollection"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
@@ -98,7 +98,7 @@ namespace Irony.ITG.Ast
 		"BnfiExpressionTransient<T>",
 		inheritFromBase: "BnfiExpressionTransient",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermTransient<TType>", "BnfiTermCollection<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollection<TCollectionType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false

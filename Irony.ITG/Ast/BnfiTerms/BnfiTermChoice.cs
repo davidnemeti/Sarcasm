@@ -14,9 +14,9 @@ using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermTransient : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
+    public partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
-        public BnfiTermTransient(Type type, string errorAlias = null)
+        public BnfiTermChoice(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
             GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
@@ -74,13 +74,13 @@ namespace Irony.ITG.Ast
                 yield break;
             }
 
-            throw new CannotUnparseException(string.Format("BnfiTermTransient '{0}' cannot be unparsed.", this.Name));
+            throw new CannotUnparseException(string.Format("'{0}' cannot be unparsed.", this.Name));
         }
     }
 
-    public partial class BnfiTermTransient<TType> : BnfiTermTransient, IBnfiTerm<TType>
+    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>
     {
-        public BnfiTermTransient(string errorAlias = null)
+        public BnfiTermChoice(string errorAlias = null)
             : base(typeof(TType), errorAlias)
         {
         }
