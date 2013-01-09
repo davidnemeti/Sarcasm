@@ -152,12 +152,14 @@ namespace Irony.ITG.Unparsing
             return this.error;
         }
 
+        [DebuggerStepThrough()]
         void IUnparser.AssumeNoError()
         {
             if (((IUnparser)this).HasError())
                 ((IUnparser)this).ThrowUnhandledErrorException(error, errorMessage);
         }
 
+        [DebuggerStepThrough()]
         void IUnparser.ThrowUnhandledErrorException(Error error, string message)
         {
             throw new UnhandledInternalUnparseErrorException(error, errorMessage);
