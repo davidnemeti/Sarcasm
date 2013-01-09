@@ -116,13 +116,17 @@ namespace Irony.ITG.Unparsing
             // TODO: do this by choosing by context
         }
 
-        Error error = Error.None;
-        string errorMessage;
+        #region IUnparser implementations
 
         IEnumerable<Utoken> IUnparser.Unparse(object obj, BnfTerm bnfTerm)
         {
             return UnparseRaw(obj, bnfTerm);
         }
+
+        #region Error handling
+
+        Error error = Error.None;
+        string errorMessage;
 
         void IUnparser.RaiseError(Error error, string message)
         {
@@ -156,6 +160,10 @@ namespace Irony.ITG.Unparsing
         {
             throw new UnhandledInternalUnparseErrorException(error, errorMessage);
         }
+
+        #endregion
+
+        #endregion
     }
 
     public enum Error { None, ValueMismatch }
@@ -201,12 +209,16 @@ namespace Irony.ITG.Unparsing
     {
         IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
 
-        void RaiseError(Error error, string message);
+        #region Error handling
+
+		void RaiseError(Error error, string message);
         void ClearError();
         bool HasError();
         Error GetError();
         void AssumeNoError();
         void ThrowUnhandledErrorException(Error error, string message);
+
+    	#endregion
     }
 
     public static class IUnparserExtensions
