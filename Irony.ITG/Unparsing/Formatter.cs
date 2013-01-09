@@ -21,10 +21,6 @@ namespace Irony.ITG.Unparsing
     {
         #region Types
 
-        /*
-         * BeginParams and EndParams exist for passing parameters and for enforcing the proper calling order for Begin-YieldBefore and YieldAfter-End
-         * */
-
         public class BeginParams
         {
             public readonly IEnumerable<Utoken> utokensBetweenAndBefore;
@@ -32,13 +28,6 @@ namespace Irony.ITG.Unparsing
             public BeginParams(IList<Utoken> utokensBetweenAndBefore)
             {
                 this.utokensBetweenAndBefore = utokensBetweenAndBefore;
-            }
-        }
-
-        public class EndParams
-        {
-            public EndParams()
-            {
             }
         }
 
@@ -122,16 +111,7 @@ namespace Irony.ITG.Unparsing
             beginParams = new BeginParams(utokensBetweenAndBefore);
         }
 
-        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, BeginParams beginParams)
-        {
-            foreach (Utoken utokenBetweenOrBefore in beginParams.utokensBetweenAndBefore)
-            {
-                Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
-                yield return utokenBetweenOrBefore;
-            }
-        }
-
-        public void End(BnfTerm bnfTerm, EndParams endParams)
+        public void End(BnfTerm bnfTerm)
         {
             if (lastState != State.End)
                 leftBnfTermsFromTopToBottom.Clear();
@@ -144,13 +124,16 @@ namespace Irony.ITG.Unparsing
             dependersStack.Pop();
         }
 
-        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm, out EndParams endParams)
+        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, BeginParams beginParams)
         {
-            endParams = new EndParams();
-            return _YieldAfter(bnfTerm);
+            foreach (Utoken utokenBetweenOrBefore in beginParams.utokensBetweenAndBefore)
+            {
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
+                yield return utokenBetweenOrBefore;
+            }
         }
 
-        private IEnumerable<Utoken> _YieldAfter(BnfTerm bnfTerm)
+        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))

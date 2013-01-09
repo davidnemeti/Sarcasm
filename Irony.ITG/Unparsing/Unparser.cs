@@ -62,7 +62,6 @@ namespace Irony.ITG.Unparsing
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
             Formatter.BeginParams beginParams;
-            Formatter.EndParams endParams = null;
 
             formatter.Begin(bnfTerm, out beginParams);
 
@@ -112,13 +111,13 @@ namespace Irony.ITG.Unparsing
                         Unparser.tsUnparse.Unindent();
                     }
 
-                    foreach (var utoken in formatter.YieldAfter(bnfTerm, out endParams))
+                    foreach (var utoken in formatter.YieldAfter(bnfTerm))
                         yield return utoken;
                 }
             }
             finally
             {
-                formatter.End(bnfTerm, endParams);
+                formatter.End(bnfTerm);
             }
         }
 
