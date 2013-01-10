@@ -168,16 +168,6 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.CreateIdentifier(identifierTerminal);
         }
 
-        public static BnfiTermValue CreateNumber(this NumberLiteral numberLiteral)
-        {
-            return BnfiTermValue.CreateNumber(numberLiteral);
-        }
-
-        public static BnfiTermValue CreateData(this DataLiteralBase dataLiteral)
-        {
-            return BnfiTermValue.CreateData(dataLiteral);
-        }
-
         public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
             return BnfiTermValue.Create(terminal, value, astForChild);

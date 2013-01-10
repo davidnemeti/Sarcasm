@@ -17,19 +17,16 @@ namespace Irony.ITG.Ast
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Object> CreateDataObject(DataLiteralBase dataLiteral)
+        public static BnfiTermValue CreateData(DataLiteralBase dataLiteral)
         {
-            if (dataLiteral.DataType != TypeCode.Object)
-                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Object", dataLiteral.Name);
-
-            BnfiTermValue<Object> bnfiTermValue = Create<Object>(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
+            BnfiTermValue bnfiTermValue = Create(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Object, object>;
             return bnfiTermValue;
         }
 
-		public static BnfiTermValue<Object> CreateNumberObject(NumberLiteral numberLiteral)
+		public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Object> bnfiTermValue = Create<Object>(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
+            BnfiTermValue bnfiTermValue = Create(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Object, object>;
             return bnfiTermValue;
         }
@@ -41,14 +38,14 @@ namespace Irony.ITG.Ast
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Object> CreateDataObject(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue CreateData(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.CreateDataObject(dataLiteral);
+			return BnfiTermValue.CreateData(dataLiteral);
         }
 
-		public static BnfiTermValue<Object> CreateNumberObject(this NumberLiteral numberLiteral)
+		public static BnfiTermValue CreateNumber(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.CreateNumberObject(numberLiteral);
+			return BnfiTermValue.CreateNumber(numberLiteral);
         }
 	}
 
@@ -60,48 +57,48 @@ namespace Irony.ITG.Ast
 	{
 		#region Data
 
-        public static BnfiTermValue<Object> CreateDataObject()
+        public static BnfiTermValue CreateData()
 		{
-			return new DataLiteralBase(name: "Object", dataType: TypeCode.Object).CreateDataObject();
+			return new DataLiteralBase(name: "data", dataType: TypeCode.Object).CreateData();
 		}
 
-        public static BnfiTermValue<Object> CreateDataObjectDsv()
+        public static BnfiTermValue CreateDataDsv()
 		{
-			return new DsvLiteral(name: "ObjectDsv", dataType: TypeCode.Object).CreateDataObject();
+			return new DsvLiteral(name: "dataDsv", dataType: TypeCode.Object).CreateData();
 		}
 
-        public static BnfiTermValue<Object> CreateDataObjectDsv(string terminator)
+        public static BnfiTermValue CreateDataDsv(string terminator)
 		{
-			return new DsvLiteral(name: "ObjectDsv", dataType: TypeCode.Object, terminator: terminator).CreateDataObject();
+			return new DsvLiteral(name: "dataDsv", dataType: TypeCode.Object, terminator: terminator).CreateData();
 		}
 
-        public static BnfiTermValue<Object> CreateDataObjectQuoted(string startEndSymbol)
+        public static BnfiTermValue CreateDataQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "ObjectQuoted", dataType: TypeCode.Object, startEndSymbol: startEndSymbol).CreateDataObject();
+			return new QuotedValueLiteral(name: "dataQuoted", dataType: TypeCode.Object, startEndSymbol: startEndSymbol).CreateData();
 		}
 
-        public static BnfiTermValue<Object> CreateDataObjectQuoted(string startSymbol, string endSymbol)
+        public static BnfiTermValue CreateDataQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "ObjectQuoted", dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataObject();
+			return new QuotedValueLiteral(name: "dataQuoted", dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).CreateData();
 		}
 
-        public static BnfiTermValue<Object> CreateDataObjectFixedLength(int length)
+        public static BnfiTermValue CreateDataFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "ObjectFixedLength", dataType: TypeCode.Object, length: length).CreateDataObject();
+			return new FixedLengthLiteral(name: "dataFixedLength", dataType: TypeCode.Object, length: length).CreateData();
 		}
 
 		#endregion
 
 		#region Number
 
-		public static BnfiTermValue<Object> CreateNumberObject()
+		public static BnfiTermValue CreateNumber()
         {
-			return new NumberLiteral(name: null).CreateNumberObject();
+			return new NumberLiteral(name: "number").CreateNumber();
         }
 
-		public static BnfiTermValue<Object> CreateNumberObject(NumberOptions options)
+		public static BnfiTermValue CreateNumber(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberObject();
+			return new NumberLiteral(name: "number", options: options).CreateNumber();
         }
 
 		#endregion
@@ -150,32 +147,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<DBNull> CreateDataDBNull()
 		{
-			return new DataLiteralBase(name: "DBNull", dataType: TypeCode.DBNull).CreateDataDBNull();
+			return new DataLiteralBase(name: "dataDBNull", dataType: TypeCode.DBNull).CreateDataDBNull();
 		}
 
         public static BnfiTermValue<DBNull> CreateDataDBNullDsv()
 		{
-			return new DsvLiteral(name: "DBNullDsv", dataType: TypeCode.DBNull).CreateDataDBNull();
+			return new DsvLiteral(name: "dataDBNullDsv", dataType: TypeCode.DBNull).CreateDataDBNull();
 		}
 
         public static BnfiTermValue<DBNull> CreateDataDBNullDsv(string terminator)
 		{
-			return new DsvLiteral(name: "DBNullDsv", dataType: TypeCode.DBNull, terminator: terminator).CreateDataDBNull();
+			return new DsvLiteral(name: "dataDBNullDsv", dataType: TypeCode.DBNull, terminator: terminator).CreateDataDBNull();
 		}
 
         public static BnfiTermValue<DBNull> CreateDataDBNullQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "DBNullQuoted", dataType: TypeCode.DBNull, startEndSymbol: startEndSymbol).CreateDataDBNull();
+			return new QuotedValueLiteral(name: "dataDBNullQuoted", dataType: TypeCode.DBNull, startEndSymbol: startEndSymbol).CreateDataDBNull();
 		}
 
         public static BnfiTermValue<DBNull> CreateDataDBNullQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "DBNullQuoted", dataType: TypeCode.DBNull, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDBNull();
+			return new QuotedValueLiteral(name: "dataDBNullQuoted", dataType: TypeCode.DBNull, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDBNull();
 		}
 
         public static BnfiTermValue<DBNull> CreateDataDBNullFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "DBNullFixedLength", dataType: TypeCode.DBNull, length: length).CreateDataDBNull();
+			return new FixedLengthLiteral(name: "dataDBNullFixedLength", dataType: TypeCode.DBNull, length: length).CreateDataDBNull();
 		}
 
 		#endregion
@@ -224,32 +221,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Boolean> CreateDataBoolean()
 		{
-			return new DataLiteralBase(name: "Boolean", dataType: TypeCode.Boolean).CreateDataBoolean();
+			return new DataLiteralBase(name: "dataBoolean", dataType: TypeCode.Boolean).CreateDataBoolean();
 		}
 
         public static BnfiTermValue<Boolean> CreateDataBooleanDsv()
 		{
-			return new DsvLiteral(name: "BooleanDsv", dataType: TypeCode.Boolean).CreateDataBoolean();
+			return new DsvLiteral(name: "dataBooleanDsv", dataType: TypeCode.Boolean).CreateDataBoolean();
 		}
 
         public static BnfiTermValue<Boolean> CreateDataBooleanDsv(string terminator)
 		{
-			return new DsvLiteral(name: "BooleanDsv", dataType: TypeCode.Boolean, terminator: terminator).CreateDataBoolean();
+			return new DsvLiteral(name: "dataBooleanDsv", dataType: TypeCode.Boolean, terminator: terminator).CreateDataBoolean();
 		}
 
         public static BnfiTermValue<Boolean> CreateDataBooleanQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "BooleanQuoted", dataType: TypeCode.Boolean, startEndSymbol: startEndSymbol).CreateDataBoolean();
+			return new QuotedValueLiteral(name: "dataBooleanQuoted", dataType: TypeCode.Boolean, startEndSymbol: startEndSymbol).CreateDataBoolean();
 		}
 
         public static BnfiTermValue<Boolean> CreateDataBooleanQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "BooleanQuoted", dataType: TypeCode.Boolean, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataBoolean();
+			return new QuotedValueLiteral(name: "dataBooleanQuoted", dataType: TypeCode.Boolean, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataBoolean();
 		}
 
         public static BnfiTermValue<Boolean> CreateDataBooleanFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "BooleanFixedLength", dataType: TypeCode.Boolean, length: length).CreateDataBoolean();
+			return new FixedLengthLiteral(name: "dataBooleanFixedLength", dataType: TypeCode.Boolean, length: length).CreateDataBoolean();
 		}
 
 		#endregion
@@ -298,32 +295,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Char> CreateDataChar()
 		{
-			return new DataLiteralBase(name: "Char", dataType: TypeCode.Char).CreateDataChar();
+			return new DataLiteralBase(name: "dataChar", dataType: TypeCode.Char).CreateDataChar();
 		}
 
         public static BnfiTermValue<Char> CreateDataCharDsv()
 		{
-			return new DsvLiteral(name: "CharDsv", dataType: TypeCode.Char).CreateDataChar();
+			return new DsvLiteral(name: "dataCharDsv", dataType: TypeCode.Char).CreateDataChar();
 		}
 
         public static BnfiTermValue<Char> CreateDataCharDsv(string terminator)
 		{
-			return new DsvLiteral(name: "CharDsv", dataType: TypeCode.Char, terminator: terminator).CreateDataChar();
+			return new DsvLiteral(name: "dataCharDsv", dataType: TypeCode.Char, terminator: terminator).CreateDataChar();
 		}
 
         public static BnfiTermValue<Char> CreateDataCharQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "CharQuoted", dataType: TypeCode.Char, startEndSymbol: startEndSymbol).CreateDataChar();
+			return new QuotedValueLiteral(name: "dataCharQuoted", dataType: TypeCode.Char, startEndSymbol: startEndSymbol).CreateDataChar();
 		}
 
         public static BnfiTermValue<Char> CreateDataCharQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "CharQuoted", dataType: TypeCode.Char, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataChar();
+			return new QuotedValueLiteral(name: "dataCharQuoted", dataType: TypeCode.Char, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataChar();
 		}
 
         public static BnfiTermValue<Char> CreateDataCharFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "CharFixedLength", dataType: TypeCode.Char, length: length).CreateDataChar();
+			return new FixedLengthLiteral(name: "dataCharFixedLength", dataType: TypeCode.Char, length: length).CreateDataChar();
 		}
 
 		#endregion
@@ -384,32 +381,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<SByte> CreateDataSByte()
 		{
-			return new DataLiteralBase(name: "SByte", dataType: TypeCode.SByte).CreateDataSByte();
+			return new DataLiteralBase(name: "dataSByte", dataType: TypeCode.SByte).CreateDataSByte();
 		}
 
         public static BnfiTermValue<SByte> CreateDataSByteDsv()
 		{
-			return new DsvLiteral(name: "SByteDsv", dataType: TypeCode.SByte).CreateDataSByte();
+			return new DsvLiteral(name: "dataSByteDsv", dataType: TypeCode.SByte).CreateDataSByte();
 		}
 
         public static BnfiTermValue<SByte> CreateDataSByteDsv(string terminator)
 		{
-			return new DsvLiteral(name: "SByteDsv", dataType: TypeCode.SByte, terminator: terminator).CreateDataSByte();
+			return new DsvLiteral(name: "dataSByteDsv", dataType: TypeCode.SByte, terminator: terminator).CreateDataSByte();
 		}
 
         public static BnfiTermValue<SByte> CreateDataSByteQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "SByteQuoted", dataType: TypeCode.SByte, startEndSymbol: startEndSymbol).CreateDataSByte();
+			return new QuotedValueLiteral(name: "dataSByteQuoted", dataType: TypeCode.SByte, startEndSymbol: startEndSymbol).CreateDataSByte();
 		}
 
         public static BnfiTermValue<SByte> CreateDataSByteQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "SByteQuoted", dataType: TypeCode.SByte, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataSByte();
+			return new QuotedValueLiteral(name: "dataSByteQuoted", dataType: TypeCode.SByte, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataSByte();
 		}
 
         public static BnfiTermValue<SByte> CreateDataSByteFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "SByteFixedLength", dataType: TypeCode.SByte, length: length).CreateDataSByte();
+			return new FixedLengthLiteral(name: "dataSByteFixedLength", dataType: TypeCode.SByte, length: length).CreateDataSByte();
 		}
 
 		#endregion
@@ -418,12 +415,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<SByte> CreateNumberSByte()
         {
-			return new NumberLiteral(name: null).CreateNumberSByte();
+			return new NumberLiteral(name: "number").CreateNumberSByte();
         }
 
 		public static BnfiTermValue<SByte> CreateNumberSByte(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberSByte();
+			return new NumberLiteral(name: "number", options: options).CreateNumberSByte();
         }
 
 		#endregion
@@ -484,32 +481,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Byte> CreateDataByte()
 		{
-			return new DataLiteralBase(name: "Byte", dataType: TypeCode.Byte).CreateDataByte();
+			return new DataLiteralBase(name: "dataByte", dataType: TypeCode.Byte).CreateDataByte();
 		}
 
         public static BnfiTermValue<Byte> CreateDataByteDsv()
 		{
-			return new DsvLiteral(name: "ByteDsv", dataType: TypeCode.Byte).CreateDataByte();
+			return new DsvLiteral(name: "dataByteDsv", dataType: TypeCode.Byte).CreateDataByte();
 		}
 
         public static BnfiTermValue<Byte> CreateDataByteDsv(string terminator)
 		{
-			return new DsvLiteral(name: "ByteDsv", dataType: TypeCode.Byte, terminator: terminator).CreateDataByte();
+			return new DsvLiteral(name: "dataByteDsv", dataType: TypeCode.Byte, terminator: terminator).CreateDataByte();
 		}
 
         public static BnfiTermValue<Byte> CreateDataByteQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "ByteQuoted", dataType: TypeCode.Byte, startEndSymbol: startEndSymbol).CreateDataByte();
+			return new QuotedValueLiteral(name: "dataByteQuoted", dataType: TypeCode.Byte, startEndSymbol: startEndSymbol).CreateDataByte();
 		}
 
         public static BnfiTermValue<Byte> CreateDataByteQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "ByteQuoted", dataType: TypeCode.Byte, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataByte();
+			return new QuotedValueLiteral(name: "dataByteQuoted", dataType: TypeCode.Byte, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataByte();
 		}
 
         public static BnfiTermValue<Byte> CreateDataByteFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "ByteFixedLength", dataType: TypeCode.Byte, length: length).CreateDataByte();
+			return new FixedLengthLiteral(name: "dataByteFixedLength", dataType: TypeCode.Byte, length: length).CreateDataByte();
 		}
 
 		#endregion
@@ -518,12 +515,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Byte> CreateNumberByte()
         {
-			return new NumberLiteral(name: null).CreateNumberByte();
+			return new NumberLiteral(name: "number").CreateNumberByte();
         }
 
 		public static BnfiTermValue<Byte> CreateNumberByte(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberByte();
+			return new NumberLiteral(name: "number", options: options).CreateNumberByte();
         }
 
 		#endregion
@@ -584,32 +581,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Int16> CreateDataInt16()
 		{
-			return new DataLiteralBase(name: "Int16", dataType: TypeCode.Int16).CreateDataInt16();
+			return new DataLiteralBase(name: "dataInt16", dataType: TypeCode.Int16).CreateDataInt16();
 		}
 
         public static BnfiTermValue<Int16> CreateDataInt16Dsv()
 		{
-			return new DsvLiteral(name: "Int16Dsv", dataType: TypeCode.Int16).CreateDataInt16();
+			return new DsvLiteral(name: "dataInt16Dsv", dataType: TypeCode.Int16).CreateDataInt16();
 		}
 
         public static BnfiTermValue<Int16> CreateDataInt16Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "Int16Dsv", dataType: TypeCode.Int16, terminator: terminator).CreateDataInt16();
+			return new DsvLiteral(name: "dataInt16Dsv", dataType: TypeCode.Int16, terminator: terminator).CreateDataInt16();
 		}
 
         public static BnfiTermValue<Int16> CreateDataInt16Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int16Quoted", dataType: TypeCode.Int16, startEndSymbol: startEndSymbol).CreateDataInt16();
+			return new QuotedValueLiteral(name: "dataInt16Quoted", dataType: TypeCode.Int16, startEndSymbol: startEndSymbol).CreateDataInt16();
 		}
 
         public static BnfiTermValue<Int16> CreateDataInt16Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int16Quoted", dataType: TypeCode.Int16, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt16();
+			return new QuotedValueLiteral(name: "dataInt16Quoted", dataType: TypeCode.Int16, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt16();
 		}
 
         public static BnfiTermValue<Int16> CreateDataInt16FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "Int16FixedLength", dataType: TypeCode.Int16, length: length).CreateDataInt16();
+			return new FixedLengthLiteral(name: "dataInt16FixedLength", dataType: TypeCode.Int16, length: length).CreateDataInt16();
 		}
 
 		#endregion
@@ -618,12 +615,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Int16> CreateNumberInt16()
         {
-			return new NumberLiteral(name: null).CreateNumberInt16();
+			return new NumberLiteral(name: "number").CreateNumberInt16();
         }
 
 		public static BnfiTermValue<Int16> CreateNumberInt16(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberInt16();
+			return new NumberLiteral(name: "number", options: options).CreateNumberInt16();
         }
 
 		#endregion
@@ -684,32 +681,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<UInt16> CreateDataUInt16()
 		{
-			return new DataLiteralBase(name: "UInt16", dataType: TypeCode.UInt16).CreateDataUInt16();
+			return new DataLiteralBase(name: "dataUInt16", dataType: TypeCode.UInt16).CreateDataUInt16();
 		}
 
         public static BnfiTermValue<UInt16> CreateDataUInt16Dsv()
 		{
-			return new DsvLiteral(name: "UInt16Dsv", dataType: TypeCode.UInt16).CreateDataUInt16();
+			return new DsvLiteral(name: "dataUInt16Dsv", dataType: TypeCode.UInt16).CreateDataUInt16();
 		}
 
         public static BnfiTermValue<UInt16> CreateDataUInt16Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "UInt16Dsv", dataType: TypeCode.UInt16, terminator: terminator).CreateDataUInt16();
+			return new DsvLiteral(name: "dataUInt16Dsv", dataType: TypeCode.UInt16, terminator: terminator).CreateDataUInt16();
 		}
 
         public static BnfiTermValue<UInt16> CreateDataUInt16Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt16Quoted", dataType: TypeCode.UInt16, startEndSymbol: startEndSymbol).CreateDataUInt16();
+			return new QuotedValueLiteral(name: "dataUInt16Quoted", dataType: TypeCode.UInt16, startEndSymbol: startEndSymbol).CreateDataUInt16();
 		}
 
         public static BnfiTermValue<UInt16> CreateDataUInt16Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt16Quoted", dataType: TypeCode.UInt16, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt16();
+			return new QuotedValueLiteral(name: "dataUInt16Quoted", dataType: TypeCode.UInt16, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt16();
 		}
 
         public static BnfiTermValue<UInt16> CreateDataUInt16FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "UInt16FixedLength", dataType: TypeCode.UInt16, length: length).CreateDataUInt16();
+			return new FixedLengthLiteral(name: "dataUInt16FixedLength", dataType: TypeCode.UInt16, length: length).CreateDataUInt16();
 		}
 
 		#endregion
@@ -718,12 +715,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<UInt16> CreateNumberUInt16()
         {
-			return new NumberLiteral(name: null).CreateNumberUInt16();
+			return new NumberLiteral(name: "number").CreateNumberUInt16();
         }
 
 		public static BnfiTermValue<UInt16> CreateNumberUInt16(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberUInt16();
+			return new NumberLiteral(name: "number", options: options).CreateNumberUInt16();
         }
 
 		#endregion
@@ -784,32 +781,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Int32> CreateDataInt32()
 		{
-			return new DataLiteralBase(name: "Int32", dataType: TypeCode.Int32).CreateDataInt32();
+			return new DataLiteralBase(name: "dataInt32", dataType: TypeCode.Int32).CreateDataInt32();
 		}
 
         public static BnfiTermValue<Int32> CreateDataInt32Dsv()
 		{
-			return new DsvLiteral(name: "Int32Dsv", dataType: TypeCode.Int32).CreateDataInt32();
+			return new DsvLiteral(name: "dataInt32Dsv", dataType: TypeCode.Int32).CreateDataInt32();
 		}
 
         public static BnfiTermValue<Int32> CreateDataInt32Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "Int32Dsv", dataType: TypeCode.Int32, terminator: terminator).CreateDataInt32();
+			return new DsvLiteral(name: "dataInt32Dsv", dataType: TypeCode.Int32, terminator: terminator).CreateDataInt32();
 		}
 
         public static BnfiTermValue<Int32> CreateDataInt32Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int32Quoted", dataType: TypeCode.Int32, startEndSymbol: startEndSymbol).CreateDataInt32();
+			return new QuotedValueLiteral(name: "dataInt32Quoted", dataType: TypeCode.Int32, startEndSymbol: startEndSymbol).CreateDataInt32();
 		}
 
         public static BnfiTermValue<Int32> CreateDataInt32Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int32Quoted", dataType: TypeCode.Int32, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt32();
+			return new QuotedValueLiteral(name: "dataInt32Quoted", dataType: TypeCode.Int32, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt32();
 		}
 
         public static BnfiTermValue<Int32> CreateDataInt32FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "Int32FixedLength", dataType: TypeCode.Int32, length: length).CreateDataInt32();
+			return new FixedLengthLiteral(name: "dataInt32FixedLength", dataType: TypeCode.Int32, length: length).CreateDataInt32();
 		}
 
 		#endregion
@@ -818,12 +815,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Int32> CreateNumberInt32()
         {
-			return new NumberLiteral(name: null).CreateNumberInt32();
+			return new NumberLiteral(name: "number").CreateNumberInt32();
         }
 
 		public static BnfiTermValue<Int32> CreateNumberInt32(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberInt32();
+			return new NumberLiteral(name: "number", options: options).CreateNumberInt32();
         }
 
 		#endregion
@@ -884,32 +881,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<UInt32> CreateDataUInt32()
 		{
-			return new DataLiteralBase(name: "UInt32", dataType: TypeCode.UInt32).CreateDataUInt32();
+			return new DataLiteralBase(name: "dataUInt32", dataType: TypeCode.UInt32).CreateDataUInt32();
 		}
 
         public static BnfiTermValue<UInt32> CreateDataUInt32Dsv()
 		{
-			return new DsvLiteral(name: "UInt32Dsv", dataType: TypeCode.UInt32).CreateDataUInt32();
+			return new DsvLiteral(name: "dataUInt32Dsv", dataType: TypeCode.UInt32).CreateDataUInt32();
 		}
 
         public static BnfiTermValue<UInt32> CreateDataUInt32Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "UInt32Dsv", dataType: TypeCode.UInt32, terminator: terminator).CreateDataUInt32();
+			return new DsvLiteral(name: "dataUInt32Dsv", dataType: TypeCode.UInt32, terminator: terminator).CreateDataUInt32();
 		}
 
         public static BnfiTermValue<UInt32> CreateDataUInt32Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt32Quoted", dataType: TypeCode.UInt32, startEndSymbol: startEndSymbol).CreateDataUInt32();
+			return new QuotedValueLiteral(name: "dataUInt32Quoted", dataType: TypeCode.UInt32, startEndSymbol: startEndSymbol).CreateDataUInt32();
 		}
 
         public static BnfiTermValue<UInt32> CreateDataUInt32Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt32Quoted", dataType: TypeCode.UInt32, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt32();
+			return new QuotedValueLiteral(name: "dataUInt32Quoted", dataType: TypeCode.UInt32, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt32();
 		}
 
         public static BnfiTermValue<UInt32> CreateDataUInt32FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "UInt32FixedLength", dataType: TypeCode.UInt32, length: length).CreateDataUInt32();
+			return new FixedLengthLiteral(name: "dataUInt32FixedLength", dataType: TypeCode.UInt32, length: length).CreateDataUInt32();
 		}
 
 		#endregion
@@ -918,12 +915,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<UInt32> CreateNumberUInt32()
         {
-			return new NumberLiteral(name: null).CreateNumberUInt32();
+			return new NumberLiteral(name: "number").CreateNumberUInt32();
         }
 
 		public static BnfiTermValue<UInt32> CreateNumberUInt32(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberUInt32();
+			return new NumberLiteral(name: "number", options: options).CreateNumberUInt32();
         }
 
 		#endregion
@@ -984,32 +981,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Int64> CreateDataInt64()
 		{
-			return new DataLiteralBase(name: "Int64", dataType: TypeCode.Int64).CreateDataInt64();
+			return new DataLiteralBase(name: "dataInt64", dataType: TypeCode.Int64).CreateDataInt64();
 		}
 
         public static BnfiTermValue<Int64> CreateDataInt64Dsv()
 		{
-			return new DsvLiteral(name: "Int64Dsv", dataType: TypeCode.Int64).CreateDataInt64();
+			return new DsvLiteral(name: "dataInt64Dsv", dataType: TypeCode.Int64).CreateDataInt64();
 		}
 
         public static BnfiTermValue<Int64> CreateDataInt64Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "Int64Dsv", dataType: TypeCode.Int64, terminator: terminator).CreateDataInt64();
+			return new DsvLiteral(name: "dataInt64Dsv", dataType: TypeCode.Int64, terminator: terminator).CreateDataInt64();
 		}
 
         public static BnfiTermValue<Int64> CreateDataInt64Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int64Quoted", dataType: TypeCode.Int64, startEndSymbol: startEndSymbol).CreateDataInt64();
+			return new QuotedValueLiteral(name: "dataInt64Quoted", dataType: TypeCode.Int64, startEndSymbol: startEndSymbol).CreateDataInt64();
 		}
 
         public static BnfiTermValue<Int64> CreateDataInt64Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "Int64Quoted", dataType: TypeCode.Int64, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt64();
+			return new QuotedValueLiteral(name: "dataInt64Quoted", dataType: TypeCode.Int64, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataInt64();
 		}
 
         public static BnfiTermValue<Int64> CreateDataInt64FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "Int64FixedLength", dataType: TypeCode.Int64, length: length).CreateDataInt64();
+			return new FixedLengthLiteral(name: "dataInt64FixedLength", dataType: TypeCode.Int64, length: length).CreateDataInt64();
 		}
 
 		#endregion
@@ -1018,12 +1015,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Int64> CreateNumberInt64()
         {
-			return new NumberLiteral(name: null).CreateNumberInt64();
+			return new NumberLiteral(name: "number").CreateNumberInt64();
         }
 
 		public static BnfiTermValue<Int64> CreateNumberInt64(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberInt64();
+			return new NumberLiteral(name: "number", options: options).CreateNumberInt64();
         }
 
 		#endregion
@@ -1084,32 +1081,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<UInt64> CreateDataUInt64()
 		{
-			return new DataLiteralBase(name: "UInt64", dataType: TypeCode.UInt64).CreateDataUInt64();
+			return new DataLiteralBase(name: "dataUInt64", dataType: TypeCode.UInt64).CreateDataUInt64();
 		}
 
         public static BnfiTermValue<UInt64> CreateDataUInt64Dsv()
 		{
-			return new DsvLiteral(name: "UInt64Dsv", dataType: TypeCode.UInt64).CreateDataUInt64();
+			return new DsvLiteral(name: "dataUInt64Dsv", dataType: TypeCode.UInt64).CreateDataUInt64();
 		}
 
         public static BnfiTermValue<UInt64> CreateDataUInt64Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "UInt64Dsv", dataType: TypeCode.UInt64, terminator: terminator).CreateDataUInt64();
+			return new DsvLiteral(name: "dataUInt64Dsv", dataType: TypeCode.UInt64, terminator: terminator).CreateDataUInt64();
 		}
 
         public static BnfiTermValue<UInt64> CreateDataUInt64Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt64Quoted", dataType: TypeCode.UInt64, startEndSymbol: startEndSymbol).CreateDataUInt64();
+			return new QuotedValueLiteral(name: "dataUInt64Quoted", dataType: TypeCode.UInt64, startEndSymbol: startEndSymbol).CreateDataUInt64();
 		}
 
         public static BnfiTermValue<UInt64> CreateDataUInt64Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "UInt64Quoted", dataType: TypeCode.UInt64, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt64();
+			return new QuotedValueLiteral(name: "dataUInt64Quoted", dataType: TypeCode.UInt64, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataUInt64();
 		}
 
         public static BnfiTermValue<UInt64> CreateDataUInt64FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "UInt64FixedLength", dataType: TypeCode.UInt64, length: length).CreateDataUInt64();
+			return new FixedLengthLiteral(name: "dataUInt64FixedLength", dataType: TypeCode.UInt64, length: length).CreateDataUInt64();
 		}
 
 		#endregion
@@ -1118,12 +1115,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<UInt64> CreateNumberUInt64()
         {
-			return new NumberLiteral(name: null).CreateNumberUInt64();
+			return new NumberLiteral(name: "number").CreateNumberUInt64();
         }
 
 		public static BnfiTermValue<UInt64> CreateNumberUInt64(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberUInt64();
+			return new NumberLiteral(name: "number", options: options).CreateNumberUInt64();
         }
 
 		#endregion
@@ -1184,32 +1181,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Single> CreateDataSingle()
 		{
-			return new DataLiteralBase(name: "Single", dataType: TypeCode.Single).CreateDataSingle();
+			return new DataLiteralBase(name: "dataSingle", dataType: TypeCode.Single).CreateDataSingle();
 		}
 
         public static BnfiTermValue<Single> CreateDataSingleDsv()
 		{
-			return new DsvLiteral(name: "SingleDsv", dataType: TypeCode.Single).CreateDataSingle();
+			return new DsvLiteral(name: "dataSingleDsv", dataType: TypeCode.Single).CreateDataSingle();
 		}
 
         public static BnfiTermValue<Single> CreateDataSingleDsv(string terminator)
 		{
-			return new DsvLiteral(name: "SingleDsv", dataType: TypeCode.Single, terminator: terminator).CreateDataSingle();
+			return new DsvLiteral(name: "dataSingleDsv", dataType: TypeCode.Single, terminator: terminator).CreateDataSingle();
 		}
 
         public static BnfiTermValue<Single> CreateDataSingleQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "SingleQuoted", dataType: TypeCode.Single, startEndSymbol: startEndSymbol).CreateDataSingle();
+			return new QuotedValueLiteral(name: "dataSingleQuoted", dataType: TypeCode.Single, startEndSymbol: startEndSymbol).CreateDataSingle();
 		}
 
         public static BnfiTermValue<Single> CreateDataSingleQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "SingleQuoted", dataType: TypeCode.Single, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataSingle();
+			return new QuotedValueLiteral(name: "dataSingleQuoted", dataType: TypeCode.Single, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataSingle();
 		}
 
         public static BnfiTermValue<Single> CreateDataSingleFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "SingleFixedLength", dataType: TypeCode.Single, length: length).CreateDataSingle();
+			return new FixedLengthLiteral(name: "dataSingleFixedLength", dataType: TypeCode.Single, length: length).CreateDataSingle();
 		}
 
 		#endregion
@@ -1218,12 +1215,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Single> CreateNumberSingle()
         {
-			return new NumberLiteral(name: null).CreateNumberSingle();
+			return new NumberLiteral(name: "number").CreateNumberSingle();
         }
 
 		public static BnfiTermValue<Single> CreateNumberSingle(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberSingle();
+			return new NumberLiteral(name: "number", options: options).CreateNumberSingle();
         }
 
 		#endregion
@@ -1284,32 +1281,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Double> CreateDataDouble()
 		{
-			return new DataLiteralBase(name: "Double", dataType: TypeCode.Double).CreateDataDouble();
+			return new DataLiteralBase(name: "dataDouble", dataType: TypeCode.Double).CreateDataDouble();
 		}
 
         public static BnfiTermValue<Double> CreateDataDoubleDsv()
 		{
-			return new DsvLiteral(name: "DoubleDsv", dataType: TypeCode.Double).CreateDataDouble();
+			return new DsvLiteral(name: "dataDoubleDsv", dataType: TypeCode.Double).CreateDataDouble();
 		}
 
         public static BnfiTermValue<Double> CreateDataDoubleDsv(string terminator)
 		{
-			return new DsvLiteral(name: "DoubleDsv", dataType: TypeCode.Double, terminator: terminator).CreateDataDouble();
+			return new DsvLiteral(name: "dataDoubleDsv", dataType: TypeCode.Double, terminator: terminator).CreateDataDouble();
 		}
 
         public static BnfiTermValue<Double> CreateDataDoubleQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "DoubleQuoted", dataType: TypeCode.Double, startEndSymbol: startEndSymbol).CreateDataDouble();
+			return new QuotedValueLiteral(name: "dataDoubleQuoted", dataType: TypeCode.Double, startEndSymbol: startEndSymbol).CreateDataDouble();
 		}
 
         public static BnfiTermValue<Double> CreateDataDoubleQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "DoubleQuoted", dataType: TypeCode.Double, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDouble();
+			return new QuotedValueLiteral(name: "dataDoubleQuoted", dataType: TypeCode.Double, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDouble();
 		}
 
         public static BnfiTermValue<Double> CreateDataDoubleFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "DoubleFixedLength", dataType: TypeCode.Double, length: length).CreateDataDouble();
+			return new FixedLengthLiteral(name: "dataDoubleFixedLength", dataType: TypeCode.Double, length: length).CreateDataDouble();
 		}
 
 		#endregion
@@ -1318,12 +1315,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Double> CreateNumberDouble()
         {
-			return new NumberLiteral(name: null).CreateNumberDouble();
+			return new NumberLiteral(name: "number").CreateNumberDouble();
         }
 
 		public static BnfiTermValue<Double> CreateNumberDouble(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberDouble();
+			return new NumberLiteral(name: "number", options: options).CreateNumberDouble();
         }
 
 		#endregion
@@ -1384,32 +1381,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<Decimal> CreateDataDecimal()
 		{
-			return new DataLiteralBase(name: "Decimal", dataType: TypeCode.Decimal).CreateDataDecimal();
+			return new DataLiteralBase(name: "dataDecimal", dataType: TypeCode.Decimal).CreateDataDecimal();
 		}
 
         public static BnfiTermValue<Decimal> CreateDataDecimalDsv()
 		{
-			return new DsvLiteral(name: "DecimalDsv", dataType: TypeCode.Decimal).CreateDataDecimal();
+			return new DsvLiteral(name: "dataDecimalDsv", dataType: TypeCode.Decimal).CreateDataDecimal();
 		}
 
         public static BnfiTermValue<Decimal> CreateDataDecimalDsv(string terminator)
 		{
-			return new DsvLiteral(name: "DecimalDsv", dataType: TypeCode.Decimal, terminator: terminator).CreateDataDecimal();
+			return new DsvLiteral(name: "dataDecimalDsv", dataType: TypeCode.Decimal, terminator: terminator).CreateDataDecimal();
 		}
 
         public static BnfiTermValue<Decimal> CreateDataDecimalQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "DecimalQuoted", dataType: TypeCode.Decimal, startEndSymbol: startEndSymbol).CreateDataDecimal();
+			return new QuotedValueLiteral(name: "dataDecimalQuoted", dataType: TypeCode.Decimal, startEndSymbol: startEndSymbol).CreateDataDecimal();
 		}
 
         public static BnfiTermValue<Decimal> CreateDataDecimalQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "DecimalQuoted", dataType: TypeCode.Decimal, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDecimal();
+			return new QuotedValueLiteral(name: "dataDecimalQuoted", dataType: TypeCode.Decimal, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDecimal();
 		}
 
         public static BnfiTermValue<Decimal> CreateDataDecimalFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "DecimalFixedLength", dataType: TypeCode.Decimal, length: length).CreateDataDecimal();
+			return new FixedLengthLiteral(name: "dataDecimalFixedLength", dataType: TypeCode.Decimal, length: length).CreateDataDecimal();
 		}
 
 		#endregion
@@ -1418,12 +1415,12 @@ namespace Irony.ITG.Ast
 
 		public static BnfiTermValue<Decimal> CreateNumberDecimal()
         {
-			return new NumberLiteral(name: null).CreateNumberDecimal();
+			return new NumberLiteral(name: "number").CreateNumberDecimal();
         }
 
 		public static BnfiTermValue<Decimal> CreateNumberDecimal(NumberOptions options)
         {
-			return new NumberLiteral(name: null, options: options).CreateNumberDecimal();
+			return new NumberLiteral(name: "number", options: options).CreateNumberDecimal();
         }
 
 		#endregion
@@ -1472,32 +1469,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<DateTime> CreateDataDateTime()
 		{
-			return new DataLiteralBase(name: "DateTime", dataType: TypeCode.DateTime).CreateDataDateTime();
+			return new DataLiteralBase(name: "dataDateTime", dataType: TypeCode.DateTime).CreateDataDateTime();
 		}
 
         public static BnfiTermValue<DateTime> CreateDataDateTimeDsv()
 		{
-			return new DsvLiteral(name: "DateTimeDsv", dataType: TypeCode.DateTime).CreateDataDateTime();
+			return new DsvLiteral(name: "dataDateTimeDsv", dataType: TypeCode.DateTime).CreateDataDateTime();
 		}
 
         public static BnfiTermValue<DateTime> CreateDataDateTimeDsv(string terminator)
 		{
-			return new DsvLiteral(name: "DateTimeDsv", dataType: TypeCode.DateTime, terminator: terminator).CreateDataDateTime();
+			return new DsvLiteral(name: "dataDateTimeDsv", dataType: TypeCode.DateTime, terminator: terminator).CreateDataDateTime();
 		}
 
         public static BnfiTermValue<DateTime> CreateDataDateTimeQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "DateTimeQuoted", dataType: TypeCode.DateTime, startEndSymbol: startEndSymbol).CreateDataDateTime();
+			return new QuotedValueLiteral(name: "dataDateTimeQuoted", dataType: TypeCode.DateTime, startEndSymbol: startEndSymbol).CreateDataDateTime();
 		}
 
         public static BnfiTermValue<DateTime> CreateDataDateTimeQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "DateTimeQuoted", dataType: TypeCode.DateTime, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDateTime();
+			return new QuotedValueLiteral(name: "dataDateTimeQuoted", dataType: TypeCode.DateTime, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataDateTime();
 		}
 
         public static BnfiTermValue<DateTime> CreateDataDateTimeFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "DateTimeFixedLength", dataType: TypeCode.DateTime, length: length).CreateDataDateTime();
+			return new FixedLengthLiteral(name: "dataDateTimeFixedLength", dataType: TypeCode.DateTime, length: length).CreateDataDateTime();
 		}
 
 		#endregion
@@ -1546,32 +1543,32 @@ namespace Irony.ITG.Ast
 
         public static BnfiTermValue<String> CreateDataString()
 		{
-			return new DataLiteralBase(name: "String", dataType: TypeCode.String).CreateDataString();
+			return new DataLiteralBase(name: "dataString", dataType: TypeCode.String).CreateDataString();
 		}
 
         public static BnfiTermValue<String> CreateDataStringDsv()
 		{
-			return new DsvLiteral(name: "StringDsv", dataType: TypeCode.String).CreateDataString();
+			return new DsvLiteral(name: "dataStringDsv", dataType: TypeCode.String).CreateDataString();
 		}
 
         public static BnfiTermValue<String> CreateDataStringDsv(string terminator)
 		{
-			return new DsvLiteral(name: "StringDsv", dataType: TypeCode.String, terminator: terminator).CreateDataString();
+			return new DsvLiteral(name: "dataStringDsv", dataType: TypeCode.String, terminator: terminator).CreateDataString();
 		}
 
         public static BnfiTermValue<String> CreateDataStringQuoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "StringQuoted", dataType: TypeCode.String, startEndSymbol: startEndSymbol).CreateDataString();
+			return new QuotedValueLiteral(name: "dataStringQuoted", dataType: TypeCode.String, startEndSymbol: startEndSymbol).CreateDataString();
 		}
 
         public static BnfiTermValue<String> CreateDataStringQuoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "StringQuoted", dataType: TypeCode.String, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataString();
+			return new QuotedValueLiteral(name: "dataStringQuoted", dataType: TypeCode.String, startSymbol: startSymbol, endSymbol: endSymbol).CreateDataString();
 		}
 
         public static BnfiTermValue<String> CreateDataStringFixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "StringFixedLength", dataType: TypeCode.String, length: length).CreateDataString();
+			return new FixedLengthLiteral(name: "dataStringFixedLength", dataType: TypeCode.String, length: length).CreateDataString();
 		}
 
 		#endregion

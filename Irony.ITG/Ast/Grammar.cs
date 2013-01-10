@@ -197,20 +197,6 @@ namespace Irony.ITG.Ast
 
         #endregion
 
-        #region Numbers
-
-        public static BnfiTermValue CreateNumber()
-        {
-            return new NumberLiteral(name: null).CreateNumber();
-        }
-
-        public static BnfiTermValue CreateNumber(NumberOptions options)
-        {
-            return new NumberLiteral(name: null, options: options).CreateNumber();
-        }
-
-        #endregion
-
         #region Misc
 
 #if IRONY_INTERNALS_VISIBLE

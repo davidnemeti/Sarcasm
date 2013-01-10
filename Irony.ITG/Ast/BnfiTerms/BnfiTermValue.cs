@@ -101,20 +101,6 @@ namespace Irony.ITG.Ast
             return bnfiTermValue;
         }
 
-        public static BnfiTermValue CreateData(DataLiteralBase dataLiteral)
-        {
-            BnfiTermValue bnfiTermValue = Create(dataLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
-            return bnfiTermValue;
-        }
-
-        public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
-        {
-            BnfiTermValue bnfiTermValue = Create(numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
-            return bnfiTermValue;
-        }
-
         public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert(typeof(object), bnfiTerm, valueConverter);
