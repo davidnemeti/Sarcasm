@@ -14,7 +14,7 @@ using Irony.Parsing;
 
 namespace Irony.ITG.Ast
 {
-    public static class GrammarHelper
+    public static partial class GrammarHelper
     {
         #region StarList and PlusList
 
@@ -168,19 +168,14 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.CreateIdentifier(identifierTerminal);
         }
 
-        public static BnfiTermValue<T> CreateNumber<T>(this NumberLiteral numberLiteral)
-        {
-            return BnfiTermValue.CreateNumber<T>(numberLiteral);
-        }
-
         public static BnfiTermValue CreateNumber(this NumberLiteral numberLiteral)
         {
             return BnfiTermValue.CreateNumber(numberLiteral);
         }
 
-        public static BnfiTermValue<DateTime> CreateDateTime(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue CreateData(this DataLiteralBase dataLiteral)
         {
-            return BnfiTermValue.CreateDateTime(dataLiteral);
+            return BnfiTermValue.CreateData(dataLiteral);
         }
 
         public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)

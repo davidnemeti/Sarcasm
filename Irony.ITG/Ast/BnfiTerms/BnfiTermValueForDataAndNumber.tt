@@ -1,0 +1,185 @@
+﻿<#@ template debug="true" hostSpecific="false" #>
+<#@ output extension="generated.cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #> 
+<#
+	WriteLine("// GENERATED FILE");
+#>
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+using Irony;
+using Irony.Ast;
+using Irony.Parsing;
+
+namespace Irony.ITG.Ast
+{
+<#
+	foreach (TypeCode typeCode in Enum.GetValues(typeof(TypeCode)))
+    {
+		if (typeCode == TypeCode.Empty)
+			continue;
+
+		Type type = TypeCodeToType(typeCode);
+#>
+	#region Create <#= type.Name #> (Data and Number)
+
+	#region BnfiTermValue
+
+    public partial class BnfiTermValue
+	{
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>(DataLiteralBase dataLiteral)
+        {
+            if (dataLiteral.DataType != TypeCode.<#= typeCode #>)
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a <#= type.Name #>", dataLiteral.Name);
+
+            BnfiTermValue<<#= type.Name #>> bnfiTermValue = Create<<#= type.Name #>>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
+            return bnfiTermValue;
+        }
+<#
+		if (IsNumeric(typeCode))
+        {
+#>
+
+		public static BnfiTermValue<<#= type.Name #>> CreateNumber<#= type.Name #>(NumberLiteral numberLiteral)
+        {
+            BnfiTermValue<<#= type.Name #>> bnfiTermValue = Create<<#= type.Name #>>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
+            return bnfiTermValue;
+        }
+<#
+        }
+#>
+	}
+
+	#endregion
+
+	#region GrammarHelper
+
+    public static partial class GrammarHelper
+	{
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>(this DataLiteralBase dataLiteral)
+        {
+			return BnfiTermValue.CreateData<#= typeCode #>(dataLiteral);
+        }
+<#
+		if (IsNumeric(typeCode))
+        {
+#>
+
+		public static BnfiTermValue<<#= type.Name #>> CreateNumber<#= type.Name #>(this NumberLiteral numberLiteral)
+        {
+			return BnfiTermValue.CreateNumber<#= typeCode #>(numberLiteral);
+        }
+<#
+        }
+#>
+	}
+
+	#endregion
+
+	#region Grammar
+
+    public partial class Grammar
+	{
+		#region Data
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>()
+		{
+			return new DataLiteralBase(name: "<#= type.Name #>", dataType: TypeCode.<#= typeCode #>).CreateData<#= typeCode #>();
+		}
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>Dsv()
+		{
+			return new DsvLiteral(name: "<#= type.Name #>Dsv", dataType: TypeCode.<#= typeCode #>).CreateData<#= typeCode #>();
+		}
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>Dsv(string terminator)
+		{
+			return new DsvLiteral(name: "<#= type.Name #>Dsv", dataType: TypeCode.<#= typeCode #>, terminator: terminator).CreateData<#= typeCode #>();
+		}
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>Quoted(string startEndSymbol)
+		{
+			return new QuotedValueLiteral(name: "<#= type.Name #>Quoted", dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).CreateData<#= typeCode #>();
+		}
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>Quoted(string startSymbol, string endSymbol)
+		{
+			return new QuotedValueLiteral(name: "<#= type.Name #>Quoted", dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).CreateData<#= typeCode #>();
+		}
+
+        public static BnfiTermValue<<#= type.Name #>> CreateData<#= typeCode #>FixedLength(int length)
+		{
+			return new FixedLengthLiteral(name: "<#= type.Name #>FixedLength", dataType: TypeCode.<#= typeCode #>, length: length).CreateData<#= typeCode #>();
+		}
+
+		#endregion
+<#
+		if (IsNumeric(typeCode))
+        {
+#>
+
+		#region Number
+
+		public static BnfiTermValue<<#= type.Name #>> CreateNumber<#= type.Name #>()
+        {
+			return new NumberLiteral(name: null).CreateNumber<#= typeCode #>();
+        }
+
+		public static BnfiTermValue<<#= type.Name #>> CreateNumber<#= type.Name #>(NumberOptions options)
+        {
+			return new NumberLiteral(name: null, options: options).CreateNumber<#= typeCode #>();
+        }
+
+		#endregion
+<#
+        }
+#>
+	}
+
+	#endregion
+
+	#endregion
+
+<#
+    }
+#>
+}
+
+<#+
+Type TypeCodeToType(TypeCode typeCode)
+{
+	return Type.GetType("System." + typeCode.ToString());
+}
+
+bool IsNumeric(TypeCode typeCode)
+{
+	switch (typeCode)
+    {
+		case TypeCode.Byte:
+		case TypeCode.Decimal:
+		case TypeCode.Double:
+		case TypeCode.Int16:
+		case TypeCode.Int32:
+		case TypeCode.Int64:
+		case TypeCode.SByte:
+		case TypeCode.Single:
+		case TypeCode.UInt16:
+		case TypeCode.UInt32:
+		case TypeCode.UInt64:
+		case TypeCode.Object:
+			return true;
+
+		default:
+			return false;
+    }
+}
+#>

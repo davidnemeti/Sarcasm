@@ -65,6 +65,11 @@
     <Compile Include="Ast\BnfiTerms\BnfiTermKeyTerm.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermNoAst.cs" />
+    <Compile Include="Ast\BnfiTerms\BnfiTermValueForDataAndNumber.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BnfiTermValueForDataAndNumber.tt</DependentUpon>
+    </Compile>
     <Compile Include="Ast\Common.cs" />
     <Compile Include="Ast\GrammarHelper.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermConstant.cs" />
@@ -89,6 +94,10 @@
     <None Include="Ast\BnfiExpressions\BnfiExpression.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
+    </None>
+    <None Include="Ast\BnfiTerms\BnfiTermValueForDataAndNumber.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>BnfiTermValueForDataAndNumber.generated.cs</LastGenOutput>
     </None>
     <None Include="Signature\Irony.ITG.pub" />
     <None Include="Signature\Irony.ITG.snk" />

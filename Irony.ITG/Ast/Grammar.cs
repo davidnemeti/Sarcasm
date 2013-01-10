@@ -19,7 +19,7 @@ namespace Irony.ITG.Ast
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
     public enum ErrorHandling { ThrowException, ErrorMessage }
 
-    public class Grammar : Irony.Parsing.Grammar
+    public partial class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 
@@ -199,24 +199,14 @@ namespace Irony.ITG.Ast
 
         #region Numbers
 
-        public static BnfiTermValue<T> CreateNumber<T>(string name = "number")
+        public static BnfiTermValue CreateNumber()
         {
-            return new NumberLiteral(name).CreateNumber<T>();
+            return new NumberLiteral(name: null).CreateNumber();
         }
 
-        public static BnfiTermValue CreateNumber(string name = "number")
+        public static BnfiTermValue CreateNumber(NumberOptions options)
         {
-            return new NumberLiteral(name).CreateNumber();
-        }
-
-        public static BnfiTermValue<T> CreateNumber<T>(string name, NumberOptions options)
-        {
-            return new NumberLiteral(name, options).CreateNumber<T>();
-        }
-
-        public static BnfiTermValue<DateTime> CreateDateTime(DataLiteralBase dataLiteral)
-        {
-            return dataLiteral.CreateDateTime();
+            return new NumberLiteral(name: null, options: options).CreateNumber();
         }
 
         #endregion

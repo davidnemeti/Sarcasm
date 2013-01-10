@@ -101,25 +101,17 @@ namespace Irony.ITG.Ast
             return bnfiTermValue;
         }
 
-        public static BnfiTermValue<T> CreateNumber<T>(NumberLiteral numberLiteral)
+        public static BnfiTermValue CreateData(DataLiteralBase dataLiteral)
         {
-            BnfiTermValue<T> bnfiTermValue = Create<T>(numberLiteral, (context, parseNode) => { return (T)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<T, object>;
+            BnfiTermValue bnfiTermValue = Create(dataLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
             return bnfiTermValue;
         }
 
         public static BnfiTermValue CreateNumber(NumberLiteral numberLiteral)
         {
-            return CreateNumber<object>(numberLiteral);
-        }
-
-        public static BnfiTermValue<DateTime> CreateDateTime(DataLiteralBase dataLiteral)
-        {
-            if (dataLiteral.DataType != TypeCode.DateTime)
-                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DateTime", dataLiteral.Name);
-
-            BnfiTermValue<DateTime> bnfiTermValue = Create<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<DateTime, object>;
+            BnfiTermValue bnfiTermValue = Create(numberLiteral, (context, parseNode) => { return parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
             return bnfiTermValue;
         }
 
