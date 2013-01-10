@@ -32,6 +32,8 @@ namespace Irony.ITG.Ast
         private BnfTerm element;
         private BnfTerm delimiter;
 
+        private readonly bool movable = true;
+
         public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
         #endregion
@@ -48,11 +50,13 @@ namespace Irony.ITG.Ast
         public BnfiTermCollection(Type collectionType, string errorAlias = null)
             : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
         {
+            this.movable = false;
         }
 
         public BnfiTermCollection(Type collectionType, Type elementType, string errorAlias = null)
             : this(collectionType, elementType, errorAlias, runtimeCheck: true)
         {
+            this.movable = false;
         }
 
         protected BnfiTermCollection(Type collectionType, Type elementType, string errorAlias, bool runtimeCheck)
@@ -336,6 +340,9 @@ namespace Irony.ITG.Ast
 
         protected void MoveTo(BnfiTermCollection target)
         {
+            if (!this.movable)
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This collection should not be a right-value: {0}", this.Name);
+
             if (!this.listKind.HasValue)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Right-value collection has not been initialized: {0}", this.Name);
 
