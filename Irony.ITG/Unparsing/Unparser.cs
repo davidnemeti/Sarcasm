@@ -69,6 +69,9 @@ namespace Irony.ITG.Unparsing
 
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
+            if (bnfTerm == null)
+                throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
+
             Formatter.BeginParams beginParams;
 
             formatter.Begin(bnfTerm, out beginParams);
@@ -110,7 +113,7 @@ namespace Irony.ITG.Unparsing
                             yield return utoken;
 
                         if (!steppedIntoUnparseRaw)
-                            Unparser.tsUnparse.Debug("utokenized: [\"{0}\"]", obj.ToString());
+                            Unparser.tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
 
                         steppedIntoUnparseRaw = true;
                     }
@@ -122,8 +125,13 @@ namespace Irony.ITG.Unparsing
                     foreach (var utoken in formatter.YieldAfter(bnfTerm))
                         yield return utoken;
                 }
+                else if (bnfTerm is GrammarHint)
+                {
+                    // GrammarHint is legal, but it does not need any unparse
+                }
                 else
                 {
+                    throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + bnfTerm.Name, bnfTerm.GetType().Name));
                 }
             }
             finally
@@ -154,16 +162,58 @@ namespace Irony.ITG.Unparsing
 
         internal static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, BnfTermListToPriority bnfTermListToPriority)
         {
+            return UnparseBestChildBnfTermList(
+                nonTerminal,
+                unparser,
+                obj,
+                (BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
+                {
+                    object outObj;
+                    int? priority = bnfTermListToPriority(bnfTerms, out outObj, out preYieldedUtokens);
+                    _bnfTermToOutObj = (BnfTerm bnfTerm, out object _outObj) =>
+                        {
+                            _outObj = outObj;
+                            return true;
+                        };
+                    return priority;
+                }
+                );
+        }
+
+        internal static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, BnfTermListToPriorityMulti bnfTermListToPriority)
+        {
+            return UnparseBestChildBnfTermList(
+                nonTerminal,
+                unparser,
+                obj,
+                (BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
+                {
+                    IDictionary<BnfTerm, object> bnfTermToOutObj;
+                    int? priority = bnfTermListToPriority(bnfTerms, out bnfTermToOutObj, out preYieldedUtokens);
+                    _bnfTermToOutObj = (BnfTerm bnfTerm, out object _outObj) =>
+                        {
+                            return bnfTermToOutObj.TryGetValue(bnfTerm, out _outObj);
+                        };
+                    return priority;
+                }
+                );
+        }
+
+        private static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, _BnfTermListToPriority bnfTermListToPriority)
+        {
             try
             {
                 var childBnfTermsWithPriorityChosen = Unparser.GetChildBnfTermLists(nonTerminal)
                     .Select(childBnfTerms =>
                         {
+                            _BnfTermToOutObj bnfTermToOutObj;
                             ICollection<Utoken> preYieldedUtokens;
+
                             return new
                             {
                                 ChildBnfTerms = childBnfTerms,
-                                Priority = bnfTermListToPriority(childBnfTerms, out preYieldedUtokens),
+                                Priority = bnfTermListToPriority(childBnfTerms, out bnfTermToOutObj, out preYieldedUtokens),
+                                BnfTermToOutObj = bnfTermToOutObj,
                                 PreYieldedUtokens = preYieldedUtokens
                             };
                         }
@@ -174,7 +224,15 @@ namespace Irony.ITG.Unparsing
 
                 return childBnfTermsWithPriorityChosen.PreYieldedUtokens
                     ?? childBnfTermsWithPriorityChosen.ChildBnfTerms
-                        .SelectMany(childBnfTerm => unparser.Unparse(obj, childBnfTerm));
+                        .SelectMany(childBnfTerm =>
+                            {
+                                object outObj;
+                                if (childBnfTermsWithPriorityChosen.BnfTermToOutObj(childBnfTerm, out outObj))
+                                    return unparser.Unparse(outObj, childBnfTerm);
+                                else
+                                    return new Utoken[0];
+                            }
+                            );
             }
             catch (InvalidOperationException)
             {
@@ -186,9 +244,13 @@ namespace Irony.ITG.Unparsing
         {
             return string.Format(formatProvider, "{0}", obj);
         }
+
+        protected delegate bool _BnfTermToOutObj(BnfTerm bnfTerm, out object outObj);
+        protected delegate int? _BnfTermListToPriority(BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens);
     }
 
-    delegate int? BnfTermListToPriority(BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens);
+    public delegate int? BnfTermListToPriority(BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens);
+    public delegate int? BnfTermListToPriorityMulti(BnfTermList bnfTerms, out IDictionary<BnfTerm, object> bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens);
 
     public static class UnparserExtensions
     {

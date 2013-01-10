@@ -45,8 +45,7 @@ namespace Irony.ITG.Ast
 
         public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
-            foreach (Utoken utoken in unparser.Unparse(obj, childBnfTerm))
-                yield return utoken;
+            return unparser.Unparse(obj, childBnfTerm);
         }
     }
 

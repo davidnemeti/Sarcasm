@@ -337,16 +337,18 @@ namespace Irony.ITG.Ast
             {
                 // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
 
-                BnfTermListToPriority bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
+                BnfTermListToPriority bnfTermListToPriority = (BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens) =>
                 {
                     try
                     {
                         // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
+                        outObj = obj;
                         preYieldedUtokens = bnfTerms.SelectMany(bnfTerm => unparser.Unparse(obj, bnfTerm)).ToList();
                         return int.MaxValue;
                     }
                     catch (ValueMismatchException)
                     {
+                        outObj = obj;
                         preYieldedUtokens = null;
                         return null;
                     }

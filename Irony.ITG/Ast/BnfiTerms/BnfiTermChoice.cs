@@ -37,8 +37,10 @@ namespace Irony.ITG.Ast
             BnfTermListToPriority bnfTermListToPriority;
             if (obj.GetType() == this.Type)
             {
-                bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
+                bnfTermListToPriority = (BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens) =>
                 {
+                    outObj = obj;
+
                     try
                     {
                         // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
@@ -54,8 +56,9 @@ namespace Irony.ITG.Ast
             }
             else
             {
-                bnfTermListToPriority = (BnfTermList bnfTerms, out ICollection<Utoken> preYieldedUtokens) =>
+                bnfTermListToPriority = (BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens) =>
                 {
+                    outObj = obj;
                     preYieldedUtokens = null;
 
                     BnfTerm bnfTermCandidate = bnfTerms.Single(bnfTerm => !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint));

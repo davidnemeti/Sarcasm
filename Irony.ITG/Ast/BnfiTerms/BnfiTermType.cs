@@ -111,28 +111,41 @@ namespace Irony.ITG.Ast
 
         public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
         {
-            // TODO: we should process the first one which has some UnparseHint...
-            BnfTermList childBnfTerms = Unparser.GetChildBnfTermLists(this).First();
-            foreach (BnfTerm childBnfTerm in childBnfTerms)
+            // TODO: we should check whether any bnfTermList has an UnparseHint
+
+            BnfTermListToPriorityMulti bnfTermListToPriority = (BnfTermList bnfTerms, out IDictionary<BnfTerm, object> bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
             {
-                object childObj;
+                bnfTermToOutObj = new Dictionary<BnfTerm, object>();
+                preYieldedUtokens = null;
+                int bnfiTermMemberWithNullValueCount = 0;
 
-                if (childBnfTerm is BnfiTermMember)
+                foreach (BnfTerm bnfTerm in bnfTerms)
                 {
-                    BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
-                    childObj = GetValue(bnfiTermMember.MemberInfo, obj);
+                    object outObj;
 
-                    if (childObj == null)
-                        continue;
+                    if (bnfTerm is BnfiTermMember)
+                    {
+                        BnfiTermMember bnfiTermMember = (BnfiTermMember)bnfTerm;
+                        outObj = GetValue(bnfiTermMember.MemberInfo, obj);
+
+                        if (outObj == null)
+                        {
+                            bnfiTermMemberWithNullValueCount++;
+                            continue;
+                        }
+                    }
+                    else if (bnfTerm is BnfiTermCopyable)
+                        outObj = obj;
+                    else
+                        outObj = null;
+
+                    bnfTermToOutObj.Add(bnfTerm, outObj);
                 }
-                else if (childBnfTerm is BnfiTermCopyable)
-                    childObj = obj;
-                else
-                    childObj = null;
 
-                foreach (Utoken utoken in unparser.Unparse(childObj, childBnfTerm))
-                    yield return utoken;
-            }
+                return -bnfiTermMemberWithNullValueCount;
+            };
+
+            return Unparser.UnparseBestChildBnfTermList(this, unparser, obj, bnfTermListToPriority);
         }
     }
 
