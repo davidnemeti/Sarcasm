@@ -36,21 +36,21 @@ namespace Irony.ITG.Unparsing
 #endif
 
         public Grammar Grammar { get; private set; }
-        public Formatting Formatting { get { return Grammar.Formatting; } }
-        public IFormatProvider FormatProvider { get; set; }
+        public Formatting Formatting { get; private set; }
 
         private readonly Formatter formatter;
 
         public Unparser(Grammar grammar)
-            : this(grammar, grammar.Formatting.DefaultCulture)
+            : this(grammar, grammar.DefaultFormatting)
         {
         }
 
-        public Unparser(Grammar grammar, IFormatProvider formatProvider)
+        public Unparser(Grammar grammar, Formatting formatting)
         {
             this.Grammar = grammar;
-            this.FormatProvider = formatProvider;
-            this.formatter = new Formatter(grammar.Formatting);
+            this.Formatting = formatting;
+
+            this.formatter = new Formatter(formatting);
         }
 
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
@@ -147,6 +147,10 @@ namespace Irony.ITG.Unparsing
         {
             return UnparseRaw(obj, bnfTerm);
         }
+
+        IFormatProvider IUnparser.FormatProvider { get { return this.FormatProvider; } }
+
+        protected IFormatProvider FormatProvider { get { return this.Formatting.FormatProvider; } }
 
         internal static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, BnfTermListToPriority bnfTermListToPriority)
         {

@@ -46,6 +46,7 @@ namespace Irony.ITG.Unparsing
         private const string tabDefault = "\t";
         private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));
         private const string whiteSpaceBetweenUtokensDefault = spaceDefault;
+        private static readonly IFormatProvider formatProviderDefault = CultureInfo.InvariantCulture;
 
         internal static BnfTerm AnyBnfTerm { get { return _AnyBnfTerm.Instance; } }
 
@@ -64,7 +65,12 @@ namespace Irony.ITG.Unparsing
 
         #region Construction
 
-        public Formatting(Grammar grammar)
+        public Formatting()
+            : this(grammar: null)
+        {
+        }
+
+        protected Formatting(Grammar grammar)
         {
             this.grammar = grammar;
 
@@ -73,6 +79,14 @@ namespace Irony.ITG.Unparsing
             this.Tab = tabDefault;
             this.IndentUnit = indentUnitDefault;
             this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
+
+            if (this.FormatProvider == null)
+                this.FormatProvider = formatProviderDefault;
+        }
+
+        internal static Formatting CreateDefaultFormattingForGrammar(Grammar grammar)
+        {
+            return new Formatting(grammar);
         }
 
         #endregion
@@ -87,15 +101,20 @@ namespace Irony.ITG.Unparsing
         public string IndentUnit { get; set; }
         public string WhiteSpaceBetweenUtokens { get; set; }
 
-        public CultureInfo DefaultCulture
+        IFormatProvider formatProvider = null;
+
+        public IFormatProvider FormatProvider
         {
             get
             {
-                return grammar.DefaultCulture;
+                return grammar != null ? grammar.DefaultCulture : this.formatProvider;
             }
             set
             {
-                grammar.DefaultCulture = value;
+                if (grammar != null)
+                    grammar.DefaultCulture = (CultureInfo)value;    // note: this will throw an InvalidCastException if the value is not a CultureInfo
+                else
+                    this.formatProvider = value;
             }
         }
 

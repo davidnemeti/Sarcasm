@@ -268,15 +268,15 @@ namespace Irony.ITG.Ast
 
         #region Unparsing
 
-        private Formatting _formatting;
-        public Formatting Formatting
+        private Formatting _defaultFormatting;
+        public Formatting DefaultFormatting
         {
             get
             {
-                if (_formatting == null)
-                    _formatting = new Formatting(this);
+                if (_defaultFormatting == null)
+                    _defaultFormatting = Formatting.CreateDefaultFormattingForGrammar(this);
 
-                return _formatting;
+                return _defaultFormatting;
             }
         }
 
