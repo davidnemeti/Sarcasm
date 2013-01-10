@@ -113,6 +113,16 @@ namespace Irony.ITG.Ast
             return CreateNumber<object>(numberLiteral);
         }
 
+        public static BnfiTermValue<DateTime> CreateDateTime(DataLiteralBase dataLiteral)
+        {
+            if (dataLiteral.DataType != TypeCode.DateTime)
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DateTime", dataLiteral.Name);
+
+            BnfiTermValue<DateTime> bnfiTermValue = Create<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, astForChild: false);
+            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<DateTime, object>;
+            return bnfiTermValue;
+        }
+
         public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert(typeof(object), bnfiTerm, valueConverter);

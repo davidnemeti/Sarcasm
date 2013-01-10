@@ -214,6 +214,11 @@ namespace Irony.ITG.Ast
             return new NumberLiteral(name, options).CreateNumber<T>();
         }
 
+        public static BnfiTermValue<DateTime> CreateDateTime(DataLiteralBase dataLiteral)
+        {
+            return dataLiteral.CreateDateTime();
+        }
+
         #endregion
 
         #region Misc

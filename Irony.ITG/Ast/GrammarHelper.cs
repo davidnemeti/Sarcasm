@@ -178,6 +178,11 @@ namespace Irony.ITG.Ast
             return BnfiTermValue.CreateNumber(numberLiteral);
         }
 
+        public static BnfiTermValue<DateTime> CreateDateTime(this DataLiteralBase dataLiteral)
+        {
+            return BnfiTermValue.CreateDateTime(dataLiteral);
+        }
+
         public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
             return BnfiTermValue.Create(terminal, value, astForChild);
