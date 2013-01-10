@@ -30,7 +30,7 @@ namespace Irony.ITG.Ast
 		string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
 		string typeParamsStr = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
 #>
-	#region Create <#= type.Name #> (Data and Number)
+	#region Create <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
 
 	#region BnfiTermValue
 

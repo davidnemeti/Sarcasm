@@ -108,7 +108,7 @@ namespace Irony.ITG.Ast
 
 	#endregion
 
-	#region Create DBNull (Data and Number)
+	#region Create DBNull (Data)
 
 	#region BnfiTermValue
 
@@ -182,7 +182,7 @@ namespace Irony.ITG.Ast
 
 	#endregion
 
-	#region Create Boolean (Data and Number)
+	#region Create Boolean (Data)
 
 	#region BnfiTermValue
 
@@ -256,7 +256,7 @@ namespace Irony.ITG.Ast
 
 	#endregion
 
-	#region Create Char (Data and Number)
+	#region Create Char (Data)
 
 	#region BnfiTermValue
 
@@ -1430,7 +1430,7 @@ namespace Irony.ITG.Ast
 
 	#endregion
 
-	#region Create DateTime (Data and Number)
+	#region Create DateTime (Data)
 
 	#region BnfiTermValue
 
@@ -1504,7 +1504,7 @@ namespace Irony.ITG.Ast
 
 	#endregion
 
-	#region Create String (Data and Number)
+	#region Create String (Data)
 
 	#region BnfiTermValue
 
