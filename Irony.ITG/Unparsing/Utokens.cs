@@ -40,14 +40,14 @@ namespace Irony.ITG.Unparsing
             yield return this;
         }
 
-        public static implicit operator Utoken(string text)
+        public static Utoken CreateText(object obj)
         {
-            return (UtokenText)text;
+            return new UtokenText(obj);
         }
 
-        public static Utoken CreateText(string text, object reference = null)
+        public static Utoken CreateText(string text, object obj = null)
         {
-            return new UtokenText(text, reference);
+            return new UtokenText(text, obj);
         }
 
         public static readonly Utoken NewLine = UtokenWhitespace.NewLine;
@@ -73,10 +73,15 @@ namespace Irony.ITG.Unparsing
         public string Text { get; private set; }
         public object Reference { get; private set; }
 
-        public UtokenText(string text, object reference = null)
+        public UtokenText(object obj)
+            : this(text: null, obj: obj)
+        {
+        }
+
+        public UtokenText(string text, object obj = null)
         {
             this.Text = text;
-            this.Reference = reference;
+            this.Reference = obj;
         }
 
         public static implicit operator UtokenText(string text)
@@ -86,12 +91,13 @@ namespace Irony.ITG.Unparsing
 
         public override string ToString(Formatting formatting)
         {
-            return this.Text;
+            return this.Text ?? Unparser.ToString(formatting.FormatProvider, this.Reference);
         }
 
         public override string ToString()
         {
-            return ToString("\"{0}\"{1}", Text, Reference != null ? " (with ref)" : string.Empty);
+            string text = this.Text ?? this.Reference.ToString();
+            return ToString("\"{0}\"{1}", text, Reference != null ? " (with ref)" : string.Empty);
         }
     }
 

@@ -83,12 +83,12 @@ namespace Irony.ITG.Unparsing
                 if (bnfTerm is KeyTerm)
                 {
                     Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                    yield return ToString(this.FormatProvider, ((KeyTerm)bnfTerm).Text);
+                    yield return Utoken.CreateText(((KeyTerm)bnfTerm).Text, obj);
                 }
                 else if (bnfTerm is Terminal)
                 {
                     Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                    yield return ToString(this.FormatProvider, obj);
+                    yield return Utoken.CreateText(obj);
                 }
                 else if (bnfTerm is NonTerminal)
                 {
