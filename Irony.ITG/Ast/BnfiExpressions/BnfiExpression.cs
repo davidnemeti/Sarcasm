@@ -69,6 +69,11 @@ namespace Irony.ITG.Ast
         {
             return term1 | term2;
         }
+
+        internal IEnumerable<BnfTermList> GetBnfTermsList()
+        {
+            return this.bnfExpression.Data;
+        }
     }
 
     #endregion

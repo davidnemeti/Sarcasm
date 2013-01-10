@@ -304,19 +304,19 @@ namespace Irony.ITG.Ast
 
         protected static BnfiTermCollection _MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetListTerms(ListKind.Plus, element, delimiter);
+            bnfiTermCollection.SetState(ListKind.Plus, element, delimiter);
             Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, element);
             return bnfiTermCollection;
         }
 
         protected static BnfiTermCollection _MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetListTerms(ListKind.Star, element, delimiter);
+            bnfiTermCollection.SetState(ListKind.Star, element, delimiter);
             Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, element);
             return bnfiTermCollection;
         }
 
-        protected void SetListTerms(ListKind listKind, BnfTerm element, BnfTerm delimiter)
+        protected void SetState(ListKind listKind, BnfTerm element, BnfTerm delimiter)
         {
             this.listKind = listKind;
             this.element = element;
@@ -324,18 +324,12 @@ namespace Irony.ITG.Ast
             this.Name = GetName();
         }
 
-        protected void ClearListTerms()
+        protected void ClearState()
         {
             this.listKind = null;
             this.element = null;
             this.delimiter = null;
             this.Name = "<<null list>>";
-        }
-
-        protected void ClearRule()
-        {
-            ClearListTerms();
-            RuleRaw = null;
         }
 
         protected void MoveTo(BnfiTermCollection target)
@@ -346,6 +340,7 @@ namespace Irony.ITG.Ast
             if (!this.listKind.HasValue)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Right-value collection has not been initialized: {0}", this.Name);
 
+            // note: target.RuleRaw is set and target.SetState is called by _MakePlusRule/_MakeStarRule
             if (this.listKind == ListKind.Plus)
                 _MakePlusRule(target, this.delimiter, this.element);
             else if (this.listKind == ListKind.Star)
@@ -353,7 +348,8 @@ namespace Irony.ITG.Ast
             else
                 throw new InvalidOperationException(string.Format("Unknown listKind: {0}", this.listKind));
 
-            this.ClearRule();
+            this.RuleRaw = null;
+            this.ClearState();
         }
 
         protected string GetName()

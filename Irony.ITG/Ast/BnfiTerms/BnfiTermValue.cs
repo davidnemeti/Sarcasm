@@ -16,17 +16,24 @@ namespace Irony.ITG.Ast
 {
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
-        private readonly BnfTerm bnfTerm;
-        private readonly object value;
+        private BnfTerm bnfTerm;
+        private object value;
+
+        public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
+        public Func<IFormatProvider, object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
+
+        private readonly bool movable = true;
 
         public BnfiTermValue(string errorAlias = null)
             : this(typeof(object), errorAlias)
         {
+            this.movable = false;
         }
 
         public BnfiTermValue(Type type, string errorAlias = null)
             : base(type, errorAlias)
         {
+            this.movable = false;
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
             this.InverseValueConverterForUnparse = IdentityFunction;
         }
@@ -249,9 +256,6 @@ namespace Irony.ITG.Ast
             };
         }
 
-        public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
-        public Func<IFormatProvider, object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
-
         protected static object IdentityFunction(object obj)
         {
             return obj;
@@ -262,9 +266,63 @@ namespace Irony.ITG.Ast
             return (TOut)(object)obj;
         }
 
+        protected void SetState(BnfiTermValue source)
+        {
+            this.bnfTerm = source.bnfTerm;
+            this.value = source.value;
+            this.Flags = source.Flags;
+            this.AstConfig = source.AstConfig;
+            this.InverseValueConverterForUnparse = source.InverseValueConverterForUnparse;
+            this.UtokenizerForUnparse = source.UtokenizerForUnparse;
+        }
+
+        protected void ClearState()
+        {
+            this.bnfTerm = null;
+            this.value = null;
+            this.Flags = TermFlags.None;
+            this.AstConfig = null;
+            this.InverseValueConverterForUnparse = null;
+            this.UtokenizerForUnparse = null;
+        }
+
+        protected void MoveTo(BnfiTermValue target)
+        {
+            if (!this.movable)
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This value should not be a right-value: {0}", this.Name);
+
+            target.RuleRaw = this.RuleRaw;
+            target.SetState(this);
+
+            this.RuleRaw = null;
+            this.ClearState();
+        }
+
         protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new BnfiExpressionValue Rule { set { base.Rule = value; } }
+        public new BnfiExpressionValue Rule
+        {
+            set
+            {
+                try
+                {
+                    /*
+                     * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
+                     * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
+                     * 
+                     * (note that if there is a single bnfTerm inside 'value' then it must be a BnfiTermValue (enforced by BnfiExpressionValue's typesafety),
+                     * that's why we can cast here)
+                     * */
+                    BnfiTermValue onlyBnfTermInValue = (BnfiTermValue)value.GetBnfTermsList().Single().Single();
+                    onlyBnfTermInValue.MoveTo(this);
+                }
+                catch (InvalidOperationException)
+                {
+                    // there are more than one bnfTerms inside 'value' -> "rule-embedding" is necessary
+                    base.Rule = value;
+                }
+            }
+        }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
