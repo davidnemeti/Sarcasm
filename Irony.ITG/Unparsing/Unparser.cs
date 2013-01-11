@@ -136,7 +136,7 @@ namespace Irony.ITG.Unparsing
                                 .FirstOrDefault();
 
                             if (chosenChildBnfTermsWithPriority == null)
-                                throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no approriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
+                                throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
 
                             foreach (Value childValue in chosenChildBnfTermsWithPriority.ChildValues)
                                 foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
