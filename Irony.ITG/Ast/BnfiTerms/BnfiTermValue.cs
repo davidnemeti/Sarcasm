@@ -260,8 +260,11 @@ namespace Irony.ITG.Ast
             this.value = source.value;
             this.Flags = source.Flags;
             this.AstConfig = source.AstConfig;
+
             this.InverseValueConverterForUnparse = source.InverseValueConverterForUnparse;
-            this.UtokenizerForUnparse = source.UtokenizerForUnparse;
+
+            if (this.UtokenizerForUnparse != null)
+                this.UtokenizerForUnparse = source.UtokenizerForUnparse;
         }
 
         protected void ClearState()
@@ -317,47 +320,47 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
-        {
-            if (this.value != null && !this.value.Equals(obj))
-                throw new ValueMismatchException(string.Format("BnfiTermValue has value '{0}' which is not equal to the to-be-unparsed object '{1}'", this.value, obj));
+        #region Unparse
 
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
+        {
             if (this.UtokenizerForUnparse != null)
             {
-                return this.UtokenizerForUnparse(unparser.FormatProvider, obj);
-            }
-            else if (this.InverseValueConverterForUnparse != null)
-            {
-                BnfTerm childBnfTerm = this.bnfTerm ?? Unparser.GetChildBnfTermLists(this).First().Single(bnfTerm => bnfTerm is BnfiTermValue);
-                object childObj = this.InverseValueConverterForUnparse(obj);
-
-                return unparser.Unparse(childObj, childBnfTerm);
+                utokens = this.UtokenizerForUnparse(unparser.FormatProvider, obj);
+                return true;
             }
             else if (this.bnfTerm == null)
             {
                 // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
-
-                BnfTermListToPriority bnfTermListToPriority = (BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens) =>
-                {
-                    try
-                    {
-                        // we need to do the full unparse non-lazy in order to catch ValueMismatchException (that's why we use ToList here)
-                        outObj = obj;
-                        preYieldedUtokens = bnfTerms.SelectMany(bnfTerm => unparser.Unparse(obj, bnfTerm)).ToList();
-                        return int.MaxValue;
-                    }
-                    catch (ValueMismatchException)
-                    {
-                        outObj = obj;
-                        preYieldedUtokens = null;
-                        return null;
-                    }
-                };
-
-                return Unparser.UnparseBestChildBnfTermList(this, unparser, obj, bnfTermListToPriority);
+                utokens = null;
+                return false;
             }
             else
                 throw new CannotUnparseException(string.Format("'{0}' has no UtokenizerForUnparse, no ValueConverterForUnparse, and no other BnfiTermValue under", this.Name));
+        }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        {
+            object childObj = this.InverseValueConverterForUnparse != null
+                ? this.InverseValueConverterForUnparse(obj)
+                : obj;
+
+            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, IsMainChild(childBnfTerm) ? childObj : null));
+        }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            if (this.value != null)
+                return this.value.Equals(obj) ? (int?)1 : null;
+            else
+                return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+        }
+
+        #endregion
+
+        private static bool IsMainChild(BnfTerm bnfTerm)
+        {
+            return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
         }
     }
 

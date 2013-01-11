@@ -23,17 +23,12 @@ namespace Irony.ITG.Ast
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)
         }
 
-        public static BnfiTermCopyable Copy(IBnfiTerm bnfiTerm)
+        public static BnfiTermCopyable Copy(IBnfiTermCopyable bnfiTerm)
         {
-            return Copy(typeof(object), bnfiTerm);
+            return new BnfiTermCopyable(bnfiTerm.Type, bnfiTerm.AsBnfTerm());
         }
 
-        public static BnfiTermCopyable Copy(Type type, IBnfiTerm bnfiTerm)
-        {
-            return new BnfiTermCopyable(type, bnfiTerm.AsBnfTerm());
-        }
-
-        public static BnfiTermCopyable<T> Copy<T>(IBnfiTerm<T> bnfiTerm)
+        public static BnfiTermCopyable<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
         {
             return new BnfiTermCopyable<T>(bnfiTerm.AsBnfTerm());
         }
@@ -43,10 +38,25 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
+        #region Unparse
+
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
         {
-            return unparser.Unparse(obj, childBnfTerm);
+            utokens = null;
+            return false;
         }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        {
+            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, obj));
+        }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+        }
+
+        #endregion
     }
 
     public partial class BnfiTermCopyable<T> : BnfiTermCopyable, IBnfiTerm<T>, IBnfiTermCopyable<T>

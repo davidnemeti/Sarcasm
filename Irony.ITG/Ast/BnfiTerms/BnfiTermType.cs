@@ -15,7 +15,7 @@ using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
 {
-    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
+    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
         public BnfiTermType(Type type, string errorAlias = null)
             : base(type, errorAlias)
@@ -109,47 +109,58 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
+        #region Unparse
+
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
         {
-            // TODO: we should check whether any bnfTermList has an UnparseHint
-
-            BnfTermListToPriorityMulti bnfTermListToPriority = (BnfTermList bnfTerms, out IDictionary<BnfTerm, object> bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
-            {
-                bnfTermToOutObj = new Dictionary<BnfTerm, object>();
-                preYieldedUtokens = null;
-                int bnfiTermMemberWithNullValueCount = 0;
-
-                foreach (BnfTerm bnfTerm in bnfTerms)
-                {
-                    object outObj;
-
-                    if (bnfTerm is BnfiTermMember)
-                    {
-                        BnfiTermMember bnfiTermMember = (BnfiTermMember)bnfTerm;
-                        outObj = GetValue(bnfiTermMember.MemberInfo, obj);
-
-                        if (outObj == null)
-                        {
-                            bnfiTermMemberWithNullValueCount++;
-                            continue;
-                        }
-                    }
-                    else if (bnfTerm is BnfiTermCopyable)
-                        outObj = obj;
-                    else
-                        outObj = null;
-
-                    bnfTermToOutObj.Add(bnfTerm, outObj);
-                }
-
-                return -bnfiTermMemberWithNullValueCount;
-            };
-
-            return Unparser.UnparseBestChildBnfTermList(this, unparser, obj, bnfTermListToPriority);
+            utokens = null;
+            return false;
         }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        {
+            foreach (BnfTerm childBnfTerm in childBnfTerms)
+            {
+                object childObj;
+
+                if (childBnfTerm is BnfiTermMember)
+                {
+                    BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
+                    childObj = GetValue(bnfiTermMember.MemberInfo, obj);
+                }
+                else if (childBnfTerm is BnfiTermCopyable)
+                    childObj = obj;
+                else
+                    childObj = null;
+
+                yield return new Value(childBnfTerm, childObj);
+            }
+        }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            return childValues.SumIncludingNullValues(
+                childValue =>
+                    {
+                        if (childValue.bnfTerm is BnfiTermMember)
+                        {
+                            if (childValue.obj != null)
+                                return 1;
+                            else
+                                return null;
+                        }
+                        else if (childValue.bnfTerm is IBnfiTermCopyable)
+                            return unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj);
+                        else
+                            return 0;
+                    }
+                );
+        }
+
+        #endregion
     }
 
-    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>
+    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }

@@ -33,10 +33,24 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
+        #region Unparse
+
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
         {
-            foreach (Utoken utoken in unparser.Unparse(obj: null, bnfTerm: childBnfTerm))
-                yield return utoken;
+            utokens = null;
+            return false;
         }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        {
+            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, obj: null));
+        }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            return 0;
+        }
+
+        #endregion
     }
 }

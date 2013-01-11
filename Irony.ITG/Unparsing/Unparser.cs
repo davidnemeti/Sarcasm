@@ -109,8 +109,39 @@ namespace Irony.ITG.Unparsing
 
                         steppedIntoUnparseRaw = false;
 
-                        foreach (Utoken utoken in unparsable.Unparse(this, obj))
-                            yield return utoken;
+                        IEnumerable<Utoken> utokens;
+
+                        if (unparsable.TryGetUtokensDirectly(this, obj, out utokens))
+                        {
+                            foreach (Utoken utoken in utokens)
+                                yield return utoken;
+                        }
+                        else
+                        {
+                            // TODO: we should check whether any bnfTermList has an UnparseHint
+
+                            var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
+                                .Select(childBnfTerms =>
+                                    {
+                                        var childValues = unparsable.GetChildValues(childBnfTerms, obj);
+                                        return new
+                                            {
+                                                ChildValues = childValues,
+                                                Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues),
+                                            };
+                                    }
+                                )
+                                .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
+                                .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
+                                .FirstOrDefault();
+
+                            if (chosenChildBnfTermsWithPriority == null)
+                                throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no approriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
+
+                            foreach (Value childValue in chosenChildBnfTermsWithPriority.ChildValues)
+                                foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
+                                    yield return utoken;
+                        }
 
                         if (!steppedIntoUnparseRaw)
                             Unparser.tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
@@ -151,106 +182,36 @@ namespace Irony.ITG.Unparsing
             // TODO: do this by choosing by context
         }
 
-        IEnumerable<Utoken> IUnparser.Unparse(object obj, BnfTerm bnfTerm)
+        IEnumerable<Utoken> IUnparser.Unparse(BnfTerm bnfTerm, object obj)
         {
             return UnparseRaw(obj, bnfTerm);
+        }
+
+        int? IUnparser.GetBnfTermPriority(BnfTerm bnfTerm, object obj)
+        {
+            if (bnfTerm is NonTerminal && bnfTerm is IUnparsable)
+            {
+                NonTerminal nonTerminal = (NonTerminal)bnfTerm;
+                IUnparsable unparsable = (IUnparsable)bnfTerm;
+
+                return GetChildBnfTermLists(nonTerminal)
+                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildValues(childBnfTerms, obj)));
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         IFormatProvider IUnparser.FormatProvider { get { return this.FormatProvider; } }
 
         protected IFormatProvider FormatProvider { get { return this.Formatting.FormatProvider; } }
 
-        internal static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, BnfTermListToPriority bnfTermListToPriority)
-        {
-            return UnparseBestChildBnfTermList(
-                nonTerminal,
-                unparser,
-                obj,
-                (BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
-                {
-                    object outObj;
-                    int? priority = bnfTermListToPriority(bnfTerms, out outObj, out preYieldedUtokens);
-                    _bnfTermToOutObj = (BnfTerm bnfTerm, out object _outObj) =>
-                        {
-                            _outObj = outObj;
-                            return true;
-                        };
-                    return priority;
-                }
-                );
-        }
-
-        internal static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, BnfTermListToPriorityMulti bnfTermListToPriority)
-        {
-            return UnparseBestChildBnfTermList(
-                nonTerminal,
-                unparser,
-                obj,
-                (BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens) =>
-                {
-                    IDictionary<BnfTerm, object> bnfTermToOutObj;
-                    int? priority = bnfTermListToPriority(bnfTerms, out bnfTermToOutObj, out preYieldedUtokens);
-                    _bnfTermToOutObj = (BnfTerm bnfTerm, out object _outObj) =>
-                        {
-                            return bnfTermToOutObj.TryGetValue(bnfTerm, out _outObj);
-                        };
-                    return priority;
-                }
-                );
-        }
-
-        private static IEnumerable<Utoken> UnparseBestChildBnfTermList(NonTerminal nonTerminal, IUnparser unparser, object obj, _BnfTermListToPriority bnfTermListToPriority)
-        {
-            try
-            {
-                var childBnfTermsWithPriorityChosen = Unparser.GetChildBnfTermLists(nonTerminal)
-                    .Select(childBnfTerms =>
-                        {
-                            _BnfTermToOutObj bnfTermToOutObj;
-                            ICollection<Utoken> preYieldedUtokens;
-
-                            return new
-                            {
-                                ChildBnfTerms = childBnfTerms,
-                                Priority = bnfTermListToPriority(childBnfTerms, out bnfTermToOutObj, out preYieldedUtokens),
-                                BnfTermToOutObj = bnfTermToOutObj,
-                                PreYieldedUtokens = preYieldedUtokens
-                            };
-                        }
-                    )
-                    .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
-                    .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
-                    .First();
-
-                return childBnfTermsWithPriorityChosen.PreYieldedUtokens
-                    ?? childBnfTermsWithPriorityChosen.ChildBnfTerms
-                        .SelectMany(childBnfTerm =>
-                            {
-                                object outObj;
-                                if (childBnfTermsWithPriorityChosen.BnfTermToOutObj(childBnfTerm, out outObj))
-                                    return unparser.Unparse(outObj, childBnfTerm);
-                                else
-                                    return new Utoken[0];
-                            }
-                            );
-            }
-            catch (InvalidOperationException)
-            {
-                throw new CannotUnparseException(string.Format("'{0}' cannot be unparsed (none of its child bnftermlists is appropriate)", nonTerminal.Name));
-            }
-        }
-
         public static string ToString(IFormatProvider formatProvider, object obj)
         {
             return string.Format(formatProvider, "{0}", obj);
         }
-
-        protected delegate bool _BnfTermToOutObj(BnfTerm bnfTerm, out object outObj);
-        protected delegate int? _BnfTermListToPriority(BnfTermList bnfTerms, out _BnfTermToOutObj _bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens);
     }
-
-    public delegate int? BnfTermListToPriority(BnfTermList bnfTerms, out object outObj, out ICollection<Utoken> preYieldedUtokens);
-    public delegate int? BnfTermListToPriorityMulti(BnfTermList bnfTerms, out IDictionary<BnfTerm, object> bnfTermToOutObj, out ICollection<Utoken> preYieldedUtokens);
 
     public static class UnparserExtensions
     {
@@ -286,12 +247,27 @@ namespace Irony.ITG.Unparsing
 
     public interface IUnparsable
     {
-        IEnumerable<Utoken> Unparse(IUnparser unparser, object obj);
+        bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens);
+        IEnumerable<Value> GetChildValues(BnfTermList childBnfTerms, object obj);
+        int? GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues);
     }
 
     public interface IUnparser
     {
-        IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm);
+        IEnumerable<Utoken> Unparse(BnfTerm bnfTerm, object obj);
+        int? GetBnfTermPriority(BnfTerm bnfTerm, object obj);
         IFormatProvider FormatProvider { get; }
+    }
+
+    public class Value
+    {
+        public readonly BnfTerm bnfTerm;
+        public readonly object obj;
+
+        public Value(BnfTerm bnfTerm, object obj)
+        {
+            this.bnfTerm = bnfTerm;
+            this.obj = obj;
+        }
     }
 }

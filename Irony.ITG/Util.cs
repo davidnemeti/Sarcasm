@@ -9,6 +9,26 @@ namespace Irony.ITG
 {
     public static class Util
     {
+        public static int? SumIncludingNullValues<TSource>(this IEnumerable<TSource> items, Func<TSource, int?> selector)
+        {
+            return items.Select(selector).SumIncludingNullValues();
+        }
+
+        public static int? SumIncludingNullValues(this IEnumerable<int?> items)
+        {
+            int sum = 0;
+
+            foreach (int? item in items)
+            {
+                if (item.HasValue)
+                    sum += item.Value;
+                else
+                    return null;    // does not need to go further, since the result will be null anyway
+            }
+
+            return sum;
+        }
+
         public static int? GetInheritanceDistance(this Type ancestor, object descendantObj)
         {
             return GetInheritanceDistance(ancestor, descendantObj.GetType());

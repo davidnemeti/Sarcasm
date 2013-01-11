@@ -216,12 +216,12 @@ namespace Irony.ITG.Ast
 
         #region Copy
 
-        public static BnfiTermCopyable Copy(this IBnfiTerm bnfiTerm)
+        public static BnfiTermCopyable Copy(this IBnfiTermCopyable bnfiTerm)
         {
             return BnfiTermCopyable.Copy(bnfiTerm);
         }
 
-        public static BnfiTermCopyable<T> Copy<T>(this IBnfiTerm<T> bnfiTerm)
+        public static BnfiTermCopyable<T> Copy<T>(this IBnfiTermCopyable<T> bnfiTerm)
         {
             return BnfiTermCopyable.Copy<T>(bnfiTerm);
         }

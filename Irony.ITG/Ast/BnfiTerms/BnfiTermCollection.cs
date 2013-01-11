@@ -386,7 +386,15 @@ namespace Irony.ITG.Ast
             return this;
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
+        #region Unparse
+
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
+        {
+            utokens = null;
+            return false;
+        }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 
@@ -396,18 +404,21 @@ namespace Irony.ITG.Ast
             bool firstElement = true;
             foreach (object element in collection)
             {
-                if (!firstElement && delimiter != null)
-                {
-                    foreach (Utoken utoken in unparser.Unparse(obj: null, bnfTerm: delimiter))
-                        yield return utoken;
-                }
+                if (!firstElement && this.delimiter != null)
+                    yield return new Value(this.delimiter, null);
 
-                foreach (Utoken utoken in unparser.Unparse(element, this.element))
-                    yield return utoken;
+                yield return new Value(this.element, element);
 
                 firstElement = false;
             }
         }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            return 1;
+        }
+
+        #endregion
     }
 
     public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>

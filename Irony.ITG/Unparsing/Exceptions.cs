@@ -39,16 +39,4 @@ namespace Irony.ITG.Unparsing
         {
         }
     }
-
-    internal class ValueMismatchException : UnparseException
-    {
-        public ValueMismatchException()
-        {
-        }
-
-        public ValueMismatchException(string message)
-            : base(message)
-        {
-        }
-    }
 }

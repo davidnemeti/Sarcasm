@@ -102,11 +102,25 @@ namespace Irony.ITG.Ast
             set { base.Rule = value; }
         }
 
-        public IEnumerable<Utoken> Unparse(IUnparser unparser, object obj)
+        #region Unparse
+
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
         {
-            foreach (Utoken utoken in unparser.Unparse(obj, this.BnfTerm))
-                yield return utoken;
+            utokens = null;
+            return false;
         }
+
+        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        {
+            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, obj));
+        }
+
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        {
+            return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+        }
+
+        #endregion
     }
 
     public partial class BnfiTermMember<TDeclaringType> : BnfiTermMember, IBnfiTerm<TDeclaringType>

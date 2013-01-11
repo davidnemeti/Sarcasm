@@ -30,7 +30,7 @@ namespace Irony.ITG.Ast
         Type Type { get; }
     }
 
-    public interface IBnfiTermCopyable
+    public interface IBnfiTermCopyable : IHasType, IBnfiTerm
     {
     }
 
