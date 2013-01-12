@@ -340,19 +340,7 @@ namespace Irony.ITG.Ast
 
         IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
         {
-            object childObj = this.InverseValueConverterForUnparse != null
-                    ? this.InverseValueConverterForUnparse(obj)
-                    : obj;
-
-            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, IsMainChild(childBnfTerm) ? childObj : null));
-
-            //Lazy<object> childObj = new Lazy<object>(() =>
-            //    this.InverseValueConverterForUnparse != null
-            //        ? this.InverseValueConverterForUnparse(obj)
-            //        : obj
-            //    );
-
-            //return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, IsMainChild(childBnfTerm) ? childObj.Value : null));
+            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
         }
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
@@ -361,15 +349,8 @@ namespace Irony.ITG.Ast
                 return this.value.Equals(obj) ? (int?)1 : null;
             else
             {
-                BnfTerm mainChildBnfTerm = this.bnfTerm != null
-                    ? bnfTerm
-                    : childValues.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
-
-                object childObj = this.InverseValueConverterForUnparse != null
-                        ? this.InverseValueConverterForUnparse(obj)
-                        : obj;
-
-                return unparser.GetBnfTermPriority(mainChildBnfTerm, childObj);
+                Value innerValue = GetMainChildValue(obj, childValues);
+                return unparser.GetBnfTermPriority(innerValue.bnfTerm, innerValue.obj);
             }
         }
 
@@ -378,6 +359,25 @@ namespace Irony.ITG.Ast
         private static bool IsMainChild(BnfTerm bnfTerm)
         {
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
+        }
+
+        private Value GetMainChildValue(object obj, IEnumerable<Value> childValues)
+        {
+            return this.bnfTerm != null
+                ? new Value(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
+                : childValues.Single(childValue => IsMainChild(childValue.bnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+        }
+
+        private object ConvertObjectForChild(object obj, BnfTerm childBnfTerm)
+        {
+            if (IsMainChild(childBnfTerm))
+            {
+                return this.InverseValueConverterForUnparse != null
+                        ? this.InverseValueConverterForUnparse(obj)
+                        : obj;
+            }
+            else
+                return null;
         }
 
         public override string GetExtraStrForToString()

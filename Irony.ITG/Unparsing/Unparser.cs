@@ -185,6 +185,7 @@ namespace Irony.ITG.Unparsing
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
         {
+            // TODO: which one to choose?
 //            return nonTerminal.Rule.Data;
             return nonTerminal.Productions.Select(production => production.RValues);
         }
