@@ -119,7 +119,7 @@ namespace Irony.ITG.Ast
         {
             if (obj != null)
                 return 1;
-            else if (this.BnfTerm is BnfiTermCollection)      // rendesen mecsinálni
+            else if (this.BnfTerm is BnfiTermCollection)
                 return unparser.GetBnfTermPriority(this.BnfTerm, obj);
             else
                 return null;
