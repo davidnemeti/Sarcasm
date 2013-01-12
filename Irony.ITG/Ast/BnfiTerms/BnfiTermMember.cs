@@ -139,7 +139,6 @@ namespace Irony.ITG.Ast
             : base(memberInfo, bnfTerm)
         {
         }
-
     }
 
     internal class MemberValue
