@@ -11,6 +11,7 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Irony.ITG;
 using Irony.ITG.Unparsing;
 
 namespace Irony.ITG.Ast
@@ -139,22 +140,7 @@ namespace Irony.ITG.Ast
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
         {
-            return childValues.SumIncludingNullValues(
-                childValue =>
-                    {
-                        if (childValue.bnfTerm is BnfiTermMember)
-                        {
-                            if (childValue.obj != null)
-                                return 1;
-                            else
-                                return null;
-                        }
-                        else if (childValue.bnfTerm is IBnfiTermCopyable)
-                            return unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj);
-                        else
-                            return 0;
-                    }
-                );
+            return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
         }
 
         #endregion

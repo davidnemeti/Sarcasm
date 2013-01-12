@@ -129,43 +129,39 @@ namespace Irony.ITG
             ts.TraceEvent(TraceEventType.Verbose, 0, format, args);
         }
 
-        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, string category = null)
-        {
-            foreach (T item in items)
-            {
-                System.Diagnostics.Trace.WriteLine(item, category);
-                yield return item;
-            }
-        }
-
         public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType)
         {
+            return items.TraceWriteLines(ts, traceEventType, item => item.ToString());
+        }
+
+        public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType, Func<T, string> toString)
+        {
+            if (ts.Listeners.Count > 0)
+                return items._TraceWriteLines(ts, traceEventType, toString);
+            else
+                return items;
+        }
+
+        private static IEnumerable<T> _TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType, Func<T, string> toString)
+        {
             foreach (T item in items)
             {
-                ts.Trace(traceEventType, item);
+                ts.Trace(traceEventType, toString(item));
                 yield return item;
             }
         }
 
         public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, TraceSource ts)
         {
-#if DEBUG
-            foreach (T item in items)
-            {
-                ts.Debug(item);
-                yield return item;
-            }
-#else
-            return items;
-#endif
+            return items.DebugWriteLines(ts, item => item.ToString());
         }
 
-        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, string category = null)
+        public static IEnumerable<T> DebugWriteLines<T>(this IEnumerable<T> items, TraceSource ts, Func<T, string> toString)
         {
 #if DEBUG
             foreach (T item in items)
             {
-                System.Diagnostics.Debug.WriteLine(item, category);
+                ts.Debug(item);
                 yield return item;
             }
 #else

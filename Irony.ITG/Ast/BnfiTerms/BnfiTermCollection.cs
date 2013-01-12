@@ -415,7 +415,12 @@ namespace Irony.ITG.Ast
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
         {
-            return 1;
+            System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
+
+            if (collection != null || this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
+                return 1;
+            else
+                return null;
         }
 
         #endregion

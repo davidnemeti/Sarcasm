@@ -27,18 +27,20 @@ namespace ConsoleApplication1
         {
             var grammar = new UDLGrammar();
             Console.WriteLine(grammar.GetNonTerminalsAsText());
-            Console.WriteLine();
-            Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
+            //Console.WriteLine();
+            //Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
 
             var parser = new Parser(grammar);
             ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
 
             Unparser unparser = new Unparser(grammar);
-//            Directory.CreateDirectory("unparse_logs");
-//            var stream = File.Create(@"unparse_logs\unparsed_text");
-//            unparser.Unparse(parseTree.Root.AstNode).WriteToStreamAsync(stream, unparser);
-            string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
-            Console.WriteLine(str);
+
+            Directory.CreateDirectory("unparse_logs");
+            var stream = File.Create(@"unparse_logs\unparsed_text");
+            unparser.Unparse(parseTree.Root.AstNode).WriteToStreamAsync(stream, unparser);
+
+            //string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
+            //Console.WriteLine(str);
         }
     }
 }

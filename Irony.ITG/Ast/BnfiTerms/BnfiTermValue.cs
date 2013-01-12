@@ -329,23 +329,30 @@ namespace Irony.ITG.Ast
                 utokens = this.UtokenizerForUnparse(unparser.FormatProvider, obj);
                 return true;
             }
-            else if (this.bnfTerm == null)
+            else if (this.InverseValueConverterForUnparse != null)
             {
-                // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
                 utokens = null;
                 return false;
             }
             else
-                throw new CannotUnparseException(string.Format("'{0}' has no UtokenizerForUnparse, no ValueConverterForUnparse, and no other BnfiTermValue under", this.Name));
+                throw new CannotUnparseException(string.Format("'{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
         IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
         {
             object childObj = this.InverseValueConverterForUnparse != null
-                ? this.InverseValueConverterForUnparse(obj)
-                : obj;
+                    ? this.InverseValueConverterForUnparse(obj)
+                    : obj;
 
             return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, IsMainChild(childBnfTerm) ? childObj : null));
+
+            //Lazy<object> childObj = new Lazy<object>(() =>
+            //    this.InverseValueConverterForUnparse != null
+            //        ? this.InverseValueConverterForUnparse(obj)
+            //        : obj
+            //    );
+
+            //return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, IsMainChild(childBnfTerm) ? childObj.Value : null));
         }
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
@@ -353,7 +360,17 @@ namespace Irony.ITG.Ast
             if (this.value != null)
                 return this.value.Equals(obj) ? (int?)1 : null;
             else
-                return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+            {
+                BnfTerm mainChildBnfTerm = this.bnfTerm != null
+                    ? bnfTerm
+                    : childValues.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+
+                object childObj = this.InverseValueConverterForUnparse != null
+                        ? this.InverseValueConverterForUnparse(obj)
+                        : obj;
+
+                return unparser.GetBnfTermPriority(mainChildBnfTerm, childObj);
+            }
         }
 
         #endregion
@@ -361,6 +378,12 @@ namespace Irony.ITG.Ast
         private static bool IsMainChild(BnfTerm bnfTerm)
         {
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
+        }
+
+        public override string GetExtraStrForToString()
+        {
+            return string.Format("child bnfterm: {0}, value: {1}, utokenizer: {2}, inverse value converter: {3}",
+                this.bnfTerm.Name, this.value != null ? value.ToString() : "<<NULL>>", this.UtokenizerForUnparse != null, this.InverseValueConverterForUnparse != null);
         }
     }
 

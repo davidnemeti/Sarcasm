@@ -22,6 +22,7 @@ namespace Irony.ITG.Unparsing
         internal const string logDirectoryName = "unparse_logs";
 
         internal readonly static TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
+        internal readonly static TraceSource tsPriorities = new TraceSource("PRIORITIES", SourceLevels.Verbose);
 
 #if DEBUG
         static Unparser()
@@ -32,6 +33,9 @@ namespace Irony.ITG.Unparsing
 
             tsUnparse.Listeners.Clear();
             tsUnparse.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(logDirectoryName, "00_unparse.log"))));
+
+            tsPriorities.Listeners.Clear();
+            tsPriorities.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(logDirectoryName, "priorities.log"))));
         }
 #endif
 
@@ -120,6 +124,9 @@ namespace Irony.ITG.Unparsing
                         {
                             // TODO: we should check whether any bnfTermList has an UnparseHint
 
+                            tsPriorities.Debug("{0} BEGIN priorities", bnfTerm);
+                            tsPriorities.Indent();
+
                             var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
                                 .Select(childBnfTerms =>
                                     {
@@ -127,13 +134,18 @@ namespace Irony.ITG.Unparsing
                                         return new
                                             {
                                                 ChildValues = childValues,
-                                                Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues),
+                                                Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues)
+                                                    .DebugWriteLinePriority(tsPriorities, bnfTerm, obj)
                                             };
                                     }
                                 )
                                 .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
                                 .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
                                 .FirstOrDefault();
+
+                            tsPriorities.Unindent();
+                            tsPriorities.Debug("{0} END priorities", bnfTerm);
+                            tsPriorities.Debug("");
 
                             if (chosenChildBnfTermsWithPriority == null)
                                 throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
@@ -173,6 +185,7 @@ namespace Irony.ITG.Unparsing
 
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
         {
+//            return nonTerminal.Rule.Data;
             return nonTerminal.Productions.Select(production => production.RValues);
         }
 
@@ -182,11 +195,6 @@ namespace Irony.ITG.Unparsing
             // TODO: do this by choosing by context
         }
 
-        IEnumerable<Utoken> IUnparser.Unparse(BnfTerm bnfTerm, object obj)
-        {
-            return UnparseRaw(obj, bnfTerm);
-        }
-
         int? IUnparser.GetBnfTermPriority(BnfTerm bnfTerm, object obj)
         {
             if (bnfTerm is NonTerminal && bnfTerm is IUnparsable)
@@ -194,11 +202,21 @@ namespace Irony.ITG.Unparsing
                 NonTerminal nonTerminal = (NonTerminal)bnfTerm;
                 IUnparsable unparsable = (IUnparsable)bnfTerm;
 
-                return GetChildBnfTermLists(nonTerminal)
-                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildValues(childBnfTerms, obj)));
+                tsPriorities.Indent();
+
+                int? priority = GetChildBnfTermLists(nonTerminal)
+                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildValues(childBnfTerms, obj))
+                        .DebugWriteLinePriority(tsPriorities, bnfTerm, obj));
+
+                tsPriorities.Unindent();
+
+                priority.DebugWriteLinePriority(tsPriorities, bnfTerm, obj, messageAfter: " (MAX)");
+
+                return priority;
             }
             else
             {
+                Misc.DebugWriteLinePriority(0, tsPriorities, bnfTerm, obj, messageAfter: " (for terminal)");
                 return 0;
             }
         }
@@ -254,7 +272,6 @@ namespace Irony.ITG.Unparsing
 
     public interface IUnparser
     {
-        IEnumerable<Utoken> Unparse(BnfTerm bnfTerm, object obj);
         int? GetBnfTermPriority(BnfTerm bnfTerm, object obj);
         IFormatProvider FormatProvider { get; }
     }

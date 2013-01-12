@@ -112,15 +112,25 @@ namespace Irony.ITG.Ast
 
         IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
         {
-            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, obj));
+            yield return new Value(this.BnfTerm, obj);
         }
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
         {
-            return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+            if (obj != null)
+                return 1;
+            else if (this.BnfTerm is BnfiTermCollection)      // rendesen mecsinálni
+                return unparser.GetBnfTermPriority(this.BnfTerm, obj);
+            else
+                return null;
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
+        }
     }
 
     public partial class BnfiTermMember<TDeclaringType> : BnfiTermMember, IBnfiTerm<TDeclaringType>

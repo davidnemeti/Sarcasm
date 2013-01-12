@@ -53,22 +53,27 @@ namespace Irony.ITG.Ast
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
         {
+            BnfTerm mainChildBnfTerm = childValues.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
+
             if (obj.GetType() == this.Type)
-            {
-                return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
-            }
+                return unparser.GetBnfTermPriority(mainChildBnfTerm, obj);
             else
             {
-                BnfTerm childBnfTermCandidate = childValues.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
-                IHasType childBnfTermCandidateWithType = childBnfTermCandidate as IHasType;
+                IHasType mainChildBnfTermWithType = mainChildBnfTerm as IHasType;
 
-                if (childBnfTermCandidateWithType == null)
+                if (mainChildBnfTermWithType == null)
                 {
                     throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
-                        obj, obj.GetType().Name, childBnfTermCandidate.Name));
+                        obj, obj.GetType().Name, mainChildBnfTerm.Name));
                 }
 
-                return 0 - childBnfTermCandidateWithType.Type.GetInheritanceDistance(obj);
+                int? priority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(obj);
+
+                Unparser.tsPriorities.Indent();
+                priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChildBnfTerm, obj);
+                Unparser.tsPriorities.Unindent();
+
+                return priority;
             }
         }
 

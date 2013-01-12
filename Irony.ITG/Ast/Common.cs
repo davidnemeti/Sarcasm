@@ -56,5 +56,16 @@ namespace Irony.ITG.Ast
         {
             get { return this.Type; }
         }
+
+        public virtual string GetExtraStrForToString()
+        {
+            return null;
+        }
+
+        public override string ToString()
+        {
+            string extraStr = GetExtraStrForToString();
+            return string.Format("{0}<{1}>{2}", this.GetType().Name, this.Name, extraStr != null ? "(" + extraStr + ")" : "");
+        }
     }
 }
