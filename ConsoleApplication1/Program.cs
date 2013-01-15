@@ -10,9 +10,9 @@ using System.Globalization;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG;
-using Irony.ITG.Ast;
-using Irony.ITG.Unparsing;
+using Sarcasm;
+using Sarcasm.Ast;
+using Sarcasm.Unparsing;
 
 using ETUS.DomainModel;
 using ETUS.Grammar;
