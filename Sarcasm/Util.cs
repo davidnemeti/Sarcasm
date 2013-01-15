@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace Irony.ITG
+namespace Sarcasm
 {
     public static class Util
     {

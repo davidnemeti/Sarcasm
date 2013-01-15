@@ -9,12 +9,12 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG;
-using Irony.ITG.Ast;
+using Sarcasm;
+using Sarcasm.Ast;
 
-using Grammar = Irony.ITG.Ast.Grammar;
+using Grammar = Sarcasm.Ast.Grammar;
 
-namespace Irony.ITG.Unparsing
+namespace Sarcasm.Unparsing
 {
     public abstract class Utoken
     {

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Irony.ITG")]
+[assembly: AssemblyTitle("Sarcasm")]
 [assembly: AssemblyDescription("Index-free AST builder and typesafe grammar for Irony")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Irony.ITG")]
+[assembly: AssemblyProduct("Sarcasm")]
 [assembly: AssemblyCopyright("Copyright ©  2012, Dávid Németi")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

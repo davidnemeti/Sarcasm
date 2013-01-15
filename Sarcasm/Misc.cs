@@ -9,11 +9,11 @@ using System.Diagnostics;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG;
-using Irony.ITG.Ast;
-using Irony.ITG.Unparsing;
+using Sarcasm;
+using Sarcasm.Ast;
+using Sarcasm.Unparsing;
 
-namespace Irony.ITG
+namespace Sarcasm
 {
     public static class Misc
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Irony.ITG.UnitTest
+namespace Sarcasm.UnitTest
 {
     [TestClass]
     public class UnitTest

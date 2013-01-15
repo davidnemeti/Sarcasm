@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG.Unparsing;
+using Sarcasm.Unparsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }

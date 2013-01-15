@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public partial class BnfiTermKeyTermPunctuation : BnfiTermKeyTerm
     {

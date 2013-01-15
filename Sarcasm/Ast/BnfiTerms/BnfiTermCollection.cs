@@ -10,9 +10,9 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG.Unparsing;
+using Sarcasm.Unparsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
@@ -82,7 +82,7 @@ namespace Irony.ITG.Ast
 
             SetNodeCreator();
 
-            this.EmptyCollectionHandling = Irony.ITG.Ast.Grammar.CurrentGrammar.EmptyCollectionHandling;
+            this.EmptyCollectionHandling = Sarcasm.Ast.Grammar.CurrentGrammar.EmptyCollectionHandling;
         }
 
         protected virtual void SetNodeCreator()

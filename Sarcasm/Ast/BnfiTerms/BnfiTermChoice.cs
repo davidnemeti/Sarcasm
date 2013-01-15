@@ -10,10 +10,10 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG;
-using Irony.ITG.Unparsing;
+using Sarcasm;
+using Sarcasm.Unparsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {

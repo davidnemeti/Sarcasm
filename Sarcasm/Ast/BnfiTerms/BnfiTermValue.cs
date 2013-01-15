@@ -10,9 +10,9 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Irony.ITG.Unparsing;
+using Sarcasm.Unparsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {

@@ -11,7 +11,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Irony.ITG.Ast
+namespace Sarcasm.Ast
 {
     public delegate T ValueCreator<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
