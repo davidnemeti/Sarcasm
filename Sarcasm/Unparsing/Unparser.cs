@@ -69,8 +69,6 @@ namespace Sarcasm.Unparsing
                 .Cook();
         }
 
-        bool steppedIntoUnparseRaw = false;
-
         private IEnumerable<Utoken> UnparseRaw(object obj, BnfTerm bnfTerm)
         {
             if (bnfTerm == null)
@@ -82,104 +80,115 @@ namespace Sarcasm.Unparsing
 
             try
             {
-                foreach (var utoken in formatter.YieldBefore(bnfTerm, beginParams))
-                    yield return utoken;
+                bool isAnyUtokenMiddle = false;
 
-                steppedIntoUnparseRaw = true;
-
-                if (bnfTerm is KeyTerm)
+                foreach (Utoken utokenMiddle in UnparseRawMiddle(obj, bnfTerm))
                 {
-                    Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                    yield return Utoken.CreateText(((KeyTerm)bnfTerm).Text, obj);
-                }
-                else if (bnfTerm is Terminal)
-                {
-                    Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                    yield return Utoken.CreateText(obj);
-                }
-                else if (bnfTerm is NonTerminal)
-                {
-                    Unparser.tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
-
-                    Unparser.tsUnparse.Indent();
-
-                    try
+                    if (!isAnyUtokenMiddle)
                     {
-                        NonTerminal nonTerminal = (NonTerminal)bnfTerm;
-                        IUnparsable unparsable = nonTerminal as IUnparsable;
-
-                        if (unparsable == null)
-                            throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
-
-                        steppedIntoUnparseRaw = false;
-
-                        IEnumerable<Utoken> utokens;
-
-                        if (unparsable.TryGetUtokensDirectly(this, obj, out utokens))
-                        {
-                            foreach (Utoken utoken in utokens)
-                                yield return utoken;
-                        }
-                        else
-                        {
-                            // TODO: we should check whether any bnfTermList has an UnparseHint
-
-                            tsPriorities.Debug("{0} BEGIN priorities", bnfTerm);
-                            tsPriorities.Indent();
-
-                            var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
-                                .Select(childBnfTerms =>
-                                    {
-                                        var childValues = unparsable.GetChildValues(childBnfTerms, obj);
-                                        return new
-                                            {
-                                                ChildValues = childValues,
-                                                Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues)
-                                                    .DebugWriteLinePriority(tsPriorities, bnfTerm, obj)
-                                            };
-                                    }
-                                )
-                                .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
-                                .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
-                                .FirstOrDefault();
-
-                            tsPriorities.Unindent();
-                            tsPriorities.Debug("{0} END priorities", bnfTerm);
-                            tsPriorities.Debug("");
-
-                            if (chosenChildBnfTermsWithPriority == null)
-                                throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
-
-                            foreach (Value childValue in chosenChildBnfTermsWithPriority.ChildValues)
-                                foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
-                                    yield return utoken;
-                        }
-
-                        if (!steppedIntoUnparseRaw)
-                            Unparser.tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
-
-                        steppedIntoUnparseRaw = true;
-                    }
-                    finally
-                    {
-                        Unparser.tsUnparse.Unindent();
+                        foreach (Utoken utokenBefore in formatter.YieldBefore(bnfTerm, beginParams))
+                            yield return utokenBefore;
                     }
 
-                    foreach (var utoken in formatter.YieldAfter(bnfTerm))
-                        yield return utoken;
+                    isAnyUtokenMiddle = true;
+
+                    yield return utokenMiddle;
                 }
-                else if (bnfTerm is GrammarHint)
+
+                if (isAnyUtokenMiddle)
                 {
-                    // GrammarHint is legal, but it does not need any unparse
-                }
-                else
-                {
-                    throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + bnfTerm.Name, bnfTerm.GetType().Name));
+                    foreach (Utoken utokenAfter in formatter.YieldAfter(bnfTerm))
+                        yield return utokenAfter;
                 }
             }
             finally
             {
                 formatter.End(bnfTerm);
+            }
+        }
+
+        private IEnumerable<Utoken> UnparseRawMiddle(object obj, BnfTerm bnfTerm)
+        {
+            if (bnfTerm is KeyTerm)
+            {
+                Unparser.tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
+                yield return Utoken.CreateText(((KeyTerm)bnfTerm).Text, obj);
+            }
+            else if (bnfTerm is Terminal)
+            {
+                Unparser.tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
+                yield return Utoken.CreateText(obj);
+            }
+            else if (bnfTerm is NonTerminal)
+            {
+                Unparser.tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
+
+                Unparser.tsUnparse.Indent();
+
+                try
+                {
+                    NonTerminal nonTerminal = (NonTerminal)bnfTerm;
+                    IUnparsable unparsable = nonTerminal as IUnparsable;
+
+                    if (unparsable == null)
+                        throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, nonTerminal.Name));
+
+                    IEnumerable<Utoken> directUtokens;
+
+                    if (unparsable.TryGetUtokensDirectly(this, obj, out directUtokens))
+                    {
+                        foreach (Utoken utoken in directUtokens)
+                            yield return utoken;
+
+                        Unparser.tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
+                    }
+                    else
+                    {
+                        // TODO: we should check whether any bnfTermList has an UnparseHint
+
+                        tsPriorities.Debug("{0} BEGIN priorities", bnfTerm);
+                        tsPriorities.Indent();
+
+                        var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
+                            .Select(childBnfTerms =>
+                                {
+                                    var childValues = unparsable.GetChildValues(childBnfTerms, obj);
+                                    return new
+                                        {
+                                            ChildValues = childValues,
+                                            Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues)
+                                                .DebugWriteLinePriority(tsPriorities, bnfTerm, obj)
+                                        };
+                                }
+                            )
+                            .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
+                            .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
+                            .FirstOrDefault();
+
+                        tsPriorities.Unindent();
+                        tsPriorities.Debug("{0} END priorities", bnfTerm);
+                        tsPriorities.Debug("");
+
+                        if (chosenChildBnfTermsWithPriority == null)
+                            throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
+
+                        foreach (Value childValue in chosenChildBnfTermsWithPriority.ChildValues)
+                            foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
+                                yield return utoken;
+                    }
+                }
+                finally
+                {
+                    Unparser.tsUnparse.Unindent();
+                }
+            }
+            else if (bnfTerm is GrammarHint)
+            {
+                // GrammarHint is legal, but it does not need any unparse
+            }
+            else
+            {
+                throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + bnfTerm.Name, bnfTerm.GetType().Name));
             }
         }
 
