@@ -21,16 +21,6 @@ namespace Sarcasm.Ast
         BnfTerm AsBnfTerm();
     }
 
-    /// <summary>
-    /// Typeless IBnfiTerm
-    /// </summary>
-    public interface IBnfiTermTL : IBnfiTerm
-    {
-    }
-
-    /// <summary>
-    /// Typesafe IBnfiTerm
-    /// </summary>
     public interface IBnfiTerm<out T> : IBnfiTerm
     {
     }
@@ -48,7 +38,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm
+    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType
     {
         protected Type Type { get; private set; }
 
@@ -65,11 +55,6 @@ namespace Sarcasm.Ast
         Type IHasType.Type
         {
             get { return this.Type; }
-        }
-
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
         }
 
         public virtual string GetExtraStrForToString()

@@ -10,7 +10,7 @@ using Irony.Parsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermKeyTerm : KeyTerm, IBnfiTermTL
+    public partial class BnfiTermKeyTerm : KeyTerm, IBnfiTerm
     {
         public BnfiTermKeyTerm(string text, string name)
             : base(text, name)

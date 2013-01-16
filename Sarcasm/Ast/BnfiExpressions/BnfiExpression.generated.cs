@@ -17,7 +17,7 @@ namespace Sarcasm.Ast
 {
 	#region BnfiExpressionTerminals definition and operators
 
-	public interface IBnfiExpressionTerminals : IBnfiExpressionTL { }
+	public interface IBnfiExpressionTerminals : IBnfiExpression { }
 
 	#region BnfiExpressionTerminals definition
 
@@ -367,7 +367,7 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionKeyTermPunctuations definition and operators
 
-	public interface IBnfiExpressionKeyTermPunctuations : IBnfiExpressionTL { }
+	public interface IBnfiExpressionKeyTermPunctuations : IBnfiExpression { }
 
 	#region BnfiExpressionKeyTermPunctuations definition
 
@@ -551,7 +551,7 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionType definition and operators
 
-	public interface IBnfiExpressionType : IBnfiExpressionTL { }
+	public interface IBnfiExpressionType : IBnfiExpression { }
 
 	#region BnfiExpressionType definition
 
@@ -1415,7 +1415,7 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionValue definition and operators
 
-	public interface IBnfiExpressionValue : IBnfiExpressionTL { }
+	public interface IBnfiExpressionValue : IBnfiExpression { }
 
 	#region BnfiExpressionValue definition
 
@@ -1823,7 +1823,7 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionChoice definition and operators
 
-	public interface IBnfiExpressionChoice : IBnfiExpressionTL { }
+	public interface IBnfiExpressionChoice : IBnfiExpression { }
 
 	#region BnfiExpressionChoice definition
 

@@ -14,7 +14,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermTL, IUnparsable
+    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
         #region Types
 
@@ -369,6 +369,11 @@ namespace Sarcasm.Ast
             }
         }
 
+        BnfTerm IBnfiTerm.AsBnfTerm()
+        {
+            return this;
+        }
+
         public BnfiTermCollection ReturnNullInsteadOfEmptyCollection()
         {
             this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
@@ -429,7 +434,7 @@ namespace Sarcasm.Ast
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>, IBnfiTerm<TCollectionType>
+    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string errorAlias = null)
