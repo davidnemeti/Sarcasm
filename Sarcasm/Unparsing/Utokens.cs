@@ -291,18 +291,20 @@ namespace Sarcasm.Unparsing
         }
     }
 
+    public enum Overridable { Yes, No }
+
     internal class InsertedUtokens : Utoken, IComparable<InsertedUtokens>
     {
         public enum Kind { Before, After, Between }
 
         public readonly Kind kind;
         public readonly double priority;
-        public readonly bool overridable;
+        public readonly Overridable overridable;
         public readonly IEnumerable<Utoken> utokens;
 
         private readonly IEnumerable<BnfTerm> affectedBnfTerms;
 
-        internal InsertedUtokens(Kind kind, double priority, bool overridable, IEnumerable<Utoken> utokens, params BnfTerm[] affectedBnfTerms)
+        internal InsertedUtokens(Kind kind, double priority, Overridable overridable, IEnumerable<Utoken> utokens, params BnfTerm[] affectedBnfTerms)
         {
             this.priority = priority;
             this.kind = kind;
@@ -321,7 +323,7 @@ namespace Sarcasm.Unparsing
         {
             return string.Format("{0}{1}, priority {2}: {{ {3} }}; affected bnfTerms: {{ {4} }}",
                 kind,
-                overridable ? ", overridable" : string.Empty,
+                overridable == Overridable.Yes ? ", overridable" : string.Empty,
                 priority,
                 string.Join(", ", utokens),
                 string.Join(", ", affectedBnfTerms)

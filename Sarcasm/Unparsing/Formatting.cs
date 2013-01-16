@@ -38,8 +38,8 @@ namespace Sarcasm.Unparsing
         private const double priorityDefault = 0;
         private const double anyPriorityDefault = double.NegativeInfinity;
 
-        private const bool overridableDefault = true;
-        private const bool anyOverridableDefault = true;
+        private const Overridable overridableDefault = Overridable.Yes;
+        private const Overridable anyOverridableDefault = Overridable.Yes;
 
         private const string newLineDefault = "\n";
         private const string spaceDefault = " ";
@@ -132,7 +132,7 @@ namespace Sarcasm.Unparsing
             InsertUtokensBefore(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensBefore: utokensBefore);
         }
 
-        public void InsertUtokensBefore(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensBefore)
+        public void InsertUtokensBefore(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensBefore)
         {
             bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore, bnfTerm));
         }
@@ -147,7 +147,7 @@ namespace Sarcasm.Unparsing
             InsertUtokensAfter(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensAfter: utokensAfter);
         }
 
-        public void InsertUtokensAfter(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensAfter)
+        public void InsertUtokensAfter(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensAfter)
         {
             bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter, bnfTerm));
         }
@@ -162,7 +162,7 @@ namespace Sarcasm.Unparsing
             InsertUtokensAround(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensAround: utokensAround);
         }
 
-        public void InsertUtokensAround(BnfTerm bnfTerm, double priority, bool overridable, params Utoken[] utokensAround)
+        public void InsertUtokensAround(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensAround)
         {
             InsertUtokensBefore(bnfTerm, priority, overridable, utokensAround);
             InsertUtokensAfter(bnfTerm, priority, overridable, utokensAround);
@@ -193,7 +193,7 @@ namespace Sarcasm.Unparsing
             InsertUtokensBetweenOrdered(leftBnfTerm, rightBnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, double priority, bool overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, double priority, Overridable overridable, params Utoken[] utokensBetween)
         {
             bnfTermToUtokensBetween.Add(
                 Tuple.Create(leftBnfTerm, rightBnfTerm),
@@ -208,7 +208,7 @@ namespace Sarcasm.Unparsing
             InsertUtokensBetweenUnordered(bnfTerm1, bnfTerm2, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, double priority, bool overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, double priority, Overridable overridable, params Utoken[] utokensBetween)
         {
             InsertUtokensBetweenOrdered(bnfTerm1, bnfTerm2, priority, overridable, utokensBetween);
             InsertUtokensBetweenOrdered(bnfTerm2, bnfTerm1, priority, overridable, utokensBetween);

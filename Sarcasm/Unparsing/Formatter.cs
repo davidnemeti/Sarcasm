@@ -219,7 +219,7 @@ namespace Sarcasm.Unparsing
 
                     bool switchToNewInsertedUtokens = IsRightStronger(leftInsertedUtokensToBeYield, rightInsertedUtokens);
 
-                    if (rightInsertedUtokens.overridable)
+                    if (rightInsertedUtokens.overridable == Overridable.Yes)
                         leftInsertedUtokensToBeYield = switchToNewInsertedUtokens ? rightInsertedUtokens : leftInsertedUtokensToBeYield;
                     else
                     {
