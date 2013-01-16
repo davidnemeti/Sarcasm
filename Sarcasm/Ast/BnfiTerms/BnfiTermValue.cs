@@ -20,7 +20,7 @@ namespace Sarcasm.Ast
         private object value;
 
         public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
-        public Utokenizer<object> UtokenizerForUnparse { private get; set; }
+        public ValueUtokenizer<object> UtokenizerForUnparse { private get; set; }
 
         private readonly bool movable = true;
 
@@ -44,7 +44,7 @@ namespace Sarcasm.Ast
             this.value = value;
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueCreator<object> valueCreator, bool isOptionalValue, string errorAlias, bool astForChild)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, bool isOptionalValue, string errorAlias, bool astForChild)
             : base(type, errorAlias)
         {
             this.bnfTerm = bnfTerm;
@@ -57,46 +57,46 @@ namespace Sarcasm.Ast
                 : new BnfExpression(bnfTerm);
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueCreator(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueParser(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
         }
 
-        public static BnfiTermValue Create(Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermValue Parse(Terminal terminal, object value, bool astForChild = true)
         {
-            return Create(typeof(object), terminal, value, astForChild);
+            return Parse(typeof(object), terminal, value, astForChild);
         }
 
-        public static BnfiTermValue Create(Type type, Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermValue Parse(Type type, Terminal terminal, object value, bool astForChild = true)
         {
             BnfiTermValue bnfiTermValue = new BnfiTermValue(type, terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunction;
             return bnfiTermValue;
         }
 
-        public static BnfiTermValue Create(Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
+        public static BnfiTermValue Parse(Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
         {
-            return Create(typeof(object), terminal, valueCreator, astForChild);
+            return Parse(typeof(object), terminal, valueParser, astForChild);
         }
 
-        public static BnfiTermValue Create(Type type, Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
+        public static BnfiTermValue Parse(Type type, Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
         {
-            return new BnfiTermValue(type, terminal, (context, parseNode) => valueCreator(context, parseNode), isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValue(type, terminal, (context, parseNode) => valueParser(context, parseNode), isOptionalValue: false, errorAlias: null, astForChild: astForChild);
         }
 
-        public static BnfiTermValue<T> Create<T>(Terminal terminal, T value, bool astForChild = true)
+        public static BnfiTermValue<T> Parse<T>(Terminal terminal, T value, bool astForChild = true)
         {
             BnfiTermValue<T> bnfiTermValue = new BnfiTermValue<T>(terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<T, object>;
             return bnfiTermValue;
         }
 
-        public static BnfiTermValue<T> Create<T>(Terminal terminal, ValueCreator<T> valueCreator, bool astForChild = true)
+        public static BnfiTermValue<T> Parse<T>(Terminal terminal, ValueParser<T> valueParser, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => valueCreator(context, parseNode), isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => valueParser(context, parseNode), isOptionalValue: false, errorAlias: null, astForChild: astForChild);
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(IdentifierTerminal identifierTerminal)
+        public static BnfiTermValue<string> ParseIdentifier(IdentifierTerminal identifierTerminal)
         {
-            BnfiTermValue<string> bnfiTermValue = Create<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
+            BnfiTermValue<string> bnfiTermValue = Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), astForChild: false);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<string, object>;
             return bnfiTermValue;
         }
@@ -111,7 +111,7 @@ namespace Sarcasm.Ast
             return new BnfiTermValue(
                 type,
                 bnfiTerm.AsBnfTerm(),
-                ConvertValueConverterToValueCreator(valueConverter),
+                ConvertValueConverterToValueParser(valueConverter),
                 isOptionalValue: false,
                 errorAlias: null,
                 astForChild: true
@@ -122,7 +122,7 @@ namespace Sarcasm.Ast
         {
             return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
-                ConvertValueConverterToValueCreator(valueConverter),
+                ConvertValueConverterToValueParser(valueConverter),
                 isOptionalValue: false,
                 errorAlias: null,
                 astForChild: true
@@ -133,7 +133,7 @@ namespace Sarcasm.Ast
         {
             return new BnfiTermValue<TOut>(
                 bnfiTerm.AsBnfTerm(),
-                ConvertValueConverterToValueCreator(valueConverter),
+                ConvertValueConverterToValueParser(valueConverter),
                 isOptionalValue: false,
                 errorAlias: null,
                 astForChild: true
@@ -149,7 +149,7 @@ namespace Sarcasm.Ast
 
         public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
-            BnfiTermValue<TOut> bnfiTermValue = Create<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
+            BnfiTermValue<TOut> bnfiTermValue = Parse<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value));
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<TOut, object>;
             return bnfiTermValue;
         }
@@ -210,24 +210,24 @@ namespace Sarcasm.Ast
         {
             return new BnfiTermValue<TOut>(
                 bnfTerm.AsBnfTerm(),
-                ConvertValueConverterToValueCreatorOpt(valueConverter, defaultValue),
+                ConvertValueConverterToValueParserOpt(valueConverter, defaultValue),
                 isOptionalValue: true,
                 errorAlias: null,
                 astForChild: true
                 );
         }
 
-        protected static ValueCreator<TOut> ConvertValueConverterToValueCreator<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter)
+        protected static ValueParser<TOut> ConvertValueConverterToValueParser<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter)
         {
-            return ConvertValueConverterToValueCreator(valueConverter, isOptionalValue: false, defaultValue: default(TOut));   // defaultValue won't be used
+            return ConvertValueConverterToValueParser(valueConverter, isOptionalValue: false, defaultValue: default(TOut));   // defaultValue won't be used
         }
 
-        protected static ValueCreator<TOut> ConvertValueConverterToValueCreatorOpt<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+        protected static ValueParser<TOut> ConvertValueConverterToValueParserOpt<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
         {
-            return ConvertValueConverterToValueCreator(valueConverter, isOptionalValue: true, defaultValue: defaultValue);
+            return ConvertValueConverterToValueParser(valueConverter, isOptionalValue: true, defaultValue: defaultValue);
         }
 
-        private static ValueCreator<TOut> ConvertValueConverterToValueCreator<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, bool isOptionalValue, TOut defaultValue)
+        private static ValueParser<TOut> ConvertValueConverterToValueParser<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter, bool isOptionalValue, TOut defaultValue)
         {
             return (context, parseTreeNode) =>
             {
@@ -396,7 +396,7 @@ namespace Sarcasm.Ast
             return obj => valueConverter((TInFrom)obj);
         }
 
-        protected static Utokenizer<object> CastUtokenizerToObject<T>(Utokenizer<T> utokenizer)
+        protected static ValueUtokenizer<object> CastUtokenizerToObject<T>(ValueUtokenizer<T> utokenizer)
         {
             return (formatProvider, obj) => utokenizer(formatProvider, (T)obj);
         }
@@ -415,8 +415,8 @@ namespace Sarcasm.Ast
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, ValueCreator<T> valueCreator, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(typeof(T), bnfTerm, (context, parseNode) => valueCreator(context, parseNode), isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValue(BnfTerm bnfTerm, ValueParser<T> valueParser, bool isOptionalValue, string errorAlias, bool astForChild)
+            : base(typeof(T), bnfTerm, (context, parseNode) => valueParser(context, parseNode), isOptionalValue, errorAlias, astForChild)
         {
         }
 
@@ -428,7 +428,7 @@ namespace Sarcasm.Ast
             }
         }
 
-        public new Utokenizer<T> UtokenizerForUnparse
+        public new ValueUtokenizer<T> UtokenizerForUnparse
         {
             set
             {

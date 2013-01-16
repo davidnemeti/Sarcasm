@@ -151,31 +151,31 @@ namespace Sarcasm.Ast
 
         #endregion
 
-        #region Create/ConvertValue
+        #region Parse/ConvertValue
 
-        public static BnfiTermValue CreateValue(this Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermValue ParseValue(this Terminal terminal, object value, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, value, astForChild);
+            return BnfiTermValue.Parse(terminal, value, astForChild);
         }
 
-        public static BnfiTermValue CreateValue(this Terminal terminal, ValueCreator<object> valueCreator, bool astForChild = true)
+        public static BnfiTermValue ParseValue(this Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, valueCreator, astForChild);
+            return BnfiTermValue.Parse(terminal, valueParser, astForChild);
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(this IdentifierTerminal identifierTerminal)
+        public static BnfiTermValue<string> ParseIdentifier(this IdentifierTerminal identifierTerminal)
         {
-            return BnfiTermValue.CreateIdentifier(identifierTerminal);
+            return BnfiTermValue.ParseIdentifier(identifierTerminal);
         }
 
-        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
+        public static BnfiTermValue<TOut> ParseValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, value, astForChild);
+            return BnfiTermValue.Parse(terminal, value, astForChild);
         }
 
-        public static BnfiTermValue<TOut> CreateValue<TOut>(this Terminal terminal, ValueCreator<TOut> valueCreator, bool astForChild = true)
+        public static BnfiTermValue<TOut> ParseValue<TOut>(this Terminal terminal, ValueParser<TOut> valueParser, bool astForChild = true)
         {
-            return BnfiTermValue.Create(terminal, valueCreator, astForChild);
+            return BnfiTermValue.Parse(terminal, valueParser, astForChild);
         }
 
         public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)

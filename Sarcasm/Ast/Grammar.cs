@@ -139,7 +139,7 @@ namespace Sarcasm.Ast
 
         public BnfiTermValue<T> ToTerm<T>(string text, T value)
         {
-            return ToTerm(text).CreateValue(value);
+            return ToTerm(text).ParseValue(value);
         }
 
         public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
@@ -175,24 +175,24 @@ namespace Sarcasm.Ast
 
         #region Identifiers
 
-        public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
+        public static BnfiTermValue<string> ParseIdentifier(string name = "identifier")
         {
-            return new IdentifierTerminal(name).CreateIdentifier();
+            return new IdentifierTerminal(name).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
+        public static BnfiTermValue<string> ParseIdentifier(string name, IdOptions options)
         {
-            return new IdentifierTerminal(name, options).CreateIdentifier();
+            return new IdentifierTerminal(name, options).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
+        public static BnfiTermValue<string> ParseIdentifier(string name, string extraChars)
         {
-            return new IdentifierTerminal(name, extraChars).CreateIdentifier();
+            return new IdentifierTerminal(name, extraChars).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
+        public static BnfiTermValue<string> ParseIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
-            return new IdentifierTerminal(name, extraChars, extraFirstChars).CreateIdentifier();
+            return new IdentifierTerminal(name, extraChars, extraFirstChars).ParseIdentifier();
         }
 
         #endregion

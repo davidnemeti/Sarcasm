@@ -30,13 +30,13 @@ namespace Sarcasm.Ast
 		string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
 		string typeParamsStr = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
 #>
-	#region Create <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
+	#region Parse <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>(DataLiteralBase dataLiteral)
         {
 <#
 		if (typeCode != TypeCode.Object)
@@ -48,7 +48,7 @@ namespace Sarcasm.Ast
 <#
         }
 #>
-            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Create<#= typeParamsStr #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
+            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Parse<#= typeParamsStr #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
             return bnfiTermValue;
         }
@@ -57,9 +57,9 @@ namespace Sarcasm.Ast
         {
 #>
 
-		public static BnfiTermValue<#= typeParamsStr #> CreateNumber<#= methodNameExt #>(NumberLiteral numberLiteral)
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Create<#= typeParamsStr #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
+            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Parse<#= typeParamsStr #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
             bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
             return bnfiTermValue;
         }
@@ -74,18 +74,18 @@ namespace Sarcasm.Ast
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.CreateData<#= methodNameExt #>(dataLiteral);
+			return BnfiTermValue.ParseData<#= methodNameExt #>(dataLiteral);
         }
 <#
 		if (IsNumeric(typeCode))
         {
 #>
 
-		public static BnfiTermValue<#= typeParamsStr #> CreateNumber<#= methodNameExt #>(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.CreateNumber<#= methodNameExt #>(numberLiteral);
+			return BnfiTermValue.ParseNumber<#= methodNameExt #>(numberLiteral);
         }
 <#
         }
@@ -100,34 +100,34 @@ namespace Sarcasm.Ast
 	{
 		#region Data
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>()
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>()
 		{
-			return new DataLiteralBase(name: "data<#= methodNameExt #>", dataType: TypeCode.<#= typeCode #>).CreateData<#= methodNameExt #>();
+			return new DataLiteralBase(name: "data<#= methodNameExt #>", dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>Dsv()
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv()
 		{
-			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>).CreateData<#= methodNameExt #>();
+			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>Dsv(string terminator)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv(string terminator)
 		{
-			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>, terminator: terminator).CreateData<#= methodNameExt #>();
+			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>, terminator: terminator).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>Quoted(string startEndSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).CreateData<#= methodNameExt #>();
+			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>Quoted(string startSymbol, string endSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).CreateData<#= methodNameExt #>();
+			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> CreateData<#= methodNameExt #>FixedLength(int length)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>FixedLength(int length)
 		{
-			return new FixedLengthLiteral(name: "data<#= methodNameExt #>FixedLength", dataType: TypeCode.<#= typeCode #>, length: length).CreateData<#= methodNameExt #>();
+			return new FixedLengthLiteral(name: "data<#= methodNameExt #>FixedLength", dataType: TypeCode.<#= typeCode #>, length: length).ParseData<#= methodNameExt #>();
 		}
 
 		#endregion
@@ -138,14 +138,14 @@ namespace Sarcasm.Ast
 
 		#region Number
 
-		public static BnfiTermValue<#= typeParamsStr #> CreateNumber<#= methodNameExt #>()
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>()
         {
-			return new NumberLiteral(name: "number").CreateNumber<#= methodNameExt #>();
+			return new NumberLiteral(name: "number").ParseNumber<#= methodNameExt #>();
         }
 
-		public static BnfiTermValue<#= typeParamsStr #> CreateNumber<#= methodNameExt #>(NumberOptions options)
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(NumberOptions options)
         {
-			return new NumberLiteral(name: "number", options: options).CreateNumber<#= methodNameExt #>();
+			return new NumberLiteral(name: "number", options: options).ParseNumber<#= methodNameExt #>();
         }
 
 		#endregion
