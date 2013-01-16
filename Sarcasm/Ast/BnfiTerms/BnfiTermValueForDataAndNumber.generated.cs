@@ -19,16 +19,12 @@ namespace Sarcasm.Ast
 	{
         public static BnfiTermValue ParseData(DataLiteralBase dataLiteral)
         {
-            BnfiTermValue bnfiTermValue = Parse(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Object, object>;
-            return bnfiTermValue;
+            return Parse(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
 
 		public static BnfiTermValue ParseNumber(NumberLiteral numberLiteral)
         {
-            BnfiTermValue bnfiTermValue = Parse(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Object, object>;
-            return bnfiTermValue;
+            return Parse(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
 	}
 
@@ -119,9 +115,7 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.DBNull)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DBNull", dataLiteral.Name);
 
-            BnfiTermValue<DBNull> bnfiTermValue = Parse<DBNull>(dataLiteral, (context, parseNode) => { return (DBNull)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<DBNull, object>;
-            return bnfiTermValue;
+            return Parse<DBNull>(dataLiteral, (context, parseNode) => { return (DBNull)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DBNull, object>, astForChild: false);
         }
 	}
 
@@ -193,9 +187,7 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Boolean)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Boolean", dataLiteral.Name);
 
-            BnfiTermValue<Boolean> bnfiTermValue = Parse<Boolean>(dataLiteral, (context, parseNode) => { return (Boolean)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Boolean, object>;
-            return bnfiTermValue;
+            return Parse<Boolean>(dataLiteral, (context, parseNode) => { return (Boolean)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Boolean, object>, astForChild: false);
         }
 	}
 
@@ -267,9 +259,7 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Char)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Char", dataLiteral.Name);
 
-            BnfiTermValue<Char> bnfiTermValue = Parse<Char>(dataLiteral, (context, parseNode) => { return (Char)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Char, object>;
-            return bnfiTermValue;
+            return Parse<Char>(dataLiteral, (context, parseNode) => { return (Char)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Char, object>, astForChild: false);
         }
 	}
 
@@ -341,16 +331,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.SByte)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a SByte", dataLiteral.Name);
 
-            BnfiTermValue<SByte> bnfiTermValue = Parse<SByte>(dataLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<SByte, object>;
-            return bnfiTermValue;
+            return Parse<SByte>(dataLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<SByte> ParseNumberSByte(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<SByte> bnfiTermValue = Parse<SByte>(numberLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<SByte, object>;
-            return bnfiTermValue;
+            return Parse<SByte>(numberLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
         }
 	}
 
@@ -441,16 +427,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Byte)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Byte", dataLiteral.Name);
 
-            BnfiTermValue<Byte> bnfiTermValue = Parse<Byte>(dataLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Byte, object>;
-            return bnfiTermValue;
+            return Parse<Byte>(dataLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Byte> ParseNumberByte(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Byte> bnfiTermValue = Parse<Byte>(numberLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Byte, object>;
-            return bnfiTermValue;
+            return Parse<Byte>(numberLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
         }
 	}
 
@@ -541,16 +523,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Int16)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int16", dataLiteral.Name);
 
-            BnfiTermValue<Int16> bnfiTermValue = Parse<Int16>(dataLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int16, object>;
-            return bnfiTermValue;
+            return Parse<Int16>(dataLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Int16> ParseNumberInt16(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Int16> bnfiTermValue = Parse<Int16>(numberLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int16, object>;
-            return bnfiTermValue;
+            return Parse<Int16>(numberLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
         }
 	}
 
@@ -641,16 +619,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.UInt16)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt16", dataLiteral.Name);
 
-            BnfiTermValue<UInt16> bnfiTermValue = Parse<UInt16>(dataLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt16, object>;
-            return bnfiTermValue;
+            return Parse<UInt16>(dataLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<UInt16> ParseNumberUInt16(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<UInt16> bnfiTermValue = Parse<UInt16>(numberLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt16, object>;
-            return bnfiTermValue;
+            return Parse<UInt16>(numberLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
         }
 	}
 
@@ -741,16 +715,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Int32)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int32", dataLiteral.Name);
 
-            BnfiTermValue<Int32> bnfiTermValue = Parse<Int32>(dataLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int32, object>;
-            return bnfiTermValue;
+            return Parse<Int32>(dataLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Int32> ParseNumberInt32(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Int32> bnfiTermValue = Parse<Int32>(numberLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int32, object>;
-            return bnfiTermValue;
+            return Parse<Int32>(numberLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
         }
 	}
 
@@ -841,16 +811,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.UInt32)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt32", dataLiteral.Name);
 
-            BnfiTermValue<UInt32> bnfiTermValue = Parse<UInt32>(dataLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt32, object>;
-            return bnfiTermValue;
+            return Parse<UInt32>(dataLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<UInt32> ParseNumberUInt32(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<UInt32> bnfiTermValue = Parse<UInt32>(numberLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt32, object>;
-            return bnfiTermValue;
+            return Parse<UInt32>(numberLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
         }
 	}
 
@@ -941,16 +907,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Int64)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int64", dataLiteral.Name);
 
-            BnfiTermValue<Int64> bnfiTermValue = Parse<Int64>(dataLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int64, object>;
-            return bnfiTermValue;
+            return Parse<Int64>(dataLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Int64> ParseNumberInt64(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Int64> bnfiTermValue = Parse<Int64>(numberLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Int64, object>;
-            return bnfiTermValue;
+            return Parse<Int64>(numberLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
         }
 	}
 
@@ -1041,16 +1003,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.UInt64)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt64", dataLiteral.Name);
 
-            BnfiTermValue<UInt64> bnfiTermValue = Parse<UInt64>(dataLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt64, object>;
-            return bnfiTermValue;
+            return Parse<UInt64>(dataLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<UInt64> ParseNumberUInt64(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<UInt64> bnfiTermValue = Parse<UInt64>(numberLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<UInt64, object>;
-            return bnfiTermValue;
+            return Parse<UInt64>(numberLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
         }
 	}
 
@@ -1141,16 +1099,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Single)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Single", dataLiteral.Name);
 
-            BnfiTermValue<Single> bnfiTermValue = Parse<Single>(dataLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Single, object>;
-            return bnfiTermValue;
+            return Parse<Single>(dataLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Single> ParseNumberSingle(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Single> bnfiTermValue = Parse<Single>(numberLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Single, object>;
-            return bnfiTermValue;
+            return Parse<Single>(numberLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
         }
 	}
 
@@ -1241,16 +1195,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Double)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Double", dataLiteral.Name);
 
-            BnfiTermValue<Double> bnfiTermValue = Parse<Double>(dataLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Double, object>;
-            return bnfiTermValue;
+            return Parse<Double>(dataLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Double> ParseNumberDouble(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Double> bnfiTermValue = Parse<Double>(numberLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Double, object>;
-            return bnfiTermValue;
+            return Parse<Double>(numberLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
         }
 	}
 
@@ -1341,16 +1291,12 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.Decimal)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Decimal", dataLiteral.Name);
 
-            BnfiTermValue<Decimal> bnfiTermValue = Parse<Decimal>(dataLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Decimal, object>;
-            return bnfiTermValue;
+            return Parse<Decimal>(dataLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
         }
 
 		public static BnfiTermValue<Decimal> ParseNumberDecimal(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<Decimal> bnfiTermValue = Parse<Decimal>(numberLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<Decimal, object>;
-            return bnfiTermValue;
+            return Parse<Decimal>(numberLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
         }
 	}
 
@@ -1441,9 +1387,7 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.DateTime)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DateTime", dataLiteral.Name);
 
-            BnfiTermValue<DateTime> bnfiTermValue = Parse<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<DateTime, object>;
-            return bnfiTermValue;
+            return Parse<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DateTime, object>, astForChild: false);
         }
 	}
 
@@ -1515,9 +1459,7 @@ namespace Sarcasm.Ast
             if (dataLiteral.DataType != TypeCode.String)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a String", dataLiteral.Name);
 
-            BnfiTermValue<String> bnfiTermValue = Parse<String>(dataLiteral, (context, parseNode) => { return (String)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<String, object>;
-            return bnfiTermValue;
+            return Parse<String>(dataLiteral, (context, parseNode) => { return (String)parseNode.FindToken().Value; }, IdentityFunctionForceCast<String, object>, astForChild: false);
         }
 	}
 

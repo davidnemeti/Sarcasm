@@ -48,9 +48,7 @@ namespace Sarcasm.Ast
 <#
         }
 #>
-            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Parse<#= typeParamsStr #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
-            return bnfiTermValue;
+            return Parse<#= typeParamsStr #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
         }
 <#
 		if (IsNumeric(typeCode))
@@ -59,9 +57,7 @@ namespace Sarcasm.Ast
 
 		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
-            BnfiTermValue<#= typeParamsStr #> bnfiTermValue = Parse<#= typeParamsStr #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, astForChild: false);
-            bnfiTermValue.InverseValueConverterForUnparse = IdentityFunctionForceCast<<#= type.Name #>, object>;
-            return bnfiTermValue;
+            return Parse<#= typeParamsStr #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
         }
 <#
         }
