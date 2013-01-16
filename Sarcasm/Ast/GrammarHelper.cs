@@ -114,6 +114,20 @@ namespace Sarcasm.Ast
 
         #region BindMember
 
+        // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTerm bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
+        {
+            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
+        }
+
+        // NOTE: the method's name is BindMember_ instead of BindMember to avoid ambiguous calls
+        public static BnfiTermMember<TDeclaringType> BindMember_<TDeclaringType, TMemberType>(this BnfTerm bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
+        {
+            return BnfiTermMember.Bind_(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfTerm);
+        }
+
         public static BnfiTermMember BindMember<TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TBnfTermType : TMemberType
         {

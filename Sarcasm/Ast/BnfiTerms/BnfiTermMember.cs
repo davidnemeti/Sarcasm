@@ -35,6 +35,30 @@ namespace Sarcasm.Ast
                 };
         }
 
+        protected static BnfiTermMember<TDeclaringType> Bind_<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
+        {
+            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
+
+            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
+                return new BnfiTermMember<TDeclaringType>(memberInfo, bnfTerm);
+            else
+                throw new ArgumentException("Field or property not found", memberInfo.Name);
+        }
+
+        // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<TDeclaringType> dummyBnfiTerm, IBnfiTerm bnfiTerm)
+        {
+            return Bind_(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        // NOTE: the method's name is Bind_ instead of Bind to avoid ambiguous calls
+        public static BnfiTermMember<TDeclaringType> Bind_<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<TDeclaringType> dummyBnfiTerm, BnfTerm bnfTerm)
+        {
+            return Bind_(exprForFieldOrPropertyAccess, bnfTerm);
+        }
+
         public static BnfiTermMember Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
         {
             return new BnfiTermMember(propertyInfo, bnfTerm);
@@ -60,12 +84,7 @@ namespace Sarcasm.Ast
             IBnfiTerm<TBnfTermType> bnfiTerm)
             where TBnfTermType : TMemberType
         {
-            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
-
-            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new BnfiTermMember<TDeclaringType>(memberInfo, bnfiTerm.AsBnfTerm());
-            else
-                throw new ArgumentException("Field or property not found", memberInfo.Name);
+            return Bind_(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TBnfTermType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
