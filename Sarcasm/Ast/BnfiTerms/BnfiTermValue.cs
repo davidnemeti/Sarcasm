@@ -20,7 +20,7 @@ namespace Sarcasm.Ast
         private object value;
 
         public ValueConverter<object, object> InverseValueConverterForUnparse { private get; set; }
-        public Func<IFormatProvider, object, IEnumerable<Utoken>> UtokenizerForUnparse { private get; set; }
+        public Utokenizer<object> UtokenizerForUnparse { private get; set; }
 
         private readonly bool movable = true;
 
@@ -354,8 +354,6 @@ namespace Sarcasm.Ast
             }
         }
 
-        #endregion
-
         private static bool IsMainChild(BnfTerm bnfTerm)
         {
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
@@ -380,10 +378,27 @@ namespace Sarcasm.Ast
                 return null;
         }
 
+        #endregion
+
         public override string GetExtraStrForToString()
         {
             return string.Format("child bnfterm: {0}, value: {1}, utokenizer: {2}, inverse value converter: {3}",
                 this.bnfTerm.Name, this.value != null ? value.ToString() : "<<NULL>>", this.UtokenizerForUnparse != null, this.InverseValueConverterForUnparse != null);
+        }
+
+        protected static ValueConverter<TInTo, object> CastValueConverter<TInFrom, TOutFrom, TInTo>(ValueConverter<TInFrom, TOutFrom> valueConverter)
+        {
+            return obj => valueConverter((TInFrom)(object)obj);
+        }
+
+        protected static ValueConverter<object, object> CastValueConverterToObject<TInFrom, TOutFrom>(ValueConverter<TInFrom, TOutFrom> valueConverter)
+        {
+            return obj => valueConverter((TInFrom)obj);
+        }
+
+        protected static Utokenizer<object> CastUtokenizerToObject<T>(Utokenizer<T> utokenizer)
+        {
+            return (formatProvider, obj) => utokenizer(formatProvider, (T)obj);
         }
     }
 
@@ -409,15 +424,15 @@ namespace Sarcasm.Ast
         {
             set
             {
-                base.InverseValueConverterForUnparse = obj => value((T)obj);
+                base.InverseValueConverterForUnparse = CastValueConverterToObject(value);
             }
         }
 
-        public new Func<IFormatProvider, T, IEnumerable<Utoken>> UtokenizerForUnparse
+        public new Utokenizer<T> UtokenizerForUnparse
         {
             set
             {
-                base.UtokenizerForUnparse = (formatProvider, obj) => value(formatProvider, (T)obj);
+                base.UtokenizerForUnparse = CastUtokenizerToObject(value);
             }
         }
 

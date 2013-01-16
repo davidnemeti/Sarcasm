@@ -297,4 +297,6 @@ namespace Sarcasm.Unparsing
             this.obj = obj;
         }
     }
+
+    public delegate IEnumerable<Utoken> Utokenizer<T>(IFormatProvider formatProvider, T obj);
 }
