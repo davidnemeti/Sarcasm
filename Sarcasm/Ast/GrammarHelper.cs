@@ -233,25 +233,25 @@ namespace Sarcasm.Ast
         public static BnfiTermValue<T?> QVal<T>(this IBnfiTerm<T> bnfTerm)
             where T : struct
         {
-            return BnfiTermValue.ConvertValueOptVal(bnfTerm);
+            return BnfiTermValue.ConvertOptVal(bnfTerm);
         }
 
         public static BnfiTermValue<T> QRef<T>(this IBnfiTerm<T> bnfTerm)
             where T : class
         {
-            return BnfiTermValue.ConvertValueOptRef(bnfTerm);
+            return BnfiTermValue.ConvertOptRef(bnfTerm);
         }
 
         public static BnfiTermValue<T> QVal<T>(this IBnfiTerm<T> bnfTerm, T defaultValue)
             where T : struct
         {
-            return BnfiTermValue.ConvertValueOptVal(bnfTerm, defaultValue);
+            return BnfiTermValue.ConvertOptVal(bnfTerm, defaultValue);
         }
 
         public static BnfiTermValue<T> QRef<T>(this IBnfiTerm<T> bnfTerm, T defaultValue)
             where T : class
         {
-            return BnfiTermValue.ConvertValueOptRef(bnfTerm, defaultValue);
+            return BnfiTermValue.ConvertOptRef(bnfTerm, defaultValue);
         }
 
         #endregion

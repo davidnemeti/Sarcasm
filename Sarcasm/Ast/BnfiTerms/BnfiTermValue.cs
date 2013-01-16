@@ -16,6 +16,8 @@ namespace Sarcasm.Ast
 {
     public partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
+        #region State
+
         private BnfTerm bnfTerm;
         private object value;
 
@@ -23,6 +25,10 @@ namespace Sarcasm.Ast
         public ValueUtokenizer<object> UtokenizerForUnparse { private get; set; }
 
         private readonly bool movable = true;
+
+        #endregion
+
+        #region Construction
 
         public BnfiTermValue(string errorAlias = null)
             : this(typeof(object), errorAlias)
@@ -59,6 +65,10 @@ namespace Sarcasm.Ast
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueParser(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
         }
+
+        #endregion
+
+        #region Parse
 
         public static BnfiTermValue Parse(Terminal terminal, object value, bool astForChild = true)
         {
@@ -101,6 +111,10 @@ namespace Sarcasm.Ast
             return bnfiTermValue;
         }
 
+        #endregion
+
+        #region Convert
+
         public static BnfiTermValue Convert(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert(typeof(object), bnfiTerm, valueConverter);
@@ -140,6 +154,77 @@ namespace Sarcasm.Ast
                 );
         }
 
+        #endregion
+
+        #region ConvertOpt
+
+        public static BnfiTermValue<T?> ConvertOptVal<T>(IBnfiTerm<T> bnfTerm)
+            where T : struct
+        {
+            return ConvertOptVal(bnfTerm, value => value);
+        }
+
+        public static BnfiTermValue<TOut?> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+            where TIn : struct
+            where TOut : struct
+        {
+            return ConvertOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
+        }
+
+        public static BnfiTermValue<T> ConvertOptRef<T>(IBnfiTerm<T> bnfTerm)
+            where T : class
+        {
+            return ConvertOptRef(bnfTerm, value => value);
+        }
+
+        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+            where TIn : class
+            where TOut : class
+        {
+            return ConvertOpt<TIn, TOut>(bnfTerm, valueConverter);
+        }
+
+        public static BnfiTermValue<T> ConvertOptVal<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+            where T : struct
+        {
+            return ConvertOptVal(bnfiTerm, value => value, defaultValue);
+        }
+
+        public static BnfiTermValue<TOut> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+            where TIn : struct
+            where TOut : struct
+        {
+            return ConvertOpt<TIn, TOut>(bnfiTerm, valueConverter, defaultValue);
+        }
+
+        public static BnfiTermValue<T> ConvertOptRef<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+            where T : class
+        {
+            return ConvertOptRef(bnfiTerm, value => value, defaultValue);
+        }
+
+        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+            where TIn : class
+            where TOut : class
+        {
+            return ConvertOptRef(bnfiTerm, valueConverter, defaultValue);
+        }
+
+        protected static BnfiTermValue<TOut> ConvertOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue = default(TOut))
+        {
+            return new BnfiTermValue<TOut>(
+                bnfTerm.AsBnfTerm(),
+                ConvertValueConverterToValueParserOpt(valueConverter, defaultValue),
+                isOptionalValue: true,
+                errorAlias: null,
+                astForChild: true
+                );
+        }
+
+        #endregion
+
+        #region Cast
+
         public static BnfiTermValue<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
         {
             BnfiTermValue<TOut> bnfiTermValue = Convert(bnfTerm, value => IdentityFunctionForceCast<TIn, TOut>(value));
@@ -154,68 +239,9 @@ namespace Sarcasm.Ast
             return bnfiTermValue;
         }
 
-        public static BnfiTermValue<T?> ConvertValueOptVal<T>(IBnfiTerm<T> bnfTerm)
-            where T : struct
-        {
-            return ConvertValueOptVal(bnfTerm, value => value);
-        }
+        #endregion
 
-        public static BnfiTermValue<TOut?> ConvertValueOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
-            where TIn : struct
-            where TOut : struct
-        {
-            return ConvertValueOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value));
-        }
-
-        public static BnfiTermValue<T> ConvertValueOptRef<T>(IBnfiTerm<T> bnfTerm)
-            where T : class
-        {
-            return ConvertValueOptRef(bnfTerm, value => value);
-        }
-
-        public static BnfiTermValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
-            where TIn : class
-            where TOut : class
-        {
-            return ConvertValueOpt<TIn, TOut>(bnfTerm, valueConverter);
-        }
-
-        public static BnfiTermValue<T> ConvertValueOptVal<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
-            where T : struct
-        {
-            return ConvertValueOptVal(bnfiTerm, value => value, defaultValue);
-        }
-
-        public static BnfiTermValue<TOut> ConvertValueOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
-            where TIn : struct
-            where TOut : struct
-        {
-            return ConvertValueOpt<TIn, TOut>(bnfiTerm, valueConverter, defaultValue);
-        }
-
-        public static BnfiTermValue<T> ConvertValueOptRef<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
-            where T : class
-        {
-            return ConvertValueOptRef(bnfiTerm, value => value, defaultValue);
-        }
-
-        public static BnfiTermValue<TOut> ConvertValueOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
-            where TIn : class
-            where TOut : class
-        {
-            return ConvertValueOptRef(bnfiTerm, valueConverter, defaultValue);
-        }
-
-        protected static BnfiTermValue<TOut> ConvertValueOpt<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue = default(TOut))
-        {
-            return new BnfiTermValue<TOut>(
-                bnfTerm.AsBnfTerm(),
-                ConvertValueConverterToValueParserOpt(valueConverter, defaultValue),
-                isOptionalValue: true,
-                errorAlias: null,
-                astForChild: true
-                );
-        }
+        #region Helpers for Convert and ConvertOpt
 
         protected static ValueParser<TOut> ConvertValueConverterToValueParser<TIn, TOut>(ValueConverter<TIn, TOut> valueConverter)
         {
@@ -243,6 +269,8 @@ namespace Sarcasm.Ast
                     : defaultValue;
             };
         }
+
+        #endregion
 
         protected static object IdentityFunction(object obj)
         {
