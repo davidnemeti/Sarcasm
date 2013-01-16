@@ -11,7 +11,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermCopyable : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
+    public partial class BnfiTermCopyable : BnfiTermNonTerminal, IBnfiTermTL, IBnfiTermCopyable, IUnparsable
     {
         private readonly BnfTerm childBnfTerm;
 
@@ -31,11 +31,6 @@ namespace Sarcasm.Ast
         public static BnfiTermCopyable<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
         {
             return new BnfiTermCopyable<T>(bnfiTerm.AsBnfTerm());
-        }
-
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
         }
 
         #region Unparse

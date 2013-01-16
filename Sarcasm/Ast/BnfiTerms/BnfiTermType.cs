@@ -16,7 +16,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
+    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTermTL, IBnfiTermCopyable, IUnparsable
     {
         public BnfiTermType(Type type, string errorAlias = null)
             : base(type, errorAlias)
@@ -104,11 +104,6 @@ namespace Sarcasm.Ast
         }
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
-
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
-        }
 
         #region Unparse
 

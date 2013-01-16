@@ -26,7 +26,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTerminals",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
 		bnfTermCoreExternTypeNames: new[]{"Terminal", "GrammarHint"},
 		multiCore: true
@@ -36,7 +36,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionKeyTermPunctuations",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTermPunctuation"},
 		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
 		multiCore: true
@@ -45,7 +45,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyable"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
@@ -66,7 +66,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
@@ -87,7 +87,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionChoice",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollection"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
