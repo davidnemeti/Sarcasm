@@ -217,26 +217,32 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
-        [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
-        {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
-        }
-
-        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
-        {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
-        }
+        /*
+         * NOTE: for typeless BnfiTermValue the method name is Convert_ instead of Convert to avoid inappropriate type inference
+         * when working with typesafe BnfiTermValue<T> due to an accidentally wrong type of inverseValueConverterForUnparse.
+         * (IBnfiTerm vs. IBnfiTerm<T> problem)
+         * */
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
         {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
+            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue ConvertValue(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
         {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+        }
+
+        [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
+        public static BnfiTermValue ConvertValue_(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        {
+            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
+        }
+
+        public static BnfiTermValue ConvertValue_(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        {
+            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
         #endregion
