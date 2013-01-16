@@ -28,14 +28,14 @@ namespace Sarcasm.Ast
             {
                 object objValue = Activator.CreateInstance(type, nonPublic: true);
 
-                var childValues = parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).Where(childNode => childNode != null);
+                var childUnparsableObjects = parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).Where(childNode => childNode != null);
 
                 // 1. memberwise copy for ast values
-                foreach (var childValue in childValues.Where(childValue => objValue.GetType().IsAssignableFrom(childValue.GetType())))
+                foreach (var childValue in childUnparsableObjects.Where(childValue => objValue.GetType().IsAssignableFrom(childValue.GetType())))
                     MemberwiseCopyExceptNullValues(objValue, childValue);
 
                 // 2. set member values by MemberValues (so that we can overwrite the copied members if we want)
-                foreach (var memberValue in childValues.OfType<MemberValue>())
+                foreach (var memberValue in childUnparsableObjects.OfType<MemberValue>())
                     SetValue(memberValue, objValue);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
@@ -118,7 +118,7 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             foreach (BnfTerm childBnfTerm in childBnfTerms)
             {
@@ -134,13 +134,13 @@ namespace Sarcasm.Ast
                 else
                     childObj = null;
 
-                yield return new Value(childBnfTerm, childObj);
+                yield return new UnparsableObject(childBnfTerm, childObj);
             }
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
-            return childValues.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+            return childUnparsableObjects.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
         }
 
         #endregion

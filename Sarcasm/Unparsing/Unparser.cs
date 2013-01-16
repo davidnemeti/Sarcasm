@@ -152,11 +152,11 @@ namespace Sarcasm.Unparsing
                         var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
                             .Select(childBnfTerms =>
                                 {
-                                    var childValues = unparsable.GetChildValues(childBnfTerms, obj);
+                                    var childUnparsableObjects = unparsable.GetChildUnparsableObjects(childBnfTerms, obj);
                                     return new
                                         {
-                                            ChildValues = childValues,
-                                            Priority = unparsable.GetChildBnfTermListPriority(this, obj, childValues)
+                                            ChildUnparsableObjects = childUnparsableObjects,
+                                            Priority = unparsable.GetChildBnfTermListPriority(this, obj, childUnparsableObjects)
                                                 .DebugWriteLinePriority(tsPriorities, bnfTerm, obj)
                                         };
                                 }
@@ -172,7 +172,7 @@ namespace Sarcasm.Unparsing
                         if (chosenChildBnfTermsWithPriority == null)
                             throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
 
-                        foreach (Value childValue in chosenChildBnfTermsWithPriority.ChildValues)
+                        foreach (UnparsableObject childValue in chosenChildBnfTermsWithPriority.ChildUnparsableObjects)
                             foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
                                 yield return utoken;
                     }
@@ -215,7 +215,7 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(nonTerminal)
-                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildValues(childBnfTerms, obj))
+                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildUnparsableObjects(childBnfTerms, obj))
                         .DebugWriteLinePriority(tsPriorities, bnfTerm, obj));
 
                 tsPriorities.Unindent();
@@ -276,8 +276,8 @@ namespace Sarcasm.Unparsing
     public interface IUnparsable
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens);
-        IEnumerable<Value> GetChildValues(BnfTermList childBnfTerms, object obj);
-        int? GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues);
+        IEnumerable<UnparsableObject> GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj);
+        int? GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects);
     }
 
     public interface IUnparser
@@ -286,12 +286,12 @@ namespace Sarcasm.Unparsing
         IFormatProvider FormatProvider { get; }
     }
 
-    public class Value
+    public class UnparsableObject
     {
         public readonly BnfTerm bnfTerm;
         public readonly object obj;
 
-        public Value(BnfTerm bnfTerm, object obj)
+        public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
             this.bnfTerm = bnfTerm;
             this.obj = obj;

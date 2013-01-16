@@ -110,12 +110,12 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
-            yield return new Value(this.BnfTerm, obj);
+            yield return new UnparsableObject(this.BnfTerm, obj);
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             if (obj != null)
                 return 1;

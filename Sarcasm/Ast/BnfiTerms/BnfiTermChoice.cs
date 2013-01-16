@@ -40,20 +40,20 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             return childBnfTerms
                 .Select(childBnfTerm =>
-                    new Value(
+                    new UnparsableObject(
                         childBnfTerm,
                         IsMainChild(childBnfTerm) ? obj : null
                         )
                     );
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
-            BnfTerm mainChildBnfTerm = childValues.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
+            BnfTerm mainChildBnfTerm = childUnparsableObjects.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
 
             if (obj.GetType() == this.Type)
                 return unparser.GetBnfTermPriority(mainChildBnfTerm, obj);

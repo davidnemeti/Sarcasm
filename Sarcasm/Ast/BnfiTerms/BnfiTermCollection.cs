@@ -394,7 +394,7 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 
@@ -405,15 +405,15 @@ namespace Sarcasm.Ast
             foreach (object element in collection)
             {
                 if (!firstElement && this.delimiter != null)
-                    yield return new Value(this.delimiter, null);
+                    yield return new UnparsableObject(this.delimiter, null);
 
-                yield return new Value(this.element, element);
+                yield return new UnparsableObject(this.element, element);
 
                 firstElement = false;
             }
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 

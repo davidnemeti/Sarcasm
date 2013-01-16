@@ -338,18 +338,18 @@ namespace Sarcasm.Ast
                 throw new CannotUnparseException(string.Format("'{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<Value> IUnparsable.GetChildValues(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
-            return childBnfTerms.Select(childBnfTerm => new Value(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
+            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<Value> childValues)
+        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             if (this.value != null)
                 return this.value.Equals(obj) ? (int?)1 : null;
             else
             {
-                Value innerValue = GetMainChildValue(obj, childValues);
+                UnparsableObject innerValue = GetMainChildValue(obj, childUnparsableObjects);
                 return unparser.GetBnfTermPriority(innerValue.bnfTerm, innerValue.obj);
             }
         }
@@ -359,11 +359,11 @@ namespace Sarcasm.Ast
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
         }
 
-        private Value GetMainChildValue(object obj, IEnumerable<Value> childValues)
+        private UnparsableObject GetMainChildValue(object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             return this.bnfTerm != null
-                ? new Value(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
-                : childValues.Single(childValue => IsMainChild(childValue.bnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+                ? new UnparsableObject(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
+                : childUnparsableObjects.Single(childValue => IsMainChild(childValue.bnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
         }
 
         private object ConvertObjectForChild(object obj, BnfTerm childBnfTerm)
