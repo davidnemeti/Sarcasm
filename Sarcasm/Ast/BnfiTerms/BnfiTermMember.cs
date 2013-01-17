@@ -14,7 +14,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermMember : NonTerminal, IBnfiTerm, IUnparsable
+    public partial class BnfiTermMember : NonTerminal, IBnfiTermTL, IUnparsable
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }

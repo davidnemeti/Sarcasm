@@ -26,7 +26,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsable
+    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IBnfiTermTL, IUnparsable
     {
         #region State
 
@@ -369,11 +369,6 @@ namespace Sarcasm.Ast
             {
                 value.AsBnfiTermCollection().MoveTo(this);
             }
-        }
-
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
         }
 
         NonTerminal IBnfiTermCollection.AsNonTerminal()

@@ -13,6 +13,16 @@ namespace Sarcasm.Ast
         BnfExpression AsBnfExpression();
     }
 
+    /// <summary>
+    /// Typeless IBnfiExpression
+    /// </summary>
+    public interface IBnfiExpressionTL : IBnfiExpression, IBnfiTermTL
+    {
+    }
+
+    /// <summary>
+    /// Typesafe IBnfiExpression
+    /// </summary>
     public interface IBnfiExpression<out T> : IBnfiExpression, IBnfiTerm<T>
     {
     }
