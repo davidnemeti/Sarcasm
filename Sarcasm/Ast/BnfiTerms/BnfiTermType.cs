@@ -141,7 +141,7 @@ namespace Sarcasm.Ast
         #endregion
     }
 
-    public partial class BnfiTermTypeTL : BnfiTermType, IBnfiTermTL
+    public partial class BnfiTermTypeTL : BnfiTermType, IBnfiTermTL, IBnfiTermCopyableTL
     {
         public BnfiTermTypeTL(Type type, string errorAlias = null)
             : base(type, errorAlias)

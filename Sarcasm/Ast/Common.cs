@@ -44,6 +44,12 @@ namespace Sarcasm.Ast
     {
     }
 
+    // NOTE: does not inherit from IBnfiTermTL for symmetry (see IBnfiTermCopyable<T>)
+    public interface IBnfiTermCopyableTL : IBnfiTermCopyable
+    {
+    }
+
+    // NOTE: cannot inherit from IBnfiTerm<T> because of covariance vs. contravariance conflict
     public interface IBnfiTermCopyable<in T> : IBnfiTermCopyable
     {
     }
