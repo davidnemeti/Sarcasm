@@ -28,7 +28,8 @@ namespace Sarcasm.Ast
 
 		Type type = TypeCodeToType(typeCode);
 		string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
-		string typeParamsStr = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
+		string parseMethodNameExt = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
+		string typeParamsStr = typeCode == TypeCode.Object ? "TL" : string.Format("<{0}>", typeCode);
 #>
 	#region Parse <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
 
@@ -48,7 +49,7 @@ namespace Sarcasm.Ast
 <#
         }
 #>
-            return Parse<#= typeParamsStr #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Parse<#= parseMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
         }
 <#
 		if (IsNumeric(typeCode))
@@ -57,7 +58,7 @@ namespace Sarcasm.Ast
 
 		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
-            return Parse<#= typeParamsStr #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Parse<#= parseMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
         }
 <#
         }

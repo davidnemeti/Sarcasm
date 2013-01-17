@@ -98,12 +98,12 @@ namespace Sarcasm.Ast
 
         #region Typeless
 
-        public static IBnfiTermCollection StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListTL(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListTL(bnfTermElement, delimiter);
         }
@@ -128,7 +128,7 @@ namespace Sarcasm.Ast
             return BnfiTermMember.Bind_(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfTerm);
         }
 
-        public static BnfiTermMember BindMember<TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static BnfiTermMemberTL BindMember<TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
         {
             return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
@@ -145,12 +145,12 @@ namespace Sarcasm.Ast
             return BnfiTermMember.Bind<TDeclaringType, TMemberType>(dummyBnfiTerm, exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static BnfiTermMemberTL BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
             return BnfiTermMember.Bind(propertyInfo, bnfTerm);
         }
 
-        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
+        public static BnfiTermMemberTL BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
             return BnfiTermMember.Bind(fieldInfo, bnfTerm);
         }
@@ -164,18 +164,18 @@ namespace Sarcasm.Ast
 
         #region Parse/ConvertValue
 
-        public static BnfiTermValue ParseValue(this Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, object value, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, value, astForChild);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue ParseValue(this Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, valueParser, astForChild);
         }
 
-        public static BnfiTermValue ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparsebool, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparsebool, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparsebool, astForChild);
         }
@@ -232,12 +232,12 @@ namespace Sarcasm.Ast
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValueTL ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValueTL ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
         {
             return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }

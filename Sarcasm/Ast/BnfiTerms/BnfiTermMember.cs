@@ -14,7 +14,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermMember : NonTerminal, IBnfiTermTL, IUnparsable
+    public abstract partial class BnfiTermMember : NonTerminal, IBnfiTerm, IUnparsable
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
@@ -59,22 +59,22 @@ namespace Sarcasm.Ast
             return Bind_(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        public static BnfiTermMember Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
+        public static BnfiTermMemberTL Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
         {
-            return new BnfiTermMember(propertyInfo, bnfTerm);
+            return new BnfiTermMemberTL(propertyInfo, bnfTerm);
         }
 
-        public static BnfiTermMember Bind(FieldInfo fieldInfo, BnfTerm bnfTerm)
+        public static BnfiTermMemberTL Bind(FieldInfo fieldInfo, BnfTerm bnfTerm)
         {
-            return new BnfiTermMember(fieldInfo, bnfTerm);
+            return new BnfiTermMemberTL(fieldInfo, bnfTerm);
         }
 
-        public static BnfiTermMember Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TMemberType> bnfiTerm)
+        public static BnfiTermMemberTL Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TMemberType> bnfiTerm)
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
             if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new BnfiTermMember(memberInfo, bnfiTerm.AsBnfTerm());
+                return new BnfiTermMemberTL(memberInfo, bnfiTerm.AsBnfTerm());
             else
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
@@ -91,19 +91,19 @@ namespace Sarcasm.Ast
             return Bind<TDeclaringType, TMemberType>(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static BnfiTermMember Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
+        public static BnfiTermMemberTL Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
         {
             return Bind(typeof(TDeclaringType), fieldOrPropertyName, bnfTerm);
         }
 
-        public static BnfiTermMember Bind(Type declaringType, string fieldOrPropertyName, BnfTerm bnfTerm)
+        public static BnfiTermMemberTL Bind(Type declaringType, string fieldOrPropertyName, BnfTerm bnfTerm)
         {
             MemberInfo memberInfo = (MemberInfo)declaringType.GetField(fieldOrPropertyName) ?? (MemberInfo)declaringType.GetProperty(fieldOrPropertyName);
 
             if (memberInfo == null)
                 throw new ArgumentException("Field or property not found", fieldOrPropertyName);
 
-            return new BnfiTermMember(memberInfo, bnfTerm);
+            return new BnfiTermMemberTL(memberInfo, bnfTerm);
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
@@ -146,6 +146,14 @@ namespace Sarcasm.Ast
         public override string ToString()
         {
             return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
+        }
+    }
+
+    public partial class BnfiTermMemberTL : BnfiTermMember, IBnfiTermTL
+    {
+        internal BnfiTermMemberTL(MemberInfo memberInfo, BnfTerm bnfTerm)
+            : base(memberInfo, bnfTerm)
+        {
         }
     }
 

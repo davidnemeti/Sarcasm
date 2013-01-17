@@ -15,15 +15,15 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTermTL, IUnparsable
+    public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
-        public BnfiTermChoice(Type type, string errorAlias = null)
+        protected BnfiTermChoice(Type type, string errorAlias)
             : base(type, errorAlias)
         {
             GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
         }
 
-        public new BnfiExpressionChoice Rule { set { base.Rule = value; } }
+        protected new BnfiExpression Rule { set { base.Rule = value; } }
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
@@ -80,6 +80,16 @@ namespace Sarcasm.Ast
         #endregion
     }
 
+    public partial class BnfiTermChoiceTL : BnfiTermChoice, IBnfiTermTL
+    {
+        public BnfiTermChoiceTL(Type type, string errorAlias = null)
+            : base(type, errorAlias)
+        {
+        }
+
+        public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
+    }
+
     public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>
     {
         public BnfiTermChoice(string errorAlias = null)
@@ -93,7 +103,7 @@ namespace Sarcasm.Ast
             return base.Q();
         }
 
-        public BnfiExpressionChoice RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpression RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
 

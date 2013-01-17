@@ -34,7 +34,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollectionTL, IBnfiTermTL, IUnparsable
+    public abstract partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsable
     {
         #region State
 
@@ -61,13 +61,13 @@ namespace Sarcasm.Ast
 
         #region Construction
 
-        public BnfiTermCollection(Type collectionType, string errorAlias = null)
+        protected BnfiTermCollection(Type collectionType, string errorAlias = null)
             : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
         {
             this.movable = false;
         }
 
-        public BnfiTermCollection(Type collectionType, Type elementType, string errorAlias = null)
+        protected BnfiTermCollection(Type collectionType, Type elementType, string errorAlias = null)
             : this(collectionType, elementType, errorAlias, runtimeCheck: true)
         {
             this.movable = false;
@@ -262,16 +262,16 @@ namespace Sarcasm.Ast
 
         #region Typeless
 
-        public static IBnfiTermCollection StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = new BnfiTermCollection(typeof(ICollection<object>));
+            var bnfiTermCollection = new BnfiTermCollectionTL(typeof(ICollection<object>));
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
-        public static IBnfiTermCollection PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = new BnfiTermCollection(typeof(ICollection<object>));
+            var bnfiTermCollection = new BnfiTermCollectionTL(typeof(ICollection<object>));
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -371,7 +371,7 @@ namespace Sarcasm.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new IBnfiTermCollection Rule
+        protected new IBnfiTermCollection Rule
         {
             set
             {
@@ -439,6 +439,21 @@ namespace Sarcasm.Ast
         }
 
         #endregion
+    }
+
+    public partial class BnfiTermCollectionTL : BnfiTermCollection, IBnfiTermCollectionTL
+    {
+        public BnfiTermCollectionTL(Type collectionType, string errorAlias = null)
+            : base(collectionType, errorAlias)
+        {
+        }
+
+        public BnfiTermCollectionTL(Type collectionType, Type elementType, string errorAlias = null)
+            : base(collectionType, elementType, errorAlias, runtimeCheck: true)
+        {
+        }
+
+        public new BnfiTermCollectionTL Rule { set { base.Rule = value; } }
     }
 
     public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTermCollection<TElementType>
