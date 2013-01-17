@@ -20,24 +20,24 @@ namespace Sarcasm.Ast
 
         #region Typesafe (TCollectionType, TElementType)
 
-        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarList(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusList(bnfTermElement, delimiter);
         }
@@ -46,24 +46,24 @@ namespace Sarcasm.Ast
 
         #region Typeless converted to typesafe (TCollectionType, TElementType)
 
-        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarList<TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusList<TElementType>(bnfTermElement, delimiter);
         }
@@ -72,24 +72,24 @@ namespace Sarcasm.Ast
 
         #region Typeless converted to semi-typesafe (TCollectionType, object)
 
-        public static BnfiTermCollection<TCollectionType, object> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.StarListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<object>, object> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListST(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, object> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             return BnfiTermCollection.PlusListST<TCollectionType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<List<object>, object> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListST(bnfTermElement, delimiter);
         }
@@ -98,12 +98,12 @@ namespace Sarcasm.Ast
 
         #region Typeless
 
-        public static BnfiTermCollection StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListTL(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListTL(bnfTermElement, delimiter);
         }
@@ -114,13 +114,6 @@ namespace Sarcasm.Ast
 
         #region BindMember
 
-        // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
-        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTerm bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
-            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
-        {
-            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
-        }
-
         // NOTE: the method's name is BindMember_ instead of BindMember to avoid ambiguous calls
         public static BnfiTermMember<TDeclaringType> BindMember_<TDeclaringType, TMemberType>(this BnfTerm bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
@@ -128,32 +121,35 @@ namespace Sarcasm.Ast
             return BnfiTermMember.Bind_(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfTerm);
         }
 
-        public static BnfiTermMember BindMember<TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
-            where TBnfTermType : TMemberType
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTermTL bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
+        {
+            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
+        }
+
+        public static BnfiTermMemberTL BindMember<TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
         {
             return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfiTerm,
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
-            where TBnfTermType : TMemberType
         {
-            return BnfiTermMember.Bind<TDeclaringType, TMemberType, TBnfTermType>(exprForFieldOrPropertyAccess, bnfiTerm);
+            return BnfiTermMember.Bind<TDeclaringType, TMemberType>(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TBnfTermType, TMemberType>(this IBnfiTerm<TBnfTermType> bnfiTerm,
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
-            where TBnfTermType : TMemberType
         {
-            return BnfiTermMember.Bind<TDeclaringType, TMemberType, TBnfTermType>(dummyBnfiTerm, exprForFieldOrPropertyAccess, bnfiTerm);
+            return BnfiTermMember.Bind<TDeclaringType, TMemberType>(dummyBnfiTerm, exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static BnfiTermMemberTL BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
             return BnfiTermMember.Bind(propertyInfo, bnfTerm);
         }
 
-        public static BnfiTermMember BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
+        public static BnfiTermMemberTL BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
             return BnfiTermMember.Bind(fieldInfo, bnfTerm);
         }
@@ -167,18 +163,18 @@ namespace Sarcasm.Ast
 
         #region Parse/ConvertValue
 
-        public static BnfiTermValue ParseValue(this Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, object value, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, value, astForChild);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue ParseValue(this Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, valueParser, astForChild);
         }
 
-        public static BnfiTermValue ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparsebool, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparsebool, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparsebool, astForChild);
         }
@@ -217,32 +213,26 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
-        /*
-         * NOTE: for typeless BnfiTermValue the method name is Convert_ instead of Convert to avoid inappropriate type inference
-         * when working with typesafe BnfiTermValue<T> due to an accidentally wrong type of inverseValueConverterForUnparse.
-         * (IBnfiTerm vs. IBnfiTerm<T> problem)
-         * */
-
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue ConvertValue_(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue ConvertValue_(this IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
         #endregion

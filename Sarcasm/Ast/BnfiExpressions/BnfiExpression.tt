@@ -26,7 +26,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionTerminals",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
 		bnfTermCoreExternTypeNames: new[]{"Terminal", "GrammarHint"},
 		multiCore: true
@@ -36,16 +36,16 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionKeyTermPunctuations",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermKeyTermPunctuation"},
 		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
 		multiCore: true
 	);
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionType",
+		"BnfiExpressionTypeTL",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyable"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
@@ -54,7 +54,7 @@ namespace Sarcasm.Ast
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType<T>",
-		inheritFromBase: "BnfiExpressionType",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>", "BnfiTermCopyable<T>"},
 		bnfTermCoreExternTypeNames: new[]{"IBnfiTermCopyable<T>"},
@@ -64,9 +64,9 @@ namespace Sarcasm.Ast
 
 	var bnfTermCoreTypeNamesForBnfiExpressionValue =
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionValue",
+		"BnfiExpressionValueTL",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
@@ -75,7 +75,7 @@ namespace Sarcasm.Ast
 	var bnfTermCoreTypeNamesForBnfiExpressionValueGeneric =
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue<T>",
-		inheritFromBase: "BnfiExpressionValue",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
@@ -85,21 +85,21 @@ namespace Sarcasm.Ast
 	// multiCore is false for BnfiExpressionChoice to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionChoice",
+		"BnfiExpressionChoiceTL",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression"},
+		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollection"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue.Concat(new []{"IBnfiTermCollectionTL"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionChoice<T>",
-		inheritFromBase: "BnfiExpressionChoice",
+		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollection<TCollectionType>"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
+		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>"},
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric.Concat(new []{"IBnfiTermCollectionWithCollectionType<TCollectionType>"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);

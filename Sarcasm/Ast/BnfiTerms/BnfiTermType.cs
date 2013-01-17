@@ -16,9 +16,9 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
+    public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
-        public BnfiTermType(Type type, string errorAlias = null)
+        protected BnfiTermType(Type type, string errorAlias)
             : base(type, errorAlias)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
@@ -41,8 +41,6 @@ namespace Sarcasm.Ast
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
             };
         }
-
-        public new BnfiExpressionType Rule { set { base.Rule = value; } }
 
         protected static void MemberwiseCopyExceptNullValues(object destination, object source)
         {
@@ -105,10 +103,7 @@ namespace Sarcasm.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
-        }
+        protected new BnfiExpression Rule { set { base.Rule = value; } }
 
         #region Unparse
 
@@ -146,6 +141,16 @@ namespace Sarcasm.Ast
         #endregion
     }
 
+    public partial class BnfiTermTypeTL : BnfiTermType, IBnfiTermTL
+    {
+        public BnfiTermTypeTL(Type type, string errorAlias = null)
+            : base(type, errorAlias)
+        {
+        }
+
+        public new BnfiExpressionTypeTL Rule { set { base.Rule = value; } }
+    }
+
     public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>
         where TType : new()
     {
@@ -169,7 +174,7 @@ namespace Sarcasm.Ast
             return base.Q();
         }
 
-        public BnfiExpressionType RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionTypeTL RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
     }

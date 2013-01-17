@@ -17,12 +17,12 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue ParseData(DataLiteralBase dataLiteral)
+        public static BnfiTermValueTL ParseData(DataLiteralBase dataLiteral)
         {
             return Parse(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
 
-		public static BnfiTermValue ParseNumber(NumberLiteral numberLiteral)
+		public static BnfiTermValueTL ParseNumber(NumberLiteral numberLiteral)
         {
             return Parse(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
@@ -34,12 +34,12 @@ namespace Sarcasm.Ast
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue ParseData(this DataLiteralBase dataLiteral)
+        public static BnfiTermValueTL ParseData(this DataLiteralBase dataLiteral)
         {
 			return BnfiTermValue.ParseData(dataLiteral);
         }
 
-		public static BnfiTermValue ParseNumber(this NumberLiteral numberLiteral)
+		public static BnfiTermValueTL ParseNumber(this NumberLiteral numberLiteral)
         {
 			return BnfiTermValue.ParseNumber(numberLiteral);
         }
@@ -53,32 +53,32 @@ namespace Sarcasm.Ast
 	{
 		#region Data
 
-        public static BnfiTermValue ParseData()
+        public static BnfiTermValueTL ParseData()
 		{
 			return new DataLiteralBase(name: "data", dataType: TypeCode.Object).ParseData();
 		}
 
-        public static BnfiTermValue ParseDataDsv()
+        public static BnfiTermValueTL ParseDataDsv()
 		{
 			return new DsvLiteral(name: "dataDsv", dataType: TypeCode.Object).ParseData();
 		}
 
-        public static BnfiTermValue ParseDataDsv(string terminator)
+        public static BnfiTermValueTL ParseDataDsv(string terminator)
 		{
 			return new DsvLiteral(name: "dataDsv", dataType: TypeCode.Object, terminator: terminator).ParseData();
 		}
 
-        public static BnfiTermValue ParseDataQuoted(string startEndSymbol)
+        public static BnfiTermValueTL ParseDataQuoted(string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: "dataQuoted", dataType: TypeCode.Object, startEndSymbol: startEndSymbol).ParseData();
 		}
 
-        public static BnfiTermValue ParseDataQuoted(string startSymbol, string endSymbol)
+        public static BnfiTermValueTL ParseDataQuoted(string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: "dataQuoted", dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).ParseData();
 		}
 
-        public static BnfiTermValue ParseDataFixedLength(int length)
+        public static BnfiTermValueTL ParseDataFixedLength(int length)
 		{
 			return new FixedLengthLiteral(name: "dataFixedLength", dataType: TypeCode.Object, length: length).ParseData();
 		}
@@ -87,12 +87,12 @@ namespace Sarcasm.Ast
 
 		#region Number
 
-		public static BnfiTermValue ParseNumber()
+		public static BnfiTermValueTL ParseNumber()
         {
 			return new NumberLiteral(name: "number").ParseNumber();
         }
 
-		public static BnfiTermValue ParseNumber(NumberOptions options)
+		public static BnfiTermValueTL ParseNumber(NumberOptions options)
         {
 			return new NumberLiteral(name: "number", options: options).ParseNumber();
         }
