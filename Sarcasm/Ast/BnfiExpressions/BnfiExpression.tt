@@ -98,7 +98,7 @@ namespace Sarcasm.Ast
 		"BnfiExpressionChoice<T>",
 		inheritFromBase: "BnfiExpressionChoice",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollection<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric.Concat(new []{"IBnfiTermCollectionWithCollectionType<TCollectionType>"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false

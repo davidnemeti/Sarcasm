@@ -441,19 +441,11 @@ namespace Sarcasm.Ast
         #endregion
     }
 
-    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTermCollectionWithCollectionType<TCollectionType>
-    {
-        protected BnfiTermCollection(Type elementType, string errorAlias = null)
-            : base(typeof(TCollectionType), elementType, errorAlias: errorAlias, runtimeCheck: false)
-        {
-        }
-    }
-
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>, IBnfiTermCollection<TElementType>
+    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTermCollection<TElementType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string errorAlias = null)
-            : base(typeof(TElementType), errorAlias)
+            : base(typeof(TCollectionType), typeof(TElementType), errorAlias: errorAlias, runtimeCheck: false)
         {
         }
 
