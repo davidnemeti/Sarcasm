@@ -174,9 +174,9 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Parse(terminal, valueParser, astForChild);
         }
 
-        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparsebool, bool astForChild = true)
+        public static BnfiTermValueTL ParseValue(this Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparsebool, astForChild);
+            return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparse, astForChild);
         }
 
         public static BnfiTermValue<string> ParseIdentifier(this IdentifierTerminal identifierTerminal)
@@ -196,9 +196,9 @@ namespace Sarcasm.Ast
         }
 
         public static BnfiTermValue<TOut> ParseValue<TOut>(this Terminal terminal, ValueParser<TOut> valueParser,
-            ValueConverter<TOut, object> inverseValueConverterForUnparsebool, bool astForChild = true)
+            ValueConverter<TOut, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparsebool, astForChild);
+            return BnfiTermValue.Parse(terminal, valueParser, inverseValueConverterForUnparse, astForChild);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
@@ -208,9 +208,9 @@ namespace Sarcasm.Ast
         }
 
         public static BnfiTermValue<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
-            ValueConverter<TOut, TIn> inverseValueConverterForUnparsebool)
+            ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
         {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
@@ -219,9 +219,9 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
         {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
@@ -230,9 +230,9 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
         {
-            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         #endregion
