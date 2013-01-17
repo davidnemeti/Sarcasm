@@ -14,14 +14,20 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
+    public enum ListKind { Star, Plus }
+
+    public interface IBnfiTermCollection : IBnfiTerm
     {
-        #region Types
+        NonTerminal AsNonTerminal();
+        BnfiTermCollection AsBnfiTermCollection();
+    }
 
-        protected enum ListKind { Star, Plus }
+    public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollection, IBnfiTerm<IEnumerable<TElementType>>
+    {
+    }
 
-        #endregion
-
+    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsable
+    {
         #region State
 
         private ListKind? listKind = null;
@@ -158,7 +164,7 @@ namespace Sarcasm.Ast
 
         #region Typesafe (TCollectionType, TElementType)
 
-        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
@@ -166,12 +172,12 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
@@ -179,7 +185,7 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
@@ -188,7 +194,7 @@ namespace Sarcasm.Ast
 
         #region Typeless converted to typesafe (TCollectionType, TElementType)
 
-        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
@@ -196,12 +202,12 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> StarList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return StarList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
@@ -209,7 +215,7 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusList<List<TElementType>, TElementType>(bnfTermElement, delimiter);
         }
@@ -218,7 +224,7 @@ namespace Sarcasm.Ast
 
         #region Typeless converted to semi-typesafe (TCollectionType, object)
 
-        public static BnfiTermCollection<TCollectionType, object> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, object>();
@@ -226,12 +232,12 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<object>, object> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return StarListST<List<object>>(bnfTermElement, delimiter);
         }
 
-        public static BnfiTermCollection<TCollectionType, object> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<object>, new()
         {
             var bnfiTermCollection = new BnfiTermCollection<TCollectionType, object>();
@@ -239,7 +245,7 @@ namespace Sarcasm.Ast
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection<List<object>, object> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection<object> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return PlusListST<List<object>>(bnfTermElement, delimiter);
         }
@@ -248,14 +254,14 @@ namespace Sarcasm.Ast
 
         #region Typeless
 
-        public static BnfiTermCollection StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             var bnfiTermCollection = new BnfiTermCollection(typeof(ICollection<object>));
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
-        public static BnfiTermCollection PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static IBnfiTermCollection PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             var bnfiTermCollection = new BnfiTermCollection(typeof(ICollection<object>));
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
@@ -268,51 +274,47 @@ namespace Sarcasm.Ast
 
         #region MakePlusRule and MakeStarRule
 
-        internal static BnfiTermCollection MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static IBnfiTermCollection MakePlusRule(IBnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiTermCollection)_MakePlusRule(bnfiTermCollection, delimiter, element);
+            return (IBnfiTermCollection)_MakePlusRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiTermCollection MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        internal static IBnfiTermCollection MakeStarRule(IBnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiTermCollection)_MakeStarRule(bnfiTermCollection, delimiter, element);
+            return (IBnfiTermCollection)_MakeStarRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
-            where TCollectionType : ICollection<object>, new()
+        internal static IBnfiTermCollection<object> MakePlusRule(IBnfiTermCollection<object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiTermCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element);
+            return (IBnfiTermCollection<object>)_MakePlusRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType>(BnfiTermCollection<TCollectionType, object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
-            where TCollectionType : ICollection<object>, new()
+        internal static IBnfiTermCollection<object> MakeStarRule(IBnfiTermCollection<object> bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            return (BnfiTermCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element);
+            return (IBnfiTermCollection<object>)_MakeStarRule(bnfiTermCollection, delimiter, element);
         }
 
-        internal static BnfiTermCollection<TCollectionType> MakePlusRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
-            where TCollectionType : ICollection<TElementType>, new()
+        internal static IBnfiTermCollection<TElementType> MakePlusRule<TElementType>(IBnfiTermCollection<TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
         {
-            return (BnfiTermCollection<TCollectionType>)_MakePlusRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
+            return (IBnfiTermCollection<TElementType>)_MakePlusRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
         }
 
-        internal static BnfiTermCollection<TCollectionType> MakeStarRule<TCollectionType, TElementType>(BnfiTermCollection<TCollectionType, TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
-            where TCollectionType : ICollection<TElementType>, new()
+        internal static IBnfiTermCollection<TElementType> MakeStarRule<TElementType>(IBnfiTermCollection<TElementType> bnfiTermCollection, BnfTerm delimiter, IBnfiTerm<TElementType> element)
         {
-            return (BnfiTermCollection<TCollectionType>)_MakeStarRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
+            return (IBnfiTermCollection<TElementType>)_MakeStarRule(bnfiTermCollection, delimiter, element.AsBnfTerm());
         }
 
-        protected static BnfiTermCollection _MakePlusRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        protected static IBnfiTermCollection _MakePlusRule(IBnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetState(ListKind.Plus, element, delimiter);
-            Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.AsBnfiTermCollection().SetState(ListKind.Plus, element, delimiter);
+            Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection.AsNonTerminal(), delimiter, element);
             return bnfiTermCollection;
         }
 
-        protected static BnfiTermCollection _MakeStarRule(BnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
+        protected static IBnfiTermCollection _MakeStarRule(IBnfiTermCollection bnfiTermCollection, BnfTerm delimiter, BnfTerm element)
         {
-            bnfiTermCollection.SetState(ListKind.Star, element, delimiter);
-            Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.AsBnfiTermCollection().SetState(ListKind.Star, element, delimiter);
+            Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection.AsNonTerminal(), delimiter, element);
             return bnfiTermCollection;
         }
 
@@ -361,15 +363,25 @@ namespace Sarcasm.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        public new BnfiTermCollection Rule
+        public new IBnfiTermCollection Rule
         {
             set
             {
-                value.MoveTo(this);
+                value.AsBnfiTermCollection().MoveTo(this);
             }
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
+        {
+            return this;
+        }
+
+        NonTerminal IBnfiTermCollection.AsNonTerminal()
+        {
+            return this;
+        }
+
+        BnfiTermCollection IBnfiTermCollection.AsBnfiTermCollection()
         {
             return this;
         }
@@ -426,7 +438,7 @@ namespace Sarcasm.Ast
         #endregion
     }
 
-    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTerm<TCollectionType>
+    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTermCollection<TCollectionType>
     {
         protected BnfiTermCollection(Type elementType, string errorAlias = null)
             : base(typeof(TCollectionType), elementType, errorAlias: errorAlias, runtimeCheck: false)
@@ -434,7 +446,7 @@ namespace Sarcasm.Ast
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>
+    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection<TCollectionType>, IBnfiTermCollection<TElementType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string errorAlias = null)
@@ -456,9 +468,9 @@ namespace Sarcasm.Ast
             return base.Q();
         }
 
-        public BnfiTermCollection RuleTypeless { set { base.Rule = value; } }
+        public IBnfiTermCollection RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiTermCollection<TCollectionType> Rule { set { base.Rule = value; } }
+        public new IBnfiTermCollection<TElementType> Rule { set { base.Rule = value; } }
 
         public new BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection()
         {

@@ -89,7 +89,7 @@ namespace Sarcasm.Ast
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollection"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue.Concat(new []{"IBnfiTermCollection"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);
@@ -99,7 +99,7 @@ namespace Sarcasm.Ast
 		inheritFromBase: "BnfiExpressionChoice",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollection<TCollectionType>"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric.Concat(new []{"IBnfiTermCollection"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);
