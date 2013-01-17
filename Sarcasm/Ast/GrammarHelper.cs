@@ -114,18 +114,17 @@ namespace Sarcasm.Ast
 
         #region BindMember
 
-        // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
-        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTermTL bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
-            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
-        {
-            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
-        }
-
         // NOTE: the method's name is BindMember_ instead of BindMember to avoid ambiguous calls
         public static BnfiTermMember<TDeclaringType> BindMember_<TDeclaringType, TMemberType>(this BnfTerm bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
         {
             return BnfiTermMember.Bind_(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfTerm);
+        }
+
+        public static BnfiTermMember<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTermTL bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
+        {
+            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
         }
 
         public static BnfiTermMemberTL BindMember<TMemberType>(this IBnfiTerm<TMemberType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
@@ -214,32 +213,26 @@ namespace Sarcasm.Ast
             return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
-        /*
-         * NOTE: for typeless BnfiTermValue the method name is Convert_ instead of Convert to avoid inappropriate type inference
-         * when working with typesafe BnfiTermValue<T> due to an accidentally wrong type of inverseValueConverterForUnparse.
-         * (IBnfiTerm vs. IBnfiTerm<T> problem)
-         * */
-
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValue<TOut> ConvertValue_<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValue<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparsebool)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
         [Obsolete(BnfiTermValue.messageForMissingUnparseValueConverter, BnfiTermValue.errorForMissingUnparseValueConverter)]
-        public static BnfiTermValueTL ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermValueTL ConvertValue_(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
+        public static BnfiTermValueTL ConvertValue(this IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparsebool)
         {
-            return BnfiTermValue.Convert_(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
+            return BnfiTermValue.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparsebool);
         }
 
         #endregion

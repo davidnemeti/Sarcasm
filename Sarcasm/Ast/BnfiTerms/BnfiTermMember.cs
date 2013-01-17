@@ -35,7 +35,7 @@ namespace Sarcasm.Ast
                 };
         }
 
-        protected static BnfiTermMember<TDeclaringType> Bind_<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
+        protected static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
         {
             MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
 
@@ -45,18 +45,17 @@ namespace Sarcasm.Ast
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
-        // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
-        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
-            IBnfiTerm<TDeclaringType> dummyBnfiTerm, IBnfiTermTL bnfiTerm)
-        {
-            return Bind_(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
-        }
-
         // NOTE: the method's name is Bind_ instead of Bind to avoid ambiguous calls
         public static BnfiTermMember<TDeclaringType> Bind_<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, BnfTerm bnfTerm)
         {
-            return Bind_(exprForFieldOrPropertyAccess, bnfTerm);
+            return Bind(exprForFieldOrPropertyAccess, bnfTerm);
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<TDeclaringType> dummyBnfiTerm, IBnfiTermTL bnfiTerm)
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermMemberTL Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
@@ -82,7 +81,7 @@ namespace Sarcasm.Ast
         public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
             IBnfiTerm<TMemberType> bnfiTerm)
         {
-            return Bind_(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
