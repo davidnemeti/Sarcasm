@@ -257,19 +257,19 @@ namespace Sarcasm.Ast
             }
         }
 
-        public static ValueConverter<object, object> NoUnparse()
+        public static ValueConverter<object, object> NoUnparseByInverse()
         {
-            return BnfiTermValue.NoUnparse();
+            return BnfiTermValue.NoUnparseByInverse();
         }
 
-        public static ValueConverter<T, object> NoUnparse<T>()
+        public static ValueConverter<T, object> NoUnparseByInverse<T>()
         {
-            return BnfiTermValue.NoUnparse<T>();
+            return BnfiTermValue.NoUnparseByInverse<T>();
         }
 
-        public static ValueConverter<TIn, TOut> NoUnparse<TIn, TOut>()
+        public static ValueConverter<TIn, TOut> NoUnparseByInverse<TIn, TOut>()
         {
-            return BnfiTermValue.NoUnparse<TIn, TOut>();
+            return BnfiTermValue.NoUnparseByInverse<TIn, TOut>();
         }
 
         #endregion
