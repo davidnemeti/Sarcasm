@@ -11,11 +11,11 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermCopyable : BnfiTermNonTerminal, IBnfiTermTL, IBnfiTermCopyable, IUnparsable
+    public partial class BnfiTermCopy : BnfiTermNonTerminal, IBnfiTermTL, IUnparsable
     {
         private readonly BnfTerm childBnfTerm;
 
-        protected BnfiTermCopyable(Type type, BnfTerm bnfTerm, string errorAlias = null)
+        protected BnfiTermCopy(Type type, BnfTerm bnfTerm, string errorAlias = null)
             : base(type, errorAlias)
         {
             this.childBnfTerm = bnfTerm;
@@ -23,14 +23,14 @@ namespace Sarcasm.Ast
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)
         }
 
-        public static BnfiTermCopyable Copy(IBnfiTermCopyable bnfiTerm)
+        public static BnfiTermCopy Copy(IBnfiTermCopyable bnfiTerm)
         {
-            return new BnfiTermCopyable(bnfiTerm.Type, bnfiTerm.AsBnfTerm());
+            return new BnfiTermCopy(bnfiTerm.Type, bnfiTerm.AsBnfTerm());
         }
 
-        public static BnfiTermCopyable<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
+        public static BnfiTermCopy<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
         {
-            return new BnfiTermCopyable<T>(bnfiTerm.AsBnfTerm());
+            return new BnfiTermCopy<T>(bnfiTerm.AsBnfTerm());
         }
 
         #region Unparse
@@ -54,9 +54,9 @@ namespace Sarcasm.Ast
         #endregion
     }
 
-    public partial class BnfiTermCopyable<T> : BnfiTermCopyable, IBnfiTerm<T>, IBnfiTermCopyable<T>
+    public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>
     {
-        internal BnfiTermCopyable(BnfTerm bnfTerm, string errorAlias = null)
+        internal BnfiTermCopy(BnfTerm bnfTerm, string errorAlias = null)
             : base(typeof(T), bnfTerm, errorAlias)
         {
         }

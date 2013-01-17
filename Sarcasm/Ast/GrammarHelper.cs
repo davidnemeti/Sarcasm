@@ -258,14 +258,14 @@ namespace Sarcasm.Ast
 
         #region Copy
 
-        public static BnfiTermCopyable Copy(this IBnfiTermCopyable bnfiTerm)
+        public static BnfiTermCopy Copy(this IBnfiTermCopyable bnfiTerm)
         {
-            return BnfiTermCopyable.Copy(bnfiTerm);
+            return BnfiTermCopy.Copy(bnfiTerm);
         }
 
-        public static BnfiTermCopyable<T> Copy<T>(this IBnfiTermCopyable<T> bnfiTerm)
+        public static BnfiTermCopy<T> Copy<T>(this IBnfiTermCopyable<T> bnfiTerm)
         {
-            return BnfiTermCopyable.Copy<T>(bnfiTerm);
+            return BnfiTermCopy.Copy<T>(bnfiTerm);
         }
 
         #endregion

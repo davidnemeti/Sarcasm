@@ -124,7 +124,7 @@ namespace Sarcasm.Ast
                     BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
                     childObj = GetValue(bnfiTermMember.MemberInfo, obj);
                 }
-                else if (childBnfTerm is BnfiTermCopyable)
+                else if (childBnfTerm is BnfiTermCopy)
                     childObj = obj;
                 else
                     childObj = null;
