@@ -22,11 +22,19 @@ namespace Sarcasm.Ast
         BnfiTermCollection AsBnfiTermCollection();
     }
 
-    public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollection, IBnfiTerm<IEnumerable<TElementType>>
+    public interface IBnfiTermCollectionTL : IBnfiTermCollection, IBnfiTermTL
     {
     }
 
-    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IBnfiTermTL, IUnparsable
+    public interface IBnfiTermCollectionWithCollectionType<out TCollectionType> : IBnfiTermCollection, IBnfiTerm<TCollectionType>
+    {
+    }
+
+    public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollectionWithCollectionType<IEnumerable<TElementType>>
+    {
+    }
+
+    public partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollectionTL, IBnfiTermTL, IUnparsable
     {
         #region State
 
@@ -433,7 +441,7 @@ namespace Sarcasm.Ast
         #endregion
     }
 
-    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTermCollection<TCollectionType>
+    public abstract partial class BnfiTermCollection<TCollectionType> : BnfiTermCollection, IBnfiTermCollectionWithCollectionType<TCollectionType>
     {
         protected BnfiTermCollection(Type elementType, string errorAlias = null)
             : base(typeof(TCollectionType), elementType, errorAlias: errorAlias, runtimeCheck: false)
