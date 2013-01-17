@@ -142,23 +142,23 @@ namespace Sarcasm.Ast
          * */
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue Convert_(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValue Convert_(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert_(bnfiTerm, valueConverter, NoUnparse());
         }
 
-        public static BnfiTermValue Convert_(IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
+        public static BnfiTermValue Convert_(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
         {
             return Convert_(typeof(object), bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue Convert_(Type type, IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermValue Convert_(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert_(type, bnfiTerm, valueConverter, NoUnparse());
         }
 
-        public static BnfiTermValue Convert_(Type type, IBnfiTerm bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
+        public static BnfiTermValue Convert_(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
         {
             return new BnfiTermValue(
                 type,
@@ -172,12 +172,12 @@ namespace Sarcasm.Ast
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> Convert_<TOut>(IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        public static BnfiTermValue<TOut> Convert_<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
         {
             return Convert_<TOut>(bnfiTerm, valueConverter, NoUnparse<TOut, object>());
         }
 
-        public static BnfiTermValue<TOut> Convert_<TOut>(IBnfiTerm bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
+        public static BnfiTermValue<TOut> Convert_<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
         {
             return new BnfiTermValue<TOut>(
                 bnfiTerm.AsBnfTerm(),

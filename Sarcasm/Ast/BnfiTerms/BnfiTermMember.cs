@@ -47,7 +47,7 @@ namespace Sarcasm.Ast
 
         // NOTE: first parameter is a IBnfiTerm instead of BnfTerm to avoid ambiguous calls
         public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
-            IBnfiTerm<TDeclaringType> dummyBnfiTerm, IBnfiTerm bnfiTerm)
+            IBnfiTerm<TDeclaringType> dummyBnfiTerm, IBnfiTermTL bnfiTerm)
         {
             return Bind_(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
