@@ -56,6 +56,7 @@ namespace Sarcasm.Unparsing
         public static readonly Utoken Tab = UtokenWhitespace.Tab;
 
         public static readonly Utoken IndentBlock = UtokenControl.IndentBlock;
+        public static readonly Utoken UnindentBlock = UtokenControl.UnindentBlock;
 
         public static readonly Utoken IndentThisLine = UtokenControl.IndentThisLine;
         public static readonly Utoken UnindentThisLine = UtokenControl.UnindentThisLine;
@@ -103,7 +104,7 @@ namespace Sarcasm.Unparsing
 
     public class UtokenWhitespace : Utoken
     {
-        internal enum Kind { NewLine, EmptyLine, Space, Tab, BetweenUtokens }
+        internal enum Kind { NewLine, EmptyLine, Space, Tab, WhiteSpaceBetweenUtokens }
 
         internal readonly Kind kind;
 
@@ -116,7 +117,7 @@ namespace Sarcasm.Unparsing
         internal static new readonly UtokenWhitespace EmptyLine = new UtokenWhitespace(Kind.EmptyLine);
         internal static new readonly UtokenWhitespace Space = new UtokenWhitespace(Kind.Space);
         internal static new readonly UtokenWhitespace Tab = new UtokenWhitespace(Kind.Tab);
-        internal static readonly UtokenWhitespace BetweenUtokens = new UtokenWhitespace(Kind.BetweenUtokens);
+        internal static readonly UtokenWhitespace WhiteSpaceBetweenUtokens = new UtokenWhitespace(Kind.WhiteSpaceBetweenUtokens);
 
         public override string ToString(Formatting formatting)
         {
@@ -134,7 +135,7 @@ namespace Sarcasm.Unparsing
                 case Kind.Tab:
                     return formatting.Tab;
 
-                case Kind.BetweenUtokens:
+                case Kind.WhiteSpaceBetweenUtokens:
                     return formatting.WhiteSpaceBetweenUtokens;
 
                 default:
@@ -173,6 +174,7 @@ namespace Sarcasm.Unparsing
         internal enum Kind
         {
             IndentBlock,
+            UnindentBlock,
             IndentThisLine,
             UnindentThisLine,
             NoIndentForThisLine,
@@ -190,6 +192,7 @@ namespace Sarcasm.Unparsing
         }
 
         public static new readonly UtokenControl IndentBlock = new UtokenControl(Kind.IndentBlock);
+        public static new readonly UtokenControl UnindentBlock = new UtokenControl(Kind.UnindentBlock);
 
         public static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
         public static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);
