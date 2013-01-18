@@ -559,7 +559,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionValueTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>
+    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>
     {
         public BnfiTermValue(string errorAlias = null)
             : base(typeof(T), errorAlias)

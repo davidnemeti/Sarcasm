@@ -26,7 +26,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public interface IBnfiTermCollectionWithCollectionType<out TCollectionType> : IBnfiTermCollection, IBnfiTerm<TCollectionType>
+    public interface IBnfiTermCollectionWithCollectionType<out TCollectionType> : IBnfiTermCollection, IBnfiTerm<TCollectionType>, IBnfiTermOrAbleForChoice<TCollectionType>
     {
     }
 

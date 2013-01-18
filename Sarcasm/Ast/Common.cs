@@ -40,17 +40,24 @@ namespace Sarcasm.Ast
         Type Type { get; }
     }
 
-    public interface IBnfiTermCopyable : IHasType, IBnfiTerm
-    {
-    }
-
-    // NOTE: does not inherit from IBnfiTermTL for symmetry (see IBnfiTermCopyable<T>)
-    public interface IBnfiTermCopyableTL : IBnfiTermCopyable
+    public interface IBnfiTermOrAbleForChoice<out T> : IBnfiTerm<T>
     {
     }
 
     // NOTE: cannot inherit from IBnfiTerm<T> because of covariance vs. contravariance conflict
-    public interface IBnfiTermCopyable<in T> : IBnfiTermCopyable
+    public interface IBnfiTermPlusAbleForType<in T> : IBnfiTerm
+    {
+    }
+
+    public interface IBnfiTermCopyable : IHasType, IBnfiTerm
+    {
+    }
+
+    public interface IBnfiTermCopyableTL : IBnfiTermCopyable, IBnfiTermTL
+    {
+    }
+
+    public interface IBnfiTermCopyable<out T> : IBnfiTermCopyable, IBnfiTerm<T>
     {
     }
 

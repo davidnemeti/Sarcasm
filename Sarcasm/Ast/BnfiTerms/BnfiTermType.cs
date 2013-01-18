@@ -151,7 +151,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionTypeTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>
+    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }
@@ -177,5 +177,21 @@ namespace Sarcasm.Ast
         public BnfiExpressionTypeTL RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
+
+        // NOTE: type inference for superclasses works only if SetRulePlus is an instance method and not an extension method
+        public void SetRulePlus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        {
+            this.Rule = Plus(bnfiTermFirst, bnfiTerms);
+        }
+
+        public BnfiExpressionType<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        {
+            return (BnfiExpressionType<TType>)bnfiTerms
+                .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
+                .Aggregate(
+                new BnfExpression(bnfiTermFirst.AsBnfTerm()),
+                (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed + bnfTermToBeProcess
+                );
+        }
     }
 }

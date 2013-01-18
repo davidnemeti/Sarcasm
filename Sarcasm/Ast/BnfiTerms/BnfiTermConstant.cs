@@ -10,7 +10,7 @@ using Irony.Parsing;
 
 namespace Sarcasm.Ast
 {
-    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>
+    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>, IBnfiTermOrAbleForChoice<T>
     {
         public BnfiTermConstant()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))

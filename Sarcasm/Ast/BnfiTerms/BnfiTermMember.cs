@@ -156,7 +156,8 @@ namespace Sarcasm.Ast
         }
     }
 
-    public partial class BnfiTermMember<TDeclaringType> : BnfiTermMember, IBnfiTerm<TDeclaringType>
+    // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
+    public partial class BnfiTermMember<TDeclaringType> : BnfiTermMember, IBnfiTerm<TDeclaringType>, IBnfiTermPlusAbleForType<TDeclaringType>
     {
         internal BnfiTermMember(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(memberInfo, bnfTerm)

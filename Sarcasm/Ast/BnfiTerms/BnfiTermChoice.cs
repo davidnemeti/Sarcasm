@@ -90,7 +90,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>
+    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>, IBnfiTermOrAbleForChoice<TType>
     {
         public BnfiTermChoice(string errorAlias = null)
             : base(typeof(TType), errorAlias)
@@ -107,12 +107,13 @@ namespace Sarcasm.Ast
 
         public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
 
-        public void SetRuleOr(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
+        // NOTE: type inference for subclasses works only if SetRuleOr is an instance method and not an extension method
+        public void SetRuleOr(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
         {
             this.Rule = Or(bnfiTermFirst, bnfiTerms);
         }
 
-        public BnfiExpressionChoice<TType> Or(IBnfiTerm<TType> bnfiTermFirst, params IBnfiTerm<TType>[] bnfiTerms)
+        public BnfiExpressionChoice<TType> Or(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
         {
             return (BnfiExpressionChoice<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
