@@ -97,34 +97,34 @@ namespace Sarcasm.Ast
 	{
 		#region Data
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>()
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>(string name = "data<#= methodNameExt #>")
 		{
-			return new DataLiteralBase(name: "data<#= methodNameExt #>", dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
+			return new DataLiteralBase(name: name, dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv()
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv(string name)
 		{
-			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
+			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv(string terminator)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: "data<#= methodNameExt #>Dsv", dataType: TypeCode.<#= typeCode #>, terminator: terminator).ParseData<#= methodNameExt #>();
+			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>, terminator: terminator).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string startEndSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).ParseData<#= methodNameExt #>();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string startSymbol, string endSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: "data<#= methodNameExt #>Quoted", dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).ParseData<#= methodNameExt #>();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).ParseData<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>FixedLength(int length)
+        public static BnfiTermValue<#= typeParamsStr #> ParseData<#= methodNameExt #>FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: "data<#= methodNameExt #>FixedLength", dataType: TypeCode.<#= typeCode #>, length: length).ParseData<#= methodNameExt #>();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.<#= typeCode #>, length: length).ParseData<#= methodNameExt #>();
 		}
 
 		#endregion
@@ -135,14 +135,19 @@ namespace Sarcasm.Ast
 
 		#region Number
 
-		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>()
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(string name = "number")
         {
-			return new NumberLiteral(name: "number").ParseNumber<#= methodNameExt #>();
+			return new NumberLiteral(name: name).ParseNumber<#= methodNameExt #>();
         }
 
 		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(NumberOptions options)
         {
 			return new NumberLiteral(name: "number", options: options).ParseNumber<#= methodNameExt #>();
+        }
+
+		public static BnfiTermValue<#= typeParamsStr #> ParseNumber<#= methodNameExt #>(string name, NumberOptions options)
+        {
+			return new NumberLiteral(name: name, options: options).ParseNumber<#= methodNameExt #>();
         }
 
 		#endregion
