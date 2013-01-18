@@ -80,30 +80,48 @@ namespace Sarcasm.Unparsing
 
             try
             {
-                bool isAnyUtokenMiddle = false;
+                /*
+                 * NOTE that we cannot return the result of ConcatIfAnyMiddle because that would result in calling
+                 * formatter.End immediately (before any utokens would be yielded) which is not the expected behavior.
+                 * So we have to iterate through the resulted utokens and yield them one-by-one.
+                 * */
 
-                foreach (Utoken utokenMiddle in UnparseRawMiddle(obj, bnfTerm))
-                {
-                    if (!isAnyUtokenMiddle)
-                    {
-                        foreach (Utoken utokenBefore in formatter.YieldBefore(bnfTerm, beginParams))
-                            yield return utokenBefore;
-                    }
+                var utokens = ConcatIfAnyMiddle(
+                    formatter.YieldBefore(bnfTerm, beginParams),
+                    UnparseRawMiddle(obj, bnfTerm),
+                    formatter.YieldAfter(bnfTerm)
+                    );
 
-                    isAnyUtokenMiddle = true;
-
-                    yield return utokenMiddle;
-                }
-
-                if (isAnyUtokenMiddle)
-                {
-                    foreach (Utoken utokenAfter in formatter.YieldAfter(bnfTerm))
-                        yield return utokenAfter;
-                }
+                foreach (Utoken utoken in utokens)
+                    yield return utoken;
             }
             finally
             {
                 formatter.End(bnfTerm);
+            }
+        }
+
+        private static IEnumerable<Utoken> ConcatIfAnyMiddle(IEnumerable<Utoken> utokensBefore, IEnumerable<Utoken> utokensMiddle, IEnumerable<Utoken> utokensAfter)
+        {
+            bool isAnyUtokenMiddle = false;
+
+            foreach (Utoken utokenMiddle in utokensMiddle)
+            {
+                if (!isAnyUtokenMiddle)
+                {
+                    foreach (Utoken utokenBefore in utokensBefore)
+                        yield return utokenBefore;
+                }
+
+                isAnyUtokenMiddle = true;
+
+                yield return utokenMiddle;
+            }
+
+            if (isAnyUtokenMiddle)
+            {
+                foreach (Utoken utokenAfter in utokensAfter)
+                    yield return utokenAfter;
             }
         }
 
