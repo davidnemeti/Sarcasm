@@ -23,7 +23,7 @@ namespace Sarcasm.Ast
     /// <summary>
     /// Typesafe IBnfiExpression
     /// </summary>
-    public interface IBnfiExpression<out T> : IBnfiExpression, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>
+    public interface IBnfiExpression<out T> : IBnfiExpression, IBnfiTerm<T>
     {
     }
 

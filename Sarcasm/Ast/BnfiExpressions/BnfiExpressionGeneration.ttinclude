@@ -6,9 +6,9 @@
 <#@ import namespace="System.Text" #> 
 <#@ import namespace="System.Text.RegularExpressions" #> 
 <#+
-IEnumerable<string> GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null, IEnumerable<string> constraints = null,
-	IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null, IEnumerable<string> bnfTermSideTypeNames = null, bool multiCore = true,
-	Func<string, string, bool> filterOutCorePairs = null)
+IEnumerable<string> GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null,
+	IEnumerable<string> constraints = null, IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null,
+	IEnumerable<string> bnfTermSideTypeNames = null, bool multiCore = true, Func<string, string, bool> filterOutCorePairs = null)
 {
 	implementInterfaces = implementInterfaces ?? new string[0];
 	constraints = constraints ?? new string[0];
@@ -50,20 +50,11 @@ void GenerateBnfExpressionClass(string bnfExpressionTypeName, string inheritFrom
 
 	string typeParameterName = ExtractFirstTypeParameterName(bnfExpressionTypeName);
 	string orTypeParameterString = typeParameterName != null ? "<" + typeParameterName + ">" : string.Empty;
-
-	string bnfExpressionInterfaceName = "I" + bnfExpressionTypeName;
-
-	string bnfExpressionInterfaceDefinitionName = bnfExpressionInterfaceName;
-	if (typeParameterName != null)
-		bnfExpressionInterfaceDefinitionName = GetTypeNameWithReplacedTypeParameterName(bnfExpressionInterfaceDefinitionName, "out " + typeParameterName);
-
 	string bnfExpressionConstructorName = TypeNameToConstructorName(bnfExpressionTypeName);
 #>
-	public interface <#= bnfExpressionInterfaceDefinitionName #> <#= implementInterfaces.Any() ? string.Format(": {0}", string.Join(", ", implementInterfaces)) : string.Empty #> { }
-
 	#region <#= bnfExpressionTypeName #> definition
 
-	public partial class <#= bnfExpressionTypeName #> : <#= inheritFromBase #>, <#= bnfExpressionInterfaceName #>
+	public partial class <#= bnfExpressionTypeName #> : <#= inheritFromBase #><#= implementInterfaces.Any() ? string.Format(", {0}", string.Join(", ", implementInterfaces)) : string.Empty #>
 <#+
 	WriteConstraints(constraints, "\t\t");
 #>

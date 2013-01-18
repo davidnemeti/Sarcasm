@@ -17,11 +17,9 @@ namespace Sarcasm.Ast
 {
 	#region BnfiExpressionTerminals definition and operators
 
-	public interface IBnfiExpressionTerminals : IBnfiExpressionTL { }
-
 	#region BnfiExpressionTerminals definition
 
-	public partial class BnfiExpressionTerminals : BnfiExpression, IBnfiExpressionTerminals
+	public partial class BnfiExpressionTerminals : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
@@ -367,11 +365,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionKeyTermPunctuations definition and operators
 
-	public interface IBnfiExpressionKeyTermPunctuations : IBnfiExpressionTL { }
-
 	#region BnfiExpressionKeyTermPunctuations definition
 
-	public partial class BnfiExpressionKeyTermPunctuations : BnfiExpression, IBnfiExpressionKeyTermPunctuations
+	public partial class BnfiExpressionKeyTermPunctuations : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
@@ -551,11 +547,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionTypeTL definition and operators
 
-	public interface IBnfiExpressionTypeTL : IBnfiExpressionTL { }
-
 	#region BnfiExpressionTypeTL definition
 
-	public partial class BnfiExpressionTypeTL : BnfiExpression, IBnfiExpressionTypeTL
+	public partial class BnfiExpressionTypeTL : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
@@ -899,11 +893,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionType<T> definition and operators
 
-	public interface IBnfiExpressionType<out T> : IBnfiExpression<T> { }
-
 	#region BnfiExpressionType<T> definition
 
-	public partial class BnfiExpressionType<T> : BnfiExpression, IBnfiExpressionType<T>
+	public partial class BnfiExpressionType<T> : BnfiExpression, IBnfiExpression<T>, IBnfiTermPlusAbleForType<T>
 	{
 		#region Construction
 
@@ -1247,11 +1239,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionValueTL definition and operators
 
-	public interface IBnfiExpressionValueTL : IBnfiExpressionTL { }
-
 	#region BnfiExpressionValueTL definition
 
-	public partial class BnfiExpressionValueTL : BnfiExpression, IBnfiExpressionValueTL
+	public partial class BnfiExpressionValueTL : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
@@ -1451,11 +1441,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionValue<T> definition and operators
 
-	public interface IBnfiExpressionValue<out T> : IBnfiExpression<T> { }
-
 	#region BnfiExpressionValue<T> definition
 
-	public partial class BnfiExpressionValue<T> : BnfiExpression, IBnfiExpressionValue<T>
+	public partial class BnfiExpressionValue<T> : BnfiExpression, IBnfiExpression<T>, IBnfiTermOrAbleForChoice<T>
 	{
 		#region Construction
 
@@ -1655,11 +1643,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionChoiceTL definition and operators
 
-	public interface IBnfiExpressionChoiceTL : IBnfiExpressionTL { }
-
 	#region BnfiExpressionChoiceTL definition
 
-	public partial class BnfiExpressionChoiceTL : BnfiExpression, IBnfiExpressionChoiceTL
+	public partial class BnfiExpressionChoiceTL : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
@@ -2147,11 +2133,9 @@ namespace Sarcasm.Ast
 
 	#region BnfiExpressionChoice<T> definition and operators
 
-	public interface IBnfiExpressionChoice<out T> : IBnfiExpression<T> { }
-
 	#region BnfiExpressionChoice<T> definition
 
-	public partial class BnfiExpressionChoice<T> : BnfiExpression, IBnfiExpressionChoice<T>
+	public partial class BnfiExpressionChoice<T> : BnfiExpression, IBnfiExpression<T>, IBnfiTermOrAbleForChoice<T>
 	{
 		#region Construction
 

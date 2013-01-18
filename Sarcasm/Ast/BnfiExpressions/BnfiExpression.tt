@@ -54,7 +54,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionType<T>",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermPlusAbleForType<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>", "BnfiTermCopy<T>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
@@ -74,7 +74,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionValue<T>",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
@@ -95,7 +95,7 @@ namespace Sarcasm.Ast
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionChoice<T>",
 		inheritFromBase: "BnfiExpression",
-		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric.Concat(new []{"IBnfiTermCollectionWithCollectionType<TCollectionType>"}),
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
