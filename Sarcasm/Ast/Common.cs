@@ -21,6 +21,11 @@ namespace Sarcasm.Ast
         BnfTerm AsBnfTerm();
     }
 
+    public interface INonTerminal
+    {
+        NonTerminal AsNonTerminal();
+    }
+
     /// <summary>
     /// Typeless IBnfiTerm
     /// </summary>
@@ -61,7 +66,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm
+    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal
     {
         protected Type Type { get; private set; }
 
@@ -81,6 +86,11 @@ namespace Sarcasm.Ast
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
+        {
+            return this;
+        }
+
+        NonTerminal INonTerminal.AsNonTerminal()
         {
             return this;
         }

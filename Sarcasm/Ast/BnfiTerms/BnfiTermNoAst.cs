@@ -33,6 +33,11 @@ namespace Sarcasm.Ast
             return this;
         }
 
+        NonTerminal INonTerminal.AsNonTerminal()
+        {
+            return this;
+        }
+
         #region Unparse
 
         bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)

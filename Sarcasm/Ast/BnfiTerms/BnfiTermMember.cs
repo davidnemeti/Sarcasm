@@ -110,6 +110,11 @@ namespace Sarcasm.Ast
             return this;
         }
 
+        NonTerminal INonTerminal.AsNonTerminal()
+        {
+            return this;
+        }
+
         [Obsolete("Cannot use Rule method", error: true)]
         public new BnfExpression Rule
         {

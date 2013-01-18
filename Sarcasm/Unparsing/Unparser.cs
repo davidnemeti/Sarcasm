@@ -19,6 +19,21 @@ namespace Sarcasm.Unparsing
 {
     public class Unparser : IUnparser
     {
+        #region Types
+        private class BnfTermsWithPriority
+        {
+            public readonly IEnumerable<UnparsableObject> UnparsableObjects;
+            public readonly int? Priority;
+
+            public BnfTermsWithPriority(IEnumerable<UnparsableObject> unparsableObjects, int? priority)
+            {
+                this.UnparsableObjects = unparsableObjects;
+                this.Priority = priority;
+            }
+        }
+
+        #endregion
+
         internal const string logDirectoryName = "unparse_logs";
 
         internal readonly static TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
@@ -162,35 +177,12 @@ namespace Sarcasm.Unparsing
                     }
                     else
                     {
-                        // TODO: we should check whether any bnfTermList has an UnparseHint
-
-                        tsPriorities.Debug("{0} BEGIN priorities", bnfTerm);
-                        tsPriorities.Indent();
-
-                        var chosenChildBnfTermsWithPriority = GetChildBnfTermLists(nonTerminal)
-                            .Select(childBnfTerms =>
-                                {
-                                    var childUnparsableObjects = unparsable.GetChildUnparsableObjects(childBnfTerms, obj);
-                                    return new
-                                        {
-                                            ChildUnparsableObjects = childUnparsableObjects,
-                                            Priority = unparsable.GetChildBnfTermListPriority(this, obj, childUnparsableObjects)
-                                                .DebugWriteLinePriority(tsPriorities, bnfTerm, obj)
-                                        };
-                                }
-                            )
-                            .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
-                            .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
-                            .FirstOrDefault();
-
-                        tsPriorities.Unindent();
-                        tsPriorities.Debug("{0} END priorities", bnfTerm);
-                        tsPriorities.Debug("");
+                        BnfTermsWithPriority chosenChildBnfTermsWithPriority = ChooseBnfTermsbyPriority(obj, unparsable);
 
                         if (chosenChildBnfTermsWithPriority == null)
                             throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.", obj, obj.GetType().Name, bnfTerm.Name));
 
-                        foreach (UnparsableObject childValue in chosenChildBnfTermsWithPriority.ChildUnparsableObjects)
+                        foreach (UnparsableObject childValue in chosenChildBnfTermsWithPriority.UnparsableObjects)
                             foreach (Utoken utoken in UnparseRaw(childValue.obj, childValue.bnfTerm))
                                 yield return utoken;
                     }
@@ -207,6 +199,38 @@ namespace Sarcasm.Unparsing
             else
             {
                 throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + bnfTerm.Name, bnfTerm.GetType().Name));
+            }
+        }
+
+        private BnfTermsWithPriority ChooseBnfTermsbyPriority(object obj, IUnparsable unparsable)
+        {
+            // TODO: we should check whether any bnfTermList has an UnparseHint
+
+            tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
+            tsPriorities.Indent();
+
+            try
+            {
+                return GetChildBnfTermLists(unparsable.AsNonTerminal())
+                    .Select(childBnfTerms =>
+                        {
+                            var childUnparsableObjects = unparsable.GetChildUnparsableObjects(childBnfTerms, obj);
+                            return new BnfTermsWithPriority(
+                                    childUnparsableObjects,
+                                    unparsable.GetChildBnfTermListPriority(this, obj, childUnparsableObjects)
+                                        .DebugWriteLinePriority(tsPriorities, unparsable.AsNonTerminal(), obj)
+                                );
+                        }
+                    )
+                    .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
+                    .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
+                    .FirstOrDefault();
+            }
+            finally
+            {
+                tsPriorities.Unindent();
+                tsPriorities.Debug("{0} END priorities", unparsable.AsNonTerminal());
+                tsPriorities.Debug("");
             }
         }
 
@@ -291,7 +315,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public interface IUnparsable
+    public interface IUnparsable : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens);
         IEnumerable<UnparsableObject> GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj);
