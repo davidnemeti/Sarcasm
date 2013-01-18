@@ -36,6 +36,22 @@ namespace Sarcasm.Ast
 
     public abstract partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsable
     {
+        #region Types
+
+        private class CollectionInfo
+        {
+            public readonly Type collectionType;
+            public readonly Type elementType;
+
+            public CollectionInfo(Type collectionType, Type elementType)
+            {
+                this.collectionType = collectionType;
+                this.elementType = elementType;
+            }
+        }
+
+        #endregion
+
         #region State
 
         private ListKind? listKind = null;
@@ -46,7 +62,7 @@ namespace Sarcasm.Ast
         private BnfTerm element;
         private BnfTerm delimiter;
 
-        private readonly bool movable = true;
+        private readonly bool movable;
 
         public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
@@ -54,38 +70,22 @@ namespace Sarcasm.Ast
 
         protected Type collectionType { get { return base.Type; } }
 
-        [Obsolete("Use collectionDynamicType instead", error: true)]
+        [Obsolete("Use collectionType instead", error: true)]
         public new Type Type { get { return base.Type; } }
 
         private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         #region Construction
 
-        protected BnfiTermCollection(Type collectionType, string name = null)
-            : this(collectionType, elementType: null, name: name, runtimeCheck: true)
+        protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck, bool movable)
+            : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name)
         {
-            this.movable = false;
-        }
+            CollectionInfo collectionInfo = GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck);
+            Type collectionType = collectionInfo.collectionType;
+            elementType = collectionInfo.elementType;
 
-        protected BnfiTermCollection(Type collectionType, Type elementType, string name = null)
-            : this(collectionType, elementType, name, runtimeCheck: true)
-        {
-            this.movable = false;
-        }
-
-        protected BnfiTermCollection(Type collectionType, Type elementType, string name, bool runtimeCheck)
-            : base(collectionType, name)
-        {
             if (runtimeCheck && collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
-
-            if (runtimeCheck && elementType == null && collectionType.IsGenericType)
-            {   // we try to guess the elementType
-                Type iCollectionGenericType = collectionType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
-                if (iCollectionGenericType != null)
-                    elementType = iCollectionGenericType.GenericTypeArguments[0];
-            }
-            this.elementType = elementType ?? typeof(object);
 
             if (runtimeCheck)
             {
@@ -94,9 +94,77 @@ namespace Sarcasm.Ast
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
             }
 
+            this.movable = movable;
+
             SetNodeCreator();
 
             this.EmptyCollectionHandling = Sarcasm.Ast.Grammar.CurrentGrammar.EmptyCollectionHandling;
+        }
+
+        private static CollectionInfo GetCollectionInfo(Type collectionTypeOrTypeDefinition, Type elementTypeHint, bool runtimeCheck)
+        {
+            if (collectionTypeOrTypeDefinition == null)
+                throw new ArgumentNullException("collectionTypeOrTypeDefinition", "collectionTypeOrTypeDefinition should not be null");
+
+            if (!runtimeCheck)
+            {
+                if (elementTypeHint == null)
+                    throw new ArgumentNullException("elementTypeHint", "elementTypeHint should not be null if runtime check is turned off");
+
+                return new CollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint);
+            }
+
+            if (collectionTypeOrTypeDefinition.IsGenericTypeDefinition)
+            {
+                if (elementTypeHint == null)
+                    throw new ArgumentNullException("elementType", "elementType should not be null if collectionTypeOrTypeDefinition is a generic type definition");
+
+                return new CollectionInfo(
+                    collectionTypeOrTypeDefinition.MakeGenericType(elementTypeHint),
+                    elementTypeHint
+                    );
+            }
+            else
+            {
+                return new CollectionInfo(
+                    collectionTypeOrTypeDefinition,
+                    _GetElementType(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck)
+                    );
+            }
+        }
+
+        private static Type _GetElementType(Type collectionType, Type elementTypeHint, bool runtimeCheck)
+        {
+            if (!runtimeCheck)
+            {
+                if (elementTypeHint == null)
+                    throw new ArgumentNullException("elementTypeHint", "elementTypeHint should not be null if runtime check is turned off");
+
+                return elementTypeHint;
+            }
+
+            if (collectionType.IsGenericType)
+            {
+                // we try to guess the elementType
+
+                Type iCollectionGenericType = collectionType.GetInterfaces().FirstOrDefault(interfaceType => interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
+
+                if (iCollectionGenericType != null)
+                {
+                    Type guessedElementType = iCollectionGenericType.GenericTypeArguments[0];
+
+                    if (elementTypeHint != null && elementTypeHint != guessedElementType)
+                        throw new ArgumentException("elementType should be null or equal to the generic parameter of the collectionTypeOrTypeDefinition if collectionTypeOrTypeDefinition is a generic type", "elementType");
+
+                    return guessedElementType;
+                }
+                else
+                    throw new ArgumentException("although collectionTypeOrTypeDefinition is a generic type, elementType could not be guessed", "elementType");
+            }
+            else if (elementTypeHint != null)
+                return elementTypeHint;
+            else
+                return typeof(object);
         }
 
         protected virtual void SetNodeCreator()
@@ -175,7 +243,7 @@ namespace Sarcasm.Ast
         public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -188,7 +256,7 @@ namespace Sarcasm.Ast
         public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -205,7 +273,7 @@ namespace Sarcasm.Ast
         public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -218,7 +286,7 @@ namespace Sarcasm.Ast
         public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, TElementType>();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -230,48 +298,32 @@ namespace Sarcasm.Ast
 
         #endregion
 
-        #region Typeless converted to semi-typesafe (TCollectionType, object)
-
-        public static IBnfiTermCollection<object> StarListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
-            where TCollectionType : ICollection<object>, new()
-        {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, object>();
-            MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
-            return bnfiTermCollection;
-        }
-
-        public static IBnfiTermCollection<object> StarListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
-        {
-            return StarListST<List<object>>(bnfTermElement, delimiter);
-        }
-
-        public static IBnfiTermCollection<object> PlusListST<TCollectionType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
-            where TCollectionType : ICollection<object>, new()
-        {
-            var bnfiTermCollection = new BnfiTermCollection<TCollectionType, object>();
-            MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
-            return bnfiTermCollection;
-        }
-
-        public static IBnfiTermCollection<object> PlusListST(BnfTerm bnfTermElement, BnfTerm delimiter = null)
-        {
-            return PlusListST<List<object>>(bnfTermElement, delimiter);
-        }
-
-        #endregion
-
         #region Typeless
 
         public static IBnfiTermCollectionTL StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = new BnfiTermCollectionTL(typeof(ICollection<object>));
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static IBnfiTermCollectionTL PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = new BnfiTermCollectionTL(typeof(ICollection<object>));
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
+            MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return bnfiTermCollection;
+        }
+
+        public static IBnfiTermCollectionTL StarListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<>), elementType);
+            MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
+            return bnfiTermCollection;
+        }
+
+        public static IBnfiTermCollectionTL PlusListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        {
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<>), elementType);
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -444,13 +496,28 @@ namespace Sarcasm.Ast
     public partial class BnfiTermCollectionTL : BnfiTermCollection, IBnfiTermCollectionTL
     {
         public BnfiTermCollectionTL(Type collectionType, string name = null)
-            : base(collectionType, name)
+            : this(collectionType, elementType: null, name: name, movable: false)
         {
         }
 
-        public BnfiTermCollectionTL(Type collectionType, Type elementType, string name = null)
-            : base(collectionType, elementType, name, runtimeCheck: true)
+        public BnfiTermCollectionTL(Type collectionTypeDefinition, Type elementType, string name = null)
+            : this(collectionTypeDefinition, elementType, name, movable: false)
         {
+        }
+
+        private BnfiTermCollectionTL(Type collectionTypeOrTypeDefinition, Type elementType, string name, bool movable)
+            : base(collectionTypeOrTypeDefinition, elementType, name: name, runtimeCheck: true, movable: movable)
+        {
+        }
+
+        internal static BnfiTermCollectionTL CreateMovable(Type collectionTypeDefinition, Type elementType)
+        {
+            return new BnfiTermCollectionTL(collectionTypeDefinition, elementType, name: null, movable: true);
+        }
+
+        internal static BnfiTermCollectionTL CreateMovable(Type collectionType)
+        {
+            return new BnfiTermCollectionTL(collectionType, elementType: null, name: null, movable: true);
         }
 
         public new BnfiTermCollectionTL Rule { set { base.Rule = value; } }
@@ -460,8 +527,18 @@ namespace Sarcasm.Ast
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string name = null)
-            : base(typeof(TCollectionType), typeof(TElementType), name: name, runtimeCheck: false)
+            : this(name: name, movable: false)
         {
+        }
+
+        private BnfiTermCollection(string name, bool movable)
+            : base(typeof(TCollectionType), typeof(TElementType), name: name, runtimeCheck: false, movable: movable)
+        {
+        }
+
+        internal static BnfiTermCollection<TCollectionType, TElementType> CreateMovable()
+        {
+            return new BnfiTermCollection<TCollectionType, TElementType>(name: null, movable: true);
         }
 
         protected override void SetNodeCreator()

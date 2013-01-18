@@ -70,32 +70,6 @@ namespace Sarcasm.Ast
 
         #endregion
 
-        #region Typeless converted to semi-typesafe (TCollectionType, object)
-
-        public static IBnfiTermCollection<object> StarListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
-            where TCollectionType : ICollection<object>, new()
-        {
-            return BnfiTermCollection.StarListST<TCollectionType>(bnfTermElement, delimiter);
-        }
-
-        public static IBnfiTermCollection<object> StarListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
-        {
-            return BnfiTermCollection.StarListST(bnfTermElement, delimiter);
-        }
-
-        public static IBnfiTermCollection<object> PlusListST<TCollectionType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
-            where TCollectionType : ICollection<object>, new()
-        {
-            return BnfiTermCollection.PlusListST<TCollectionType>(bnfTermElement, delimiter);
-        }
-
-        public static IBnfiTermCollection<object> PlusListST(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
-        {
-            return BnfiTermCollection.PlusListST(bnfTermElement, delimiter);
-        }
-
-        #endregion
-
         #region Typeless
 
         public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
@@ -106,6 +80,16 @@ namespace Sarcasm.Ast
         public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListTL(bnfTermElement, delimiter);
+        }
+
+        public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
+        {
+            return BnfiTermCollection.StarListTL(elementType, bnfTermElement, delimiter);
+        }
+
+        public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
+        {
+            return BnfiTermCollection.PlusListTL(elementType, bnfTermElement, delimiter);
         }
 
         #endregion
