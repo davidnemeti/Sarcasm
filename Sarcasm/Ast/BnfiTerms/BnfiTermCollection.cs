@@ -82,15 +82,16 @@ namespace Sarcasm.Ast
         {
             CollectionInfo collectionInfo = GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck);
             Type collectionType = collectionInfo.collectionType;
-            elementType = collectionInfo.elementType;
-
-            if (runtimeCheck && collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
-                throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
+            this.elementType = collectionInfo.elementType;
 
             if (runtimeCheck)
             {
-                addMethod = collectionType.GetMethod("Add", bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
-                if (addMethod == null)
+                if (collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
+                    throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
+
+                this.addMethod = collectionType.GetMethod("Add", bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
+
+                if (this.addMethod == null)
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
             }
 
