@@ -61,20 +61,20 @@ namespace Sarcasm.Ast
 
         #region Construction
 
-        protected BnfiTermCollection(Type collectionType, string errorAlias = null)
-            : this(collectionType, elementType: null, errorAlias: errorAlias, runtimeCheck: true)
+        protected BnfiTermCollection(Type collectionType, string name = null)
+            : this(collectionType, elementType: null, name: name, runtimeCheck: true)
         {
             this.movable = false;
         }
 
-        protected BnfiTermCollection(Type collectionType, Type elementType, string errorAlias = null)
-            : this(collectionType, elementType, errorAlias, runtimeCheck: true)
+        protected BnfiTermCollection(Type collectionType, Type elementType, string name = null)
+            : this(collectionType, elementType, name, runtimeCheck: true)
         {
             this.movable = false;
         }
 
-        protected BnfiTermCollection(Type collectionType, Type elementType, string errorAlias, bool runtimeCheck)
-            : base(collectionType, errorAlias)
+        protected BnfiTermCollection(Type collectionType, Type elementType, string name, bool runtimeCheck)
+            : base(collectionType, name)
         {
             if (runtimeCheck && collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
@@ -443,13 +443,13 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermCollectionTL : BnfiTermCollection, IBnfiTermCollectionTL
     {
-        public BnfiTermCollectionTL(Type collectionType, string errorAlias = null)
-            : base(collectionType, errorAlias)
+        public BnfiTermCollectionTL(Type collectionType, string name = null)
+            : base(collectionType, name)
         {
         }
 
-        public BnfiTermCollectionTL(Type collectionType, Type elementType, string errorAlias = null)
-            : base(collectionType, elementType, errorAlias, runtimeCheck: true)
+        public BnfiTermCollectionTL(Type collectionType, Type elementType, string name = null)
+            : base(collectionType, elementType, name, runtimeCheck: true)
         {
         }
 
@@ -459,8 +459,8 @@ namespace Sarcasm.Ast
     public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollection, IBnfiTermCollection<TElementType>
         where TCollectionType : ICollection<TElementType>, new()
     {
-        public BnfiTermCollection(string errorAlias = null)
-            : base(typeof(TCollectionType), typeof(TElementType), errorAlias: errorAlias, runtimeCheck: false)
+        public BnfiTermCollection(string name = null)
+            : base(typeof(TCollectionType), typeof(TElementType), name: name, runtimeCheck: false)
         {
         }
 

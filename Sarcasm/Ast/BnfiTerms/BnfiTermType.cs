@@ -18,8 +18,8 @@ namespace Sarcasm.Ast
 {
     public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
-        protected BnfiTermType(Type type, string errorAlias)
-            : base(type, errorAlias)
+        protected BnfiTermType(Type type, string name)
+            : base(type, name)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
@@ -143,8 +143,8 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermTypeTL : BnfiTermType, IBnfiTermTL, IBnfiTermCopyableTL
     {
-        public BnfiTermTypeTL(Type type, string errorAlias = null)
-            : base(type, errorAlias)
+        public BnfiTermTypeTL(Type type, string name = null)
+            : base(type, name)
         {
         }
 
@@ -163,8 +163,8 @@ namespace Sarcasm.Ast
 
         public TType _ { get { return BnfiTermType<TType>.__; } }
 
-        public BnfiTermType(string errorAlias = null)
-            : base(typeof(TType), errorAlias)
+        public BnfiTermType(string name = null)
+            : base(typeof(TType), name)
         {
         }
 

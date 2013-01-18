@@ -65,8 +65,8 @@ namespace Sarcasm.Ast
     {
         protected Type Type { get; private set; }
 
-        protected BnfiTermNonTerminal(Type type, string errorAlias)
-            : base(name: GrammarHelper.TypeNameWithDeclaringTypes(type), errorAlias: errorAlias)
+        protected BnfiTermNonTerminal(Type type, string name)
+            : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
             this.Type = type;
         }

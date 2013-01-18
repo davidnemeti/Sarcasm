@@ -30,34 +30,34 @@ namespace Sarcasm.Ast
 
         #region Construction
 
-        protected BnfiTermValue(string errorAlias)
-            : this(typeof(object), errorAlias)
+        protected BnfiTermValue(string name)
+            : this(typeof(object), name)
         {
             this.movable = false;
         }
 
-        protected BnfiTermValue(Type type, string errorAlias)
-            : base(type, errorAlias)
+        protected BnfiTermValue(Type type, string name)
+            : base(type, name)
         {
             this.movable = false;
             this.inverseValueConverterForUnparse = IdentityFunction;
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string errorAlias, bool astForChild)
-            : this(type, bnfTerm, (context, parseNode) => value, IdentityFunction, isOptionalValue, errorAlias, astForChild)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
+            : this(type, bnfTerm, (context, parseNode) => value, IdentityFunction, isOptionalValue, name, astForChild)
         {
             this.value = value;
         }
 
         [Obsolete("Pass either a 'value', or a valueParser with an inverseValueConverterForUnparse", error: true)]
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, bool isOptionalValue, string errorAlias, bool astForChild)
-            : this(type, bnfTerm, valueParser, NoUnparseByInverse(), isOptionalValue, errorAlias, astForChild)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, bool isOptionalValue, string name, bool astForChild)
+            : this(type, bnfTerm, valueParser, NoUnparseByInverse(), isOptionalValue, name, astForChild)
         {
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(type, errorAlias)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+            : base(type, name)
         {
             this.bnfTerm = bnfTerm;
 
@@ -85,7 +85,7 @@ namespace Sarcasm.Ast
 
         public static BnfiTermValueTL Parse(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermValueTL(type, terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValueTL(type, terminal, value, isOptionalValue: false, name: null, astForChild: astForChild);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -107,12 +107,12 @@ namespace Sarcasm.Ast
 
         public static BnfiTermValueTL Parse(Type type, Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermValueTL(type, terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValueTL(type, terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false, name: null, astForChild: astForChild);
         }
 
         public static BnfiTermValue<T> Parse<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, value, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValue<T>(terminal, value, isOptionalValue: false, name: null, astForChild: astForChild);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -123,7 +123,7 @@ namespace Sarcasm.Ast
 
         public static BnfiTermValue<T> Parse<T>(Terminal terminal, ValueParser<T> valueParser, ValueConverter<T, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false, errorAlias: null, astForChild: astForChild);
+            return new BnfiTermValue<T>(terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false, name: null, astForChild: astForChild);
         }
 
         public static BnfiTermValue<string> ParseIdentifier(IdentifierTerminal identifierTerminal)
@@ -160,7 +160,7 @@ namespace Sarcasm.Ast
                 ConvertValueConverterToValueParser(valueConverter),
                 inverseValueConverterForUnparse,
                 isOptionalValue: false,
-                errorAlias: null,
+                name: null,
                 astForChild: true
                 );
         }
@@ -178,7 +178,7 @@ namespace Sarcasm.Ast
                 ConvertValueConverterToValueParser(valueConverter),
                 inverseValueConverterForUnparse,
                 isOptionalValue: false,
-                errorAlias: null,
+                name: null,
                 astForChild: true
                 );
         }
@@ -196,7 +196,7 @@ namespace Sarcasm.Ast
                 ConvertValueConverterToValueParser(valueConverter),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
                 isOptionalValue: false,
-                errorAlias: null,
+                name: null,
                 astForChild: true
                 );
         }
@@ -299,7 +299,7 @@ namespace Sarcasm.Ast
                 ConvertValueConverterToValueParserOpt(valueConverter, defaultValue),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
                 isOptionalValue: true,
-                errorAlias: null,
+                name: null,
                 astForChild: true
                 );
         }
@@ -528,29 +528,29 @@ namespace Sarcasm.Ast
     {
         #region Construction
 
-        public BnfiTermValueTL(string errorAlias = null)
-            : base(errorAlias)
+        public BnfiTermValueTL(string name = null)
+            : base(name)
         {
         }
 
-        public BnfiTermValueTL(Type type, string errorAlias = null)
-            : base(type, errorAlias)
+        public BnfiTermValueTL(Type type, string name = null)
+            : base(type, name)
         {
         }
 
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(type, bnfTerm, value, isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
+            : base(type, bnfTerm, value, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueParser with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, bool isOptionalValue, string errorAlias, bool astForChild)
-            : this(type, bnfTerm, valueParser, NoUnparseByInverse(), isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, bool isOptionalValue, string name, bool astForChild)
+            : this(type, bnfTerm, valueParser, NoUnparseByInverse(), isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(type, bnfTerm, valueParser, inverseValueConverterForUnparse, isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+            : base(type, bnfTerm, valueParser, inverseValueConverterForUnparse, isOptionalValue, name, astForChild)
         {
         }
 
@@ -561,24 +561,24 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>
     {
-        public BnfiTermValue(string errorAlias = null)
-            : base(typeof(T), errorAlias)
+        public BnfiTermValue(string name = null)
+            : base(typeof(T), name)
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, T value, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(typeof(T), bnfTerm, value, isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValue(BnfTerm bnfTerm, T value, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(T), bnfTerm, value, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueParser with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermValue(BnfTerm bnfTerm, ValueParser<T> valueParser, bool isOptionalValue, string errorAlias, bool astForChild)
-            : this(bnfTerm, valueParser, NoUnparseByInverse<T>(), isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValue(BnfTerm bnfTerm, ValueParser<T> valueParser, bool isOptionalValue, string name, bool astForChild)
+            : this(bnfTerm, valueParser, NoUnparseByInverse<T>(), isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, ValueParser<T> valueParser, ValueConverter<T, object> inverseValueConverterForUnparse, bool isOptionalValue, string errorAlias, bool astForChild)
-            : base(typeof(T), bnfTerm, (context, parseNode) => valueParser(context, parseNode), CastValueConverter<T, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, errorAlias, astForChild)
+        internal BnfiTermValue(BnfTerm bnfTerm, ValueParser<T> valueParser, ValueConverter<T, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(T), bnfTerm, (context, parseNode) => valueParser(context, parseNode), CastValueConverter<T, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, name, astForChild)
         {
         }
 

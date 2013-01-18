@@ -17,8 +17,8 @@ namespace Sarcasm.Ast
 {
     public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
-        protected BnfiTermChoice(Type type, string errorAlias)
-            : base(type, errorAlias)
+        protected BnfiTermChoice(Type type, string name)
+            : base(type, name)
         {
             GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
         }
@@ -82,8 +82,8 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermChoiceTL : BnfiTermChoice, IBnfiTermTL
     {
-        public BnfiTermChoiceTL(Type type, string errorAlias = null)
-            : base(type, errorAlias)
+        public BnfiTermChoiceTL(Type type, string name = null)
+            : base(type, name)
         {
         }
 
@@ -92,8 +92,8 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>, IBnfiTermOrAbleForChoice<TType>
     {
-        public BnfiTermChoice(string errorAlias = null)
-            : base(typeof(TType), errorAlias)
+        public BnfiTermChoice(string name = null)
+            : base(typeof(TType), name)
         {
         }
 
