@@ -44,6 +44,9 @@
     <AssemblyOriginatorKeyFile>Signature\Sarcasm.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\Libraries\Irony.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -106,12 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Irony\Irony\010.Irony.2010.csproj">
-      <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
-      <Name>010.Irony.2010</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
