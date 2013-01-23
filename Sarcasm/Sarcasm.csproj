@@ -82,6 +82,7 @@
     <Compile Include="Ast\Grammar.cs" />
     <Compile Include="Misc\Misc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Unparsing\ExpressionUnparser.cs" />
     <Compile Include="Unparsing\Formatter.cs" />
     <Compile Include="Unparsing\Exceptions.cs" />
     <Compile Include="Unparsing\Formatting.cs" />

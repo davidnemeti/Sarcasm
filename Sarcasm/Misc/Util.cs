@@ -9,6 +9,11 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static string ToString(IFormatProvider formatProvider, object obj)
+        {
+            return string.Format(formatProvider, "{0}", obj);
+        }
+
         public static int? SumIncludingNullValues<TSource>(this IEnumerable<TSource> items, Func<TSource, int?> selector)
         {
             return items.Select(selector).SumIncludingNullValues();

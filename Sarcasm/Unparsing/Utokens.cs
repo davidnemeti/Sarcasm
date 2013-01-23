@@ -92,7 +92,7 @@ namespace Sarcasm.Unparsing
 
         public override string ToString(Formatting formatting)
         {
-            return this.Text ?? Unparser.ToString(formatting.FormatProvider, this.Reference);
+            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference);
         }
 
         public override string ToString()

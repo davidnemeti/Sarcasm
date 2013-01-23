@@ -37,7 +37,7 @@ namespace Sarcasm
             return priority;
         }
 
-        internal static Unparser.BnfTermKind DebugWriteLineBnfTermKind(this Unparser.BnfTermKind bnfTermKind, TraceSource ts, BnfTerm bnfTerm, string extraMessage = null)
+        internal static ExpressionUnparser.BnfTermKind DebugWriteLineBnfTermKind(this ExpressionUnparser.BnfTermKind bnfTermKind, TraceSource ts, BnfTerm bnfTerm, string extraMessage = null)
         {
             ts.Debug(
                 "{0}, kind: {1}{2}",
