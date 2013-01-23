@@ -271,6 +271,8 @@ namespace Sarcasm.Unparsing
             else
                 bnfTermToBnfTermKind.Add(bnfTerm, BnfTermKind.Other);  // our assumption was wrong -> it is "Other"
 
+            bnfTermToBnfTermKindHint.Remove(bnfTerm);
+
             tsParentheses.Unindent();
             bnfTermKind.DebugWriteLineBnfTermKind(tsParentheses, bnfTerm);
 
