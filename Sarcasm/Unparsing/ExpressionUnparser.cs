@@ -16,6 +16,8 @@ namespace Sarcasm.Unparsing
 {
     internal class ExpressionUnparser
     {
+        #region Tracing
+
         internal readonly static TraceSource tsParentheses = new TraceSource("PARENTHESES", SourceLevels.Verbose);
 
 #if DEBUG
@@ -29,6 +31,8 @@ namespace Sarcasm.Unparsing
             tsParentheses.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "parentheses.log"))));
         }
 #endif
+
+        #endregion
 
         #region Types
 

@@ -86,6 +86,7 @@
     <Compile Include="Unparsing\Formatter.cs" />
     <Compile Include="Unparsing\Exceptions.cs" />
     <Compile Include="Unparsing\Formatting.cs" />
+    <Compile Include="Unparsing\UnparserRelated.cs" />
     <Compile Include="Unparsing\Utokens.cs" />
     <Compile Include="Unparsing\Unparser.cs" />
     <Compile Include="Misc\Util.cs" />
