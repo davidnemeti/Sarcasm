@@ -362,6 +362,26 @@ namespace Sarcasm.Ast
 
         #region Misc
 
+        public static bool IsOperator(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsOperator);
+        }
+
+        public static bool IsBrace(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsBrace);
+        }
+
+        public static bool IsOpenBrace(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsOpenBrace);
+        }
+
+        public static bool IsCloseBrace(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsCloseBrace);
+        }
+
         internal static void MarkTransient(NonTerminal nonTerminal)
         {
             nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);

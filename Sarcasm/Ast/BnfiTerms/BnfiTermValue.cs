@@ -437,7 +437,7 @@ namespace Sarcasm.Ast
                 return false;
             }
             else
-                throw new CannotUnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
+                throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
         IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
@@ -479,7 +479,7 @@ namespace Sarcasm.Ast
         private static readonly ValueConverter<object, object> noUnparseByInverse =
             value =>
             {
-                throw new CannotUnparseException("Cannot unparse. Inverse value converter parameter for unparse is missing");
+                throw new UnparseException("Cannot unparse. Inverse value converter parameter for unparse is missing");
             };
 
         public static ValueConverter<object, object> NoUnparseByInverse()

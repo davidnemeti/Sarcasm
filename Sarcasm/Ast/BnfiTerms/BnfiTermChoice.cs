@@ -58,7 +58,7 @@ namespace Sarcasm.Ast
 
                 if (mainChildBnfTermWithType == null)
                 {
-                    throw new CannotUnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
+                    throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
                         obj, obj.GetType().Name, mainChildBnfTerm.Name));
                 }
 

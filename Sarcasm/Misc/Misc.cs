@@ -36,5 +36,17 @@ namespace Sarcasm
 
             return priority;
         }
+
+        internal static Unparser.BnfTermKind DebugWriteLineBnfTermKind(this Unparser.BnfTermKind bnfTermKind, TraceSource ts, BnfTerm bnfTerm, string extraMessage = null)
+        {
+            ts.Debug(
+                "{0}, kind: {1}{2}",
+                bnfTerm,
+                bnfTermKind,
+                extraMessage != null ? extraMessage : string.Empty
+                );
+
+            return bnfTermKind;
+        }
     }
 }

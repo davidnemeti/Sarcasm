@@ -21,11 +21,11 @@ namespace Sarcasm.Unparsing
     {
         #region Types
 
-        public class BeginParams
+        public class Params
         {
             public readonly IEnumerable<Utoken> utokensBetweenAndBefore;
 
-            public BeginParams(ICollection<Utoken> utokensBetweenAndBefore)
+            public Params(ICollection<Utoken> utokensBetweenAndBefore)
             {
                 this.utokensBetweenAndBefore = utokensBetweenAndBefore;
             }
@@ -64,7 +64,7 @@ namespace Sarcasm.Unparsing
         private readonly Formatting formatting;
 
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
-        Stack<List<UtokenControl>> dependersStack = new Stack<List<UtokenControl>>();
+        Stack<List<UtokenControl>> dependers = new Stack<List<UtokenControl>>();
         State lastState = State.Begin;
 
         public Formatter(Formatting formatting)
@@ -72,12 +72,12 @@ namespace Sarcasm.Unparsing
             this.formatting = formatting;
         }
 
-        public void Begin(BnfTerm bnfTerm, out BeginParams beginParams)
+        public void BeginBnfTerm(BnfTerm bnfTerm, out Params beginParams)
         {
             ICollection<Utoken> utokensBetweenAndBefore = new List<Utoken>();
 
             lastState = State.Begin;
-            List<UtokenControl> dependers = new List<UtokenControl>();
+            List<UtokenControl> _dependers = new List<UtokenControl>();
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
@@ -85,7 +85,7 @@ namespace Sarcasm.Unparsing
                 if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
                 {
                     bool existDepender;
-                    dependers.AddRange(CollectIndents(insertedUtokensBetween, out existDepender));
+                    _dependers.AddRange(CollectIndents(insertedUtokensBetween, out existDepender));
 
                     if (existDepender)
                         utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBetween));
@@ -98,7 +98,7 @@ namespace Sarcasm.Unparsing
             if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
             {
                 bool existDepender;
-                dependers.AddRange(CollectIndents(insertedUtokensBefore, out existDepender));
+                _dependers.AddRange(CollectIndents(insertedUtokensBefore, out existDepender));
 
                 if (existDepender)
                     utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBefore));
@@ -106,12 +106,12 @@ namespace Sarcasm.Unparsing
                     utokensBetweenAndBefore.Add((Utoken)insertedUtokensBefore);
             }
 
-            dependersStack.Push(dependers);
+            dependers.Push(_dependers);
 
-            beginParams = new BeginParams(utokensBetweenAndBefore);
+            beginParams = new Params(utokensBetweenAndBefore);
         }
 
-        public void End(BnfTerm bnfTerm)
+        public void EndBnfTerm(BnfTerm bnfTerm)
         {
             if (lastState != State.End)
                 leftBnfTermsFromTopToBottom.Clear();
@@ -121,19 +121,19 @@ namespace Sarcasm.Unparsing
 
             lastState = State.End;
 
-            dependersStack.Pop();
+            dependers.Pop();
         }
 
-        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, BeginParams beginParams)
+        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, Params @params)
         {
-            foreach (Utoken utokenBetweenOrBefore in beginParams.utokensBetweenAndBefore)
+            foreach (Utoken utokenBetweenOrBefore in @params.utokensBetweenAndBefore)
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
                 yield return utokenBetweenOrBefore;
             }
         }
 
-        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm)
+        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm, Params @params)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
@@ -142,8 +142,7 @@ namespace Sarcasm.Unparsing
                 yield return insertedUtokensAfter;
             }
 
-            var dependers = dependersStack.Peek();
-            foreach (UtokenControl depender in dependers)
+            foreach (UtokenControl depender in dependers.Peek())
             {
                 UtokenDependent utokenDependent;
 

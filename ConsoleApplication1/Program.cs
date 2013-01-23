@@ -37,7 +37,7 @@ namespace ConsoleApplication1
 
             Directory.CreateDirectory("unparse_logs");
             var stream = File.Create(@"unparse_logs\unparsed_text");
-            unparser.Unparse(parseTree.Root.AstNode).WriteToStreamAsync(stream, unparser);
+            unparser.Unparse(parseTree.Root.AstNode).WriteToStream(stream, unparser);
 
             //string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
             //Console.WriteLine(str);
