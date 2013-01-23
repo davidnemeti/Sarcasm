@@ -744,7 +744,7 @@ namespace Sarcasm.Unparsing
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    sw.WriteAsync(utoken.ToString(unparser.Formatting));
+                    sw.Write(utoken.ToString(unparser.Formatting));
             }
         }
 
