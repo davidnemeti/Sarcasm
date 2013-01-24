@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{E8BB73D5-07BA-42F5-9E1E-A84CAF30E702}"
 	ProjectSection(SolutionItems) = preProject
+		Libraries\DomainCore.dll = Libraries\DomainCore.dll
 		Libraries\Irony.dll = Libraries\Irony.dll
 	EndProjectSection
 EndProject
