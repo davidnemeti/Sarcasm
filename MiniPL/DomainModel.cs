@@ -50,7 +50,7 @@ namespace MiniPL.DomainModel
     {
     }
 
-    public class Variable : Statement, IVariable
+    public class LocalVariable : Statement, IVariable
     {
         public Name Name { get; set; }
         public Type Type { get; set; }

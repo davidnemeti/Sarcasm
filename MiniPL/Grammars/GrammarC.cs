@@ -26,10 +26,9 @@ namespace MiniPL
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
             public readonly BnfiTermType<Type> Type = new BnfiTermType<Type>();
-            public readonly BnfiTermType<Variable> Variable = new BnfiTermType<Variable>();
+            public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> ParameterDefinition = new BnfiTermType<Parameter>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
-            public readonly BnfiTermType<Variable> VariableDefinition = new BnfiTermType<Variable>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
             public readonly BnfiTermType<For> For = new BnfiTermType<For>();
             public readonly BnfiTermType<If> If = new BnfiTermType<If>();
