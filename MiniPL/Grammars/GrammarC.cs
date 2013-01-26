@@ -36,13 +36,24 @@ namespace MiniPL
             public readonly BnfiTermType<IfElse> IfElse = new BnfiTermType<IfElse>();
             public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
             public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
+
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
             public readonly BnfiTermType<Expression.Binary> BinaryExpression = new BnfiTermType<Expression.Binary>();
             public readonly BnfiTermType<Expression.Unary> UnaryExpression = new BnfiTermType<Expression.Unary>();
             public readonly BnfiTermType<Expression.Number> NumberExpression = new BnfiTermType<Expression.Number>();
             public readonly BnfiTermType<Expression.VariableReference> VariableReferenceExpression = new BnfiTermType<Expression.VariableReference>();
+
             public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
             public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
+
+            public readonly BnfiTermValue<UnaryOperator> ADD_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> SUB_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> MUL_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> DIW_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> POW_OP = new BnfiTermValue<UnaryOperator>();
+
+            public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
         }
 
         public readonly BnfTerms B = new BnfTerms();

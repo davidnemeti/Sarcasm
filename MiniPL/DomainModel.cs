@@ -83,15 +83,15 @@ namespace MiniPL.DomainModel
         public IList<Statement> Body { get; set; }
     }
 
+    public class IfElse : If
+    {
+        public IList<Statement> ElseBody { get; set; }
+    }
+
     public class FunctionCall : Statement
     {
         public Reference<Function> FunctionReference { get; set; }
         public IList<Argument> Arguments { get; set; }
-    }
-
-    public class IfElse : If
-    {
-        public IList<Statement> ElseBody { get; set; }
     }
 
     public abstract class Expression
