@@ -27,12 +27,15 @@ namespace MiniPL
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
             public readonly BnfiTermType<Type> Type = new BnfiTermType<Type>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
-            public readonly BnfiTermType<Parameter> ParameterDefinition = new BnfiTermType<Parameter>();
+            public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
+            public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
             public readonly BnfiTermType<For> For = new BnfiTermType<For>();
             public readonly BnfiTermType<If> If = new BnfiTermType<If>();
             public readonly BnfiTermType<IfElse> IfElse = new BnfiTermType<IfElse>();
+            public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
+            public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
             public readonly BnfiTermType<Expression.Binary> BinaryExpression = new BnfiTermType<Expression.Binary>();
             public readonly BnfiTermType<Expression.Unary> UnaryExpression = new BnfiTermType<Expression.Unary>();
