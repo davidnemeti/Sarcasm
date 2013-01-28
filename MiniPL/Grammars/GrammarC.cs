@@ -26,21 +26,25 @@ namespace MiniPL
         {
             internal BnfTerms(Sarcasm.Ast.Grammar grammar)
             {
-                this.USE = grammar.ToTerm("use");
-                this.DECLARE = grammar.ToTerm("declare");
-                this.DEFINE = grammar.ToTerm("define");
-                this.PREFIX = grammar.ToTerm("prefix");
-                this.NAMESPACE = grammar.ToTerm("namespace");
-                this.QUANTITY = grammar.ToTerm("quantity");
-                this.UNIT = grammar.ToTerm("unit");
-                this.OF = grammar.ToTerm("of");
-                this.EXTERNAL_VARIABLE_PREFIX = grammar.ToTerm("::");
-                this.EQUAL_STATEMENT = grammar.ToTerm("=");
+                this.PROGRAM = grammar.ToTerm("program");
+                this.BEGIN = grammar.ToTerm("begin");
+                this.END = grammar.ToTerm("end");
+                this.FUNCTION = grammar.ToTerm("function");
+                this.WHILE = grammar.ToTerm("while");
+                this.FOR = grammar.ToTerm("for");
+                this.IF = grammar.ToTerm("if");
+                this.THEN = grammar.ToTerm("then");
+                this.ELSE = grammar.ToTerm("else");
+                this.DO = grammar.ToTerm("do");
                 this.DOT = grammar.ToTerm(".");
+                this.LET = ToPunctuation(":=");
+                this.SEMICOLON = ToPunctuation(";");
+                this.COMMA = ToPunctuation(",");
                 this.LEFT_PAREN = ToPunctuation("(");
                 this.RIGHT_PAREN = ToPunctuation(")");
-                this.LEFT_BRACKET = ToPunctuation("[");
-                this.RIGHT_BRACKET = ToPunctuation("]");
+
+                this.NUMBER = ParseNumber();
+                this.IDENTIFIER = ParseIdentifier();
             }
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
@@ -76,21 +80,29 @@ namespace MiniPL
             public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
 
-            public readonly BnfiTermKeyTerm USE;
-            public readonly BnfiTermKeyTerm DECLARE;
-            public readonly BnfiTermKeyTerm DEFINE;
-            public readonly BnfiTermKeyTerm PREFIX;
-            public readonly BnfiTermKeyTerm NAMESPACE;
-            public readonly BnfiTermKeyTerm QUANTITY;
-            public readonly BnfiTermKeyTerm UNIT;
-            public readonly BnfiTermKeyTerm OF;
-            public readonly BnfiTermKeyTerm EXTERNAL_VARIABLE_PREFIX;
-            public readonly BnfiTermKeyTerm EQUAL_STATEMENT;
+            public readonly BnfiTermValueTL NUMBER;
+            public readonly BnfiTermValue<string> IDENTIFIER;
+
+            public readonly BnfiTermType<Name> name = new BnfiTermType<Name>();
+            public readonly BnfiTermValue<NameRef> namespace_name = new BnfiTermValue<NameRef>("namespace_name");
+            public readonly BnfiTermValue<NameRef> nameref = new BnfiTermValue<NameRef>();
+
+            public readonly BnfiTermKeyTerm PROGRAM;
+            public readonly BnfiTermKeyTerm BEGIN;
+            public readonly BnfiTermKeyTerm END;
+            public readonly BnfiTermKeyTerm FUNCTION;
+            public readonly BnfiTermKeyTerm WHILE;
+            public readonly BnfiTermKeyTerm FOR;
+            public readonly BnfiTermKeyTerm IF;
+            public readonly BnfiTermKeyTerm THEN;
+            public readonly BnfiTermKeyTerm ELSE;
+            public readonly BnfiTermKeyTerm DO;
             public readonly BnfiTermKeyTerm DOT;
+            public readonly BnfiTermKeyTerm LET;
+            public readonly BnfiTermKeyTerm SEMICOLON;
+            public readonly BnfiTermKeyTerm COMMA;
             public readonly BnfiTermKeyTerm LEFT_PAREN;
             public readonly BnfiTermKeyTerm RIGHT_PAREN;
-            public readonly BnfiTermKeyTerm LEFT_BRACKET;
-            public readonly BnfiTermKeyTerm RIGHT_BRACKET;
         }
 
         public readonly BnfTerms B;
@@ -100,7 +112,17 @@ namespace MiniPL
         {
             B = new BnfTerms(this);
 
-//            B.Program.Rule = B.
+//            B.Program.Rule = B.PROGRAM + B.
+
+            B.name.Rule = B.IDENTIFIER.BindMember(B.name, t => t.Value);
+            B.nameref.Rule = B.IDENTIFIER.ConvertValue(_identifier => new NameRef(_identifier), _nameRef => _nameRef.Value);
+            B.namespace_name.Rule =
+                B.IDENTIFIER
+                .PlusList(B.DOT)
+                .ConvertValue(
+                    _identifiers => new NameRef(string.Join(B.DOT.Text, _identifiers)),
+                    _nameRef => _nameRef.Value.Split(new string[] { B.DOT.Text }, StringSplitOptions.None)
+                );
         }
     }
 }
