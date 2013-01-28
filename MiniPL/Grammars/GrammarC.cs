@@ -20,11 +20,28 @@ using Type = MiniPL.DomainModel.Type;
 namespace MiniPL
 {
     [Grammar(typeof(MiniPLDomain))]
-    public class GrammarC : Irony.Parsing.Grammar
+    public class GrammarC : Sarcasm.Ast.Grammar
     {
         public class BnfTerms
         {
-            internal BnfTerms() { }
+            internal BnfTerms(Sarcasm.Ast.Grammar grammar)
+            {
+                this.USE = grammar.ToTerm("use");
+                this.DECLARE = grammar.ToTerm("declare");
+                this.DEFINE = grammar.ToTerm("define");
+                this.PREFIX = grammar.ToTerm("prefix");
+                this.NAMESPACE = grammar.ToTerm("namespace");
+                this.QUANTITY = grammar.ToTerm("quantity");
+                this.UNIT = grammar.ToTerm("unit");
+                this.OF = grammar.ToTerm("of");
+                this.EXTERNAL_VARIABLE_PREFIX = grammar.ToTerm("::");
+                this.EQUAL_STATEMENT = grammar.ToTerm("=");
+                this.DOT = grammar.ToTerm(".");
+                this.LEFT_PAREN = ToPunctuation("(");
+                this.RIGHT_PAREN = ToPunctuation(")");
+                this.LEFT_BRACKET = ToPunctuation("[");
+                this.RIGHT_BRACKET = ToPunctuation("]");
+            }
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
@@ -58,13 +75,32 @@ namespace MiniPL
 
             public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
+
+            public readonly BnfiTermKeyTerm USE;
+            public readonly BnfiTermKeyTerm DECLARE;
+            public readonly BnfiTermKeyTerm DEFINE;
+            public readonly BnfiTermKeyTerm PREFIX;
+            public readonly BnfiTermKeyTerm NAMESPACE;
+            public readonly BnfiTermKeyTerm QUANTITY;
+            public readonly BnfiTermKeyTerm UNIT;
+            public readonly BnfiTermKeyTerm OF;
+            public readonly BnfiTermKeyTerm EXTERNAL_VARIABLE_PREFIX;
+            public readonly BnfiTermKeyTerm EQUAL_STATEMENT;
+            public readonly BnfiTermKeyTerm DOT;
+            public readonly BnfiTermKeyTerm LEFT_PAREN;
+            public readonly BnfiTermKeyTerm RIGHT_PAREN;
+            public readonly BnfiTermKeyTerm LEFT_BRACKET;
+            public readonly BnfiTermKeyTerm RIGHT_BRACKET;
         }
 
-        public readonly BnfTerms B = new BnfTerms();
+        public readonly BnfTerms B;
 
         public GrammarC()
+            : base(AstCreation.CreateAst, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
-//            B.Program.Rule = 
+            B = new BnfTerms(this);
+
+//            B.Program.Rule = B.
         }
     }
 }
