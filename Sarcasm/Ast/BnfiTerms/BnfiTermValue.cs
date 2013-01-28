@@ -336,16 +336,27 @@ namespace Sarcasm.Ast
         {
             return (context, parseTreeNode) =>
             {
-                if (!isOptionalValue && parseTreeNode.ChildNodes.Count != 1)
-                    throw new ArgumentException("Only one child is allowed for a non-optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
-                else if (isOptionalValue && parseTreeNode.ChildNodes.Count > 1)
-                    throw new ArgumentException("Only zero or one child is allowed for an optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                try
+                {
+                    Func<IEnumerable<ParseTreeNode>, Func<ParseTreeNode, bool>, ParseTreeNode> chooser;
+                    if (isOptionalValue)
+                        chooser = Enumerable.SingleOrDefault<ParseTreeNode>;
+                    else
+                        chooser = Enumerable.Single<ParseTreeNode>;
 
-                ParseTreeNode parseTreeChild = parseTreeNode.ChildNodes.SingleOrDefault();
+                    ParseTreeNode parseTreeChild = chooser(parseTreeNode.ChildNodes, childNode => childNode.AstNode != null);
 
-                return parseTreeChild != null
-                    ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
-                    : defaultValue;
+                    return parseTreeChild != null
+                        ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
+                        : defaultValue;
+                }
+                catch (InvalidOperationException)
+                {
+                    if (isOptionalValue)
+                        throw new ArgumentException("Only zero or one child with ast node is allowed for an optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                    else
+                        throw new ArgumentException("Exactly one child with ast node is allowed for a non-optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                }
             };
         }
 
