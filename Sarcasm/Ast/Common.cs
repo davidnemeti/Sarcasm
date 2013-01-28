@@ -45,7 +45,8 @@ namespace Sarcasm.Ast
         Type Type { get; }
     }
 
-    public interface IBnfiTermOrAbleForChoice<out T> : IBnfiTerm<T>
+    // NOTE: cannot inherit from IBnfiTerm<T> because of interface implementation conflict in BnfiTermCollection
+    public interface IBnfiTermOrAbleForChoice<out T> : IBnfiTerm
     {
     }
 

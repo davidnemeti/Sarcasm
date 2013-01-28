@@ -20,24 +20,24 @@ namespace Sarcasm.Ast
 
         #region Typesafe (TCollectionType, TElementType)
 
-        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> StarList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarList(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusList(bnfTermElement, delimiter);
         }
@@ -46,24 +46,24 @@ namespace Sarcasm.Ast
 
         #region Typeless converted to typesafe (TCollectionType, TElementType)
 
-        public static IBnfiTermCollection<TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.StarList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> StarList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarList<TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
             return BnfiTermCollection.PlusList<TCollectionType, TElementType>(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollection<TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollection<List<TElementType>, TElementType> PlusList<TElementType>(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusList<TElementType>(bnfTermElement, delimiter);
         }
@@ -72,22 +72,22 @@ namespace Sarcasm.Ast
 
         #region Typeless
 
-        public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListTL(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
+        public static BnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListTL(bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
+        public static BnfiTermCollectionTL StarListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.StarListTL(elementType, bnfTermElement, delimiter);
         }
 
-        public static IBnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
+        public static BnfiTermCollectionTL PlusListTL(this BnfTerm bnfTermElement, Type elementType, BnfTerm delimiter = null)
         {
             return BnfiTermCollection.PlusListTL(elementType, bnfTermElement, delimiter);
         }
