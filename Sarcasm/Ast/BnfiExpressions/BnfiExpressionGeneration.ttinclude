@@ -8,7 +8,7 @@
 <#+
 IEnumerable<string> GenerateBnfExpressionClassAndOperators(string bnfExpressionTypeName, string inheritFromBase, IEnumerable<string> implementInterfaces = null,
 	IEnumerable<string> constraints = null, IEnumerable<string> bnfTermCoreTypeNames = null, IEnumerable<string> bnfTermCoreExternTypeNames = null,
-	IEnumerable<string> bnfTermSideTypeNames = null, bool multiCore = true, Func<string, string, bool> filterOutCorePairs = null)
+	IEnumerable<string> bnfTermSideTypeNames = null, bool multiCore = true, bool pipeable = true, Func<string, string, bool> filterOutCorePairs = null)
 {
 	implementInterfaces = implementInterfaces ?? new string[0];
 	constraints = constraints ?? new string[0];
@@ -27,14 +27,15 @@ IEnumerable<string> GenerateBnfExpressionClassAndOperators(string bnfExpressionT
 		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(bnfTermCoreTypeNames).Concat(bnfTermCoreExternTypeNames);
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfTermCoreTypeNames, bnfTermSideTypeNames, filterOutCorePairs);
-	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
-	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreExternTypeNames, filterOutCorePairs);
+	if (pipeable)
+		GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfTermCoreTypeNames, bnfTermCoreExternTypeNames.Concat(bnfTermCoreTypeNames).Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
 
 	if (multiCore)
 		bnfTermSideTypeNames = bnfTermSideTypeNames.Concat(new[]{bnfExpressionTypeName});
 
 	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Plus, bnfExpressionTypeName, bnfTermSideTypeNames, filterOutCorePairs);
-	GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfExpressionTypeName, bnfTermCoreExternTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
+	if (pipeable)
+		GenerateBnfExpressionOperators(bnfExpressionTypeName, BnfExprOp.Pipe, bnfExpressionTypeName, bnfTermCoreExternTypeNames.Concat(new[]{bnfExpressionTypeName}), filterOutCorePairs);
 
 	EndRegion("\t");
 
