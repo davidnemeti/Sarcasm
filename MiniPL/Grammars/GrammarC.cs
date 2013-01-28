@@ -53,7 +53,6 @@ namespace MiniPL
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
             public readonly BnfiTermValue<Type> Type = new BnfiTermValue<Type>();
-            public readonly BnfiTermChoice<IVariable> IVariable = new BnfiTermChoice<IVariable>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
             public readonly BnfiTermValue<Reference<IVariable>> VariableReference = new BnfiTermValue<Reference<IVariable>>();
@@ -145,6 +144,13 @@ namespace MiniPL
                 + B.Statement.PlusList().BindMember(B.Function, t => t.Body)
                 ;
 
+            B.Parameter.Rule =
+                B.VAR
+                + B.Name.BindMember(B.Parameter, t => t.Name)
+                + B.COLON
+                + B.Type.BindMember(B.Parameter, t => t.Type)
+                ;
+
             B.Statement.SetRuleOr(
                 B.LocalVariable,
                 B.Assignment,
@@ -157,7 +163,7 @@ namespace MiniPL
             B.LocalVariable.Rule =
                 B.VAR
                 + B.Name.BindMember(B.LocalVariable, t => t.Name)
-                + B.SEMICOLON
+                + B.COLON
                 + B.Type.BindMember(B.LocalVariable, t => t.Type)
                 + (B.LET + B.Expression).QRef().BindMember(B.LocalVariable, t => t.InitValue)
                 + B.SEMICOLON
