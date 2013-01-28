@@ -11,7 +11,7 @@ namespace Sarcasm.UnitTest
         [TestMethod]
         public void TestMethod1()
         {
-            var foo = new MiniPL.GrammarC();
+            var foo = new MiniPL.GrammarP();
         }
     }
 }

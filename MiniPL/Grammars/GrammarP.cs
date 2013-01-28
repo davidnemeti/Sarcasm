@@ -19,8 +19,8 @@ using Type = MiniPL.DomainModel.Type;
 
 namespace MiniPL
 {
-    [Grammar(typeof(MiniPLDomain))]
-    public class GrammarC : Sarcasm.Ast.Grammar
+    [Grammar(typeof(MiniPLDomain), "Pascal-like grammar")]
+    public class GrammarP : Sarcasm.Ast.Grammar
     {
         public class BnfTerms
         {
@@ -118,7 +118,7 @@ namespace MiniPL
 
         public readonly BnfTerms B;
 
-        public GrammarC()
+        public GrammarP()
             : base(AstCreation.CreateAst, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
             B = new BnfTerms(this);
