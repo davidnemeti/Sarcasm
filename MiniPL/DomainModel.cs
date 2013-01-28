@@ -15,16 +15,16 @@ namespace MiniPL.DomainModel
     {
         public Name Name { get; set; }
         public NameRef Namespace { get; set; }
-        public IList<Statement> Body { get; set; }
+        [NonEmptyList] public IList<Statement> Body { get; set; }
         public IList<Function> Functions { get; set; }
     }
 
     public class Function
     {
         public Name Name { get; set; }
-        public Type ReturnType { get; set; }
-        public IList<Parameter> ParameterDefinitions { get; set; }
-        public IList<Statement> Body { get; set; }
+        [Optional] public Type ReturnType { get; set; }
+        public IList<Parameter> Parameters { get; set; }
+        [NonEmptyList] public IList<Statement> Body { get; set; }
     }
 
     public enum Type
@@ -58,7 +58,7 @@ namespace MiniPL.DomainModel
     {
         public Name Name { get; set; }
         public Type Type { get; set; }
-        public Expression InitValue { get; set; }
+        [Optional] public Expression InitValue { get; set; }
     }
 
     public class Assignment : Statement
@@ -81,6 +81,14 @@ namespace MiniPL.DomainModel
         public IList<Statement> Body { get; set; }
     }
 
+#if true
+    public class If : Statement
+    {
+        public Expression Condition { get; set; }
+        [NonEmptyList] public IList<Statement> Body { get; set; }
+        public IList<Statement> ElseBody { get; set; }
+    }
+#else
     public class If : Statement
     {
         public Expression Condition { get; set; }
@@ -91,6 +99,7 @@ namespace MiniPL.DomainModel
     {
         public IList<Statement> ElseBody { get; set; }
     }
+#endif
 
     public class FunctionCall : Statement
     {
