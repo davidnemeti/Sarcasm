@@ -53,8 +53,10 @@ namespace MiniPL
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
             public readonly BnfiTermValue<Type> Type = new BnfiTermValue<Type>();
+            public readonly BnfiTermChoice<IVariable> IVariable = new BnfiTermChoice<IVariable>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
+            public readonly BnfiTermValue<Reference<IVariable>> VariableReference = new BnfiTermValue<Reference<IVariable>>();
             public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
@@ -157,6 +159,58 @@ namespace MiniPL
                 + B.SEMICOLON
                 + B.Type.BindMember(B.LocalVariable, t => t.Type)
                 + (B.LET + B.Expression).QRef().BindMember(B.LocalVariable, t => t.InitValue)
+                + B.SEMICOLON
+                ;
+
+            B.Assignment.Rule =
+                B.VariableReference.BindMember(B.Assignment, t => t.VariableReference)
+                + B.Expression.BindMember(B.Assignment, t => t.Expression)
+                + B.SEMICOLON
+                ;
+
+            B.VariableReference.Rule =
+                B.NameRef.ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                ;
+
+            B.While.Rule =
+                B.WHILE
+                + B.LEFT_PAREN
+                + B.Expression.BindMember(B.While, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.DO
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.While, t => t.Body)
+                + B.END
+                ;
+
+            B.For.Rule =
+                B.FOR
+                + B.LEFT_PAREN
+                + B.LocalVariable.StarList(B.COMMA).BindMember(B.For, t => t.Init)
+                + B.SEMICOLON
+                + B.Expression.BindMember(B.For, t => t.Condition)
+                + B.SEMICOLON
+                + B.Assignment.StarList(B.COMMA).BindMember(B.For, t => t.Update)
+                + B.RIGHT_PAREN
+                + B.DO
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.For, t => t.Body)
+                + B.END
+                ;
+
+            B.If.Rule =
+                B.IF
+                + B.LEFT_PAREN
+                + B.Expression.BindMember(B.If, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.THEN
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.If, t => t.Body)
+                + B.END
+                + (B.ELSE
+                + B.BEGIN
+                + B.Statement.StarList()
+                + B.END).QRef().BindMember(B.If, t => t.ElseBody)
                 ;
 
             B.Name.Rule = B.IDENTIFIER.BindMember(B.Name, t => t.Value);
