@@ -101,5 +101,15 @@ namespace Sarcasm.Ast
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);
+
+	GenerateBnfExpressionClassAndOperators(
+		"BnfiExpressionGeneral<T>",
+		inheritFromBase: "BnfiExpression",
+		implementInterfaces: new[]{"IBnfiExpression<T>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>"},
+		bnfTermSideTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
+		multiCore: false,
+		pipeable: false
+	);
 #>
 }

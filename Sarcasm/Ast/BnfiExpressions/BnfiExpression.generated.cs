@@ -2549,4 +2549,182 @@ namespace Sarcasm.Ast
 
 	#endregion
 
+	#region BnfiExpressionGeneral<T> definition and operators
+
+	#region BnfiExpressionGeneral<T> definition
+
+	public partial class BnfiExpressionGeneral<T> : BnfiExpression, IBnfiExpression<T>
+	{
+		#region Construction
+
+		public BnfiExpressionGeneral()
+		{
+		}
+
+		public BnfiExpressionGeneral(BnfExpression bnfExpression)
+			: base(bnfExpression)
+		{
+		}
+
+        public BnfiExpressionGeneral(BnfTerm bnfTerm)
+			: base(bnfTerm)
+        {
+        }
+
+		#endregion
+
+		#region Cast operators
+
+		public static explicit operator BnfiExpressionGeneral<T>(BnfExpression bnfExpression)
+		{
+			return new BnfiExpressionGeneral<T>(bnfExpression);
+		}
+
+		#endregion
+	}
+
+	#endregion
+
+	#region [BnfiTermType<TType>, BnfiTermConstant<T>, BnfiTermChoice<TType>]: implicit conversions from BnfiExpressionGeneral<T>
+
+	public partial class BnfiTermType<TType>
+	{
+		public static implicit operator BnfiExpressionGeneral<TType>(BnfiTermType<TType> term)
+		{
+			return new BnfiExpressionGeneral<TType>((BnfTerm)term);
+		}
+	}
+
+	public partial class BnfiTermConstant<T>
+	{
+		public static implicit operator BnfiExpressionGeneral<T>(BnfiTermConstant<T> term)
+		{
+			return new BnfiExpressionGeneral<T>((BnfTerm)term);
+		}
+	}
+
+	public partial class BnfiTermChoice<TType>
+	{
+		public static implicit operator BnfiExpressionGeneral<TType>(BnfiTermChoice<TType> term)
+		{
+			return new BnfiExpressionGeneral<TType>((BnfTerm)term);
+		}
+	}
+
+	#endregion
+
+	#region BnfiTermType<TType> '+' operators for BnfExpression
+
+	public partial class BnfiTermType<TType>
+	{
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermType<TType> term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermType<TType> term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermConstant<T> '+' operators for BnfExpression
+
+	public partial class BnfiTermConstant<T>
+	{
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermConstant<T> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermNoAst term1, BnfiTermConstant<T> term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermConstant<T> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermKeyTerm term1, BnfiTermConstant<T> term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermChoice<TType> '+' operators for BnfExpression
+
+	public partial class BnfiTermChoice<TType>
+	{
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermChoice<TType> term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermChoice<TType> term2)
+        {
+            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionGeneral<T> '+' operators for BnfExpression
+
+	public partial class BnfiExpressionGeneral<T>
+	{
+        public static BnfiExpressionGeneral<T> operator +(BnfiExpressionGeneral<T> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermNoAst term1, BnfiExpressionGeneral<T> term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiExpressionGeneral<T> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionGeneral<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionGeneral<T> term2)
+        {
+            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#endregion
+
 }
