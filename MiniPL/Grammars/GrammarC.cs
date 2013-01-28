@@ -37,7 +37,7 @@ namespace MiniPL
                 this.THEN = grammar.ToTerm("then");
                 this.ELSE = grammar.ToTerm("else");
                 this.DO = grammar.ToTerm("do");
-                this.DOT = grammar.ToTerm(".");
+                this.DOT = ToPunctuation(".");
                 this.LET = ToPunctuation(":=");
                 this.VAR = ToPunctuation("var");
                 this.SEMICOLON = ToPunctuation(";");
@@ -53,8 +53,11 @@ namespace MiniPL
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
             public readonly BnfiTermValue<Type> Type = new BnfiTermValue<Type>();
+            public readonly BnfiTermChoice<IVariable> IVariable = new BnfiTermChoice<IVariable>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
+            public readonly BnfiTermValue<Reference<IVariable>> VariableReference = new BnfiTermValue<Reference<IVariable>>();
+            public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
             public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
@@ -73,12 +76,12 @@ namespace MiniPL
             public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
             public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
 
-            public readonly BnfiTermValue<UnaryOperator> ADD_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> SUB_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> MUL_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> DIW_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> POW_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> MOD_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> ADD_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> SUB_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> MUL_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> DIV_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> POW_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermValue<BinaryOperator> MOD_OP = new BnfiTermValue<BinaryOperator>();
 
             public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
@@ -104,14 +107,14 @@ namespace MiniPL
             public readonly BnfiTermKeyTerm THEN;
             public readonly BnfiTermKeyTerm ELSE;
             public readonly BnfiTermKeyTerm DO;
-            public readonly BnfiTermKeyTerm DOT;
-            public readonly BnfiTermKeyTerm LET;
-            public readonly BnfiTermKeyTerm VAR;
-            public readonly BnfiTermKeyTerm SEMICOLON;
-            public readonly BnfiTermKeyTerm COLON;
-            public readonly BnfiTermKeyTerm COMMA;
-            public readonly BnfiTermKeyTerm LEFT_PAREN;
-            public readonly BnfiTermKeyTerm RIGHT_PAREN;
+            public readonly BnfiTermKeyTermPunctuation DOT;
+            public readonly BnfiTermKeyTermPunctuation LET;
+            public readonly BnfiTermKeyTermPunctuation VAR;
+            public readonly BnfiTermKeyTermPunctuation SEMICOLON;
+            public readonly BnfiTermKeyTermPunctuation COLON;
+            public readonly BnfiTermKeyTermPunctuation COMMA;
+            public readonly BnfiTermKeyTermPunctuation LEFT_PAREN;
+            public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
         }
 
         public readonly BnfTerms B;
@@ -157,6 +160,68 @@ namespace MiniPL
                 + B.SEMICOLON
                 + B.Type.BindMember(B.LocalVariable, t => t.Type)
                 + (B.LET + B.Expression).QRef().BindMember(B.LocalVariable, t => t.InitValue)
+                + B.SEMICOLON
+                ;
+
+            B.Assignment.Rule =
+                B.VariableReference.BindMember(B.Assignment, t => t.VariableReference)
+                + B.Expression.BindMember(B.Assignment, t => t.Expression)
+                + B.SEMICOLON
+                ;
+
+            B.VariableReference.Rule =
+                B.NameRef.ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                ;
+
+            B.FunctionReference.Rule =
+                B.NameRef.ConvertValue(_nameRef => Reference.Get<Function>(_nameRef), _variableReference => _variableReference.NameRef)
+                ;
+
+            B.While.Rule =
+                B.WHILE
+                + B.LEFT_PAREN
+                + B.Expression.BindMember(B.While, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.DO
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.While, t => t.Body)
+                + B.END
+                ;
+
+            B.For.Rule =
+                B.FOR
+                + B.LEFT_PAREN
+                + B.LocalVariable.StarList(B.COMMA).BindMember(B.For, t => t.Init)
+                + B.SEMICOLON
+                + B.Expression.BindMember(B.For, t => t.Condition)
+                + B.SEMICOLON
+                + B.Assignment.StarList(B.COMMA).BindMember(B.For, t => t.Update)
+                + B.RIGHT_PAREN
+                + B.DO
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.For, t => t.Body)
+                + B.END
+                ;
+
+            B.If.Rule =
+                B.IF
+                + B.LEFT_PAREN
+                + B.Expression.BindMember(B.If, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.THEN
+                + B.BEGIN
+                + B.Statement.StarList().BindMember(B.If, t => t.Body)
+                + B.END
+                + (B.ELSE
+                + B.BEGIN
+                + B.Statement.StarList()
+                + B.END)
+                .QRef().BindMember(B.If, t => t.ElseBody)
+                ;
+
+            B.FunctionCall.Rule =
+                B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
+                + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
                 ;
 
             B.Name.Rule = B.IDENTIFIER.BindMember(B.Name, t => t.Value);
@@ -168,6 +233,30 @@ namespace MiniPL
                     _identifiers => new NameRef(string.Join(B.DOT.Text, _identifiers)),
                     _nameRef => _nameRef.Value.Split(new string[] { B.DOT.Text }, StringSplitOptions.None)
                 );
+
+            B.Expression.SetRuleOr(
+                B.BinaryExpression,
+                B.UnaryExpression,
+                B.NumberExpression,
+                B.VariableReferenceExpression,
+                B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
+                );
+
+            B.BinaryExpression.Rule =
+                B.Expression.BindMember(B.BinaryExpression, t => t.Term1)
+                + B.BinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
+                + B.Expression.BindMember(B.BinaryExpression, t => t.Term2);
+
+            B.UnaryExpression.Rule = B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
+                + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
+
+            B.NumberExpression.Rule = B.NUMBER.BindMember(B.NumberExpression, t => t.Value);
+
+            B.VariableReferenceExpression.Rule =
+                B.VariableReference.BindMember(B.VariableReferenceExpression, t => t.Target);
+
+            B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
+            B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP;
         }
     }
 }

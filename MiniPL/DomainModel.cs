@@ -75,9 +75,9 @@ namespace MiniPL.DomainModel
 
     public class For : Statement
     {
-        public IList<Statement> Init { get; set; }
+        public IList<LocalVariable> Init { get; set; }
         public Expression Condition { get; set; }
-        public IList<Statement> Update { get; set; }
+        public IList<Assignment> Update { get; set; }
         public IList<Statement> Body { get; set; }
     }
 
@@ -85,8 +85,8 @@ namespace MiniPL.DomainModel
     public class If : Statement
     {
         public Expression Condition { get; set; }
-        [NonEmptyList] public IList<Statement> Body { get; set; }
-        public IList<Statement> ElseBody { get; set; }
+        public IList<Statement> Body { get; set; }
+        [Optional] public IList<Statement> ElseBody { get; set; }
     }
 #else
     public class If : Statement
