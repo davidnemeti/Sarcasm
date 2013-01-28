@@ -11,12 +11,15 @@ using Sarcasm;
 using Sarcasm.Ast;
 using Sarcasm.Unparsing;
 
+using DomainCore;
+
 using MiniPL.DomainModel;
 
 using Type = MiniPL.DomainModel.Type;
 
 namespace MiniPL
 {
+    [Grammar(typeof(MiniPLDomain))]
     public class GrammarC : Irony.Parsing.Grammar
     {
         public class BnfTerms
@@ -51,6 +54,7 @@ namespace MiniPL
             public readonly BnfiTermValue<UnaryOperator> MUL_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> DIW_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> POW_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<UnaryOperator> MOD_OP = new BnfiTermValue<UnaryOperator>();
 
             public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
             public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
@@ -60,6 +64,7 @@ namespace MiniPL
 
         public GrammarC()
         {
+//            B.Program.Rule = 
         }
     }
 }

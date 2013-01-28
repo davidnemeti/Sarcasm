@@ -8,9 +8,13 @@ using DomainCore;
 
 namespace MiniPL.DomainModel
 {
+    [Domain("MiniPL", typeof(MiniPL.DomainModel.Program))]
+    public static class MiniPLDomain { }
+
     public class Program
     {
         public Name Name { get; set; }
+        public NameRef Namespace { get; set; }
         public IList<Statement> Body { get; set; }
         public IList<Function> Functions { get; set; }
     }
@@ -148,7 +152,8 @@ namespace MiniPL.DomainModel
         Sub,
         Mul,
         Div,
-        Pow
+        Pow,
+        Mod
     }
 
     public enum UnaryOperator
