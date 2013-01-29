@@ -131,6 +131,11 @@ namespace Sarcasm.Ast
             return Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
+        public static BnfiTermValue<string> ParseStringLiteral(StringLiteral stringLiteral)
+        {
+            return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
+        }
+
         #endregion
 
         #region Convert
@@ -518,7 +523,7 @@ namespace Sarcasm.Ast
 
         #endregion
 
-        public override string GetExtraStrForToString()
+        protected override string GetExtraStrForToString()
         {
             return string.Format("child bnfterm: {0}, value: {1}, utokenizer: {2}, inverse value converter: {3}",
                 this.bnfTerm.Name, this.value != null ? value.ToString() : "<<NULL>>", this.UtokenizerForUnparse != null, this.inverseValueConverterForUnparse != null);

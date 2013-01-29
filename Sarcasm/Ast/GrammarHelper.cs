@@ -168,6 +168,11 @@ namespace Sarcasm.Ast
             return BnfiTermValue.ParseIdentifier(identifierTerminal);
         }
 
+        public static BnfiTermValue<string> ParseStringLiteral(this StringLiteral stringLiteral)
+        {
+            return BnfiTermValue.ParseStringLiteral(stringLiteral);
+        }
+
         public static BnfiTermValue<TOut> ParseValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, value, astForChild);

@@ -175,24 +175,43 @@ namespace Sarcasm.Ast
 
         #region Identifiers
 
-        public static BnfiTermValue<string> ParseIdentifier(string name = "identifier")
+        public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
         {
             return new IdentifierTerminal(name).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> ParseIdentifier(string name, IdOptions options)
+        public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
         {
             return new IdentifierTerminal(name, options).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> ParseIdentifier(string name, string extraChars)
+        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
         {
             return new IdentifierTerminal(name, extraChars).ParseIdentifier();
         }
 
-        public static BnfiTermValue<string> ParseIdentifier(string name, string extraChars, string extraFirstChars = "")
+        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
             return new IdentifierTerminal(name, extraChars, extraFirstChars).ParseIdentifier();
+        }
+
+        #endregion
+
+        #region String literals
+
+        public static BnfiTermValue<string> CreateStringLiteral(string name = "stringliteral")
+        {
+            return new StringLiteral(name).ParseStringLiteral();
+        }
+
+        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol)
+        {
+            return new StringLiteral(name, startEndSymbol).ParseStringLiteral();
+        }
+
+        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
+        {
+            return new StringLiteral(name, startEndSymbol, options).ParseStringLiteral();
         }
 
         #endregion

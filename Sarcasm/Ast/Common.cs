@@ -96,7 +96,7 @@ namespace Sarcasm.Ast
             return this;
         }
 
-        public virtual string GetExtraStrForToString()
+        protected virtual string GetExtraStrForToString()
         {
             return null;
         }
