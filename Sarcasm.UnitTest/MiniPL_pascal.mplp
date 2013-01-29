@@ -1,0 +1,4 @@
+﻿program HelloWorld
+namespace Sea.Shell
+begin
+end.

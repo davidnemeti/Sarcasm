@@ -67,6 +67,9 @@
       <Name>Sarcasm</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="MiniPL_pascal.mplp" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

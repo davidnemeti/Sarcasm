@@ -30,7 +30,9 @@ namespace MiniPL.DomainModel
     public enum Type
     {
         Integer,
-        Real
+        Real,
+        String,
+        Bool
     }
 
     public interface IVariable
@@ -79,6 +81,10 @@ namespace MiniPL.DomainModel
         public Expression Condition { get; set; }
         public IList<Assignment> Update { get; set; }
         public IList<Statement> Body { get; set; }
+    }
+
+    public class Write : Statement
+    {
     }
 
 #if true
@@ -132,11 +138,11 @@ namespace MiniPL.DomainModel
             }
         }
 
-        public class Number : Expression
+        public class NumberLiteral : Expression
         {
-            public Number() { }
+            public NumberLiteral() { }
 
-            public Number(object value)
+            public NumberLiteral(object value)
             {
                 this.Value = value;
             }
@@ -146,6 +152,23 @@ namespace MiniPL.DomainModel
             public override string ToString()
             {
                 return Value.ToString();
+            }
+        }
+
+        public class StringLiteral : Expression
+        {
+            public StringLiteral() { }
+
+            public StringLiteral(string value)
+            {
+                this.Value = value;
+            }
+
+            public string Value { get; set; }
+
+            public override string ToString()
+            {
+                return Value;
             }
         }
 

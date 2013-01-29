@@ -52,7 +52,7 @@ namespace MiniPL
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
             public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
-            public readonly BnfiTermValue<Type> Type = new BnfiTermValue<Type>();
+            public readonly BnfiTermChoice<Type> Type = new BnfiTermChoice<Type>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
             public readonly BnfiTermValue<Reference<IVariable>> VariableReference = new BnfiTermValue<Reference<IVariable>>();
@@ -69,7 +69,7 @@ namespace MiniPL
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
             public readonly BnfiTermType<Expression.Binary> BinaryExpression = new BnfiTermType<Expression.Binary>();
             public readonly BnfiTermType<Expression.Unary> UnaryExpression = new BnfiTermType<Expression.Unary>();
-            public readonly BnfiTermType<Expression.Number> NumberExpression = new BnfiTermType<Expression.Number>();
+            public readonly BnfiTermType<Expression.NumberLiteral> NumberExpression = new BnfiTermType<Expression.NumberLiteral>();
             public readonly BnfiTermType<Expression.VariableReference> VariableReferenceExpression = new BnfiTermType<Expression.VariableReference>();
 
             public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
@@ -87,6 +87,8 @@ namespace MiniPL
 
             public readonly BnfiTermValue<Type> INTEGER_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> REAL_TYPE = new BnfiTermValue<Type>();
+            public readonly BnfiTermValue<Type> STRING_TYPE = new BnfiTermValue<Type>();
+            public readonly BnfiTermValue<Type> BOOL_TYPE = new BnfiTermValue<Type>();
 
             public readonly BnfiTermValueTL NUMBER;
             public readonly BnfiTermValue<string> IDENTIFIER;
@@ -263,6 +265,8 @@ namespace MiniPL
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP;
+
+            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.BOOL_TYPE;
         }
     }
 }
