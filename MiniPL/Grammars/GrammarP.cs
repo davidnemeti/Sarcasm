@@ -42,9 +42,9 @@ namespace MiniPL
                 this.RETURN = grammar.ToTerm("return");
                 this.WRITE = grammar.ToTerm("Write");
                 this.WRITELN = grammar.ToTerm("WriteLn");
+                this.VAR = grammar.ToTerm("var");
                 this.DOT = ToPunctuation(".");
                 this.LET = ToPunctuation(":=");
-                this.VAR = ToPunctuation("var");
                 this.SEMICOLON = ToPunctuation(";");
                 this.COLON = ToPunctuation(":");
                 this.COMMA = ToPunctuation(",");
@@ -167,9 +167,9 @@ namespace MiniPL
             public readonly BnfiTermKeyTerm RETURN;
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
+            public readonly BnfiTermKeyTerm VAR;
             public readonly BnfiTermKeyTermPunctuation DOT;
             public readonly BnfiTermKeyTermPunctuation LET;
-            public readonly BnfiTermKeyTermPunctuation VAR;
             public readonly BnfiTermKeyTermPunctuation SEMICOLON;
             public readonly BnfiTermKeyTermPunctuation COLON;
             public readonly BnfiTermKeyTermPunctuation COMMA;
