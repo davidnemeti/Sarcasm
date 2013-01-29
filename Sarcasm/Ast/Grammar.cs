@@ -199,11 +199,6 @@ namespace Sarcasm.Ast
 
         #region String literals
 
-        public static BnfiTermValue<string> CreateStringLiteral(string name = "stringliteral")
-        {
-            return new StringLiteral(name).ParseStringLiteral();
-        }
-
         public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol)
         {
             return new StringLiteral(name, startEndSymbol).ParseStringLiteral();
