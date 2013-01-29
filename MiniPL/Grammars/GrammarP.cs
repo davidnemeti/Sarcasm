@@ -318,6 +318,10 @@ namespace MiniPL
                 + B.RIGHT_PAREN
                 ;
 
+            B.Argument.Rule =
+                B.Expression.BindMember(B.Argument, t => t.Expression)
+                ;
+
             B.Write.Rule =
                 B.WRITE
                 + B.LEFT_PAREN
