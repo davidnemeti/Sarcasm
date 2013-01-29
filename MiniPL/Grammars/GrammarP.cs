@@ -308,13 +308,14 @@ namespace MiniPL
                 + B.RelationalBinaryOperator.BindMember(B.RelationalBinaryBoolExpression, t => t.Op)
                 + B.Expression.BindMember(B.RelationalBinaryBoolExpression, t => t.Term2);
 
-            //B.LogicalBinaryBoolExpression.Rule =
-            //    B.Expression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term1)
-            //    + B.LogicalBinaryOperator.BindMember(B.LogicalBinaryBoolExpression, t => t.Op)
-            //    + B.Expression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term2);
+            B.LogicalBinaryBoolExpression.Rule =
+                B.BoolExpression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term1)
+                + B.LogicalBinaryOperator.BindMember(B.LogicalBinaryBoolExpression, t => t.Op)
+                + B.BoolExpression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term2);
 
-            //B.LogicalUnaryBoolExpression.Rule = B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
-            //    + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
+            B.LogicalUnaryBoolExpression.Rule =
+                B.LogicalUnaryOperator.BindMember(B.LogicalUnaryBoolExpression, t => t.Op)
+                + B.BoolExpression.BindMember(B.LogicalUnaryBoolExpression, t => t.Term);
 
             B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
             B.StringLiteral.Rule = CreateStringLiteral().BindMember(B.StringLiteral, t => t.Value);
