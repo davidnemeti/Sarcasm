@@ -50,8 +50,7 @@ namespace MiniPL
                 this.COMMA = ToPunctuation(",");
                 this.LEFT_PAREN = ToPunctuation("(");
                 this.RIGHT_PAREN = ToPunctuation(")");
-                this.CONDITIONAL_TERNARY_OPERATOR_FIRST_PART = ToPunctuation("?");
-                this.CONDITIONAL_TERNARY_OPERATOR_SECOND_PART = ToPunctuation(":");
+                this.QUESTION_MARK = ToPunctuation("?");
 
                 this.ADD_OP = grammar.ToTerm("+", DomainModel.MathBinaryOperator.Add);
                 this.SUB_OP = grammar.ToTerm("-", DomainModel.MathBinaryOperator.Sub);
@@ -187,8 +186,7 @@ namespace MiniPL
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation LEFT_PAREN;
             public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
-            public readonly BnfiTermKeyTermPunctuation CONDITIONAL_TERNARY_OPERATOR_FIRST_PART;
-            public readonly BnfiTermKeyTermPunctuation CONDITIONAL_TERNARY_OPERATOR_SECOND_PART;
+            public readonly BnfiTermKeyTermPunctuation QUESTION_MARK;
         }
 
         public readonly BnfTerms B;
@@ -305,8 +303,10 @@ namespace MiniPL
                 + (B.ELSE + B.Statement).QRef().BindMember(B.If, t => t.ElseBody)
                 ;
 
+            // HACK: ConvertValue
             B.FunctionCall.Rule =
-                B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
+                B.VariableReference.ConvertValue(variableReference => Reference.Get<Function>(variableReference.Target.NameRef)).BindMember(B.FunctionCall, t => t.FunctionReference)
+                + PreferShiftHere()
                 + B.LEFT_PAREN
                 + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
                 + B.RIGHT_PAREN
@@ -362,9 +362,9 @@ namespace MiniPL
 
             B.ConditionalTernaryExpression.Rule =
                 B.BoolExpression.BindMember(B.ConditionalTernaryExpression, t => t.Cond)
-                + B.CONDITIONAL_TERNARY_OPERATOR_FIRST_PART
+                + B.QUESTION_MARK
                 + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term1)
-                + B.CONDITIONAL_TERNARY_OPERATOR_SECOND_PART
+                + B.COLON
                 + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
