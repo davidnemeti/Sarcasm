@@ -4,9 +4,9 @@ namespace Sea.Shell
 
 function Fibonacci(var n : integer) : integer
 begin
-	if (n = 0)
+	if (n = 0) then
 		return 0;
-	else if (n = 1)
+	else if (n = 1) then
 		return 1;
 	else
 		return Fibonacci(n - 1) + Fibonacci(n - 2);

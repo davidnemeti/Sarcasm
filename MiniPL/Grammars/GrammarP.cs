@@ -279,9 +279,7 @@ namespace MiniPL
                 + B.BoolExpression.BindMember(B.While, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.DO
-                + B.BEGIN
                 + B.Statement.BindMember(B.While, t => t.Body)
-                + B.END
                 ;
 
             B.For.Rule =
@@ -294,9 +292,7 @@ namespace MiniPL
                 + B.Assignment.StarList(B.COMMA).BindMember(B.For, t => t.Update)
                 + B.RIGHT_PAREN
                 + B.DO
-                + B.BEGIN
                 + B.Statement.BindMember(B.For, t => t.Body)
-                + B.END
                 ;
 
             B.If.Rule =
@@ -305,9 +301,7 @@ namespace MiniPL
                 + B.BoolExpression.BindMember(B.If, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.THEN
-                + B.BEGIN
                 + B.Statement.BindMember(B.If, t => t.Body)
-                + B.END
                 + (B.ELSE + B.Statement).QRef().BindMember(B.If, t => t.ElseBody)
                 ;
 
@@ -352,8 +346,8 @@ namespace MiniPL
                 B.ConditionalTernaryExpression,
                 B.NumberLiteral,
                 B.StringLiteral,
-                B.VariableReference,
                 B.FunctionCall,
+                B.VariableReference,
                 B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
                 );
 
