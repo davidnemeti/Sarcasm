@@ -399,7 +399,7 @@ namespace MiniPL
                 + B.BoolExpression.BindMember(B.LogicalUnaryBoolExpression, t => t.Term);
 
             B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
-            B.StringLiteral.Rule = CreateStringLiteral().BindMember(B.StringLiteral, t => t.Value);
+            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").BindMember(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
 
             B.MathBinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;

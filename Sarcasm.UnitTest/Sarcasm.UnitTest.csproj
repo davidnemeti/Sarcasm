@@ -68,7 +68,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MiniPL_pascal.mplp" />
+    <None Include="MiniPL_pascal.mplp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
