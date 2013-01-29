@@ -50,6 +50,8 @@ namespace MiniPL
                 this.COMMA = ToPunctuation(",");
                 this.LEFT_PAREN = ToPunctuation("(");
                 this.RIGHT_PAREN = ToPunctuation(")");
+                this.CONDITIONAL_TERNARY_OPERATOR_FIRST_PART = ToPunctuation("?");
+                this.CONDITIONAL_TERNARY_OPERATOR_SECOND_PART = ToPunctuation(":");
 
                 this.ADD_OP = grammar.ToTerm("+", DomainModel.MathBinaryOperator.Add);
                 this.SUB_OP = grammar.ToTerm("-", DomainModel.MathBinaryOperator.Sub);
@@ -153,9 +155,9 @@ namespace MiniPL
             public readonly BnfiTermValue<Type> CHAR_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> BOOL_TYPE = new BnfiTermValue<Type>();
 
-            public readonly BnfiTermType<NumberLiteral> NumberLiteral;
-            public readonly BnfiTermType<StringLiteral> StringLiteral;
-            public readonly BnfiTermType<BoolLiteral> BoolLiteral;
+            public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
+            public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
+            public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
             public readonly BnfiTermValue<string> IDENTIFIER;
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
@@ -185,6 +187,8 @@ namespace MiniPL
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation LEFT_PAREN;
             public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
+            public readonly BnfiTermKeyTermPunctuation CONDITIONAL_TERNARY_OPERATOR_FIRST_PART;
+            public readonly BnfiTermKeyTermPunctuation CONDITIONAL_TERNARY_OPERATOR_SECOND_PART;
         }
 
         public readonly BnfTerms B;
@@ -341,6 +345,7 @@ namespace MiniPL
             B.Expression.SetRuleOr(
                 B.BinaryExpression,
                 B.UnaryExpression,
+                B.ConditionalTernaryExpression,
                 B.NumberLiteral,
                 B.StringLiteral,
                 B.VariableReference,
@@ -356,6 +361,14 @@ namespace MiniPL
             B.UnaryExpression.Rule =
                 B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
+
+            B.ConditionalTernaryExpression.Rule =
+                B.BoolExpression.BindMember(B.ConditionalTernaryExpression, t => t.Cond)
+                + B.CONDITIONAL_TERNARY_OPERATOR_FIRST_PART
+                + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term1)
+                + B.CONDITIONAL_TERNARY_OPERATOR_SECOND_PART
+                + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term2)
+                ;
 
             B.BoolExpression.SetRuleOr(
                 B.RelationalBinaryBoolExpression,
