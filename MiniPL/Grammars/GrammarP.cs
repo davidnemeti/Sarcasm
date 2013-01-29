@@ -196,6 +196,15 @@ namespace MiniPL
         {
             B = new BnfTerms(this);
 
+            RegisterOperators(0, B.AND_OP, B.OR_OP, B.NOT_OP);
+            RegisterOperators(10, B.EQ_OP, B.NEQ_OP, B.LT_OP, B.LTE_OP, B.GT_OP, B.GTE_OP);
+            RegisterOperators(20, B.ADD_OP, B.SUB_OP);
+            RegisterOperators(30, B.MUL_OP, B.DIV_OP, B.MOD_OP);
+            RegisterOperators(40, B.NEG_OP, B.POS_OP);
+            RegisterOperators(50, Associativity.Right, B.POW_OP);
+
+            RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
+
             B.Program.Rule =
                 B.PROGRAM
                 + B.Name.BindMember(B.Program, t => t.Name)
