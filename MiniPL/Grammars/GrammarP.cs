@@ -405,6 +405,8 @@ namespace MiniPL
             B.LogicalUnaryOperator.Rule = B.NOT_OP;
 
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
+
+            this.Root = B.Program;
         }
     }
 }
