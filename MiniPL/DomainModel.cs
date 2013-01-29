@@ -57,6 +57,11 @@ namespace MiniPL.DomainModel
     {
     }
 
+    public class StatementList : Statement
+    {
+        [NonEmptyList] public IList<Statement> Body { get; set; }
+    }
+
     public class LocalVariable : Statement, IVariable
     {
         public Name Name { get; set; }
@@ -73,7 +78,7 @@ namespace MiniPL.DomainModel
     public class While : Statement
     {
         public BoolExpression Condition { get; set; }
-        public IList<Statement> Body { get; set; }
+        public Statement Body { get; set; }
     }
 
     public class For : Statement
@@ -81,7 +86,7 @@ namespace MiniPL.DomainModel
         public IList<LocalVariable> Init { get; set; }
         public BoolExpression Condition { get; set; }
         public IList<Assignment> Update { get; set; }
-        public IList<Statement> Body { get; set; }
+        public Statement Body { get; set; }
     }
 
     public class Write : Statement
@@ -98,19 +103,19 @@ namespace MiniPL.DomainModel
     public class If : Statement
     {
         public BoolExpression Condition { get; set; }
-        public IList<Statement> Body { get; set; }
-        [Optional] public IList<Statement> ElseBody { get; set; }
+        public Statement Body { get; set; }
+        [Optional] public Statement ElseBody { get; set; }
     }
 #else
     public class If : Statement
     {
         public BoolExpression Condition { get; set; }
-        public IList<Statement> Body { get; set; }
+        public Statement Body { get; set; }
     }
 
     public class IfElse : If
     {
-        public IList<Statement> ElseBody { get; set; }
+        public Statement ElseBody { get; set; }
     }
 #endif
 

@@ -95,6 +95,7 @@ namespace MiniPL
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
             public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
+            public readonly BnfiTermType<StatementList> StatementList = new BnfiTermType<StatementList>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
             public readonly BnfiTermType<For> For = new BnfiTermType<For>();
             public readonly BnfiTermType<If> If = new BnfiTermType<If>();
@@ -224,7 +225,8 @@ namespace MiniPL
                 B.While,
                 B.For,
                 B.If,
-                B.FunctionCall + B.SEMICOLON
+                B.FunctionCall + B.SEMICOLON,
+                B.StatementList
                 );
 
             B.LocalVariable.Rule =
@@ -250,6 +252,12 @@ namespace MiniPL
                 B.NameRef.ConvertValue(_nameRef => Reference.Get<Function>(_nameRef), _variableReference => _variableReference.NameRef)
                 ;
 
+            B.StatementList.Rule =
+                B.BEGIN
+                + B.Statement.PlusList().BindMember(B.StatementList, t => t.Body)
+                + B.END
+                ;
+
             B.While.Rule =
                 B.WHILE
                 + B.LEFT_PAREN
@@ -257,7 +265,7 @@ namespace MiniPL
                 + B.RIGHT_PAREN
                 + B.DO
                 + B.BEGIN
-                + B.Statement.StarList().BindMember(B.While, t => t.Body)
+                + B.Statement.BindMember(B.While, t => t.Body)
                 + B.END
                 ;
 
@@ -272,7 +280,7 @@ namespace MiniPL
                 + B.RIGHT_PAREN
                 + B.DO
                 + B.BEGIN
-                + B.Statement.StarList().BindMember(B.For, t => t.Body)
+                + B.Statement.BindMember(B.For, t => t.Body)
                 + B.END
                 ;
 
@@ -283,13 +291,9 @@ namespace MiniPL
                 + B.RIGHT_PAREN
                 + B.THEN
                 + B.BEGIN
-                + B.Statement.StarList().BindMember(B.If, t => t.Body)
+                + B.Statement.BindMember(B.If, t => t.Body)
                 + B.END
-                + (B.ELSE
-                + B.BEGIN
-                + B.Statement.StarList()
-                + B.END)
-                .QRef().BindMember(B.If, t => t.ElseBody)
+                + (B.ELSE + B.Statement).QRef().BindMember(B.If, t => t.ElseBody)
                 ;
 
             B.FunctionCall.Rule =
