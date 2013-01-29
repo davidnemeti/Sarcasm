@@ -229,6 +229,8 @@ namespace MiniPL
                 B.For,
                 B.If,
                 B.FunctionCall + B.SEMICOLON,
+                B.Write + B.SEMICOLON,
+                B.WriteLn + B.SEMICOLON,
                 B.Return + B.SEMICOLON,
                 B.StatementList
                 );
