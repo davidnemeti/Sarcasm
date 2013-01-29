@@ -220,7 +220,7 @@ namespace MiniPL
             B.While.Rule =
                 B.WHILE
                 + B.LEFT_PAREN
-                + B.Expression.BindMember(B.While, t => t.Condition)
+                + B.BoolExpression.BindMember(B.While, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.DO
                 + B.BEGIN
@@ -233,7 +233,7 @@ namespace MiniPL
                 + B.LEFT_PAREN
                 + B.LocalVariable.StarList(B.COMMA).BindMember(B.For, t => t.Init)
                 + B.SEMICOLON
-                + B.Expression.BindMember(B.For, t => t.Condition)
+                + B.BoolExpression.BindMember(B.For, t => t.Condition)
                 + B.SEMICOLON
                 + B.Assignment.StarList(B.COMMA).BindMember(B.For, t => t.Update)
                 + B.RIGHT_PAREN
@@ -246,7 +246,7 @@ namespace MiniPL
             B.If.Rule =
                 B.IF
                 + B.LEFT_PAREN
-                + B.Expression.BindMember(B.If, t => t.Condition)
+                + B.BoolExpression.BindMember(B.If, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.THEN
                 + B.BEGIN
