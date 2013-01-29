@@ -2,7 +2,17 @@
 
 namespace Sea.Shell
 
-function Fibonacci(var int n)
+function Fibonacci(var n : integer) : integer
+begin
+	if (n = 0)
+		return 0;
+	else if (n = 1)
+		return 1;
+	else
+		return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
 
 begin
+	var number : integer := 5;
+	WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
 end.
