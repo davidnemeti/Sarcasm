@@ -39,6 +39,8 @@ namespace MiniPL
                 this.THEN = grammar.ToTerm("then");
                 this.ELSE = grammar.ToTerm("else");
                 this.DO = grammar.ToTerm("do");
+                this.WRITE = grammar.ToTerm("Write");
+                this.WRITELN = grammar.ToTerm("WriteLn");
                 this.DOT = ToPunctuation(".");
                 this.LET = ToPunctuation(":=");
                 this.VAR = ToPunctuation("var");
@@ -47,6 +49,34 @@ namespace MiniPL
                 this.COMMA = ToPunctuation(",");
                 this.LEFT_PAREN = ToPunctuation("(");
                 this.RIGHT_PAREN = ToPunctuation(")");
+
+                this.ADD_OP = grammar.ToTerm("+", DomainModel.MathBinaryOperator.Add);
+                this.SUB_OP = grammar.ToTerm("-", DomainModel.MathBinaryOperator.Sub);
+                this.MUL_OP = grammar.ToTerm("*", DomainModel.MathBinaryOperator.Mul);
+                this.DIV_OP = grammar.ToTerm("/", DomainModel.MathBinaryOperator.Div);
+                this.POW_OP = grammar.ToTerm("^", DomainModel.MathBinaryOperator.Pow);
+                this.MOD_OP = grammar.ToTerm("%", DomainModel.MathBinaryOperator.Mod);
+
+                this.POS_OP = grammar.ToTerm("+", DomainModel.MathUnaryOperator.Pos);
+                this.NEG_OP = grammar.ToTerm("-", DomainModel.MathUnaryOperator.Neg);
+
+                this.EQ_OP = grammar.ToTerm("=", DomainModel.RelationalBinaryOperator.Eq);
+                this.NEQ_OP = grammar.ToTerm("<>", DomainModel.RelationalBinaryOperator.Neq);
+                this.LT_OP = grammar.ToTerm("<", DomainModel.RelationalBinaryOperator.Lt);
+                this.LTE_OP = grammar.ToTerm("<=", DomainModel.RelationalBinaryOperator.Lte);
+                this.GT_OP = grammar.ToTerm(">", DomainModel.RelationalBinaryOperator.Gt);
+                this.GTE_OP = grammar.ToTerm(">=", DomainModel.RelationalBinaryOperator.Gte);
+
+                this.AND_OP = grammar.ToTerm("and", DomainModel.LogicalBinaryOperator.And);
+                this.OR_OP = grammar.ToTerm("or", DomainModel.LogicalBinaryOperator.Or);
+
+                this.NOT_OP = grammar.ToTerm("not", DomainModel.LogicalUnaryOperator.Not);
+
+                this.INTEGER_TYPE = grammar.ToTerm("integer", DomainModel.Type.Integer);
+                this.REAL_TYPE = grammar.ToTerm("real", DomainModel.Type.Real);
+                this.STRING_TYPE = grammar.ToTerm("string", DomainModel.Type.String);
+                this.CHAR_TYPE = grammar.ToTerm("char", DomainModel.Type.Char);
+                this.BOOL_TYPE = grammar.ToTerm("boolean", DomainModel.Type.Bool);
 
                 this.IDENTIFIER = CreateIdentifier();
 
@@ -117,6 +147,7 @@ namespace MiniPL
             public readonly BnfiTermValue<Type> INTEGER_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> REAL_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> STRING_TYPE = new BnfiTermValue<Type>();
+            public readonly BnfiTermValue<Type> CHAR_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> BOOL_TYPE = new BnfiTermValue<Type>();
 
             public readonly BnfiTermType<NumberLiteral> NumberLiteral;
@@ -345,7 +376,7 @@ namespace MiniPL
             B.LogicalBinaryOperator.Rule = B.AND_OP | B.OR_OP;
             B.LogicalUnaryOperator.Rule = B.NOT_OP;
 
-            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.BOOL_TYPE;
+            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
         }
     }
 }

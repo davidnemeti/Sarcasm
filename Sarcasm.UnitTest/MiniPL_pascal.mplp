@@ -1,4 +1,8 @@
 ﻿program HelloWorld
+
 namespace Sea.Shell
+
+function Fibonacci(var int n)
+
 begin
 end.

@@ -32,6 +32,7 @@ namespace MiniPL.DomainModel
         Integer,
         Real,
         String,
+        Char,
         Bool
     }
 
