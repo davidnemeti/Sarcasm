@@ -72,6 +72,8 @@ namespace MiniPL
             public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
             public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
             public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
+            public readonly BnfiTermType<Write> Write = new BnfiTermType<Write>();
+            public readonly BnfiTermType<WriteLn> WriteLn = new BnfiTermType<WriteLn>();
             public readonly BnfiTermType<VariableReference> VariableReference = new BnfiTermType<VariableReference>();
 
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
@@ -138,6 +140,8 @@ namespace MiniPL
             public readonly BnfiTermKeyTerm THEN;
             public readonly BnfiTermKeyTerm ELSE;
             public readonly BnfiTermKeyTerm DO;
+            public readonly BnfiTermKeyTerm WRITE;
+            public readonly BnfiTermKeyTerm WRITELN;
             public readonly BnfiTermKeyTermPunctuation DOT;
             public readonly BnfiTermKeyTermPunctuation LET;
             public readonly BnfiTermKeyTermPunctuation VAR;
@@ -184,12 +188,12 @@ namespace MiniPL
                 ;
 
             B.Statement.SetRuleOr(
-                B.LocalVariable,
-                B.Assignment,
+                B.LocalVariable + B.SEMICOLON,
+                B.Assignment + B.SEMICOLON,
                 B.While,
                 B.For,
                 B.If,
-                B.FunctionCall
+                B.FunctionCall + B.SEMICOLON
                 );
 
             B.LocalVariable.Rule =
@@ -198,13 +202,11 @@ namespace MiniPL
                 + B.COLON
                 + B.Type.BindMember(B.LocalVariable, t => t.Type)
                 + (B.LET + B.Expression).QRef().BindMember(B.LocalVariable, t => t.InitValue)
-                + B.SEMICOLON
                 ;
 
             B.Assignment.Rule =
                 B.VariableReference.BindMember(B.Assignment, t => t.VariableReference)
                 + B.Expression.BindMember(B.Assignment, t => t.Expression)
-                + B.SEMICOLON
                 ;
 
             B.VariableReference.Rule =
@@ -261,7 +263,23 @@ namespace MiniPL
 
             B.FunctionCall.Rule =
                 B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
+                + B.LEFT_PAREN
                 + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
+                + B.RIGHT_PAREN
+                ;
+
+            B.Write.Rule =
+                B.WRITE
+                + B.LEFT_PAREN
+                + B.Expression.StarList(B.COMMA).BindMember(B.Write, t => t.Arguments)
+                + B.RIGHT_PAREN
+                ;
+
+            B.WriteLn.Rule =
+                B.WRITELN
+                + B.LEFT_PAREN
+                + B.Expression.StarList(B.COMMA).BindMember(B.WriteLn, t => t.Arguments)
+                + B.RIGHT_PAREN
                 ;
 
             B.Name.Rule = B.IDENTIFIER.BindMember(B.Name, t => t.Value);

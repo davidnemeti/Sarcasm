@@ -85,6 +85,12 @@ namespace MiniPL.DomainModel
 
     public class Write : Statement
     {
+        public IList<Expression> Arguments;
+    }
+
+    public class WriteLn : Statement
+    {
+        public IList<Expression> Arguments;
     }
 
 #if true
