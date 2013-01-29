@@ -278,7 +278,9 @@ namespace MiniPL
                 B.BinaryExpression,
                 B.UnaryExpression,
                 B.NumberLiteral,
+                B.StringLiteral,
                 B.VariableReference,
+                B.FunctionCall,
                 B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
                 );
 
@@ -287,19 +289,44 @@ namespace MiniPL
                 + B.MathBinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.BinaryExpression, t => t.Term2);
 
-            B.UnaryExpression.Rule = B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
+            B.UnaryExpression.Rule =
+                B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
 
-            B.NumberLiteral.Rule = B.NumberLiteral.BindMember(B.NumberLiteral, t => t.Value);
+            B.BoolExpression.SetRuleOr(
+                B.RelationalBinaryBoolExpression,
+                B.LogicalBinaryBoolExpression,
+                B.LogicalUnaryBoolExpression,
+                B.BoolLiteral,
+                B.VariableReference,
+                B.FunctionCall,
+                B.LEFT_PAREN + B.BoolExpression + B.RIGHT_PAREN
+                );
 
-            B.MathBinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
-            B.MathUnaryOperator.Rule = B.POS_OP | B.NEG_OP;
+            B.RelationalBinaryBoolExpression.Rule =
+                B.Expression.BindMember(B.RelationalBinaryBoolExpression, t => t.Term1)
+                + B.RelationalBinaryOperator.BindMember(B.RelationalBinaryBoolExpression, t => t.Op)
+                + B.Expression.BindMember(B.RelationalBinaryBoolExpression, t => t.Term2);
 
-            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.BOOL_TYPE;
+            //B.LogicalBinaryBoolExpression.Rule =
+            //    B.Expression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term1)
+            //    + B.LogicalBinaryOperator.BindMember(B.LogicalBinaryBoolExpression, t => t.Op)
+            //    + B.Expression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term2);
+
+            //B.LogicalUnaryBoolExpression.Rule = B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
+            //    + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
 
             B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
             B.StringLiteral.Rule = CreateStringLiteral().BindMember(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
+
+            B.MathBinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
+            B.MathUnaryOperator.Rule = B.POS_OP | B.NEG_OP;
+            B.RelationalBinaryOperator.Rule = B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP;
+            B.LogicalBinaryOperator.Rule = B.AND_OP | B.OR_OP;
+            B.LogicalUnaryOperator.Rule = B.NOT_OP;
+
+            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.BOOL_TYPE;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace MiniPL.DomainModel
     public class Function
     {
         public Name Name { get; set; }
-        [Optional] public Type ReturnType { get; set; }
+        public Type? ReturnType { get; set; }
         public IList<Parameter> Parameters { get; set; }
         [NonEmptyList] public IList<Statement> Body { get; set; }
     }
