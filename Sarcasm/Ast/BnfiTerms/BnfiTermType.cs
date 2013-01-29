@@ -179,17 +179,17 @@ namespace Sarcasm.Ast
         public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
 
         // NOTE: type inference for superclasses works only if SetRulePlus is an instance method and not an extension method
-        public void SetRulePlus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        public void SetRulePlus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
         {
-            this.Rule = Plus(bnfiTermFirst, bnfiTerms);
+            this.Rule = Plus(bnfiTermFirst, bnfiTermSecond, bnfiTerms);
         }
 
-        public BnfiExpressionType<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        public BnfiExpressionType<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
         {
             return (BnfiExpressionType<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
-                new BnfExpression(bnfiTermFirst.AsBnfTerm()),
+                bnfiTermFirst.AsBnfTerm() + bnfiTermSecond.AsBnfTerm(),
                 (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed + bnfTermToBeProcess
                 );
         }

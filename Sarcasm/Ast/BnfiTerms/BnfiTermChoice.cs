@@ -108,17 +108,17 @@ namespace Sarcasm.Ast
         public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
 
         // NOTE: type inference for subclasses works only if SetRuleOr is an instance method and not an extension method
-        public void SetRuleOr(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
+        public void SetRuleOr(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, IBnfiTermOrAbleForChoice<TType> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
         {
-            this.Rule = Or(bnfiTermFirst, bnfiTerms);
+            this.Rule = Or(bnfiTermFirst, bnfiTermSecond, bnfiTerms);
         }
 
-        public BnfiExpressionChoice<TType> Or(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
+        public BnfiExpressionChoice<TType> Or(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, IBnfiTermOrAbleForChoice<TType> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
         {
             return (BnfiExpressionChoice<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
-                new BnfExpression(bnfiTermFirst.AsBnfTerm()),
+                bnfiTermFirst.AsBnfTerm() | bnfiTermSecond.AsBnfTerm(),
                 (bnfExpressionProcessed, bnfTermToBeProcess) => bnfExpressionProcessed | bnfTermToBeProcess
                 );
         }
