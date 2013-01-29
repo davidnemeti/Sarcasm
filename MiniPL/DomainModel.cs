@@ -82,14 +82,14 @@ namespace MiniPL.DomainModel
 
     public class While : Statement
     {
-        public BoolExpression Condition { get; set; }
+        public Expression Condition { get; set; }
         public Statement Body { get; set; }
     }
 
     public class For : Statement
     {
         public IList<LocalVariable> Init { get; set; }
-        public BoolExpression Condition { get; set; }
+        public Expression Condition { get; set; }
         public IList<Assignment> Update { get; set; }
         public Statement Body { get; set; }
     }
@@ -107,7 +107,7 @@ namespace MiniPL.DomainModel
 #if true
     public class If : Statement
     {
-        public BoolExpression Condition { get; set; }
+        public Expression Condition { get; set; }
         public Statement Body { get; set; }
         [Optional] public Statement ElseBody { get; set; }
     }
@@ -124,7 +124,7 @@ namespace MiniPL.DomainModel
     }
 #endif
 
-    public class FunctionCall : Statement, Expression, BoolExpression
+    public class FunctionCall : Statement, Expression
     {
         public Reference<Function> FunctionReference { get; set; }
         public IList<Argument> Arguments { get; set; }
@@ -137,7 +137,7 @@ namespace MiniPL.DomainModel
     public class BinaryExpression : Expression
     {
         public Expression Term1 { get; set; }
-        public MathBinaryOperator Op { get; set; }
+        public BinaryOperator Op { get; set; }
         public Expression Term2 { get; set; }
 
         public override string ToString()
@@ -148,7 +148,7 @@ namespace MiniPL.DomainModel
 
     public class UnaryExpression : Expression
     {
-        public MathUnaryOperator Op { get; set; }
+        public UnaryOperator Op { get; set; }
         public Expression Term { get; set; }
 
         public override string ToString()
@@ -159,7 +159,7 @@ namespace MiniPL.DomainModel
 
     public class ConditionalTernaryExpression : Expression
     {
-        public BoolExpression Cond { get; set; }
+        public Expression Cond { get; set; }
         public Expression Term1 { get; set; }
         public Expression Term2 { get; set; }
 
@@ -203,46 +203,7 @@ namespace MiniPL.DomainModel
         }
     }
 
-    public interface BoolExpression : Expression
-    {
-    }
-
-    public class RelationalBinaryBoolExpression : BoolExpression
-    {
-        public Expression Term1 { get; set; }
-        public RelationalBinaryOperator Op { get; set; }
-        public Expression Term2 { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("({0} {1} {2})", Term1, Op, Term2);
-        }
-    }
-
-    public class LogicalBinaryBoolExpression : BoolExpression
-    {
-        public BoolExpression Term1 { get; set; }
-        public LogicalBinaryOperator Op { get; set; }
-        public BoolExpression Term2 { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("({0} {1} {2})", Term1, Op, Term2);
-        }
-    }
-
-    public class LogicalUnaryBoolExpression : BoolExpression
-    {
-        public LogicalUnaryOperator Op { get; set; }
-        public BoolExpression Term { get; set; }
-
-        public override string ToString()
-        {
-            return string.Format("({0} {1})", Op, Term);
-        }
-    }
-
-    public class BoolLiteral : BoolExpression
+    public class BoolLiteral : Expression
     {
         public BoolLiteral() { }
 
@@ -259,45 +220,33 @@ namespace MiniPL.DomainModel
         }
     }
 
-    public class VariableReference : Expression, BoolExpression
+    public class VariableReference : Expression
     {
         public Reference<IVariable> Target { get; set; }
     }
 
-    public enum MathBinaryOperator
+    public enum BinaryOperator
     {
         Add,
         Sub,
         Mul,
         Div,
         Pow,
-        Mod
-    }
-
-    public enum MathUnaryOperator
-    {
-        Pos,
-        Neg
-    }
-
-    public enum RelationalBinaryOperator
-    {
+        Mod,
         Eq,
         Neq,
         Lt,
         Lte,
         Gt,
         Gte,
-    }
-
-    public enum LogicalBinaryOperator
-    {
         And,
         Or
     }
 
-    public enum LogicalUnaryOperator
+    public enum UnaryOperator
     {
+        Pos,
+        Neg,
         Not
     }
 }
