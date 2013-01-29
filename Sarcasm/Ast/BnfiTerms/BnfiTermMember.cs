@@ -45,6 +45,16 @@ namespace Sarcasm.Ast
                 throw new ArgumentException("Field or property not found", memberInfo.Name);
         }
 
+        protected static BnfiTermMemberTL Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
+        {
+            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
+
+            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
+                return new BnfiTermMemberTL(memberInfo, bnfTerm);
+            else
+                throw new ArgumentException("Field or property not found", memberInfo.Name);
+        }
+
         // NOTE: the method's name is Bind_ instead of Bind to avoid ambiguous calls
         public static BnfiTermMember<TDeclaringType> Bind_<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, BnfTerm bnfTerm)
@@ -68,26 +78,66 @@ namespace Sarcasm.Ast
             return new BnfiTermMemberTL(fieldInfo, bnfTerm);
         }
 
-        public static BnfiTermMemberTL Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TMemberType> bnfiTerm)
-        {
-            MemberInfo memberInfo = GrammarHelper.GetMember(exprForFieldOrPropertyAccess);
-
-            if (memberInfo is FieldInfo || memberInfo is PropertyInfo)
-                return new BnfiTermMemberTL(memberInfo, bnfiTerm.AsBnfTerm());
-            else
-                throw new ArgumentException("Field or property not found", memberInfo.Name);
-        }
-
-        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
-            IBnfiTerm<TMemberType> bnfiTerm)
+        public static BnfiTermMemberTL Bind<TMemberType, TValueType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TValueType> bnfiTerm)
+            where TValueType : TMemberType
         {
             return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
-        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
-            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TMemberType> bnfiTerm)
+        public static BnfiTermMemberTL Bind<TMemberElementType, TValueElementType>(Expression<Func<ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
         {
-            return Bind<TDeclaringType, TMemberType>(exprForFieldOrPropertyAccess, bnfiTerm);
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMemberTL Bind<TMemberElementType, TValueElementType>(Expression<Func<IList<TMemberElementType>>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TValueType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess,
+            IBnfiTerm<TValueType> bnfiTerm)
+            where TValueType : TMemberType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberElementType, TValueElementType>(
+            Expression<Func<TDeclaringType, ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess, IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberElementType, TValueElementType>(
+            Expression<Func<TDeclaringType, IList<TMemberElementType>>> exprForFieldOrPropertyAccess, IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType, TValueType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, IBnfiTerm<TValueType> bnfiTerm)
+            where TValueType : TMemberType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm);
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberElementType, TValueElementType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess, IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberElementType, TValueElementType>(IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+            Expression<Func<TDeclaringType, IList<TMemberElementType>>> exprForFieldOrPropertyAccess, IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm)
+            where TValueElementType : TMemberElementType
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermMemberTL Bind<TDeclaringType>(string fieldOrPropertyName, BnfTerm bnfTerm)
