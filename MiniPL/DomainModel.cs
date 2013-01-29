@@ -65,7 +65,7 @@ namespace MiniPL.DomainModel
 
     public class Assignment : Statement
     {
-        public Reference<IVariable> VariableReference { get; set; }
+        public VariableReference VariableReference { get; set; }
         public Expression Expression { get; set; }
     }
 
@@ -107,78 +107,147 @@ namespace MiniPL.DomainModel
     }
 #endif
 
-    public class FunctionCall : Statement
+    public class FunctionCall : Statement, Expression, BoolExpression
     {
         public Reference<Function> FunctionReference { get; set; }
         public IList<Argument> Arguments { get; set; }
     }
 
-    public abstract class Expression
+    public interface Expression
     {
-        public class Binary : Expression
+    }
+
+    public class BinaryExpression : Expression
+    {
+        public Expression Term1 { get; set; }
+        public MathBinaryOperator Op { get; set; }
+        public Expression Term2 { get; set; }
+
+        public override string ToString()
         {
-            public Expression Term1 { get; set; }
-            public BinaryOperator Op { get; set; }
-            public Expression Term2 { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("({0} {1} {2})", Term1, Op, Term2);
-            }
-        }
-
-        public class Unary : Expression
-        {
-            public UnaryOperator Op { get; set; }
-            public Expression Term { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("({0} {1})", Op, Term);
-            }
-        }
-
-        public class NumberLiteral : Expression
-        {
-            public NumberLiteral() { }
-
-            public NumberLiteral(object value)
-            {
-                this.Value = value;
-            }
-
-            public object Value { get; set; }
-
-            public override string ToString()
-            {
-                return Value.ToString();
-            }
-        }
-
-        public class StringLiteral : Expression
-        {
-            public StringLiteral() { }
-
-            public StringLiteral(string value)
-            {
-                this.Value = value;
-            }
-
-            public string Value { get; set; }
-
-            public override string ToString()
-            {
-                return Value;
-            }
-        }
-
-        public class VariableReference : Expression
-        {
-            public Reference<IVariable> Target { get; set; }
+            return string.Format("({0} {1} {2})", Term1, Op, Term2);
         }
     }
 
-    public enum BinaryOperator
+    public class UnaryExpression : Expression
+    {
+        public MathUnaryOperator Op { get; set; }
+        public Expression Term { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0} {1})", Op, Term);
+        }
+    }
+
+    public class ConditionalTernaryExpression : Expression
+    {
+        public BoolExpression Cond { get; set; }
+        public Expression Term1 { get; set; }
+        public Expression Term2 { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0} ? {1} : {2})", Cond, Term1, Term2);
+        }
+    }
+
+    public class NumberLiteral : Expression
+    {
+        public NumberLiteral() { }
+
+        public NumberLiteral(object value)
+        {
+            this.Value = value;
+        }
+
+        public object Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+    }
+
+    public class StringLiteral : Expression
+    {
+        public StringLiteral() { }
+
+        public StringLiteral(string value)
+        {
+            this.Value = value;
+        }
+
+        public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value;
+        }
+    }
+
+    public interface BoolExpression : Expression
+    {
+    }
+
+    public class RelationalBinaryBoolExpression : BoolExpression
+    {
+        public Expression Term1 { get; set; }
+        public RelationalBinaryOperator Op { get; set; }
+        public Expression Term2 { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0} {1} {2})", Term1, Op, Term2);
+        }
+    }
+
+    public class LogicalBinaryBoolExpression : BoolExpression
+    {
+        public BoolExpression Term1 { get; set; }
+        public LogicalBinaryOperator Op { get; set; }
+        public BoolExpression Term2 { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0} {1} {2})", Term1, Op, Term2);
+        }
+    }
+
+    public class LogicalUnaryBoolExpression : BoolExpression
+    {
+        public LogicalUnaryOperator Op { get; set; }
+        public BoolExpression Term { get; set; }
+
+        public override string ToString()
+        {
+            return string.Format("({0} {1})", Op, Term);
+        }
+    }
+
+    public class BoolLiteral : BoolExpression
+    {
+        public BoolLiteral() { }
+
+        public BoolLiteral(bool value)
+        {
+            this.Value = value;
+        }
+
+        public bool Value { get; set; }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
+    }
+
+    public class VariableReference : Expression, BoolExpression
+    {
+        public Reference<IVariable> Target { get; set; }
+    }
+
+    public enum MathBinaryOperator
     {
         Add,
         Sub,
@@ -188,9 +257,30 @@ namespace MiniPL.DomainModel
         Mod
     }
 
-    public enum UnaryOperator
+    public enum MathUnaryOperator
     {
         Pos,
         Neg
+    }
+
+    public enum RelationalBinaryOperator
+    {
+        Eq,
+        Neq,
+        Lt,
+        Lte,
+        Gt,
+        Gte,
+    }
+
+    public enum LogicalBinaryOperator
+    {
+        And,
+        Or
+    }
+
+    public enum LogicalUnaryOperator
+    {
+        Not
     }
 }

@@ -16,6 +16,8 @@ using DomainCore;
 using MiniPL.DomainModel;
 
 using Type = MiniPL.DomainModel.Type;
+using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
+using StringLiteral = MiniPL.DomainModel.StringLiteral;
 
 namespace MiniPL
 {
@@ -46,8 +48,14 @@ namespace MiniPL
                 this.LEFT_PAREN = ToPunctuation("(");
                 this.RIGHT_PAREN = ToPunctuation(")");
 
-                this.NUMBER = ParseNumber();
-                this.IDENTIFIER = ParseIdentifier();
+                this.IDENTIFIER = CreateIdentifier();
+
+//                this.ADD_OP = grammar.ToTerm();
+                this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
+                {
+                    { "true", true },
+                    { "false", false }
+                };
             }
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
@@ -55,8 +63,6 @@ namespace MiniPL
             public readonly BnfiTermChoice<Type> Type = new BnfiTermChoice<Type>();
             public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
             public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
-            public readonly BnfiTermValue<Reference<IVariable>> VariableReference = new BnfiTermValue<Reference<IVariable>>();
-            public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
             public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
             public readonly BnfiTermType<While> While = new BnfiTermType<While>();
@@ -64,34 +70,58 @@ namespace MiniPL
             public readonly BnfiTermType<If> If = new BnfiTermType<If>();
 //            public readonly BnfiTermType<IfElse> IfElse = new BnfiTermType<IfElse>();
             public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
+            public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
             public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
+            public readonly BnfiTermType<VariableReference> VariableReference = new BnfiTermType<VariableReference>();
 
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
-            public readonly BnfiTermType<Expression.Binary> BinaryExpression = new BnfiTermType<Expression.Binary>();
-            public readonly BnfiTermType<Expression.Unary> UnaryExpression = new BnfiTermType<Expression.Unary>();
-            public readonly BnfiTermType<Expression.NumberLiteral> NumberExpression = new BnfiTermType<Expression.NumberLiteral>();
-            public readonly BnfiTermType<Expression.VariableReference> VariableReferenceExpression = new BnfiTermType<Expression.VariableReference>();
+            public readonly BnfiTermType<BinaryExpression> BinaryExpression = new BnfiTermType<BinaryExpression>();
+            public readonly BnfiTermType<UnaryExpression> UnaryExpression = new BnfiTermType<UnaryExpression>();
+            public readonly BnfiTermType<ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermType<ConditionalTernaryExpression>();
 
-            public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
-            public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
+            public readonly BnfiTermChoice<BoolExpression> BoolExpression = new BnfiTermChoice<BoolExpression>();
+            public readonly BnfiTermType<RelationalBinaryBoolExpression> RelationalBinaryBoolExpression = new BnfiTermType<RelationalBinaryBoolExpression>();
+            public readonly BnfiTermType<LogicalBinaryBoolExpression> LogicalBinaryBoolExpression = new BnfiTermType<LogicalBinaryBoolExpression>();
+            public readonly BnfiTermType<LogicalUnaryBoolExpression> LogicalUnaryBoolExpression = new BnfiTermType<LogicalUnaryBoolExpression>();
 
-            public readonly BnfiTermValue<BinaryOperator> ADD_OP = new BnfiTermValue<BinaryOperator>();
-            public readonly BnfiTermValue<BinaryOperator> SUB_OP = new BnfiTermValue<BinaryOperator>();
-            public readonly BnfiTermValue<BinaryOperator> MUL_OP = new BnfiTermValue<BinaryOperator>();
-            public readonly BnfiTermValue<BinaryOperator> DIV_OP = new BnfiTermValue<BinaryOperator>();
-            public readonly BnfiTermValue<BinaryOperator> POW_OP = new BnfiTermValue<BinaryOperator>();
-            public readonly BnfiTermValue<BinaryOperator> MOD_OP = new BnfiTermValue<BinaryOperator>();
+            public readonly BnfiTermChoice<MathBinaryOperator> MathBinaryOperator = new BnfiTermChoice<MathBinaryOperator>();
+            public readonly BnfiTermChoice<MathUnaryOperator> MathUnaryOperator = new BnfiTermChoice<MathUnaryOperator>();
+            public readonly BnfiTermChoice<RelationalBinaryOperator> RelationalBinaryOperator = new BnfiTermChoice<RelationalBinaryOperator>();
+            public readonly BnfiTermChoice<LogicalBinaryOperator> LogicalBinaryOperator = new BnfiTermChoice<LogicalBinaryOperator>();
+            public readonly BnfiTermChoice<LogicalUnaryOperator> LogicalUnaryOperator = new BnfiTermChoice<LogicalUnaryOperator>();
 
-            public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>();
-            public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> ADD_OP = new BnfiTermValue<MathBinaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> SUB_OP = new BnfiTermValue<MathBinaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> MUL_OP = new BnfiTermValue<MathBinaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> DIV_OP = new BnfiTermValue<MathBinaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> POW_OP = new BnfiTermValue<MathBinaryOperator>();
+            public readonly BnfiTermValue<MathBinaryOperator> MOD_OP = new BnfiTermValue<MathBinaryOperator>();
+
+            public readonly BnfiTermValue<MathUnaryOperator> POS_OP = new BnfiTermValue<MathUnaryOperator>();
+            public readonly BnfiTermValue<MathUnaryOperator> NEG_OP = new BnfiTermValue<MathUnaryOperator>();
+
+            public readonly BnfiTermValue<RelationalBinaryOperator> EQ_OP = new BnfiTermValue<RelationalBinaryOperator>();
+            public readonly BnfiTermValue<RelationalBinaryOperator> NEQ_OP = new BnfiTermValue<RelationalBinaryOperator>();
+            public readonly BnfiTermValue<RelationalBinaryOperator> LT_OP = new BnfiTermValue<RelationalBinaryOperator>();
+            public readonly BnfiTermValue<RelationalBinaryOperator> LTE_OP = new BnfiTermValue<RelationalBinaryOperator>();
+            public readonly BnfiTermValue<RelationalBinaryOperator> GT_OP = new BnfiTermValue<RelationalBinaryOperator>();
+            public readonly BnfiTermValue<RelationalBinaryOperator> GTE_OP = new BnfiTermValue<RelationalBinaryOperator>();
+
+            public readonly BnfiTermValue<LogicalBinaryOperator> AND_OP = new BnfiTermValue<LogicalBinaryOperator>();
+            public readonly BnfiTermValue<LogicalBinaryOperator> OR_OP = new BnfiTermValue<LogicalBinaryOperator>();
+
+            public readonly BnfiTermValue<LogicalUnaryOperator> NOT_OP = new BnfiTermValue<LogicalUnaryOperator>();
 
             public readonly BnfiTermValue<Type> INTEGER_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> REAL_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> STRING_TYPE = new BnfiTermValue<Type>();
             public readonly BnfiTermValue<Type> BOOL_TYPE = new BnfiTermValue<Type>();
 
-            public readonly BnfiTermValueTL NUMBER;
+            public readonly BnfiTermType<NumberLiteral> NumberLiteral;
+            public readonly BnfiTermType<StringLiteral> StringLiteral;
+            public readonly BnfiTermType<BoolLiteral> BoolLiteral;
             public readonly BnfiTermValue<string> IDENTIFIER;
+            public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
             public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
             public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
@@ -178,7 +208,9 @@ namespace MiniPL
                 ;
 
             B.VariableReference.Rule =
-                B.NameRef.ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                B.NameRef
+                .ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                .BindMember(B.VariableReference, t => t.Target)
                 ;
 
             B.FunctionReference.Rule =
@@ -245,28 +277,29 @@ namespace MiniPL
             B.Expression.SetRuleOr(
                 B.BinaryExpression,
                 B.UnaryExpression,
-                B.NumberExpression,
-                B.VariableReferenceExpression,
+                B.NumberLiteral,
+                B.VariableReference,
                 B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
                 );
 
             B.BinaryExpression.Rule =
                 B.Expression.BindMember(B.BinaryExpression, t => t.Term1)
-                + B.BinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
+                + B.MathBinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.BinaryExpression, t => t.Term2);
 
-            B.UnaryExpression.Rule = B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
+            B.UnaryExpression.Rule = B.MathUnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
 
-            B.NumberExpression.Rule = B.NUMBER.BindMember(B.NumberExpression, t => t.Value);
+            B.NumberLiteral.Rule = B.NumberLiteral.BindMember(B.NumberLiteral, t => t.Value);
 
-            B.VariableReferenceExpression.Rule =
-                B.VariableReference.BindMember(B.VariableReferenceExpression, t => t.Target);
-
-            B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
-            B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP;
+            B.MathBinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP;
+            B.MathUnaryOperator.Rule = B.POS_OP | B.NEG_OP;
 
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.BOOL_TYPE;
+
+            B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
+            B.StringLiteral.Rule = CreateStringLiteral().BindMember(B.StringLiteral, t => t.Value);
+            B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
         }
     }
 }
