@@ -71,8 +71,13 @@ namespace MiniPL.DomainModel
 
     public class Assignment : Statement
     {
-        public VariableReference VariableReference { get; set; }
-        public Expression Expression { get; set; }
+        public VariableReference LValue { get; set; }
+        public Expression RValue { get; set; }
+    }
+
+    public class Return : Statement
+    {
+        public Expression Value { get; set; }
     }
 
     public class While : Statement

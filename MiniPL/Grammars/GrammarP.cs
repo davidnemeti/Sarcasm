@@ -39,6 +39,7 @@ namespace MiniPL
                 this.THEN = grammar.ToTerm("then");
                 this.ELSE = grammar.ToTerm("else");
                 this.DO = grammar.ToTerm("do");
+                this.RETURN = grammar.ToTerm("return");
                 this.WRITE = grammar.ToTerm("Write");
                 this.WRITELN = grammar.ToTerm("WriteLn");
                 this.DOT = ToPunctuation(".");
@@ -100,6 +101,7 @@ namespace MiniPL
             public readonly BnfiTermType<For> For = new BnfiTermType<For>();
             public readonly BnfiTermType<If> If = new BnfiTermType<If>();
 //            public readonly BnfiTermType<IfElse> IfElse = new BnfiTermType<IfElse>();
+            public readonly BnfiTermType<Return> Return = new BnfiTermType<Return>();
             public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
             public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
             public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
@@ -172,6 +174,7 @@ namespace MiniPL
             public readonly BnfiTermKeyTerm THEN;
             public readonly BnfiTermKeyTerm ELSE;
             public readonly BnfiTermKeyTerm DO;
+            public readonly BnfiTermKeyTerm RETURN;
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
             public readonly BnfiTermKeyTermPunctuation DOT;
@@ -226,8 +229,14 @@ namespace MiniPL
                 B.For,
                 B.If,
                 B.FunctionCall + B.SEMICOLON,
+                B.Return + B.SEMICOLON,
                 B.StatementList
                 );
+
+            B.Return.Rule =
+                B.RETURN
+                + B.Expression.BindMember(B.Return, t => t.Value)
+                ;
 
             B.LocalVariable.Rule =
                 B.VAR
@@ -238,8 +247,8 @@ namespace MiniPL
                 ;
 
             B.Assignment.Rule =
-                B.VariableReference.BindMember(B.Assignment, t => t.VariableReference)
-                + B.Expression.BindMember(B.Assignment, t => t.Expression)
+                B.VariableReference.BindMember(B.Assignment, t => t.LValue)
+                + B.Expression.BindMember(B.Assignment, t => t.RValue)
                 ;
 
             B.VariableReference.Rule =
