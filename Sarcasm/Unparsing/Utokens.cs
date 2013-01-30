@@ -305,16 +305,16 @@ namespace Sarcasm.Unparsing
         public readonly Overridable overridable;
         public readonly IEnumerable<Utoken> utokens;
 
-        private readonly IEnumerable<BnfTermPartialContext> affectedBnfTerms;
+        private readonly IEnumerable<BnfTermPartialContext> affectedContexts;
 
-        internal InsertedUtokens(Kind kind, double priority, Overridable overridable, IEnumerable<Utoken> utokens, params BnfTermPartialContext[] affectedBnfTerms)
+        internal InsertedUtokens(Kind kind, double priority, Overridable overridable, IEnumerable<Utoken> utokens, params BnfTermPartialContext[] affectedContexts)
         {
             this.priority = priority;
             this.kind = kind;
             this.overridable = overridable;
             this.utokens = utokens.ToList();
 
-            this.affectedBnfTerms = affectedBnfTerms;
+            this.affectedContexts = affectedContexts;
         }
 
         public override string ToString(Formatting formatting)
@@ -324,12 +324,12 @@ namespace Sarcasm.Unparsing
 
         public override string ToString()
         {
-            return string.Format("{0}{1}, priority {2}: {{ {3} }}; affected bnfTerms: {{ {4} }}",
+            return string.Format("{0}{1}, priority {2}: {{ {3} }}; affected contexts: {{ {4} }}",
                 kind,
                 overridable == Overridable.Yes ? ", overridable" : string.Empty,
                 priority,
                 string.Join(", ", utokens),
-                string.Join(", ", affectedBnfTerms)
+                string.Join(", ", affectedContexts)
                 );
         }
 
@@ -340,9 +340,9 @@ namespace Sarcasm.Unparsing
 
         public int CompareTo(InsertedUtokens that)
         {
-            if (that == null || this.priority > that.priority || this.anyCount < that.anyCount)
+            if (that == null || this.priority > that.priority || this.specificScore > that.specificScore)
                 return 1;
-            else if (this.priority < that.priority || this.anyCount > that.anyCount)
+            else if (this.priority < that.priority || this.specificScore < that.specificScore)
                 return -1;
             else
                 return 0;
@@ -358,15 +358,17 @@ namespace Sarcasm.Unparsing
                 return insertedUtokens1.CompareTo(insertedUtokens2);
         }
 
-        private int? _anyCount;
-        private int anyCount
+        private int? _specificScore;
+        private int specificScore
         {
             get
             {
-                if (!_anyCount.HasValue)
-                    _anyCount = affectedBnfTerms.Count(bnfTerm => bnfTerm == BnfTermPartialContext.Any);
+                if (!_specificScore.HasValue)
+                    _specificScore = affectedContexts.Sum(context => context.Length);
 
-                return _anyCount.Value;
+                // NOTE: BnfTermPartialContext.Any.Length == 0
+
+                return _specificScore.Value;
             }
         }
     }

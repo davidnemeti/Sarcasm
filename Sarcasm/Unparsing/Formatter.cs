@@ -79,9 +79,7 @@ namespace Sarcasm.Unparsing
 
             lastState = State.Begin;
             List<UtokenControl> _dependers = new List<UtokenControl>();
-
-            if (bnfTerm.IsReferable())
-                selfAndAncestors.Push(bnfTerm);
+            selfAndAncestors.Push(bnfTerm);
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
@@ -125,9 +123,7 @@ namespace Sarcasm.Unparsing
 
             lastState = State.End;
             dependers.Pop();
-
-            if (bnfTerm.IsReferable())
-                selfAndAncestors.Pop();
+            selfAndAncestors.Pop();
         }
 
         public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, Params @params)

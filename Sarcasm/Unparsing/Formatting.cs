@@ -240,20 +240,6 @@ namespace Sarcasm.Unparsing
             return HasUtokens(contextToUtokensAfter, targetAndAncestors, context => context, out insertedUtokensAfter);
         }
 
-        private bool HasUtokens<TKey>(IDictionary<TKey, InsertedUtokens> contextToUtokens, IEnumerable<BnfTerm> targetAndAncestors,
-            Func<BnfTermPartialContext, TKey> contextToKey, out InsertedUtokens insertedUtokens)
-        {
-            for (var context = new BnfTermPartialContext(targetAndAncestors.Take(this.maxContextLength).Reverse());
-                context.Length > 0;
-                context = context.OmitTopAncestor())
-            {
-                if (contextToUtokens.TryGetValue(contextToKey(context), out insertedUtokens))
-                    return true;
-            }
-
-            return contextToUtokens.TryGetValue(contextToKey(BnfTermPartialContext.Any), out insertedUtokens);
-        }
-
         internal bool HasUtokensBetween(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> rightTargetAndAncestors, out InsertedUtokens insertedUtokensBetween)
         {
             var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
@@ -268,6 +254,25 @@ namespace Sarcasm.Unparsing
 
             insertedUtokensBetween = null;
             return false;
+        }
+
+        private bool HasUtokens<TKey>(IDictionary<TKey, InsertedUtokens> contextToUtokens, IEnumerable<BnfTerm> targetAndAncestors,
+            Func<BnfTermPartialContext, TKey> contextToKey, out InsertedUtokens insertedUtokens)
+        {
+            for (var context = new BnfTermPartialContext(targetAndAncestors.Where(IsImportant).Take(this.maxContextLength).Reverse());
+                context.Length > 0;
+                context = context.OmitTopAncestor())
+            {
+                if (contextToUtokens.TryGetValue(contextToKey(context), out insertedUtokens))
+                    return true;
+            }
+
+            return contextToUtokens.TryGetValue(contextToKey(BnfTermPartialContext.Any), out insertedUtokens);
+        }
+
+        private static bool IsImportant(BnfTerm bnfTerm)
+        {
+            return bnfTerm.IsReferable() || bnfTerm is BnfiTermCollection;
         }
 
         internal bool IsLeftBnfTermOfABetweenPair(BnfTerm leftBnfTerm)
