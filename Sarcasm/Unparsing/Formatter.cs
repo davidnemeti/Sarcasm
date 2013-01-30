@@ -88,11 +88,7 @@ namespace Sarcasm.Unparsing
                 {
                     bool existDepender;
                     _dependers.AddRange(CollectIndents(insertedUtokensBetween, out existDepender));
-
-                    if (existDepender)
-                        utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBetween));
-                    else
-                        utokensBetweenAndBefore.Add((Utoken)insertedUtokensBetween);
+                    utokensBetweenAndBefore.Add(insertedUtokensBetween.MakeDepender(existDepender));
                 }
             }
 
@@ -101,11 +97,7 @@ namespace Sarcasm.Unparsing
             {
                 bool existDepender;
                 _dependers.AddRange(CollectIndents(insertedUtokensBefore, out existDepender));
-
-                if (existDepender)
-                    utokensBetweenAndBefore.Add((Utoken)new UtokenDepender(insertedUtokensBefore));
-                else
-                    utokensBetweenAndBefore.Add((Utoken)insertedUtokensBefore);
+                utokensBetweenAndBefore.Add(insertedUtokensBefore.MakeDepender(existDepender));
             }
 
             dependers.Push(_dependers);
@@ -281,15 +273,9 @@ namespace Sarcasm.Unparsing
 
             LProcessUtoken:
 
-                if (utoken is UtokenDepender)
+                if (utoken.IsDepender())
                 {
-                    UtokenDepender utokenDepender = (UtokenDepender)utoken;
-
-                    seenDependers.Add(utokenDepender.utoken);
-
-                    // handle depender tokens recursively (utokenDepender.utoken might be a dependent, a depender or a normal utoken as well)
-                    utoken = utokenDepender.utoken;
-                    goto LProcessUtoken;
+                    seenDependers.Add(utoken);
                 }
                 else if (utoken is UtokenDependent)
                 {

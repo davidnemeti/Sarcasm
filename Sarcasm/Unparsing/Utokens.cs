@@ -18,6 +18,8 @@ namespace Sarcasm.Unparsing
 {
     public abstract class Utoken
     {
+        private bool isDepender = false;
+
         public abstract string ToString(Formatting formatting);
 
         protected string ToString(object obj)
@@ -48,6 +50,17 @@ namespace Sarcasm.Unparsing
         public static Utoken CreateText(string text, object obj = null)
         {
             return new UtokenText(text, obj);
+        }
+
+        public Utoken MakeDepender(bool isDepender = true)
+        {
+            this.isDepender = isDepender;
+            return this;
+        }
+
+        public bool IsDepender()
+        {
+            return this.isDepender;
         }
 
         public static readonly Utoken NewLine = UtokenWhitespace.NewLine;
@@ -155,6 +168,9 @@ namespace Sarcasm.Unparsing
 
         internal UtokenIndent(int indentLevel)
         {
+            if (indentLevel < 0)
+                throw new ArgumentOutOfRangeException("indentLevel");
+
             this.IndentLevel = indentLevel;
         }
 
@@ -239,31 +255,6 @@ namespace Sarcasm.Unparsing
         public override IEnumerable<Utoken> Flatten()
         {
             return utoken.Flatten();
-        }
-    }
-
-    internal class UtokenDepender : Utoken
-    {
-        public readonly Utoken utoken;
-
-        public UtokenDepender(Utoken utoken)
-        {
-            this.utoken = utoken;
-        }
-
-        public override string ToString(Formatting formatting)
-        {
-            throw new InvalidOperationException("Should not convert an UtokenDepender to string");
-        }
-
-        public override string ToString()
-        {
-            return ToString("{0} (depender)", utoken);
-        }
-
-        public override IEnumerable<Utoken> Flatten()
-        {
-            return utoken.Flatten().Select(_utoken => new UtokenDepender(_utoken));
         }
     }
 
