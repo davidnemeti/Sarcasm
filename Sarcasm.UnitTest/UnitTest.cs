@@ -34,11 +34,11 @@ namespace Sarcasm.UnitTest
 
             Assert.IsTrue(parser.Language.ErrorLevel < GrammarErrorLevel.Error, "Grammar error:\n{0}", string.Join("\n", parser.Language.Errors));
 
-            ParseTree parseTree = parser.Parse(File.ReadAllText(parseFileName), parseFileName);
+            ParseTree parseTree = parser.Parse(ConvertTabsToSpaces(File.ReadAllText(parseFileName)), parseFileName);
 
             Assert.IsTrue(parseTree.Status == ParseTreeStatus.Parsed, "Parser error:\n{0}",
                 string.Join("\n",
-                    parseTree.ParserMessages.Select(parserMessage => string.Format("{0} {1}: {2}", parseTree.FileName, parserMessage.Location.ToUiString(), parserMessage.Message))
+                    parseTree.ParserMessages.Select(parserMessage => string.Format("{0} {1}: {2}", parseTree.FileName, parserMessage.Location.ToString(), parserMessage.Message))
                     )
                 );
 
@@ -50,6 +50,12 @@ namespace Sarcasm.UnitTest
 
             ////string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
             ////Console.WriteLine(str);
+        }
+
+        // Irony does not handle tabs properly, so we convert them: the "Ch" in VS matches parserMessage.Location.Column
+        private string ConvertTabsToSpaces(string sourceText)
+        {
+            return sourceText.Replace("\t", " ");
         }
     }
 }

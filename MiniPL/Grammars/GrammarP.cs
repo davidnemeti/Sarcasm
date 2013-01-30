@@ -212,7 +212,9 @@ namespace MiniPL
                 + B.Parameter.StarList(B.COMMA).BindMember(B.Function, t => t.Parameters)
                 + B.RIGHT_PAREN
                 + (B.COLON + B.Type).QVal().BindMember(B.Function, t => t.ReturnType)
+                + B.BEGIN
                 + B.Statement.PlusList().BindMember(B.Function, t => t.Body)
+                + B.END
                 ;
 
             B.Parameter.Rule =
@@ -250,6 +252,7 @@ namespace MiniPL
 
             B.Assignment.Rule =
                 B.VariableReference.BindMember(B.Assignment, t => t.LValue)
+                + B.LET 
                 + B.Expression.BindMember(B.Assignment, t => t.RValue)
                 ;
 
@@ -301,20 +304,13 @@ namespace MiniPL
                 + (B.ELSE + B.Statement).QRef().BindMember(B.If, t => t.ElseBody)
                 ;
 
-            // HACK: ConvertValue
             B.FunctionCall.Rule =
-                B.VariableReference.ConvertValue(variableReference => Reference.Get<Function>(variableReference.Target.NameRef)).BindMember(B.FunctionCall, t => t.FunctionReference)
+                B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
                 + PreferShiftHere()
                 + B.LEFT_PAREN
                 + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
                 + B.RIGHT_PAREN
                 ;
-
-            //B.FunctionCall.Rule =
-            //    B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference) + B.LEFT_PAREN
-            //    + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
-            //    + B.RIGHT_PAREN
-            //    ;
 
             B.Argument.Rule =
                 B.Expression.BindMember(B.Argument, t => t.Expression)
@@ -378,7 +374,7 @@ namespace MiniPL
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
-            B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP | B.NOT_OP;
+            B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
 
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
 
