@@ -306,7 +306,6 @@ namespace MiniPL
 
             B.FunctionCall.Rule =
                 B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
-                + PreferShiftHere()
                 + B.LEFT_PAREN
                 + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
                 + B.RIGHT_PAREN
