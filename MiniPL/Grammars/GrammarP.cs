@@ -385,21 +385,21 @@ namespace MiniPL
             DefaultFormatting.InsertUtokensAfter(B.LEFT_PAREN, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBefore(B.COMMA, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, Utoken.NoWhitespace);
 
             DefaultFormatting.InsertUtokensAfter(B.Statement, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensBefore(B.Statement, Utoken.NewLine, Utoken.IndentBlock);
             DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), Utoken.EmptyLine);
             DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), Utoken.EmptyLine);
-
-            //DefaultFormatting.InsertUtokensBefore(definitions, Utoken.EmptyLine);
-            //DefaultFormatting.InsertUtokensAfter(definition, Utoken.NewLine);
-
-            //DefaultFormatting.InsertUtokensBefore(conversions, Utoken.NewLine, Utoken.IndentBlock);
-            //DefaultFormatting.InsertUtokensAfter(conversions, priority: 1, overridable: Overridable.Yes, utokensAfter: Utoken.EmptyLine);
-            //DefaultFormatting.InsertUtokensAfter(conversion, Utoken.NewLine);
-
-            //DefaultFormatting.InsertUtokensBetweenUnordered(prefix_definition, unit_definition, Utoken.EmptyLine);
-            //DefaultFormatting.InsertUtokensBetweenUnordered(prefix_definition, quantity_definition, Utoken.EmptyLine);
-            //DefaultFormatting.InsertUtokensBetweenUnordered(unit_definition, quantity_definition, Utoken.EmptyLine);
+            DefaultFormatting.InsertUtokensBefore(B.BEGIN, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensAfter(B.BEGIN, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensBefore(B.END, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensAfter(B.END, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), Utoken.EmptyLine);
 
             #endregion
         }
