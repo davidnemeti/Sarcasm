@@ -19,7 +19,7 @@ namespace Sarcasm.Ast
             : base(type, name)
         {
             this.childBnfTerm = bnfTerm;
-            this.Rule = new BnfExpression(bnfTerm);
+            this.Rule = bnfTerm.ToBnfExpression();
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)
         }
 

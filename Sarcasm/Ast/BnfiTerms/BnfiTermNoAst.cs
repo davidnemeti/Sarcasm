@@ -19,7 +19,7 @@ namespace Sarcasm.Ast
             : base(string.Format("{0}->no_ast", bnfTerm.Name))
         {
             this.childBnfTerm = bnfTerm;
-            this.Rule = new BnfExpression(bnfTerm);
+            this.Rule = bnfTerm.ToBnfExpression();
             this.SetFlag(TermFlags.NoAstNode);
         }
 

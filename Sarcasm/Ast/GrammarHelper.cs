@@ -457,6 +457,51 @@ namespace Sarcasm.Ast
             nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);
         }
 
+        internal static GrammarHint PreferShiftHere()
+        {
+            return new PreferredActionHint(PreferredActionType.Shift);
+        }
+
+        internal static GrammarHint ReduceHere()
+        {
+            return new PreferredActionHint(PreferredActionType.Reduce);
+        }
+
+        internal static TokenPreviewHint ReduceIf(string thisSymbol, params string[] comesBefore)
+        {
+            return new TokenPreviewHint(PreferredActionType.Reduce, thisSymbol, comesBefore);
+        }
+
+        internal static TokenPreviewHint ReduceIf(Terminal thisSymbol, params Terminal[] comesBefore)
+        {
+            return new TokenPreviewHint(PreferredActionType.Reduce, thisSymbol, comesBefore);
+        }
+
+        internal static TokenPreviewHint ShiftIf(string thisSymbol, params string[] comesBefore)
+        {
+            return new TokenPreviewHint(PreferredActionType.Shift, thisSymbol, comesBefore);
+        }
+
+        internal static TokenPreviewHint ShiftIf(Terminal thisSymbol, params Terminal[] comesBefore)
+        {
+            return new TokenPreviewHint(PreferredActionType.Shift, thisSymbol, comesBefore);
+        }
+
+        internal static GrammarHint ImplyPrecedenceHere(int precedence)
+        {
+            return ImplyPrecedenceHere(precedence, Associativity.Left);
+        }
+
+        internal static GrammarHint ImplyPrecedenceHere(int precedence, Associativity associativity)
+        {
+            return new ImpliedPrecedenceHint(precedence, associativity);
+        }
+
+        internal static CustomActionHint CustomActionHere(ExecuteActionMethod executeMethod, PreviewActionMethod previewMethod = null)
+        {
+            return new CustomActionHint(executeMethod, previewMethod);
+        }
+
         /// <summary>
         /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues,
         /// or when there are multiple children and only one of them has ast node.

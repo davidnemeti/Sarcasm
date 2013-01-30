@@ -45,9 +45,7 @@ namespace Sarcasm.Ast
 
         protected BnfiExpression(BnfTerm bnfTerm)
         {
-            this.bnfExpression = bnfTerm is BnfExpression
-                ? (BnfExpression)bnfTerm
-                : new BnfExpression(bnfTerm);
+            this.bnfExpression = bnfTerm.ToBnfExpression();
         }
 
         public static implicit operator BnfExpression(BnfiExpression bnfExpression)
@@ -87,4 +85,12 @@ namespace Sarcasm.Ast
     }
 
     #endregion
+
+    public static class BnfExpressionHelpers
+    {
+        public static BnfExpression ToBnfExpression(this BnfTerm bnfTerm)
+        {
+            return bnfTerm as BnfExpression ?? new BnfExpression(bnfTerm);
+        }
+    }
 }

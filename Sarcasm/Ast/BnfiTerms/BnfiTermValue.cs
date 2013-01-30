@@ -65,8 +65,8 @@ namespace Sarcasm.Ast
                 bnfTerm.Flags |= TermFlags.NoAstNode;
 
             this.RuleRaw = isOptionalValue
-                ? bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
-                : new BnfExpression(bnfTerm);
+                ? GrammarHelper.PreferShiftHere() + bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
+                : bnfTerm.ToBnfExpression();
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueParser(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
