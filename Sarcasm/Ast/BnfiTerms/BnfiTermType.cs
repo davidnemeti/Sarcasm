@@ -19,7 +19,7 @@ namespace Sarcasm.Ast
     public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
         protected BnfiTermType(Type type, string name)
-            : base(type, name)
+            : base(type, name, isReferable: true)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");

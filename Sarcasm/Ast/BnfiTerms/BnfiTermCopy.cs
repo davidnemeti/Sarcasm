@@ -16,7 +16,7 @@ namespace Sarcasm.Ast
         private readonly BnfTerm childBnfTerm;
 
         protected BnfiTermCopy(Type type, BnfTerm bnfTerm)
-            : base(type, name: null)
+            : base(type, name: null, isReferable: false)
         {
             this.childBnfTerm = bnfTerm;
             this.Rule = bnfTerm.ToBnfExpression();

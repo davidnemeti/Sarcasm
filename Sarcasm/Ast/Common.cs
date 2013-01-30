@@ -69,21 +69,27 @@ namespace Sarcasm.Ast
 
     public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal
     {
-        protected Type Type { get; private set; }
+        protected readonly Type type;
+        protected readonly bool isReferable;
 
-        protected BnfiTermNonTerminal(Type type, string name)
+        protected BnfiTermNonTerminal(Type type, string name, bool isReferable)
             : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
-            this.Type = type;
+            this.type = type;
+            this.isReferable = isReferable;
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
         internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
         internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use 'SetRuleOr' or 'Or' method instead.";
 
+        public bool IsReferable { get { return isReferable; } }
+
+        protected bool IsMovable { get { return !IsReferable; } }
+
         Type IHasType.Type
         {
-            get { return this.Type; }
+            get { return this.type; }
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()

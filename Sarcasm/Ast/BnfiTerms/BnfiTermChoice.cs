@@ -18,7 +18,7 @@ namespace Sarcasm.Ast
     public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
     {
         protected BnfiTermChoice(Type type, string name)
-            : base(type, name)
+            : base(type, name, isReferable: true)
         {
             GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
         }
@@ -50,7 +50,7 @@ namespace Sarcasm.Ast
         {
             BnfTerm mainChildBnfTerm = childUnparsableObjects.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
 
-            if (obj.GetType() == this.Type)
+            if (obj.GetType() == this.type)
                 return unparser.GetBnfTermPriority(mainChildBnfTerm, obj);
             else
             {

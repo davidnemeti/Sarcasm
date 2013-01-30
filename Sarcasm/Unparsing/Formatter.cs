@@ -80,7 +80,7 @@ namespace Sarcasm.Unparsing
             lastState = State.Begin;
             List<UtokenControl> _dependers = new List<UtokenControl>();
 
-            if (!(bnfTerm is BnfiTermMember))
+            if (bnfTerm.IsReferable())
                 selfAndAncestors.Push(bnfTerm);
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
@@ -126,7 +126,7 @@ namespace Sarcasm.Unparsing
             lastState = State.End;
             dependers.Pop();
 
-            if (!(bnfTerm is BnfiTermMember))
+            if (bnfTerm.IsReferable())
                 selfAndAncestors.Pop();
         }
 

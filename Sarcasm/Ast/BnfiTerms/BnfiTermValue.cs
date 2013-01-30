@@ -24,8 +24,6 @@ namespace Sarcasm.Ast
         private ValueConverter<object, object> inverseValueConverterForUnparse;
         public ValueUtokenizer<object> UtokenizerForUnparse { private get; set; }
 
-        private readonly bool movable = true;
-
         #endregion
 
         #region Construction
@@ -33,13 +31,11 @@ namespace Sarcasm.Ast
         protected BnfiTermValue(string name)
             : this(typeof(object), name)
         {
-            this.movable = false;
         }
 
         protected BnfiTermValue(Type type, string name)
-            : base(type, name)
+            : base(type, name, isReferable: true)
         {
-            this.movable = false;
             this.inverseValueConverterForUnparse = IdentityFunction;
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
         }
@@ -56,8 +52,9 @@ namespace Sarcasm.Ast
         {
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
-            : base(type, name)
+        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse,
+            bool isOptionalValue, string name, bool astForChild)
+            : base(type, name, isReferable: false)
         {
             this.bnfTerm = bnfTerm;
 
@@ -402,7 +399,7 @@ namespace Sarcasm.Ast
 
         protected void MoveTo(BnfiTermValue target)
         {
-            if (!this.movable)
+            if (!this.IsMovable)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This value should not be a right-value: {0}", this.Name);
 
             target.RuleRaw = this.RuleRaw;

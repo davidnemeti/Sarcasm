@@ -432,6 +432,16 @@ namespace Sarcasm.Ast
 
         #region Misc
 
+        public static bool IsReferable(this BnfTerm bnfTerm)
+        {
+            if (bnfTerm is BnfiTermNonTerminal)
+                return ((BnfiTermNonTerminal)bnfTerm).IsReferable;
+            else if (bnfTerm is BnfiTermMember)
+                return false;
+            else
+                return true;
+        }
+
         public static bool IsOperator(this BnfTerm bnfTerm)
         {
             return bnfTerm.Flags.IsSet(TermFlags.IsOperator);

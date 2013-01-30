@@ -56,23 +56,21 @@ namespace Sarcasm.Ast
         private BnfTerm element;
         private BnfTerm delimiter;
 
-        private readonly bool movable;
-
         public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
 
         #endregion
 
-        protected Type collectionType { get { return base.Type; } }
+        protected Type collectionType { get { return base.type; } }
 
         [Obsolete("Use collectionType instead", error: true)]
-        public new Type Type { get { return base.Type; } }
+        public new Type type { get { return base.type; } }
 
         private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 
         #region Construction
 
-        protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck, bool movable)
-            : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name)
+        protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck, bool isReferable)
+            : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name, isReferable)
         {
             CollectionInfo collectionInfo = GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck);
             Type collectionType = collectionInfo.collectionType;
@@ -88,8 +86,6 @@ namespace Sarcasm.Ast
                 if (this.addMethod == null)
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
             }
-
-            this.movable = movable;
 
             SetNodeCreator();
 
@@ -395,7 +391,7 @@ namespace Sarcasm.Ast
 
         protected void MoveTo(BnfiTermCollection target)
         {
-            if (!this.movable)
+            if (!this.IsMovable)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This collection should not be a right-value: {0}", this.Name);
 
             if (!this.listKind.HasValue)
@@ -485,28 +481,28 @@ namespace Sarcasm.Ast
     public partial class BnfiTermCollectionTL : BnfiTermCollection, IBnfiTermCollectionTL
     {
         public BnfiTermCollectionTL(Type collectionType, string name = null)
-            : this(collectionType, elementType: null, name: name, movable: false)
+            : this(collectionType, elementType: null, name: name, isReferable: true)
         {
         }
 
         public BnfiTermCollectionTL(Type collectionTypeDefinition, Type elementType, string name = null)
-            : this(collectionTypeDefinition, elementType, name, movable: false)
+            : this(collectionTypeDefinition, elementType, name, isReferable: true)
         {
         }
 
-        private BnfiTermCollectionTL(Type collectionTypeOrTypeDefinition, Type elementType, string name, bool movable)
-            : base(collectionTypeOrTypeDefinition, elementType, name: name, runtimeCheck: true, movable: movable)
+        private BnfiTermCollectionTL(Type collectionTypeOrTypeDefinition, Type elementType, string name, bool isReferable)
+            : base(collectionTypeOrTypeDefinition, elementType, name: name, runtimeCheck: true, isReferable: isReferable)
         {
         }
 
         internal static BnfiTermCollectionTL CreateMovable(Type collectionTypeDefinition, Type elementType)
         {
-            return new BnfiTermCollectionTL(collectionTypeDefinition, elementType, name: null, movable: true);
+            return new BnfiTermCollectionTL(collectionTypeDefinition, elementType, name: null, isReferable: false);
         }
 
         internal static BnfiTermCollectionTL CreateMovable(Type collectionType)
         {
-            return new BnfiTermCollectionTL(collectionType, elementType: null, name: null, movable: true);
+            return new BnfiTermCollectionTL(collectionType, elementType: null, name: null, isReferable: false);
         }
 
         public new BnfiTermCollectionTL Rule { set { base.Rule = value; } }
@@ -515,12 +511,12 @@ namespace Sarcasm.Ast
     public abstract partial class BnfiTermCollectionWithCollectionType<TCollectionType> : BnfiTermCollection
     {
         protected BnfiTermCollectionWithCollectionType(Type elementType, string name = null)
-            : this(elementType, name: name, movable: false)
+            : this(elementType, name: name, isReferable: true)
         {
         }
 
-        protected BnfiTermCollectionWithCollectionType(Type elementType, string name, bool movable)
-            : base(typeof(TCollectionType), elementType, name: name, runtimeCheck: false, movable: movable)
+        protected BnfiTermCollectionWithCollectionType(Type elementType, string name, bool isReferable)
+            : base(typeof(TCollectionType), elementType, name: name, runtimeCheck: false, isReferable: isReferable)
         {
         }
     }
@@ -529,18 +525,18 @@ namespace Sarcasm.Ast
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string name = null)
-            : this(name: name, movable: false)
+            : this(name: name, isReferable: true)
         {
         }
 
-        private BnfiTermCollection(string name, bool movable)
-            : base(typeof(TElementType), name: name, movable: movable)
+        private BnfiTermCollection(string name, bool isReferable)
+            : base(typeof(TElementType), name: name, isReferable: isReferable)
         {
         }
 
         internal static BnfiTermCollection<TCollectionType, TElementType> CreateMovable()
         {
-            return new BnfiTermCollection<TCollectionType, TElementType>(name: null, movable: true);
+            return new BnfiTermCollection<TCollectionType, TElementType>(name: null, isReferable: false);
         }
 
         protected override void SetNodeCreator()
