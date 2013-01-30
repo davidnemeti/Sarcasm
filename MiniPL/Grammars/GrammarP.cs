@@ -401,6 +401,8 @@ namespace MiniPL
             DefaultFormatting.InsertUtokensAfter(B.END, Utoken.NewLine);
             DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), Utoken.EmptyLine);
 
+            DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.IF, 10, Overridable.Yes, Utoken.Space);
+
             #endregion
         }
     }
