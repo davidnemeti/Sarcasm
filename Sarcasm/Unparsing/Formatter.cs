@@ -65,6 +65,7 @@ namespace Sarcasm.Unparsing
 
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
         Stack<List<UtokenControl>> dependers = new Stack<List<UtokenControl>>();
+        Stack<BnfTerm> selfAndAncestors = new Stack<BnfTerm>();
         State lastState = State.Begin;
 
         public Formatter(Formatting formatting)
@@ -79,10 +80,13 @@ namespace Sarcasm.Unparsing
             lastState = State.Begin;
             List<UtokenControl> _dependers = new List<UtokenControl>();
 
+            if (!(bnfTerm is BnfiTermMember))
+                selfAndAncestors.Push(bnfTerm);
+
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
                 InsertedUtokens insertedUtokensBetween;
-                if (formatting.HasUtokensBetween(leftBnfTerm, bnfTerm, out insertedUtokensBetween))
+                if (formatting.HasUtokensBetween(leftBnfTerm, selfAndAncestors, out insertedUtokensBetween))
                 {
                     bool existDepender;
                     _dependers.AddRange(CollectIndents(insertedUtokensBetween, out existDepender));
@@ -95,7 +99,7 @@ namespace Sarcasm.Unparsing
             }
 
             InsertedUtokens insertedUtokensBefore;
-            if (formatting.HasUtokensBefore(bnfTerm, out insertedUtokensBefore))
+            if (formatting.HasUtokensBefore(selfAndAncestors, out insertedUtokensBefore))
             {
                 bool existDepender;
                 _dependers.AddRange(CollectIndents(insertedUtokensBefore, out existDepender));
@@ -120,8 +124,10 @@ namespace Sarcasm.Unparsing
                 leftBnfTermsFromTopToBottom.Insert(0, bnfTerm);  // for efficiency reasons we only store bnfTerm as leftBnfTerm if it is really a leftBnfTerm
 
             lastState = State.End;
-
             dependers.Pop();
+
+            if (!(bnfTerm is BnfiTermMember))
+                selfAndAncestors.Pop();
         }
 
         public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, Params @params)
@@ -136,7 +142,7 @@ namespace Sarcasm.Unparsing
         public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm, Params @params)
         {
             InsertedUtokens insertedUtokensAfter;
-            if (formatting.HasUtokensAfter(bnfTerm, out insertedUtokensAfter))
+            if (formatting.HasUtokensAfter(selfAndAncestors, out insertedUtokensAfter))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
                 yield return insertedUtokensAfter;

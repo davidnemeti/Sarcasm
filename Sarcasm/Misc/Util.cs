@@ -9,6 +9,60 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static IEnumerable<Tuple<TA, TB>> GetCartesianProduct<TA, TB>(IEnumerable<TA> items1, IEnumerable<TB> items2)
+        {
+            foreach (var item1 in items1)
+                foreach (var item2 in items2)
+                    yield return Tuple.Create(item1, item2);
+        }
+
+        #region Recurse
+
+        public static IEnumerable<T> Recurse<T>(T init, Func<T, T> func)
+        {
+            return RecurseStopBefore(init, func, value => false);
+        }
+
+        public static IEnumerable<T> RecurseStopAt<T>(T init, Func<T, T> func, Predicate<T> fStopAt)
+        {
+            T value = init;
+            while (true)
+            {
+                yield return value;
+                if (fStopAt(value)) break;
+                value = func(value);
+            }
+        }
+
+        public static IEnumerable<T> RecurseStopBefore<T>(T init, Func<T, T> func, Predicate<T> fStopBefore)
+        {
+            T value = init;
+            while (true)
+            {
+                if (fStopBefore(value)) break;
+                yield return value;
+                value = func(value);
+            }
+        }
+
+        public static IEnumerable<T> RecurseStopBeforeNull<T>(T init, Func<T, T> func)
+            where T : class
+        {
+            return RecurseStopBefore(init, func, value => value == null);
+        }
+
+        #endregion
+
+        public static int GetHashCodeMulti(params object[] items)
+        {
+            return items.GetHashCodeMulti();
+        }
+
+        public static int GetHashCodeMulti(this System.Collections.IEnumerable items)
+        {
+            return items.Cast<object>().Aggregate(17, (hashCode, current) => hashCode * 23 + current.GetHashCode());
+        }
+
         public static string ToString(IFormatProvider formatProvider, object obj)
         {
             return string.Format(formatProvider, "{0}", obj);

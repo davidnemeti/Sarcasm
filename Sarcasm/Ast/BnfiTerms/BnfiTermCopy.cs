@@ -15,8 +15,8 @@ namespace Sarcasm.Ast
     {
         private readonly BnfTerm childBnfTerm;
 
-        protected BnfiTermCopy(Type type, BnfTerm bnfTerm, string name)
-            : base(type, name)
+        protected BnfiTermCopy(Type type, BnfTerm bnfTerm)
+            : base(type, name: null)
         {
             this.childBnfTerm = bnfTerm;
             this.Rule = bnfTerm.ToBnfExpression();
@@ -56,8 +56,8 @@ namespace Sarcasm.Ast
 
     public partial class BnfiTermCopyTL : BnfiTermCopy, IBnfiTermTL
     {
-        internal BnfiTermCopyTL(Type type, BnfTerm bnfTerm, string name = null)
-            : base(type, bnfTerm, name)
+        internal BnfiTermCopyTL(Type type, BnfTerm bnfTerm)
+            : base(type, bnfTerm)
         {
         }
     }
@@ -65,8 +65,8 @@ namespace Sarcasm.Ast
     // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
     public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>, IBnfiTermPlusAbleForType<T>
     {
-        internal BnfiTermCopy(BnfTerm bnfTerm, string name = null)
-            : base(typeof(T), bnfTerm, name)
+        internal BnfiTermCopy(BnfTerm bnfTerm)
+            : base(typeof(T), bnfTerm)
         {
         }
     }

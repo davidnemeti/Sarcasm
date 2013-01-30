@@ -305,9 +305,9 @@ namespace Sarcasm.Unparsing
         public readonly Overridable overridable;
         public readonly IEnumerable<Utoken> utokens;
 
-        private readonly IEnumerable<BnfTerm> affectedBnfTerms;
+        private readonly IEnumerable<BnfTermPartialContext> affectedBnfTerms;
 
-        internal InsertedUtokens(Kind kind, double priority, Overridable overridable, IEnumerable<Utoken> utokens, params BnfTerm[] affectedBnfTerms)
+        internal InsertedUtokens(Kind kind, double priority, Overridable overridable, IEnumerable<Utoken> utokens, params BnfTermPartialContext[] affectedBnfTerms)
         {
             this.priority = priority;
             this.kind = kind;
@@ -364,7 +364,7 @@ namespace Sarcasm.Unparsing
             get
             {
                 if (!_anyCount.HasValue)
-                    _anyCount = affectedBnfTerms.Count(bnfTerm => bnfTerm == Formatting.AnyBnfTerm);
+                    _anyCount = affectedBnfTerms.Count(bnfTerm => bnfTerm == BnfTermPartialContext.Any);
 
                 return _anyCount.Value;
             }

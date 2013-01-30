@@ -378,6 +378,30 @@ namespace MiniPL
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
 
             this.Root = B.Program;
+
+            #region Unparse
+
+            DefaultFormatting.InsertUtokensAround(B.DOT, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensAfter(B.LEFT_PAREN, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, Utoken.NoWhitespace);
+
+            DefaultFormatting.InsertUtokensAfter(B.Statement, Utoken.NewLine);
+            DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), Utoken.EmptyLine);
+            DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), Utoken.EmptyLine);
+
+            //DefaultFormatting.InsertUtokensBefore(definitions, Utoken.EmptyLine);
+            //DefaultFormatting.InsertUtokensAfter(definition, Utoken.NewLine);
+
+            //DefaultFormatting.InsertUtokensBefore(conversions, Utoken.NewLine, Utoken.IndentBlock);
+            //DefaultFormatting.InsertUtokensAfter(conversions, priority: 1, overridable: Overridable.Yes, utokensAfter: Utoken.EmptyLine);
+            //DefaultFormatting.InsertUtokensAfter(conversion, Utoken.NewLine);
+
+            //DefaultFormatting.InsertUtokensBetweenUnordered(prefix_definition, unit_definition, Utoken.EmptyLine);
+            //DefaultFormatting.InsertUtokensBetweenUnordered(prefix_definition, quantity_definition, Utoken.EmptyLine);
+            //DefaultFormatting.InsertUtokensBetweenUnordered(unit_definition, quantity_definition, Utoken.EmptyLine);
+
+            #endregion
         }
     }
 }

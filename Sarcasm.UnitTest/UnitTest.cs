@@ -18,7 +18,7 @@ namespace Sarcasm.UnitTest
     public class UnitTest
     {
         const string unparseDir = @"unparsed";
-        const string parseFileName = @"MiniPL_pascal.mplp";
+        const string parseFileName = @"MiniPL_testfile.mplp";
 
         [TestMethod]
         public void Parse_Unparse()
@@ -45,7 +45,7 @@ namespace Sarcasm.UnitTest
             Unparser unparser = new Unparser(grammar);
 
             Directory.CreateDirectory(unparseDir);
-            var stream = File.Create(@"unparse_logs\unparsed_text");
+            var stream = File.Create(Path.Combine(unparseDir, @"unparsed_text"));
             unparser.Unparse(parseTree.Root.AstNode).WriteToStream(stream, unparser);
 
             ////string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);

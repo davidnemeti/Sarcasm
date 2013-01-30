@@ -56,10 +56,11 @@ namespace Sarcasm.Unparsing
 
         private readonly Grammar grammar;
 
-        private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensBefore = new Dictionary<BnfTerm, InsertedUtokens>();
-        private IDictionary<BnfTerm, InsertedUtokens> bnfTermToUtokensAfter = new Dictionary<BnfTerm, InsertedUtokens>();
-        private IDictionary<Tuple<BnfTerm, BnfTerm>, InsertedUtokens> bnfTermToUtokensBetween = new Dictionary<Tuple<BnfTerm, BnfTerm>, InsertedUtokens>();
+        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensBefore = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
+        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensAfter = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
+        private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens> contextToUtokensBetween = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens>();
         private ISet<BnfTerm> leftBnfTerms = new HashSet<BnfTerm>();
+        private int maxContextLength = 0;
 
         #endregion
 
@@ -124,63 +125,65 @@ namespace Sarcasm.Unparsing
 
         public void InsertUtokensBeforeAny(params Utoken[] utokensBefore)
         {
-            InsertUtokensBefore(AnyBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBefore: utokensBefore);
+            InsertUtokensBefore(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBefore: utokensBefore);
         }
 
-        public void InsertUtokensBefore(BnfTerm bnfTerm, params Utoken[] utokensBefore)
+        public void InsertUtokensBefore(BnfTermPartialContext context, params Utoken[] utokensBefore)
         {
-            InsertUtokensBefore(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensBefore: utokensBefore);
+            InsertUtokensBefore(context, priority: priorityDefault, overridable: overridableDefault, utokensBefore: utokensBefore);
         }
 
-        public void InsertUtokensBefore(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensBefore)
+        public void InsertUtokensBefore(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensBefore)
         {
-            bnfTermToUtokensBefore.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore, bnfTerm));
+            contextToUtokensBefore.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore, context));
+            UpdateMaxContextLength(context);
         }
 
         public void InsertUtokensAfterAny(params Utoken[] utokensAfter)
         {
-            InsertUtokensAfter(AnyBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAfter: utokensAfter);
+            InsertUtokensAfter(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAfter: utokensAfter);
         }
 
-        public void InsertUtokensAfter(BnfTerm bnfTerm, params Utoken[] utokensAfter)
+        public void InsertUtokensAfter(BnfTermPartialContext context, params Utoken[] utokensAfter)
         {
-            InsertUtokensAfter(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensAfter: utokensAfter);
+            InsertUtokensAfter(context, priority: priorityDefault, overridable: overridableDefault, utokensAfter: utokensAfter);
         }
 
-        public void InsertUtokensAfter(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensAfter)
+        public void InsertUtokensAfter(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensAfter)
         {
-            bnfTermToUtokensAfter.Add(bnfTerm, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter, bnfTerm));
+            contextToUtokensAfter.Add(context, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter, context));
+            UpdateMaxContextLength(context);
         }
 
         public void InsertUtokensAroundAny(params Utoken[] utokensAround)
         {
-            InsertUtokensAround(AnyBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAround: utokensAround);
+            InsertUtokensAround(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAround: utokensAround);
         }
 
-        public void InsertUtokensAround(BnfTerm bnfTerm, params Utoken[] utokensAround)
+        public void InsertUtokensAround(BnfTermPartialContext context, params Utoken[] utokensAround)
         {
-            InsertUtokensAround(bnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensAround: utokensAround);
+            InsertUtokensAround(context, priority: priorityDefault, overridable: overridableDefault, utokensAround: utokensAround);
         }
 
-        public void InsertUtokensAround(BnfTerm bnfTerm, double priority, Overridable overridable, params Utoken[] utokensAround)
+        public void InsertUtokensAround(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensAround)
         {
-            InsertUtokensBefore(bnfTerm, priority, overridable, utokensAround);
-            InsertUtokensAfter(bnfTerm, priority, overridable, utokensAround);
+            InsertUtokensBefore(context, priority, overridable, utokensAround);
+            InsertUtokensAfter(context, priority, overridable, utokensAround);
         }
 
         public void InsertUtokensBetweenOrderedLeftAndAny(BnfTerm leftBnfTerm, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(leftBnfTerm, AnyBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(leftBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenOrderedAnyAndRight(BnfTerm rightBnfTerm, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenOrderedAnyAndRight(BnfTermPartialContext rightContext, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(AnyBnfTerm, rightBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(AnyBnfTerm, rightContext, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenAny(params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(AnyBnfTerm, AnyBnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(AnyBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenUnorderedAnyAndOther(BnfTerm bnfTerm, params Utoken[] utokensBetween)
@@ -188,19 +191,21 @@ namespace Sarcasm.Unparsing
             InsertUtokensBetweenUnordered(AnyBnfTerm, bnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTermPartialContext rightContext, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(leftBnfTerm, rightBnfTerm, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(leftBnfTerm, rightContext, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, double priority, Overridable overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTermPartialContext rightContext, double priority, Overridable overridable, params Utoken[] utokensBetween)
         {
-            bnfTermToUtokensBetween.Add(
-                Tuple.Create(leftBnfTerm, rightBnfTerm),
-                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, overridable, utokensBetween, leftBnfTerm, rightBnfTerm)
+            contextToUtokensBetween.Add(
+                Tuple.Create(leftBnfTerm, rightContext),
+                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, overridable, utokensBetween, leftBnfTerm, rightContext)
                 );
 
             leftBnfTerms.Add(leftBnfTerm);
+
+            UpdateMaxContextLength(rightContext);
         }
 
         public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, params Utoken[] utokensBetween)
@@ -214,30 +219,55 @@ namespace Sarcasm.Unparsing
             InsertUtokensBetweenOrdered(bnfTerm2, bnfTerm1, priority, overridable, utokensBetween);
         }
 
+        private void UpdateMaxContextLength(BnfTermPartialContext context)
+        {
+            maxContextLength = Math.Max(maxContextLength, context.Length);
+        }
+
         #endregion
 
         #endregion
 
         #region Interface to unparser
 
-        internal bool HasUtokensBefore(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensBefore)
+        internal bool HasUtokensBefore(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensBefore)
         {
-            return bnfTermToUtokensBefore.TryGetValue(bnfTerm, out insertedUtokensBefore)
-                || bnfTermToUtokensBefore.TryGetValue(AnyBnfTerm, out insertedUtokensBefore);
+            return HasUtokens(contextToUtokensBefore, targetAndAncestors, context => context, out insertedUtokensBefore);
         }
 
-        internal bool HasUtokensAfter(BnfTerm bnfTerm, out InsertedUtokens insertedUtokensAfter)
+        internal bool HasUtokensAfter(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensAfter)
         {
-            return bnfTermToUtokensAfter.TryGetValue(bnfTerm, out insertedUtokensAfter)
-                || bnfTermToUtokensAfter.TryGetValue(AnyBnfTerm, out insertedUtokensAfter);
+            return HasUtokens(contextToUtokensAfter, targetAndAncestors, context => context, out insertedUtokensAfter);
         }
 
-        internal bool HasUtokensBetween(BnfTerm leftBnfTerm, BnfTerm rightBnfTerm, out InsertedUtokens insertedUtokensBetween)
+        private bool HasUtokens<TKey>(IDictionary<TKey, InsertedUtokens> contextToUtokens, IEnumerable<BnfTerm> targetAndAncestors,
+            Func<BnfTermPartialContext, TKey> contextToKey, out InsertedUtokens insertedUtokens)
         {
-            return bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, rightBnfTerm), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(leftBnfTerm, AnyBnfTerm), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(AnyBnfTerm, rightBnfTerm), out insertedUtokensBetween)
-                || bnfTermToUtokensBetween.TryGetValue(Tuple.Create(AnyBnfTerm, AnyBnfTerm), out insertedUtokensBetween);
+            for (var context = new BnfTermPartialContext(targetAndAncestors.Take(this.maxContextLength).Reverse());
+                context.Length > 0;
+                context = context.OmitTopAncestor())
+            {
+                if (contextToUtokens.TryGetValue(contextToKey(context), out insertedUtokens))
+                    return true;
+            }
+
+            return contextToUtokens.TryGetValue(contextToKey(BnfTermPartialContext.Any), out insertedUtokens);
+        }
+
+        internal bool HasUtokensBetween(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> rightTargetAndAncestors, out InsertedUtokens insertedUtokensBetween)
+        {
+            var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
+
+            foreach (BnfTerm leftCandidate in leftCandidates)
+            {
+                if (HasUtokens(contextToUtokensBetween, rightTargetAndAncestors, rightContext => Tuple.Create(leftCandidate, rightContext), out insertedUtokensBetween))
+                    return true;
+            }
+
+            // NOTE that (Any,*), (*,Any) and (Any,Any) has been already processed
+
+            insertedUtokensBetween = null;
+            return false;
         }
 
         internal bool IsLeftBnfTermOfABetweenPair(BnfTerm leftBnfTerm)
@@ -246,5 +276,60 @@ namespace Sarcasm.Unparsing
         }
 
     	#endregion
+    }
+
+    public class BnfTermPartialContext : IEquatable<BnfTermPartialContext>
+    {
+        internal static readonly BnfTermPartialContext Any = new BnfTermPartialContext();
+
+        internal readonly BnfTerm[] ancestorsAndTarget;
+
+        public BnfTermPartialContext(BnfTerm target)
+        {
+            this.ancestorsAndTarget = new BnfTerm[] { target };
+        }
+
+        public BnfTermPartialContext(params BnfTerm[] ancestorsAndTarget)
+        {
+            this.ancestorsAndTarget = ancestorsAndTarget.ToArray();     // copy the parameter array to protect the field array from external modifications through the parameter array
+        }
+
+        public BnfTermPartialContext(IEnumerable<BnfTerm> ancestorsAndTarget)
+        {
+            this.ancestorsAndTarget = ancestorsAndTarget.ToArray();
+        }
+
+        public static implicit operator BnfTermPartialContext(BnfTerm target)
+        {
+            return new BnfTermPartialContext(target);
+        }
+
+        public bool Equals(BnfTermPartialContext that)
+        {
+            return this.ancestorsAndTarget.Length == that.ancestorsAndTarget.Length &&
+                this.ancestorsAndTarget.SequenceEqual(that.ancestorsAndTarget);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BnfTermPartialContext && Equals((BnfTermPartialContext)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ancestorsAndTarget.GetHashCodeMulti();
+        }
+
+        public override string ToString()
+        {
+            return string.Join(".", (IEnumerable<BnfTerm>)ancestorsAndTarget);
+        }
+
+        public BnfTermPartialContext OmitTopAncestor()
+        {
+            return new BnfTermPartialContext(this.ancestorsAndTarget.Skip(1));
+        }
+
+        public int Length { get { return ancestorsAndTarget.Length; } }
     }
 }
