@@ -38,8 +38,8 @@ namespace Sarcasm.Unparsing
         private const double priorityDefault = 0;
         private const double anyPriorityDefault = double.NegativeInfinity;
 
-        private const Overridable overridableDefault = Overridable.Yes;
-        private const Overridable anyOverridableDefault = Overridable.Yes;
+        private const Behavior behaviorDefault = Behavior.Overridable;
+        private const Behavior anyBehaviorDefault = Behavior.Overridable;
 
         private const string newLineDefault = "\n";
         private const string spaceDefault = " ";
@@ -125,82 +125,82 @@ namespace Sarcasm.Unparsing
 
         public void InsertUtokensBeforeAny(params Utoken[] utokensBefore)
         {
-            InsertUtokensBefore(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBefore: utokensBefore);
+            InsertUtokensBefore(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBefore: utokensBefore);
         }
 
         public void InsertUtokensBefore(BnfTermPartialContext context, params Utoken[] utokensBefore)
         {
-            InsertUtokensBefore(context, priority: priorityDefault, overridable: overridableDefault, utokensBefore: utokensBefore);
+            InsertUtokensBefore(context, priority: priorityDefault, behavior: behaviorDefault, utokensBefore: utokensBefore);
         }
 
-        public void InsertUtokensBefore(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensBefore)
+        public void InsertUtokensBefore(BnfTermPartialContext context, double priority, Behavior behavior, params Utoken[] utokensBefore)
         {
-            contextToUtokensBefore.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, overridable, utokensBefore, context));
+            contextToUtokensBefore.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, behavior, utokensBefore, context));
             UpdateMaxContextLength(context);
         }
 
         public void InsertUtokensAfterAny(params Utoken[] utokensAfter)
         {
-            InsertUtokensAfter(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAfter: utokensAfter);
+            InsertUtokensAfter(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensAfter: utokensAfter);
         }
 
         public void InsertUtokensAfter(BnfTermPartialContext context, params Utoken[] utokensAfter)
         {
-            InsertUtokensAfter(context, priority: priorityDefault, overridable: overridableDefault, utokensAfter: utokensAfter);
+            InsertUtokensAfter(context, priority: priorityDefault, behavior: behaviorDefault, utokensAfter: utokensAfter);
         }
 
-        public void InsertUtokensAfter(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensAfter)
+        public void InsertUtokensAfter(BnfTermPartialContext context, double priority, Behavior behavior, params Utoken[] utokensAfter)
         {
-            contextToUtokensAfter.Add(context, new InsertedUtokens(InsertedUtokens.Kind.After, priority, overridable, utokensAfter, context));
+            contextToUtokensAfter.Add(context, new InsertedUtokens(InsertedUtokens.Kind.After, priority, behavior, utokensAfter, context));
             UpdateMaxContextLength(context);
         }
 
         public void InsertUtokensAroundAny(params Utoken[] utokensAround)
         {
-            InsertUtokensAround(BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensAround: utokensAround);
+            InsertUtokensAround(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensAround: utokensAround);
         }
 
         public void InsertUtokensAround(BnfTermPartialContext context, params Utoken[] utokensAround)
         {
-            InsertUtokensAround(context, priority: priorityDefault, overridable: overridableDefault, utokensAround: utokensAround);
+            InsertUtokensAround(context, priority: priorityDefault, behavior: behaviorDefault, utokensAround: utokensAround);
         }
 
-        public void InsertUtokensAround(BnfTermPartialContext context, double priority, Overridable overridable, params Utoken[] utokensAround)
+        public void InsertUtokensAround(BnfTermPartialContext context, double priority, Behavior behavior, params Utoken[] utokensAround)
         {
-            InsertUtokensBefore(context, priority, overridable, utokensAround);
-            InsertUtokensAfter(context, priority, overridable, utokensAround);
+            InsertUtokensBefore(context, priority, behavior, utokensAround);
+            InsertUtokensAfter(context, priority, behavior, utokensAround);
         }
 
         public void InsertUtokensBetweenOrderedLeftAndAny(BnfTerm leftBnfTerm, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(leftBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(leftBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenOrderedAnyAndRight(BnfTermPartialContext rightContext, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(AnyBnfTerm, rightContext, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(AnyBnfTerm, rightContext, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenAny(params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(AnyBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(AnyBnfTerm, BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenUnorderedAnyAndOther(BnfTerm bnfTerm, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenUnordered(AnyBnfTerm, bnfTerm, priority: anyPriorityDefault, overridable: anyOverridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenUnordered(AnyBnfTerm, bnfTerm, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBetween: utokensBetween);
         }
 
         public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTermPartialContext rightContext, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(leftBnfTerm, rightContext, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenOrdered(leftBnfTerm, rightContext, priority: priorityDefault, behavior: behaviorDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTermPartialContext rightContext, double priority, Overridable overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenOrdered(BnfTerm leftBnfTerm, BnfTermPartialContext rightContext, double priority, Behavior behavior, params Utoken[] utokensBetween)
         {
             contextToUtokensBetween.Add(
                 Tuple.Create(leftBnfTerm, rightContext),
-                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, overridable, utokensBetween, leftBnfTerm, rightContext)
+                new InsertedUtokens(InsertedUtokens.Kind.Between, priority, behavior, utokensBetween, leftBnfTerm, rightContext)
                 );
 
             leftBnfTerms.Add(leftBnfTerm);
@@ -210,13 +210,13 @@ namespace Sarcasm.Unparsing
 
         public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenUnordered(bnfTerm1, bnfTerm2, priority: priorityDefault, overridable: overridableDefault, utokensBetween: utokensBetween);
+            InsertUtokensBetweenUnordered(bnfTerm1, bnfTerm2, priority: priorityDefault, behavior: behaviorDefault, utokensBetween: utokensBetween);
         }
 
-        public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, double priority, Overridable overridable, params Utoken[] utokensBetween)
+        public void InsertUtokensBetweenUnordered(BnfTerm bnfTerm1, BnfTerm bnfTerm2, double priority, Behavior behavior, params Utoken[] utokensBetween)
         {
-            InsertUtokensBetweenOrdered(bnfTerm1, bnfTerm2, priority, overridable, utokensBetween);
-            InsertUtokensBetweenOrdered(bnfTerm2, bnfTerm1, priority, overridable, utokensBetween);
+            InsertUtokensBetweenOrdered(bnfTerm1, bnfTerm2, priority, behavior, utokensBetween);
+            InsertUtokensBetweenOrdered(bnfTerm2, bnfTerm1, priority, behavior, utokensBetween);
         }
 
         private void UpdateMaxContextLength(BnfTermPartialContext context)

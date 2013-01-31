@@ -23,9 +23,9 @@ namespace Sarcasm.Unparsing
 
         public class Params
         {
-            public readonly IEnumerable<Utoken> utokensBetweenAndBefore;
+            public readonly IEnumerable<InsertedUtokens> utokensBetweenAndBefore;
 
-            public Params(ICollection<Utoken> utokensBetweenAndBefore)
+            public Params(ICollection<InsertedUtokens> utokensBetweenAndBefore)
             {
                 this.utokensBetweenAndBefore = utokensBetweenAndBefore;
             }
@@ -64,7 +64,6 @@ namespace Sarcasm.Unparsing
         private readonly Formatting formatting;
 
         IList<BnfTerm> leftBnfTermsFromTopToBottom = new List<BnfTerm>();
-        Stack<List<UtokenControl>> dependers = new Stack<List<UtokenControl>>();
         Stack<BnfTerm> selfAndAncestors = new Stack<BnfTerm>();
         State lastState = State.Begin;
 
@@ -75,32 +74,21 @@ namespace Sarcasm.Unparsing
 
         public void BeginBnfTerm(BnfTerm bnfTerm, out Params beginParams)
         {
-            ICollection<Utoken> utokensBetweenAndBefore = new List<Utoken>();
+            ICollection<InsertedUtokens> utokensBetweenAndBefore = new List<InsertedUtokens>();
 
             lastState = State.Begin;
-            List<UtokenControl> _dependers = new List<UtokenControl>();
             selfAndAncestors.Push(bnfTerm);
 
             foreach (BnfTerm leftBnfTerm in leftBnfTermsFromTopToBottom)
             {
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.HasUtokensBetween(leftBnfTerm, selfAndAncestors, out insertedUtokensBetween))
-                {
-                    bool existDepender;
-                    _dependers.AddRange(CollectIndents(insertedUtokensBetween, out existDepender));
-                    utokensBetweenAndBefore.Add(insertedUtokensBetween.MakeDepender(existDepender));
-                }
+                    utokensBetweenAndBefore.Add(insertedUtokensBetween.CreateYinIfOrReturnSelf(NeedsAutoCloseIndent));
             }
 
             InsertedUtokens insertedUtokensBefore;
             if (formatting.HasUtokensBefore(selfAndAncestors, out insertedUtokensBefore))
-            {
-                bool existDepender;
-                _dependers.AddRange(CollectIndents(insertedUtokensBefore, out existDepender));
-                utokensBetweenAndBefore.Add(insertedUtokensBefore.MakeDepender(existDepender));
-            }
-
-            dependers.Push(_dependers);
+                utokensBetweenAndBefore.Add(insertedUtokensBefore.CreateYinIfOrReturnSelf(NeedsAutoCloseIndent));
 
             beginParams = new Params(utokensBetweenAndBefore);
         }
@@ -114,7 +102,6 @@ namespace Sarcasm.Unparsing
                 leftBnfTermsFromTopToBottom.Insert(0, bnfTerm);  // for efficiency reasons we only store bnfTerm as leftBnfTerm if it is really a leftBnfTerm
 
             lastState = State.End;
-            dependers.Pop();
             selfAndAncestors.Pop();
         }
 
@@ -136,20 +123,23 @@ namespace Sarcasm.Unparsing
                 yield return insertedUtokensAfter;
             }
 
-            foreach (UtokenControl depender in dependers.Peek())
+            foreach (InsertedUtokens utokenBetweenOrAfter in @params.utokensBetweenAndBefore)
             {
-                UtokenDependent utokenDependent;
+                var autoCloseIndents = new List<Utoken>();
 
-                if (depender == UtokenControl.IndentBlock)
-                    utokenDependent = new UtokenDependent(UtokenControl.DecreaseIndentLevel, depender);
-                else if (depender == UtokenControl.UnindentBlock)
-                    utokenDependent = new UtokenDependent(UtokenControl.IncreaseIndentLevel, depender);
-                else
-                    throw new InvalidOperationException("Unknown depender utoken: " + depender.ToString());
+                foreach (Utoken utoken in utokenBetweenOrAfter.utokens)
+                {
+                    Utoken closeIndent;
 
-                Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenDependent);
+                    if (TryCreateAutoCloseIndent(utoken, out closeIndent))
+                    {
+                        Unparser.tsUnparse.Debug("automatic close indent: {0}", closeIndent);
 
-                yield return utokenDependent;
+                        autoCloseIndents.Add(closeIndent);
+                    }
+                }
+
+                yield return new InsertedUtokens(InsertedUtokens.Kind.After, utokenBetweenOrAfter.priority, Behavior.NonOverridableSkipThrough, autoCloseIndents, bnfTerm);
             }
         }
 
@@ -168,16 +158,55 @@ namespace Sarcasm.Unparsing
                 ;
         }
 
-        private static IList<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens, out bool existIndent)
+        private static bool NeedsAutoCloseIndent(Utoken utoken)
         {
-            IList<UtokenControl> indents = CollectIndents(insertedUtokens).ToList();
-            existIndent = indents.Count > 0;
-            return indents;
+            Utoken closeIndent;
+            return TryCreateAutoCloseIndent(utoken, preventCreation: true, closeIndent: out closeIndent);
         }
 
-        private static IEnumerable<UtokenControl> CollectIndents(InsertedUtokens insertedUtokens)
+        private static bool TryCreateAutoCloseIndent(Utoken utoken, out Utoken closeIndent)
         {
-            return insertedUtokens.utokens.Where(utoken => utoken.EqualToAny(UtokenControl.IndentBlock, UtokenControl.UnindentBlock)).Cast<UtokenControl>();
+            return TryCreateAutoCloseIndent(utoken, preventCreation: false, closeIndent: out closeIndent);
+        }
+
+        private static bool TryCreateAutoCloseIndent(Utoken utoken, bool preventCreation, out Utoken closeIndent)
+        {
+            UtokenControl utokenControl = utoken as UtokenControl;
+
+            if (utokenControl == null)
+            {
+                closeIndent = null;
+                return false;
+            }
+            else if (utokenControl.kind == UtokenControl.Kind.IndentBlock)
+            {
+                if (preventCreation)
+                    closeIndent = null;
+                else
+                {
+                    closeIndent = new UtokenControl(UtokenControl.Kind.DecreaseIndentLevel);
+                    closeIndent.MakeYang(utoken);
+                }
+
+                return true;
+            }
+            else if (utokenControl.kind == UtokenControl.Kind.UnindentBlock)
+            {
+                if (preventCreation)
+                    closeIndent = null;
+                else
+                {
+                    closeIndent = new UtokenControl(UtokenControl.Kind.IncreaseIndentLevel);
+                    closeIndent.MakeYang(utoken);
+                }
+
+                return true;
+            }
+            else
+            {
+                closeIndent = null;
+                return false;
+            }
         }
     }
 
@@ -214,22 +243,25 @@ namespace Sarcasm.Unparsing
                 {
                     InsertedUtokens rightInsertedUtokens = (InsertedUtokens)utoken;
 
-                    bool switchToNewInsertedUtokens = IsRightStronger(leftInsertedUtokensToBeYield, rightInsertedUtokens);
+                    var switchToNewInsertedUtokens = new Lazy<bool>(() => IsRightStronger(leftInsertedUtokensToBeYield, rightInsertedUtokens));
 
-                    if (rightInsertedUtokens.overridable == Overridable.Yes)
-                        leftInsertedUtokensToBeYield = switchToNewInsertedUtokens ? rightInsertedUtokens : leftInsertedUtokensToBeYield;
-                    else
+                    if (rightInsertedUtokens.behavior == Behavior.Overridable)
                     {
-                        if (!switchToNewInsertedUtokens)
-                            yield return leftInsertedUtokensToBeYield;
-
-                        leftInsertedUtokensToBeYield = null;
-
+                        leftInsertedUtokensToBeYield = switchToNewInsertedUtokens.Value ? rightInsertedUtokens : leftInsertedUtokensToBeYield;
+                    }
+                    else if (rightInsertedUtokens.behavior == Behavior.NonOverridableSkipThrough)
+                    {
                         yield return rightInsertedUtokens;
                     }
+                    else if (rightInsertedUtokens.behavior == Behavior.NonOverridableSeparator)
+                    {
+                        if (!switchToNewInsertedUtokens.Value)
+                            yield return leftInsertedUtokensToBeYield;
+
+                        yield return rightInsertedUtokens;
+                        leftInsertedUtokensToBeYield = null;
+                    }
                 }
-                else if (utoken is UtokenDependent)
-                    yield return utoken;
                 else
                 {
                     if (leftInsertedUtokensToBeYield != null)
@@ -267,26 +299,17 @@ namespace Sarcasm.Unparsing
         {
             ISet<Utoken> seenDependers = new HashSet<Utoken>();
 
-            foreach (Utoken _utoken in utokens)
+            foreach (Utoken utoken in utokens)
             {
-                Utoken utoken = _utoken;
-
-            LProcessUtoken:
-
-                if (utoken.IsDepender())
+                if (utoken.IsYin())
                 {
                     seenDependers.Add(utoken);
+                    yield return utoken;
                 }
-                else if (utoken is UtokenDependent)
+                else if (utoken.IsYang())
                 {
-                    UtokenDependent utokenDependent = (UtokenDependent)utoken;
-
-                    if (seenDependers.Contains(utokenDependent.depender))
-                    {
-                        // handle dependent tokens recursively (utokenDependent.utoken might be a dependent, a depender or a normal utoken as well)
-                        utoken = utokenDependent.utoken;
-                        goto LProcessUtoken;
-                    }
+                    if (seenDependers.Contains(utoken.GetYin()))
+                        yield return utoken;
                 }
                 else
                     yield return utoken;
@@ -298,7 +321,8 @@ namespace Sarcasm.Unparsing
             int indentLevel = 0;
             int? temporaryIndentLevel = null;
             bool firstUtokenInLine = true;
-            bool allowedWhitespaceBetweenUtokens = true;
+            bool allowWhitespaceBetweenUtokens = true;
+            Utoken prevUtoken = null;
 
             foreach (Utoken utoken in utokens)
             {
@@ -335,7 +359,7 @@ namespace Sarcasm.Unparsing
                             break;
 
                         case UtokenControl.Kind.NoWhitespace:
-                            allowedWhitespaceBetweenUtokens = false;
+                            allowWhitespaceBetweenUtokens = false;
                             break;
 
                         default:
@@ -353,15 +377,17 @@ namespace Sarcasm.Unparsing
                     {
                         if (firstUtokenInLine)
                             yield return new UtokenIndent(temporaryIndentLevel ?? indentLevel);
-                        else if (allowedWhitespaceBetweenUtokens)
+                        else if (allowWhitespaceBetweenUtokens && !(prevUtoken is UtokenWhitespace) && !(utoken is UtokenWhitespace))
                             yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
 
                         firstUtokenInLine = false;
                     }
 
                     yield return utoken;
-                    allowedWhitespaceBetweenUtokens = true;
+                    allowWhitespaceBetweenUtokens = true;
                 }
+
+                prevUtoken = utoken;
             }
         }
     }
