@@ -285,7 +285,7 @@ namespace Sarcasm.Unparsing
 
         public void UpdateUnparseInfo(BnfTerm bnfTerm)
         {
-            if (bnfTerm.IsOperator())
+            if (IsRegisteredOperator(bnfTerm))
                 _unparseInfo = UnparseInfo.CreateOperator(registeredOperator: bnfTerm);
             else if (!IsOperator(bnfTerm))
                 _unparseInfo = null;
@@ -403,6 +403,11 @@ namespace Sarcasm.Unparsing
                     yield return new UnparsedOperator(child, unparseInfo.RegisteredOperator, utokens);
                 }
             }
+        }
+
+        private static bool IsRegisteredOperator(BnfTerm bnfTerm)
+        {
+            return bnfTerm.IsOperator();
         }
 
         private bool IsOperator(BnfTerm bnfTerm)
