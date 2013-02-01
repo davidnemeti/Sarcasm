@@ -1,6 +1,4 @@
-﻿#define IRONY_INTERNALS_VISIBLE
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -212,47 +210,6 @@ namespace Sarcasm.Ast
         #endregion
 
         #region Misc
-
-#if IRONY_INTERNALS_VISIBLE
-
-        public string GetNonTerminalsAsText(bool omitBoundMembers = false)
-        {
-            return GetNonTerminalsAsText(new LanguageData(this), omitBoundMembers);
-        }
-
-        public static string GetNonTerminalsAsText(LanguageData language, bool omitBoundMembers = false)
-        {
-            var sw = new StringWriter();
-            foreach (var nonTerminal in language.GrammarData.NonTerminals.OrderBy(nonTerminal => nonTerminal.Name))
-            {
-                if (omitBoundMembers && nonTerminal is BnfiTermMember)
-                    continue;
-
-                sw.WriteLine("{0}{1}", nonTerminal.Name, nonTerminal.Flags.IsSet(TermFlags.IsNullable) ? "  (Nullable) " : string.Empty);
-                foreach (Production pr in nonTerminal.Productions)
-                {
-                    sw.WriteLine("   {0}", ProductionToString(pr, omitBoundMembers));
-                }
-            }
-            return sw.ToString();
-        }
-
-        private static string ProductionToString(Production production, bool omitBoundMembers)
-        {
-            var sw = new StringWriter();
-            sw.Write("{0} -> ", production.LValue.Name);
-            foreach (BnfTerm bnfTerm in production.RValues)
-            {
-                BnfTerm bnfTermToWrite = omitBoundMembers && bnfTerm is BnfiTermMember
-                    ? ((BnfiTermMember)bnfTerm).BnfTerm
-                    : bnfTerm;
-
-                sw.Write("{0} ", bnfTermToWrite.Name);
-            }
-            return sw.ToString();
-        }
-
-#endif
 
         public static new Grammar CurrentGrammar
         {

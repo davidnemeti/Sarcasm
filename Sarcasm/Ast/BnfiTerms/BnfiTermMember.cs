@@ -14,7 +14,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public abstract partial class BnfiTermMember : NonTerminal, IBnfiTerm, IUnparsable
+    public abstract partial class BnfiTermMember : BnfTerm, IBnfiTerm
     {
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
@@ -24,15 +24,6 @@ namespace Sarcasm.Ast
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
-            base.Rule = bnfTerm.ToBnfExpression();
-
-            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
-                {
-                    if (parseTreeNode.ChildNodes.Count != 1)
-                        throw new ArgumentException("Only one child is allowed for a BnfiTermMember node: {0}", parseTreeNode.Term.Name);
-
-                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(new MemberValue(memberInfo, GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes[0].AstNode)), context, parseTreeNode);
-                };
         }
 
         protected static BnfiTermMember<TDeclaringType> Bind<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess, BnfTerm bnfTerm)
@@ -160,43 +151,6 @@ namespace Sarcasm.Ast
             return this;
         }
 
-        NonTerminal INonTerminal.AsNonTerminal()
-        {
-            return this;
-        }
-
-        [Obsolete("Cannot use Rule method", error: true)]
-        public new BnfExpression Rule
-        {
-            get { return base.Rule; }
-            set { base.Rule = value; }
-        }
-
-        #region Unparse
-
-        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
-        {
-            utokens = null;
-            return false;
-        }
-
-        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
-        {
-            yield return new UnparsableObject(this.BnfTerm, obj);
-        }
-
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
-        {
-            if (obj != null)
-                return 1;
-            else if (this.BnfTerm is BnfiTermCollection)
-                return unparser.GetBnfTermPriority(this.BnfTerm, obj);
-            else
-                return null;
-        }
-
-        #endregion
-
         public override string ToString()
         {
             return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
@@ -217,30 +171,6 @@ namespace Sarcasm.Ast
         internal BnfiTermMember(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(memberInfo, bnfTerm)
         {
-        }
-    }
-
-    internal class MemberValue
-    {
-        public MemberInfo MemberInfo { get; private set; }
-        public object Value { get; private set; }
-
-        public MemberValue(MemberInfo MemberInfo, object Value)
-        {
-            this.MemberInfo = MemberInfo;
-            this.Value = Value;
-        }
-
-        public override string ToString()
-        {
-            return string.Format(".{{{0}}} : {1}", MemberInfo.Name, ToStringValue(Value));
-        }
-
-        protected static string ToStringValue(object value)
-        {
-            return value is System.Collections.IEnumerable
-                ? GrammarHelper.TypeNameWithDeclaringTypes(value.GetType())
-                : value.ToString();
         }
     }
 }

@@ -18,6 +18,21 @@ namespace Sarcasm.Ast
 {
     public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsable
     {
+        private struct ParseIndexedBnfTerm
+        {
+            public readonly BnfTerm BnfTerm;
+            public readonly int ParseIndex;
+
+            public ParseIndexedBnfTerm(BnfTerm bnfTerm, int parseIndex)
+            {
+                this.BnfTerm = bnfTerm;
+                this.ParseIndex = parseIndex;
+            }
+        }
+
+        private IDictionary<ParseIndexedBnfTerm, BnfiTermMember> parseIndexedBnfTermToMember = new Dictionary<ParseIndexedBnfTerm, BnfiTermMember>();
+        private IDictionary<int, int> ruleIndexToParseIndex = new Dictionary<int, int>();
+
         protected BnfiTermType(Type type, string name)
             : base(type, name, isReferable: true)
         {
@@ -26,19 +41,29 @@ namespace Sarcasm.Ast
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
-                object objValue = Activator.CreateInstance(type, nonPublic: true);
+                object obj = Activator.CreateInstance(type, nonPublic: true);
 
-                var childUnparsableObjects = parseTreeNode.ChildNodes.Select(childNode => GrammarHelper.AstNodeToValue(childNode.AstNode)).Where(childNode => childNode != null);
+                var parseIndexedChildValues = parseTreeNode.ChildNodes
+                    .Select(
+                        (childNode, index) => new
+                            {
+                                ChildBnfTerm = childNode.Term,
+                                ChildValue = GrammarHelper.AstNodeToValue(childNode.AstNode),
+                                ChildParseIndex = index
+                            }
+                        )
+                    .Where(indexedChildValue => indexedChildValue.ChildValue != null)
+                    .ToList();
 
-                // 1. memberwise copy for ast values
-                foreach (var childValue in childUnparsableObjects.Where(childValue => objValue.GetType().IsAssignableFrom(childValue.GetType())))
-                    MemberwiseCopyExceptNullValues(objValue, childValue);
+                // 1. memberwise copy for BnfiTermCopy items
+                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => obj.GetType().IsAssignableFrom(indexedChildValue.ChildValue.GetType())))
+                    MemberwiseCopyExceptNullValues(obj, parseIndexedChildValue.ChildValue);
 
-                // 2. set member values by MemberValues (so that we can overwrite the copied members if we want)
-                foreach (var memberValue in childUnparsableObjects.OfType<MemberValue>())
-                    SetValue(memberValue, objValue);
+                // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
+                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => IsMemberByParseIndex(indexedChildValue.ChildBnfTerm, indexedChildValue.ChildParseIndex)))
+                    SetValue(GetMemberByParseIndex(parseIndexedChildValue.ChildBnfTerm, parseIndexedChildValue.ChildParseIndex).MemberInfo, obj, parseIndexedChildValue.ChildValue);
 
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(objValue, context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(obj, context, parseTreeNode);
             };
         }
 
@@ -86,11 +111,6 @@ namespace Sarcasm.Ast
                 throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
         }
 
-        private static void SetValue(MemberValue memberValue, object obj)
-        {
-            SetValue(memberValue.MemberInfo, obj, memberValue.Value);
-        }
-
         protected static object GetValue(MemberInfo memberInfo, object obj)
         {
             if (memberInfo is PropertyInfo)
@@ -103,7 +123,68 @@ namespace Sarcasm.Ast
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
 
-        protected new BnfiExpression Rule { set { base.Rule = value; } }
+        protected new BnfiExpression Rule
+        {
+            set
+            {
+                ConvertAndStoreBnfiTermMembers(value);
+                base.Rule = value;
+            }
+        }
+
+        private void ConvertAndStoreBnfiTermMembers(BnfiExpression bnfiExpression)
+        {
+            foreach (BnfTermList bnfterms in bnfiExpression.GetBnfTermsList())
+            {
+                int parseIndex = 0;
+
+                for (int ruleIndex = 0; ruleIndex < bnfterms.Count; ruleIndex++)
+                {
+                    if (bnfterms[ruleIndex] is BnfiTermMember)
+                    {
+                        BnfiTermMember bnfiTermMember = (BnfiTermMember)bnfterms[ruleIndex];
+
+                        RegisterMember(bnfiTermMember.BnfTerm, parseIndex, ruleIndex, bnfiTermMember);
+                        bnfterms[ruleIndex] = bnfiTermMember.BnfTerm;
+                    }
+
+                    if (!bnfterms[ruleIndex].IsPunctuation())
+                        parseIndex++;
+                }
+            }
+        }
+
+        private void RegisterMember(ParseIndexedBnfTerm parseIndexedBnfTerm, int ruleIndex, BnfiTermMember member)
+        {
+        }
+
+        private void RegisterMember(BnfTerm bnfTerm, int parseIndex, int ruleIndex, BnfiTermMember member)
+        {
+            this.parseIndexedBnfTermToMember.Add(new ParseIndexedBnfTerm(bnfTerm, parseIndex), member);
+            this.ruleIndexToParseIndex.Add(ruleIndex, parseIndex);
+        }
+
+        private bool IsMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
+        {
+            return this.parseIndexedBnfTermToMember.ContainsKey(new ParseIndexedBnfTerm(bnfTerm, parseIndex));
+        }
+
+        private bool IsMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
+        {
+            int parseIndex;
+            return this.ruleIndexToParseIndex.TryGetValue(ruleIndex, out parseIndex) && IsMemberByParseIndex(bnfTerm, parseIndex);
+        }
+
+        private BnfiTermMember GetMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
+        {
+            return this.parseIndexedBnfTermToMember[new ParseIndexedBnfTerm(bnfTerm, parseIndex)];
+        }
+
+        private BnfiTermMember GetMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
+        {
+            int parseIndex = this.ruleIndexToParseIndex[ruleIndex];
+            return GetMemberByParseIndex(bnfTerm, parseIndex);
+        }
 
         #region Unparse
 
@@ -115,27 +196,39 @@ namespace Sarcasm.Ast
 
         IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
-            foreach (BnfTerm childBnfTerm in childBnfTerms)
+            foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, ruleIndex) => new { BnfTerm = childBnfTerm, RuleIndex = ruleIndex }))
             {
                 object childObj;
 
-                if (childBnfTerm is BnfiTermMember)
-                {
-                    BnfiTermMember bnfiTermMember = (BnfiTermMember)childBnfTerm;
-                    childObj = GetValue(bnfiTermMember.MemberInfo, obj);
-                }
-                else if (childBnfTerm is BnfiTermCopy)
+                if (IsMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex))
+                    childObj = GetValue(GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex).MemberInfo, obj);
+                else if (childRuleIndexedBnfTerm.BnfTerm is BnfiTermCopy)
                     childObj = obj;
                 else
                     childObj = null;
 
-                yield return new UnparsableObject(childBnfTerm, childObj);
+                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childObj);
             }
         }
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
-            return childUnparsableObjects.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
+            return childUnparsableObjects
+                .SumIncludingNullValues(
+                    (childUnparsableObject, ruleIndex) => IsMemberByRuleIndex(childUnparsableObject.bnfTerm, ruleIndex)
+                        ? GetBnfTermPriorityForMember(unparser, childUnparsableObject.bnfTerm, childUnparsableObject.obj)
+                        : unparser.GetBnfTermPriority(childUnparsableObject.bnfTerm, childUnparsableObject.obj)
+                    );
+        }
+
+        private static int? GetBnfTermPriorityForMember(IUnparser unparser, BnfTerm bnfTerm, object obj)
+        {
+            if (obj != null)
+                return 1;
+            else if (bnfTerm is BnfiTermCollection)
+                return unparser.GetBnfTermPriority(bnfTerm, obj);
+            else
+                return null;
         }
 
         #endregion

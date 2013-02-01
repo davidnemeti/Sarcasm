@@ -20,7 +20,7 @@ namespace Sarcasm.Ast
         protected BnfiTermChoice(Type type, string name)
             : base(type, name, isReferable: true)
         {
-            GrammarHelper.MarkTransient(this);      // the child node already contains the created ast node
+            GrammarHelper.MarkTransientForced(this);      // the child node already contains the created ast node
         }
 
         protected new BnfiExpression Rule { set { base.Rule = value; } }
