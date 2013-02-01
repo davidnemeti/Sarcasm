@@ -38,41 +38,41 @@ namespace Sarcasm.Unparsing
 
         private class UnparseInfo
         {
-            public readonly BnfTerm RegisteredOperator;
+            public readonly BnfTerm FlaggedOperator;
 
-            private UnparseInfo(BnfTerm registeredOperator)
+            private UnparseInfo(BnfTerm flaggedOperator)
             {
-                this.RegisteredOperator = registeredOperator;
+                this.FlaggedOperator = flaggedOperator;
             }
 
-            public static UnparseInfo CreateOperator(BnfTerm registeredOperator)
+            public static UnparseInfo CreateOperator(BnfTerm flaggedOperator)
             {
-                return new UnparseInfo(registeredOperator);
+                return new UnparseInfo(flaggedOperator);
             }
         }
 
         private class SurroundingOperators
         {
-            public readonly BnfTerm LeftRegisteredOperator;
-            public readonly BnfTerm RightRegisteredOperator;
+            public readonly BnfTerm LeftFlaggedOperator;
+            public readonly BnfTerm RightFlaggedOperator;
 
-            public SurroundingOperators(BnfTerm leftRegisteredOperator, BnfTerm rightRegisteredOperator)
+            public SurroundingOperators(BnfTerm leftFlaggedOperator, BnfTerm rightFlaggedOperator)
             {
-                this.LeftRegisteredOperator = leftRegisteredOperator;
-                this.RightRegisteredOperator = rightRegisteredOperator;
+                this.LeftFlaggedOperator = leftFlaggedOperator;
+                this.RightFlaggedOperator = rightFlaggedOperator;
             }
         }
 
         private class UnparsedOperator
         {
             public readonly UnparsableObject UnparsableObject;
-            public readonly BnfTerm RegisteredOperator;
+            public readonly BnfTerm FlaggedOperator;
             public readonly IEnumerable<Utoken> Utokens;
 
-            public UnparsedOperator(UnparsableObject unparsableObject, BnfTerm registeredOperator, IEnumerable<Utoken> utokens)
+            public UnparsedOperator(UnparsableObject unparsableObject, BnfTerm flaggedOperator, IEnumerable<Utoken> utokens)
             {
                 this.UnparsableObject = unparsableObject;
-                this.RegisteredOperator = registeredOperator;
+                this.FlaggedOperator = flaggedOperator;
                 this.Utokens = utokens;
             }
         }
@@ -285,8 +285,8 @@ namespace Sarcasm.Unparsing
 
         public void UpdateUnparseInfo(BnfTerm bnfTerm)
         {
-            if (IsRegisteredOperator(bnfTerm))
-                _unparseInfo = UnparseInfo.CreateOperator(registeredOperator: bnfTerm);
+            if (IsFlaggedOperator(bnfTerm))
+                _unparseInfo = UnparseInfo.CreateOperator(flaggedOperator: bnfTerm);
             else if (!IsOperator(bnfTerm))
                 _unparseInfo = null;
         }
@@ -379,17 +379,17 @@ namespace Sarcasm.Unparsing
             if (unparsedOperator == null)
                 return false;
 
-            BnfTerm registeredOperator = unparsedOperator.RegisteredOperator;
-            BnfTerm leftRegisteredOperator = GetLeftRegisteredSurroundingOperator();
-            BnfTerm rightRegisteredOperator = GetRightRegisteredSurroundingOperator();
+            BnfTerm flaggedOperator = unparsedOperator.FlaggedOperator;
+            BnfTerm leftFlaggedOperator = GetLeftFlaggedSurroundingOperator();
+            BnfTerm rightFlaggedOperator = GetRightFlaggedSurroundingOperator();
 
-            return leftRegisteredOperator != null &&
-                ((GetPrecedence(leftRegisteredOperator) > GetPrecedence(registeredOperator) ||
-                GetPrecedence(leftRegisteredOperator) == GetPrecedence(registeredOperator) && GetAssociativity(registeredOperator) == Associativity.Left))
+            return leftFlaggedOperator != null &&
+                ((GetPrecedence(leftFlaggedOperator) > GetPrecedence(flaggedOperator) ||
+                GetPrecedence(leftFlaggedOperator) == GetPrecedence(flaggedOperator) && GetAssociativity(flaggedOperator) == Associativity.Left))
                 ||
-                rightRegisteredOperator != null &&
-                ((GetPrecedence(rightRegisteredOperator) > GetPrecedence(registeredOperator) ||
-                GetPrecedence(rightRegisteredOperator) == GetPrecedence(registeredOperator) && GetAssociativity(registeredOperator) == Associativity.Right));
+                rightFlaggedOperator != null &&
+                ((GetPrecedence(rightFlaggedOperator) > GetPrecedence(flaggedOperator) ||
+                GetPrecedence(rightFlaggedOperator) == GetPrecedence(flaggedOperator) && GetAssociativity(flaggedOperator) == Associativity.Right));
         }
 
         private IEnumerable<UnparsedOperator> GetUnparsedOperators(IEnumerable<UnparsableObject> children)
@@ -400,14 +400,14 @@ namespace Sarcasm.Unparsing
                 {
                     UnparseInfo unparseInfo;
                     var utokens = UnparseRawEager(child, out unparseInfo);
-                    yield return new UnparsedOperator(child, unparseInfo.RegisteredOperator, utokens);
+                    yield return new UnparsedOperator(child, unparseInfo.FlaggedOperator, utokens);
                 }
             }
         }
 
-        private static bool IsRegisteredOperator(BnfTerm bnfTerm)
+        private static bool IsFlaggedOperator(BnfTerm bnfTerm)
         {
-            return bnfTerm.IsOperator();
+            return bnfTerm.IsOperator();    // has IsOperator as flag
         }
 
         private bool IsOperator(BnfTerm bnfTerm)
@@ -415,14 +415,14 @@ namespace Sarcasm.Unparsing
             return bnfTermToBnfTermKind[bnfTerm] == BnfTermKind.Operator;
         }
 
-        private int GetPrecedence(BnfTerm registeredOperator)
+        private int GetPrecedence(BnfTerm flaggedOperator)
         {
-            return registeredOperator.Precedence;
+            return flaggedOperator.Precedence;
         }
 
-        private Associativity GetAssociativity(BnfTerm registeredOperator)
+        private Associativity GetAssociativity(BnfTerm flaggedOperator)
         {
-            return registeredOperator.Associativity;
+            return flaggedOperator.Associativity;
         }
 
         private BnfTerm GetLeftSurroundingParenthesis()
@@ -475,13 +475,13 @@ namespace Sarcasm.Unparsing
 
         private void BeginSurroundingOperatorsContext(UnparsedOperator leftUnparsedOperator, UnparsedOperator rightUnparsedOperator)
         {
-            BnfTerm leftRegisteredOperator = leftUnparsedOperator != null ? leftUnparsedOperator.RegisteredOperator : null;
-            BnfTerm rightRegisteredOperator = rightUnparsedOperator != null ? rightUnparsedOperator.RegisteredOperator : null;
+            BnfTerm leftFlaggedOperator = leftUnparsedOperator != null ? leftUnparsedOperator.FlaggedOperator : null;
+            BnfTerm rightFlaggedOperator = rightUnparsedOperator != null ? rightUnparsedOperator.FlaggedOperator : null;
 
             surroundingOperators.Push(
                 new SurroundingOperators(
-                    leftRegisteredOperator ?? GetLeftRegisteredSurroundingOperator(),
-                    rightRegisteredOperator ?? GetRightRegisteredSurroundingOperator()
+                    leftFlaggedOperator ?? GetLeftFlaggedSurroundingOperator(),
+                    rightFlaggedOperator ?? GetRightFlaggedSurroundingOperator()
                     )
                 );
         }
@@ -491,14 +491,14 @@ namespace Sarcasm.Unparsing
             surroundingOperators.Pop();
         }
 
-        private BnfTerm GetLeftRegisteredSurroundingOperator()
+        private BnfTerm GetLeftFlaggedSurroundingOperator()
         {
-            return surroundingOperators.Count > 0 ? surroundingOperators.Peek().LeftRegisteredOperator : null;
+            return surroundingOperators.Count > 0 ? surroundingOperators.Peek().LeftFlaggedOperator : null;
         }
 
-        private BnfTerm GetRightRegisteredSurroundingOperator()
+        private BnfTerm GetRightFlaggedSurroundingOperator()
         {
-            return surroundingOperators.Count > 0 ? surroundingOperators.Peek().RightRegisteredOperator : null;
+            return surroundingOperators.Count > 0 ? surroundingOperators.Peek().RightFlaggedOperator : null;
         }
 
         #endregion
