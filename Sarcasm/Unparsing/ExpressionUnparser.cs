@@ -254,7 +254,7 @@ namespace Sarcasm.Unparsing
                 bnfTermKind = BnfTermKind.Other;
 
             // e.g. operator can be non-terminal and terminal as well; if it is non-terminal, then we override bnfTermInfo
-            if (bnfTerm.IsOperator())
+            if (IsFlaggedOperator(bnfTerm))
                 bnfTermKind = BnfTermKind.Operator;
             else if (bnfTerm.IsOpenBrace())
                 bnfTermKind = BnfTermKind.LeftParenthesis;
@@ -287,7 +287,7 @@ namespace Sarcasm.Unparsing
         {
             if (IsFlaggedOperator(bnfTerm))
                 _unparseInfo = UnparseInfo.CreateOperator(flaggedOperator: bnfTerm);
-            else if (!IsOperator(bnfTerm))
+            else if (!IsFlaggedOrDerivedOperator(bnfTerm))
                 _unparseInfo = null;
         }
 
@@ -396,7 +396,7 @@ namespace Sarcasm.Unparsing
         {
             foreach (UnparsableObject child in children)
             {
-                if (IsOperator(child.bnfTerm))
+                if (IsFlaggedOrDerivedOperator(child.bnfTerm))
                 {
                     UnparseInfo unparseInfo;
                     var utokens = UnparseRawEager(child, out unparseInfo);
@@ -410,7 +410,7 @@ namespace Sarcasm.Unparsing
             return bnfTerm.IsOperator();    // has IsOperator as flag
         }
 
-        private bool IsOperator(BnfTerm bnfTerm)
+        private bool IsFlaggedOrDerivedOperator(BnfTerm bnfTerm)
         {
             return bnfTermToBnfTermKind[bnfTerm] == BnfTermKind.Operator;
         }
