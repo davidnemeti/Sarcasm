@@ -139,7 +139,8 @@ namespace Sarcasm.Unparsing
                     }
                 }
 
-                yield return new InsertedUtokens(InsertedUtokens.Kind.After, utokenBetweenOrAfter.priority, Behavior.NonOverridableSkipThrough, autoCloseIndents, bnfTerm);
+                if (autoCloseIndents.Count > 0)
+                    yield return new InsertedUtokens(InsertedUtokens.Kind.After, utokenBetweenOrAfter.priority, Behavior.NonOverridableSkipThrough, autoCloseIndents, bnfTerm);
             }
         }
 
