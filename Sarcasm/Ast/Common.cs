@@ -109,8 +109,10 @@ namespace Sarcasm.Ast
 
         public override string ToString()
         {
-            string extraStr = GetExtraStrForToString();
+            string extraStr = verboseToString ? GetExtraStrForToString() : null;
             return string.Format("{0}<{1}>{2}", this.GetType().Name, this.Name, extraStr != null ? "(" + extraStr + ")" : "");
         }
+
+        public bool verboseToString = false;
     }
 }
