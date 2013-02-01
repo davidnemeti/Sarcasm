@@ -73,6 +73,11 @@ namespace Sarcasm
             return items.Select(selector).SumIncludingNullValues();
         }
 
+        public static int? SumIncludingNullValues<TSource>(this IEnumerable<TSource> items, Func<TSource, int, int?> selector)
+        {
+            return items.Select(selector).SumIncludingNullValues();
+        }
+
         public static int? SumIncludingNullValues(this IEnumerable<int?> items)
         {
             int sum = 0;

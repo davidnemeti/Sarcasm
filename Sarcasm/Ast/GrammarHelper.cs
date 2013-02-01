@@ -462,9 +462,40 @@ namespace Sarcasm.Ast
             return bnfTerm.Flags.IsSet(TermFlags.IsCloseBrace);
         }
 
+        public static bool IsPunctuation(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsPunctuation);
+        }
+
         internal static void MarkTransient(NonTerminal nonTerminal)
         {
             nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);
+        }
+
+        /// <summary>
+        /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues,
+        /// or when there are multiple children and only one of them has ast node.
+        /// </summary>
+        /// <example>
+        /// When creating a BnfiTermMember we should not use MarkTransient, because under this BnfiTermMember there can be a list (TermFlags.IsList),
+        /// which makes this term to become a list container (TermFlags.IsListContainer), and this causes ReduceParserActionCreate to process this term
+        /// with ReduceListContainerParserAction instead of the desired ReduceTransientParserAction, which causes the parseTreeNode of this term
+        /// to remain in the parseTree despite it is being transient (TermFlags.IsTransient), and this results bad behavior when building the AST tree,
+        /// because this term will not produce an ast node (TermFlags.NoAstNode), and therefore the AST builder will not process its children.
+        /// </example>
+        internal static void MarkTransientForced(NonTerminal nonTerminal)
+        {
+            nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
+            {
+                try
+                {
+                    parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.AstNode != null).AstNode;
+                }
+                catch (InvalidOperationException e)
+                {
+                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
+                }
+            };
         }
 
         internal static GrammarHint PreferShiftHere()
@@ -510,32 +541,6 @@ namespace Sarcasm.Ast
         internal static CustomActionHint CustomActionHere(ExecuteActionMethod executeMethod, PreviewActionMethod previewMethod = null)
         {
             return new CustomActionHint(executeMethod, previewMethod);
-        }
-
-        /// <summary>
-        /// Practically the same as marking with MarkTransient. It is used in those cases when MarkTransient would not work due to technical issues,
-        /// or when there are multiple children and only one of them has ast node.
-        /// </summary>
-        /// <example>
-        /// When creating a BnfiTermMember we should not use MarkTransient, because under this BnfiTermMember there can be a list (TermFlags.IsList),
-        /// which makes this term to become a list container (TermFlags.IsListContainer), and this causes ReduceParserActionCreate to process this term
-        /// with ReduceListContainerParserAction instead of the desired ReduceTransientParserAction, which causes the parseTreeNode of this term
-        /// to remain in the parseTree despite it is being transient (TermFlags.IsTransient), and this results bad behavior when building the AST tree,
-        /// because this term will not produce an ast node (TermFlags.NoAstNode), and therefore the AST builder will not process its children.
-        /// </example>
-        internal static void MarkTransientForced(NonTerminal nonTerminal)
-        {
-            nonTerminal.AstConfig.NodeCreator = (context, parseTreeNode) =>
-            {
-                try
-                {
-                    parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.AstNode != null).AstNode;
-                }
-                catch (InvalidOperationException e)
-                {
-                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
-                }
-            };
         }
 
         [DebuggerStepThrough()]
