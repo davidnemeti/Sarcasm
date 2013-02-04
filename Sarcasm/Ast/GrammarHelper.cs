@@ -496,6 +496,8 @@ namespace Sarcasm.Ast
                     throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
                 }
             };
+
+            nonTerminal.SetFlag(TermFlags.InheritPrecedence);
         }
 
         internal static GrammarHint PreferShiftHere()
