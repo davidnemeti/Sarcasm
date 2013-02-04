@@ -61,7 +61,7 @@ namespace Sarcasm.Ast
             if (!astForChild)
                 bnfTerm.Flags |= TermFlags.NoAstNode;
 
-            this.RuleRaw = isOptionalValue
+            this.RuleRawWithMove = isOptionalValue
                 ? GrammarHelper.PreferShiftHere() + bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : bnfTerm.ToBnfExpression();
 
@@ -411,29 +411,42 @@ namespace Sarcasm.Ast
             this.ClearState();
         }
 
-        protected BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
+        protected new BnfiExpression Rule { set { RuleRawWithMove = value; } }
 
-        protected new BnfiExpression Rule
+        public BnfExpression RuleRaw { set { base.Rule = value; } get { return base.Rule; } }
+
+        protected BnfExpression RuleRawWithMove
         {
             set
             {
                 try
                 {
+                    if (value == null)
+                    {
+                        base.Rule = null;
+                        return;
+                    }
+
                     /*
                      * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
                      * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
-                     * 
-                     * (note that if there is a single bnfTerm inside 'value' then it must be a BnfiTermValue (enforced by BnfiExpressionValue's typesafety),
-                     * that's why we can cast here)
                      * */
-                    BnfiTermValue onlyBnfTermInValue = (BnfiTermValue)value.GetBnfTermsList().Single().Single();
-                    onlyBnfTermInValue.MoveTo(this);
+                    BnfiTermValue onlyBnfTermInValue = value.GetBnfTermsList().Single().Single() as BnfiTermValue;
+
+                    if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
+                        onlyBnfTermInValue.MoveTo(this);
+                    else
+                        base.Rule = value;
                 }
                 catch (InvalidOperationException)
                 {
                     // there are more than one bnfTerms inside 'value' -> "rule-embedding" is necessary
                     base.Rule = value;
                 }
+            }
+            get
+            {
+                return base.Rule;
             }
         }
 

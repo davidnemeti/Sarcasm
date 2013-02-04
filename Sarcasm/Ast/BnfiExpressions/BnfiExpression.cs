@@ -80,7 +80,7 @@ namespace Sarcasm.Ast
 
         internal IEnumerable<BnfTermList> GetBnfTermsList()
         {
-            return this.bnfExpression.Data;
+            return this.bnfExpression.GetBnfTermsList();
         }
     }
 
@@ -91,6 +91,11 @@ namespace Sarcasm.Ast
         public static BnfExpression ToBnfExpression(this BnfTerm bnfTerm)
         {
             return bnfTerm as BnfExpression ?? new BnfExpression(bnfTerm);
+        }
+
+        internal static IEnumerable<BnfTermList> GetBnfTermsList(this BnfExpression bnfExpression)
+        {
+            return bnfExpression.Data;
         }
     }
 }
