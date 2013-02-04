@@ -36,7 +36,7 @@ namespace Sarcasm.Ast
 
         public override string ToString()
         {
-            return Value.ToString();
+            return Value != null ? Value.ToString() : "<<NULL>>";
         }
     }
 }
