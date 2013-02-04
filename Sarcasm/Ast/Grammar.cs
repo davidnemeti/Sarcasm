@@ -171,6 +171,51 @@ namespace Sarcasm.Ast
 
         #endregion
 
+        #region Operators
+
+        public new void RegisterOperators(int precedence, params BnfTerm[] operators)
+        {
+            base.RegisterOperators(precedence, operators);
+            PropagateOperatorProperties(operators.OfType<NonTerminal>(), precedence, associativity: null);
+        }
+
+        public new void RegisterOperators(int precedence, Associativity associativity, params BnfTerm[] operators)
+        {
+            base.RegisterOperators(precedence, associativity, operators);
+            PropagateOperatorProperties(operators.OfType<NonTerminal>(), precedence, associativity);
+        }
+
+        private void PropagateOperatorProperties(IEnumerable<NonTerminal> nonTerminalOperators, int precedence, Associativity? associativity)
+        {
+            foreach (NonTerminal nonTerminalOperator in nonTerminalOperators)
+                PropagateOperatorProperties(nonTerminalOperator, precedence, associativity);
+        }
+
+        private void PropagateOperatorProperties(NonTerminal nonTerminalOperator, int precedence, Associativity? associativity)
+        {
+            if (nonTerminalOperator.Rule == null)
+            {
+                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error,
+                    "Rule is needed to have been set for nonterminal operator '{0}' before calling RegisterOperators", nonTerminalOperator);
+            }
+
+            foreach (var bnfTerms in nonTerminalOperator.Rule.GetBnfTermsList())
+            {
+                foreach (var bnfTerm in bnfTerms)
+                {
+                    if (bnfTerm is Terminal || !bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
+                    {
+                        if (associativity.HasValue)
+                            RegisterOperators(precedence, associativity.Value, bnfTerm);
+                        else
+                            RegisterOperators(precedence, bnfTerm);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region Identifiers
 
         public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")

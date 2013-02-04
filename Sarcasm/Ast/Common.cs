@@ -71,12 +71,14 @@ namespace Sarcasm.Ast
     {
         protected readonly Type type;
         protected readonly bool isReferable;
+        protected readonly bool explicitName;
 
         protected BnfiTermNonTerminal(Type type, string name, bool isReferable)
             : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
             this.type = type;
             this.isReferable = isReferable;
+            this.explicitName = name != null;
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
