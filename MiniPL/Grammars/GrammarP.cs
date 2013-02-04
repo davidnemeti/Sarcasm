@@ -80,8 +80,6 @@ namespace MiniPL
                 this.CHAR_TYPE = grammar.ToTerm("char", DomainModel.Type.Char);
                 this.BOOL_TYPE = grammar.ToTerm("boolean", DomainModel.Type.Bool);
 
-                this.IDENTIFIER = CreateIdentifier();
-
 //                this.ADD_OP = grammar.ToTerm();
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
@@ -146,7 +144,7 @@ namespace MiniPL
             public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
             public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
             public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
-            public readonly BnfiTermValue<string> IDENTIFIER;
+            public readonly BnfiTermValue<string> IDENTIFIER = new BnfiTermValue<string>();
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
             public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
@@ -184,15 +182,6 @@ namespace MiniPL
             : base(AstCreation.CreateAst, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
             B = new BnfTerms(this);
-
-            RegisterOperators(0, B.AND_OP, B.OR_OP, B.NOT_OP);
-            RegisterOperators(10, B.EQ_OP, B.NEQ_OP, B.LT_OP, B.LTE_OP, B.GT_OP, B.GTE_OP);
-            RegisterOperators(20, B.ADD_OP, B.SUB_OP);
-            RegisterOperators(30, B.MUL_OP, B.DIV_OP, B.MOD_OP);
-            RegisterOperators(40, B.NEG_OP, B.POS_OP);
-            RegisterOperators(50, Associativity.Right, B.POW_OP);
-
-            RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
 
             B.Program.Rule =
                 B.PROGRAM
@@ -353,19 +342,23 @@ namespace MiniPL
 
             B.BinaryExpression.Rule =
                 B.Expression.BindMember(B.BinaryExpression, t => t.Term1)
+                + PreferShiftHere()
                 + B.BinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.BinaryExpression, t => t.Term2);
 
             B.UnaryExpression.Rule =
                 B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
-                + B.Expression.BindMember(B.UnaryExpression, t => t.Term);
+                + B.Expression.BindMember(B.UnaryExpression, t => t.Term)
+                + ReduceHere();
 
             B.ConditionalTernaryExpression.Rule =
                 B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Cond)
+                + PreferShiftHere()
                 + B.QUESTION_MARK
                 + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term1)
                 + B.COLON
                 + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term2)
+//                + ReduceHere()
                 ;
 
             B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
@@ -376,6 +369,20 @@ namespace MiniPL
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
 
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
+
+            B.IDENTIFIER.Rule = CreateIdentifier();
+
+            RegisterOperators(0, Associativity.Right, B.QUESTION_MARK, B.COLON);
+            RegisterOperators(3, B.OR_OP);
+            RegisterOperators(5, B.AND_OP);
+            RegisterOperators(10, B.EQ_OP, B.NEQ_OP);
+            RegisterOperators(15, B.LT_OP, B.LTE_OP, B.GT_OP, B.GTE_OP);
+            RegisterOperators(20, B.ADD_OP, B.SUB_OP);
+            RegisterOperators(30, B.MUL_OP, B.DIV_OP, B.MOD_OP);
+            RegisterOperators(40, B.NEG_OP, B.POS_OP, B.NOT_OP);
+            RegisterOperators(50, Associativity.Right, B.POW_OP);
+
+            RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
 
             this.Root = B.Program;
 

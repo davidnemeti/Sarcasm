@@ -83,9 +83,9 @@ namespace Sarcasm.Ast
         internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
         internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use 'SetRuleOr' or 'Or' method instead.";
 
-        public bool IsReferable { get { return isReferable; } }
+        internal bool IsReferable { get { return isReferable; } }
 
-        protected bool IsMovable { get { return !IsReferable; } }
+        internal bool IsMovable { get { return !IsReferable; } }
 
         Type IHasType.Type
         {
