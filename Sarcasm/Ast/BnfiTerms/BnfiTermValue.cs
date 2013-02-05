@@ -422,23 +422,30 @@ namespace Sarcasm.Ast
         {
             set
             {
-                if (value == null)
+                try
                 {
-                    base.Rule = null;
-                    return;
+                    if (value == null)
+                    {
+                        base.Rule = null;
+                        return;
+                    }
+
+                    /*
+                     * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
+                     * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
+                     * */
+                    BnfiTermValue onlyBnfTermInValue = value.GetBnfTermsList().Single().Single() as BnfiTermValue;
+
+                    if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
+                        onlyBnfTermInValue.MoveTo(this);
+                    else
+                        base.Rule = value;
                 }
-
-                /*
-                * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
-                * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
-                * */
-                var bnfTerms = value.GetBnfTermsList().SingleOrDefault();
-                BnfiTermValue onlyBnfTermInValue = bnfTerms.SingleOrDefault() as BnfiTermValue;
-
-                if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
-                    onlyBnfTermInValue.MoveTo(this);
-                else
+                catch (InvalidOperationException)
+                {
+                    // there are more than one bnfTerms inside 'value' -> "rule-embedding" is necessary
                     base.Rule = value;
+                }
             }
             get
             {
