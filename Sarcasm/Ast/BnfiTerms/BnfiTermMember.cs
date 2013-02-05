@@ -246,9 +246,12 @@ namespace Sarcasm.Ast
 
         protected static string ToStringValue(object value)
         {
-            return value is System.Collections.IEnumerable
-                ? GrammarHelper.TypeNameWithDeclaringTypes(value.GetType())
-                : value.ToString();
+            if (value == null)
+                return "<<NULL>>";
+            else if (value is System.Collections.IEnumerable)
+                return GrammarHelper.TypeNameWithDeclaringTypes(value.GetType());
+            else
+                return value.ToString();
         }
     }
 }
