@@ -24,7 +24,7 @@ namespace Sarcasm.Ast
         {
             this.MemberInfo = memberInfo;
             this.BnfTerm = bnfTerm;
-            base.Rule = bnfTerm.ToBnfExpression();
+            base.Rule = bnfTerm.ToBnfExpression() + GrammarHelper.ReduceHere();
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
