@@ -28,10 +28,18 @@ namespace Sarcasm.Ast
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
                 {
-                    if (parseTreeNode.ChildNodes.Count != 1)
-                        throw new ArgumentException("Only one child is allowed for a BnfiTermMember node: {0}", parseTreeNode.Term.Name);
-
-                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(new MemberValue(memberInfo, GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes[0].AstNode)), context, parseTreeNode);
+                    try
+                    {
+                        parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(
+                            new MemberValue(memberInfo, GrammarHelper.AstNodeToValue(parseTreeNode.ChildNodes.Single().AstNode)),
+                            context,
+                            parseTreeNode
+                            );
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        throw new ArgumentException(string.Format("Only one child is allowed for a BnfiTermMember node: {0}", parseTreeNode.Term.Name), "parseTreeNode", e);
+                    }
                 };
         }
 
