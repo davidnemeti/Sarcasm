@@ -175,24 +175,44 @@ namespace Sarcasm.Ast
 
         public new void RegisterOperators(int precedence, params BnfTerm[] operators)
         {
-            base.RegisterOperators(precedence, operators);
-            PropagateOperatorProperties(operators.OfType<NonTerminal>(), precedence, associativity: null);
+            RegisterTerminalOperators(operators.OfType<Terminal>(), precedence, associativity: null);
+            RegisterNonTerminalOperators(operators.OfType<NonTerminal>(), precedence, associativity: null);
         }
 
         public new void RegisterOperators(int precedence, Associativity associativity, params BnfTerm[] operators)
         {
-            base.RegisterOperators(precedence, associativity, operators);
-            PropagateOperatorProperties(operators.OfType<NonTerminal>(), precedence, associativity);
+            RegisterTerminalOperators(operators.OfType<Terminal>(), precedence, associativity);
+            RegisterNonTerminalOperators(operators.OfType<NonTerminal>(), precedence, associativity);
         }
 
-        private void PropagateOperatorProperties(IEnumerable<NonTerminal> nonTerminalOperators, int precedence, Associativity? associativity)
+        private void RegisterTerminalOperators(IEnumerable<Terminal> terminalOperators, int precedence, Associativity? associativity)
+        {
+            foreach (Terminal terminalOperator in terminalOperators)
+                RegisterTerminalOperator(terminalOperator, precedence, associativity);
+        }
+
+        private void RegisterTerminalOperator(Terminal terminalOperator, int precedence, Associativity? associativity)
+        {
+            if (terminalOperator.Precedence != BnfTerm.NoPrecedence)
+                throw new InvalidOperationException(string.Format("Double call of RegisterOperators on terminal '{0}'", terminalOperator));
+
+            if (associativity.HasValue)
+                base.RegisterOperators(precedence, associativity.Value, terminalOperator);
+            else
+                base.RegisterOperators(precedence, terminalOperator);
+        }
+
+        private void RegisterNonTerminalOperators(IEnumerable<NonTerminal> nonTerminalOperators, int precedence, Associativity? associativity)
         {
             foreach (NonTerminal nonTerminalOperator in nonTerminalOperators)
-                PropagateOperatorProperties(nonTerminalOperator, precedence, associativity);
+                RegisterNonTerminalOperator(nonTerminalOperator, precedence, associativity);
         }
 
-        private void PropagateOperatorProperties(NonTerminal nonTerminalOperator, int precedence, Associativity? associativity)
+        private void RegisterNonTerminalOperator(NonTerminal nonTerminalOperator, int precedence, Associativity? associativity)
         {
+            if (nonTerminalOperator.Precedence != BnfTerm.NoPrecedence)
+                throw new InvalidOperationException(string.Format("Double call of RegisterOperators on non-terminal '{0}'", nonTerminalOperator));
+
             if (nonTerminalOperator.Rule == null)
             {
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error,
@@ -203,15 +223,14 @@ namespace Sarcasm.Ast
             {
                 foreach (var bnfTerm in bnfTerms)
                 {
-                    if (bnfTerm is Terminal || !bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                    {
-                        if (associativity.HasValue)
-                            RegisterOperators(precedence, associativity.Value, bnfTerm);
-                        else
-                            RegisterOperators(precedence, bnfTerm);
-                    }
+                    if (bnfTerm is Terminal)
+                        RegisterTerminalOperator((Terminal)bnfTerm, precedence, associativity);
+                    else if (bnfTerm is NonTerminal && !bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
+                        RegisterNonTerminalOperator((NonTerminal)bnfTerm, precedence, associativity);
                 }
             }
+
+            nonTerminalOperator.SetFlag(TermFlags.InheritPrecedence);
         }
 
         #endregion

@@ -178,9 +178,11 @@ namespace MiniPL
         public readonly BnfTerms B;
 
         public GrammarP()
-            : base(AstCreation.CreateAst, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
+            : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
             B = new BnfTerms(this);
+
+            this.Root = B.Program;
 
             B.Program.Rule =
                 B.PROGRAM
@@ -346,9 +348,9 @@ namespace MiniPL
                 ;
 
             B.UnaryExpression.Rule =
+                ImplyPrecedenceHere(80) +
                 B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.UnaryExpression, t => t.Term)
-                + ReduceHere()
                 ;
 
             B.ConditionalTernaryExpression.Rule =
@@ -386,8 +388,6 @@ namespace MiniPL
             RegisterOperators(90, Associativity.Right, B.POW_OP);
 
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
-
-            this.Root = B.Program;
 
             #region Unparse
 
