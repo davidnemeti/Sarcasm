@@ -1,0 +1,45 @@
+﻿<#@ template debug="true" hostSpecific="true" language="C#" #>
+<#@ output extension="generated.cs" #>
+<#@ assembly Name="System.Core" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections.Generic" #> 
+
+using System;
+using System.IO;
+using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using Irony;
+using Irony.Ast;
+using Irony.Parsing;
+using Sarcasm;
+using Sarcasm.Ast;
+using Sarcasm.Unparsing;
+
+using MiniPL.DomainModel;
+
+using Grammar = Sarcasm.Ast.Grammar;
+
+namespace Sarcasm.UnitTest
+{
+    public partial class ParserTest
+    {
+<#
+	string testFileDirPath = Host.ResolvePath("Test files");
+    foreach (string filePath in Directory.GetFiles(testFileDirPath))
+    {
+#>
+        [TestMethod]
+        public void Parse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
+        {
+            ParseFileSaveXmlAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "exprParser" : "parser" #>, "<#= Path.GetFileName(filePath) #>");
+        }
+
+<#
+    }
+#>
+	}
+}
