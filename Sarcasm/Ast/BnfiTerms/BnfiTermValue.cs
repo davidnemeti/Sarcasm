@@ -422,30 +422,30 @@ namespace Sarcasm.Ast
         {
             set
             {
-                try
-                {
-                    if (value == null)
-                    {
-                        base.Rule = null;
-                        return;
-                    }
+                if (value == null)
+                    goto LDefaultRuleSetting;
 
-                    /*
-                     * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
-                     * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
-                     * */
-                    BnfiTermValue onlyBnfTermInValue = value.GetBnfTermsList().Single().Single() as BnfiTermValue;
+                /*
+                 * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
+                 * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
+                 * */
+                var bnfTerms = value.GetBnfTermsList().SingleOrDefaultNoException();
+                if (bnfTerms == null)
+                    goto LDefaultRuleSetting;
 
-                    if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
-                        onlyBnfTermInValue.MoveTo(this);
-                    else
-                        base.Rule = value;
-                }
-                catch (InvalidOperationException)
-                {
-                    // there are more than one bnfTerms inside 'value' -> "rule-embedding" is necessary
-                    base.Rule = value;
-                }
+                BnfiTermValue onlyBnfTermInValue = bnfTerms.SingleOrDefaultNoException() as BnfiTermValue;
+
+                if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
+                    onlyBnfTermInValue.MoveTo(this);
+                else
+                    goto LDefaultRuleSetting;
+
+                return;
+
+            LDefaultRuleSetting:
+                // there are more than one bnfTerms inside 'value' -> "rule-embedding" is necessary
+                base.Rule = value;
+                return;
             }
             get
             {
