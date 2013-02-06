@@ -348,10 +348,14 @@ namespace MiniPL
                 + B.Expression.BindMember(B.BinaryExpression, t => t.Term2)
                 ;
 
+            /*
+             * NOTE: ImplyPrecedenceHere does not work properly, so we do not use it (it parsed operator NEG as operator POS, and omitted the expression after).
+             * So we use ReduceHere instead, which means that unary operators has the highest precedence among operators when used inside a unary expressions.
+             * */
             B.UnaryExpression.Rule =
-                ImplyPrecedenceHere(80) +
                 B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindMember(B.UnaryExpression, t => t.Term)
+                + ReduceHere()      // this is needed for implying precedence (see note above)
                 ;
 
             B.ConditionalTernaryExpression.Rule =
