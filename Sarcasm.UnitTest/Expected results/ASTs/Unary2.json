@@ -1,0 +1,12 @@
+{
+  "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+  "Term1": {
+    "$type": "MiniPL.DomainModel.UnaryExpression, MiniPL",
+    "Op": "Pos"
+  },
+  "Op": "And",
+  "Term2": {
+    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+    "Value": 2
+  }
+}
