@@ -3,6 +3,9 @@ using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
@@ -29,6 +32,7 @@ namespace Sarcasm.UnitTest
 
         protected static void Initialize()
         {
+            Directory.Delete(actualResultsDir, recursive: true);
             Directory.CreateDirectory(actualResultsDir);
 
             grammar = new MiniPL.GrammarP();
@@ -76,6 +80,24 @@ namespace Sarcasm.UnitTest
         protected static string ConvertTabsToSpaces(string sourceText)
         {
             return sourceText.Replace("\t", " ");
+        }
+    }
+
+    internal static class JsonExtensions
+    {
+        public static string ToJson(this object astNode)
+        {
+            object value = GrammarHelper.AstNodeToValue(astNode);
+
+            var settings = new JsonSerializerSettings()
+                {
+                    Formatting = Newtonsoft.Json.Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore,
+                    TypeNameHandling = TypeNameHandling.All,
+                };
+            settings.Converters.Add(new StringEnumConverter());
+
+            return JsonConvert.SerializeObject(value, settings);
         }
     }
 }

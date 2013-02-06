@@ -23,31 +23,31 @@ namespace Sarcasm.UnitTest
         [TestMethod]
         public void Parse_Binary1()
         {
-            ParseFileSaveXmlAndCheck(exprParser, "Binary1.expr");
+            ParseFileSaveAstAndCheck(exprParser, "Binary1.expr");
         }
 
         [TestMethod]
         public void Parse_Binary2()
         {
-            ParseFileSaveXmlAndCheck(exprParser, "Binary2.expr");
+            ParseFileSaveAstAndCheck(exprParser, "Binary2.expr");
         }
 
         [TestMethod]
         public void Parse_MiniPL()
         {
-            ParseFileSaveXmlAndCheck(parser, "MiniPL.mplp");
+            ParseFileSaveAstAndCheck(parser, "MiniPL.mplp");
         }
 
         [TestMethod]
         public void Parse_Unary1()
         {
-            ParseFileSaveXmlAndCheck(exprParser, "Unary1.expr");
+            ParseFileSaveAstAndCheck(exprParser, "Unary1.expr");
         }
 
         [TestMethod]
         public void Parse_Unary2()
         {
-            ParseFileSaveXmlAndCheck(exprParser, "Unary2.expr");
+            ParseFileSaveAstAndCheck(exprParser, "Unary2.expr");
         }
 
 	}

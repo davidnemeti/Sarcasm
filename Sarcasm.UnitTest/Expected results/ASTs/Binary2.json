@@ -1,0 +1,20 @@
+{
+  "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+  "Term1": {
+    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+    "Value": 1
+  },
+  "Op": "Add",
+  "Term2": {
+    "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+    "Term1": {
+      "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+      "Value": 2
+    },
+    "Op": "Mul",
+    "Term2": {
+      "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+      "Value": 3
+    }
+  }
+}

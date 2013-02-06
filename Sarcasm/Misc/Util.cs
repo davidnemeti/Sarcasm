@@ -9,6 +9,23 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static T SingleOrDefaultNoException<T>(this IEnumerable<T> items)
+        {
+            using (var enumerator = items.GetEnumerator())
+            {
+                if (enumerator.MoveNext())
+                {
+                    T firstItem = enumerator.Current;
+
+                    return enumerator.MoveNext()
+                        ? default(T)
+                        : firstItem;
+                }
+                else
+                    return default(T);
+            }
+        }
+
         public static IEnumerable<Tuple<TA, TB>> GetCartesianProduct<TA, TB>(IEnumerable<TA> items1, IEnumerable<TB> items2)
         {
             foreach (var item1 in items1)
