@@ -42,7 +42,7 @@ namespace Sarcasm.UnitTest
             string expectedAstPath = Path.Combine(expectedAstDir, astFileName);
             string expectedAstContent = File.ReadAllText(expectedAstPath);
 
-            Assert.AreEqual(expectedAstContent, actualAstContent, "Expected and actual parsed tree differs for file: '{0}'", parseFileName);
+            Assert.AreEqual(expectedAstContent, actualAstContent, string.Format("Expected and actual parsed tree differs for file: '{0}'", parseFileName));
         }
 
         protected string ParseFileToAstAndCheck(Parser parser, string parseFileName)
