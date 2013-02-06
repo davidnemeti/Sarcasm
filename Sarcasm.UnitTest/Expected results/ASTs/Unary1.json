@@ -2,7 +2,11 @@
   "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
   "Term1": {
     "$type": "MiniPL.DomainModel.UnaryExpression, MiniPL",
-    "Op": "Pos"
+    "Op": "Neg",
+    "Term": {
+      "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+      "Value": 1
+    }
   },
   "Op": "Mul",
   "Term2": {
