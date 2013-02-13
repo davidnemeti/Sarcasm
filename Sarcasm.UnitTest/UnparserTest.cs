@@ -17,29 +17,33 @@ using Grammar = Sarcasm.Ast.Grammar;
 namespace Sarcasm.UnitTest
 {
     [TestClass]
-    public class UnparserTest : CommonTest
+    public partial class UnparserTest : CommonTest
     {
-        protected readonly static string expectedUnparsedSourcesDir = Path.Combine(expectedResultsDir, @"Unparsed sources");
-        protected readonly static string actualUnparsedSourcesDir = Path.Combine(actualResultsDir, @"Unparsed sources");
+        protected readonly static string actualUnparsedFilesDir = Path.Combine(actualResultsDir, @"Unparsed files");
+
+        protected static Unparser unparser;
 
         [ClassInitialize]
         public static void InitializeUnparser(TestContext testContext)
         {
             CommonTest.Initialize();
-//            Unparser unparser = new Unparser(grammar);
+            Directory.CreateDirectory(actualUnparsedFilesDir);
+            unparser = new Unparser(grammar);
         }
 
-        //[TestMethod]
-        //public void Unparse()
-        //{
-        //    ParseTree parseTree = ParseFileAndCheck(parseFileName);
+        protected void UnparseSaveUnparsedAndCheck(Parser parser, BnfTerm bnfTerm, string parseFileName)
+        {
+            string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
 
-        //    Directory.CreateDirectory(unparseDir);
-        //    var stream = File.Create(Path.Combine(unparseDir, @"unparsed_text"));
-        //    unparser.Unparse(parseTree.Root.AstNode).WriteToStream(stream, unparser);
+            ParseTree parseTree = ParseTextAndCheck(parser, sourceText, parseFileName);
+            object value = GrammarHelper.AstNodeToValue(parseTree.Root.AstNode);
+            string unparsedText = unparser.Unparse(value, bnfTerm).AsString(unparser);
 
-        //    ////string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
-        //    ////Console.WriteLine(str);
-        //}
+            string actualUnparsedFilePath = Path.Combine(actualUnparsedFilesDir, parseFileName);
+            File.WriteAllText(actualUnparsedFilePath, unparsedText);
+
+            // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
+            Assert.AreEqual(expected: sourceText, actual: unparsedText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
+        }
     }
 }

@@ -57,9 +57,6 @@ namespace Sarcasm.Ast
             : base(type, name, isReferable: false)
         {
             this.bnfTerm = bnfTerm;
-            this.Flags = bnfTerm.Flags;
-            this.SetFlag(TermFlags.InheritPrecedence);
-            this.SetFlag(TermFlags.NoAstNode, false);
 
             if (!astForChild)
                 bnfTerm.SetFlag(TermFlags.NoAstNode);

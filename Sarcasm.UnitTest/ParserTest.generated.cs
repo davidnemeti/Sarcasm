@@ -33,6 +33,18 @@ namespace Sarcasm.UnitTest
         }
 
         [TestMethod]
+        public void Parse_Binary3()
+        {
+            ParseFileSaveAstAndCheck(exprParser, "Binary3.expr");
+        }
+
+        [TestMethod]
+        public void Parse_Binary4()
+        {
+            ParseFileSaveAstAndCheck(exprParser, "Binary4.expr");
+        }
+
+        [TestMethod]
         public void Parse_MiniPL()
         {
             ParseFileSaveAstAndCheck(parser, "MiniPL.mplp");
@@ -48,6 +60,18 @@ namespace Sarcasm.UnitTest
         public void Parse_Unary2()
         {
             ParseFileSaveAstAndCheck(exprParser, "Unary2.expr");
+        }
+
+        [TestMethod]
+        public void Parse_Unary3()
+        {
+            ParseFileSaveAstAndCheck(exprParser, "Unary3.expr");
+        }
+
+        [TestMethod]
+        public void Parse_Unary4()
+        {
+            ParseFileSaveAstAndCheck(exprParser, "Unary4.expr");
         }
 
 	}

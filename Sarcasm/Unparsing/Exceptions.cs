@@ -16,6 +16,18 @@ using Grammar = Sarcasm.Ast.Grammar;
 
 namespace Sarcasm.Unparsing
 {
+    public class UnparserInitializationException : Exception
+    {
+        public UnparserInitializationException()
+        {
+        }
+
+        public UnparserInitializationException(string message)
+            : base(message)
+        {
+        }
+    }
+
     public class UnparseException : Exception
     {
         public UnparseException()

@@ -389,8 +389,10 @@ namespace MiniPL
             RegisterOperators(50, B.LT_OP, B.LTE_OP, B.GT_OP, B.GTE_OP);
             RegisterOperators(60, B.ADD_OP, B.SUB_OP);
             RegisterOperators(70, B.MUL_OP, B.DIV_OP, B.MOD_OP);
-            RegisterOperators(80, /*B.NEG_OP, B.POS_OP,*/ B.NOT_OP);
-            RegisterOperators(90, Associativity.Right, B.POW_OP);
+            RegisterOperators(80, Associativity.Right, B.POW_OP);
+            RegisterOperators(90, Associativity.Neutral, recurse: false, operators: new[] { B.NEG_OP, B.POS_OP, B.NOT_OP });
+            // NOTE: for the parser the unary operators precedences are encoded into the grammar, but for the unparser we have to specify the precedences
+            // NOTE: we must not recurse, since NEG_OP and POS_OP has the same terminals as SUB_OP and ADD_OP, respectively ('-' and '+').
 
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
 
@@ -401,6 +403,7 @@ namespace MiniPL
             DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBefore(B.COMMA, Utoken.NoWhitespace);
+            DefaultFormatting.InsertUtokensAfter(B.UnaryOperator, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, Utoken.NoWhitespace);
             DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, Utoken.NoWhitespace);
