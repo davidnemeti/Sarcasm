@@ -77,7 +77,7 @@ namespace Sarcasm
 
         public static int GetHashCodeMulti(this System.Collections.IEnumerable items)
         {
-            return items.Cast<object>().Aggregate(17, (hashCode, current) => hashCode * 23 + current.GetHashCode());
+            return items.Cast<object>().Aggregate(17, (hashCode, current) => hashCode * 23 + (current != null ? current.GetHashCode() : 0));
         }
 
         public static string ToString(IFormatProvider formatProvider, object obj)

@@ -41,7 +41,7 @@ namespace Sarcasm.Unparsing
         private const Behavior behaviorDefault = Behavior.Overridable;
         private const Behavior anyBehaviorDefault = Behavior.Overridable;
 
-        private const string newLineDefault = "\n";
+        private static readonly string newLineDefault = Environment.NewLine;
         private const string spaceDefault = " ";
         private const string tabDefault = "\t";
         private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));

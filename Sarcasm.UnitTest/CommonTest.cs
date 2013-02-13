@@ -30,8 +30,13 @@ namespace Sarcasm.UnitTest
         protected static Parser parser;
         protected static Parser exprParser;
 
+        private static bool initialized = false;
+
         protected static void Initialize()
         {
+            if (initialized)
+                return;
+
             Directory.Delete(actualResultsDir, recursive: true);
             Directory.CreateDirectory(actualResultsDir);
 
@@ -47,6 +52,8 @@ namespace Sarcasm.UnitTest
             exprParser = new Parser(parser.Language, grammar.B.Expression);
 
             Assert.IsTrue(parser.Language.ErrorLevel <= GrammarErrorLevel.Info, "Grammar error:\n{0}", string.Join("\n", parser.Language.Errors));
+
+            initialized = true;
         }
 
         protected static ParseTree ParseFileAndCheck(Parser parser, string parseFileName)

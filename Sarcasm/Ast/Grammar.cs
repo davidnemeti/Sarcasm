@@ -175,40 +175,46 @@ namespace Sarcasm.Ast
 
         public new void RegisterOperators(int precedence, params BnfTerm[] operators)
         {
-            RegisterTerminalOperators(operators.OfType<Terminal>(), precedence, associativity: null);
-            RegisterNonTerminalOperators(operators.OfType<NonTerminal>(), precedence, associativity: null);
+            _RegisterOperators(precedence, associativity: null, recurse: true, operators: operators);
         }
 
         public new void RegisterOperators(int precedence, Associativity associativity, params BnfTerm[] operators)
         {
-            RegisterTerminalOperators(operators.OfType<Terminal>(), precedence, associativity);
-            RegisterNonTerminalOperators(operators.OfType<NonTerminal>(), precedence, associativity);
+            _RegisterOperators(precedence, associativity, recurse: true, operators: operators);
         }
 
-        private void RegisterTerminalOperators(IEnumerable<Terminal> terminalOperators, int precedence, Associativity? associativity)
+        public void RegisterOperators(int precedence, Associativity associativity, bool recurse, params BnfTerm[] operators)
+        {
+            _RegisterOperators(precedence, associativity, recurse, operators: operators);
+        }
+
+        private void _RegisterOperators(int precedence, Associativity? associativity, bool recurse, params BnfTerm[] operators)
+        {
+            RegisterTerminalOperators(operators.OfType<Terminal>(), precedence, associativity, recurse);
+            RegisterNonTerminalOperators(operators.OfType<NonTerminal>(), precedence, associativity, recurse);
+        }
+
+        private void RegisterTerminalOperators(IEnumerable<Terminal> terminalOperators, int precedence, Associativity? associativity, bool recurse)
         {
             foreach (Terminal terminalOperator in terminalOperators)
-                RegisterTerminalOperator(terminalOperator, precedence, associativity);
+                RegisterTerminalOperator(terminalOperator, precedence, associativity, recurse);
         }
 
-        private void RegisterTerminalOperator(Terminal terminalOperator, int precedence, Associativity? associativity)
+        private void RegisterTerminalOperator(Terminal terminalOperator, int precedence, Associativity? associativity, bool recurse)
         {
             if (terminalOperator.Precedence != BnfTerm.NoPrecedence)
                 throw new InvalidOperationException(string.Format("Double call of RegisterOperators on terminal '{0}'", terminalOperator));
 
-            if (associativity.HasValue)
-                base.RegisterOperators(precedence, associativity.Value, terminalOperator);
-            else
-                base.RegisterOperators(precedence, terminalOperator);
+            BaseRegisterOperator(terminalOperator, precedence, associativity);
         }
 
-        private void RegisterNonTerminalOperators(IEnumerable<NonTerminal> nonTerminalOperators, int precedence, Associativity? associativity)
+        private void RegisterNonTerminalOperators(IEnumerable<NonTerminal> nonTerminalOperators, int precedence, Associativity? associativity, bool recurse)
         {
             foreach (NonTerminal nonTerminalOperator in nonTerminalOperators)
-                RegisterNonTerminalOperator(nonTerminalOperator, precedence, associativity);
+                RegisterNonTerminalOperator(nonTerminalOperator, precedence, associativity, recurse);
         }
 
-        private void RegisterNonTerminalOperator(NonTerminal nonTerminalOperator, int precedence, Associativity? associativity)
+        private void RegisterNonTerminalOperator(NonTerminal nonTerminalOperator, int precedence, Associativity? associativity, bool recurse)
         {
             if (nonTerminalOperator.Precedence != BnfTerm.NoPrecedence)
                 throw new InvalidOperationException(string.Format("Double call of RegisterOperators on non-terminal '{0}'", nonTerminalOperator));
@@ -219,18 +225,31 @@ namespace Sarcasm.Ast
                     "Rule is needed to have been set for nonterminal operator '{0}' before calling RegisterOperators", nonTerminalOperator);
             }
 
-            foreach (var bnfTerms in nonTerminalOperator.Rule.GetBnfTermsList())
+            if (recurse)
             {
-                foreach (var bnfTerm in bnfTerms)
+                foreach (var bnfTerms in nonTerminalOperator.Rule.GetBnfTermsList())
                 {
-                    if (bnfTerm is Terminal)
-                        RegisterTerminalOperator((Terminal)bnfTerm, precedence, associativity);
-                    else if (bnfTerm is NonTerminal && !bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
-                        RegisterNonTerminalOperator((NonTerminal)bnfTerm, precedence, associativity);
+                    foreach (var bnfTerm in bnfTerms)
+                    {
+                        if (bnfTerm is Terminal)
+                            RegisterTerminalOperator((Terminal)bnfTerm, precedence, associativity, recurse);
+                        else if (bnfTerm is NonTerminal && !bnfTerm.Flags.IsSet(TermFlags.NoAstNode))
+                            RegisterNonTerminalOperator((NonTerminal)bnfTerm, precedence, associativity, recurse);
+                    }
                 }
-            }
 
-            nonTerminalOperator.SetFlag(TermFlags.InheritPrecedence);
+                nonTerminalOperator.SetFlag(TermFlags.InheritPrecedence);
+            }
+            else
+                BaseRegisterOperator(nonTerminalOperator, precedence, associativity);
+        }
+
+        private void BaseRegisterOperator(BnfTerm bnfTerm, int precedence, Associativity? associativity)
+        {
+            if (associativity.HasValue)
+                base.RegisterOperators(precedence, associativity.Value, bnfTerm);
+            else
+                base.RegisterOperators(precedence, bnfTerm);
         }
 
         #endregion

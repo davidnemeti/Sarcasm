@@ -163,7 +163,7 @@ namespace Sarcasm.Unparsing
                                 obj, obj.GetType().Name, bnfTerm.Name));
                         }
 
-                        if (expressionUnparser.IsExpressionWithOperator(bnfTerm))
+                        if (expressionUnparser.NeedsExpressionUnparse(bnfTerm))
                         {
                             foreach (Utoken utoken in expressionUnparser.Unparse(unparsableObject, chosenChildren))
                                 yield return utoken;
