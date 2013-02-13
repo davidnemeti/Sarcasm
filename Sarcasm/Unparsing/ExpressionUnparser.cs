@@ -36,18 +36,13 @@ namespace Sarcasm.Unparsing
 
         #region Types
 
-        private class UnparseInfo
+        private class OperatorInfo
         {
             public readonly BnfTerm FlaggedOperator;
 
-            private UnparseInfo(BnfTerm flaggedOperator)
+            public OperatorInfo(BnfTerm flaggedOperator)
             {
                 this.FlaggedOperator = flaggedOperator;
-            }
-
-            public static UnparseInfo CreateOperator(BnfTerm flaggedOperator)
-            {
-                return new UnparseInfo(flaggedOperator);
             }
         }
 
@@ -178,7 +173,7 @@ namespace Sarcasm.Unparsing
 
         private Stack<SurroundingOperators> surroundingOperators = new Stack<SurroundingOperators>();
         private Stack<Parentheses> surroundingParentheses = new Stack<Parentheses>();
-        private UnparseInfo _unparseInfo = null;
+        private OperatorInfo _operatorInfo = null;
         private int ongoingExpressionUnparseLevel = 0;
         private int ongoingOperatorUnparseLevel = 0;
 
@@ -434,14 +429,6 @@ namespace Sarcasm.Unparsing
 
         #region Unparse
 
-        public void UpdateUnparseInfo(BnfTerm bnfTerm)
-        {
-            if (IsFlaggedOperator(bnfTerm))
-                _unparseInfo = UnparseInfo.CreateOperator(flaggedOperator: bnfTerm);
-            else if (!IsFlaggedOrDerivedOperator(bnfTerm))
-                _unparseInfo = null;
-        }
-
         public bool NeedsExpressionUnparse(BnfTerm bnfTerm)
         {
             return ongoingExpressionUnparseLevel > 0 || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
@@ -464,10 +451,17 @@ namespace Sarcasm.Unparsing
         private IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool simulation)
         {
             if (ongoingOperatorUnparseLevel > 0)
-                return chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, simulation)).ToList();
+            {
+                var utokens = chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, simulation)).ToList();
+                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                return utokens;
+            }
 
             if (simulation && examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
+            {
+                UpdateOperatorInfo(unparsableObject.bnfTerm);
                 return new Utoken[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
+            }
 
             if (simulation)
                 examinedBnfTermsInCurrentPath.Add(unparsableObject.bnfTerm);
@@ -560,6 +554,8 @@ namespace Sarcasm.Unparsing
                 if (needParentheses && !simulation)
                     utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, unparsableObject));
 
+                UpdateOperatorInfo(unparsableObject.bnfTerm);
+
                 return utokens;
             }
             finally
@@ -569,6 +565,19 @@ namespace Sarcasm.Unparsing
                 if (simulation)
                     examinedBnfTermsInCurrentPath.Remove(unparsableObject.bnfTerm);
             }
+        }
+
+        private void UpdateOperatorInfo(BnfTerm bnfTerm)
+        {
+            if (IsFlaggedOperator(bnfTerm))
+                _operatorInfo = new OperatorInfo(flaggedOperator: bnfTerm);
+            else if (!IsFlaggedOrDerivedOperator(bnfTerm))
+                _operatorInfo = null;
+        }
+
+        private OperatorInfo GetOperatorInfo()
+        {
+            return _operatorInfo;
         }
 
         private BnfTerm GetLeftFlaggedOperatorForInside(Operator @operator, bool simulation)
@@ -595,11 +604,11 @@ namespace Sarcasm.Unparsing
 
         private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool simulation)
         {
-            UnparseInfo unparseInfoUnused;
-            return UnparseRawEager(unparsableObject, simulation, out unparseInfoUnused);
+            OperatorInfo operatorInfoUnused;
+            return UnparseRawEager(unparsableObject, simulation, out operatorInfoUnused);
         }
 
-        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool simulation, out UnparseInfo unparseInfo)
+        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool simulation, out OperatorInfo operatorInfo)
         {
             if (simulation)
             {
@@ -608,13 +617,14 @@ namespace Sarcasm.Unparsing
                 if (nonTerminal != null)
                     RegisteringExpressionsThatNeedParentheses(nonTerminal);
 
-                unparseInfo = null;
+                operatorInfo = null;
                 return new Utoken[0];
             }
             else
             {
                 var utokens = unparser.UnparseRaw(unparsableObject).ToList();
-                unparseInfo = this._unparseInfo;
+                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                operatorInfo = GetOperatorInfo();
                 return utokens;
             }
         }
@@ -685,9 +695,9 @@ namespace Sarcasm.Unparsing
                         }
                         else
                         {
-                            UnparseInfo unparseInfo;
-                            utokens = UnparseRawEager(child, simulation, out unparseInfo);
-                            flaggedOperator = unparseInfo.FlaggedOperator;
+                            OperatorInfo operatorInfo;
+                            utokens = UnparseRawEager(child, simulation, out operatorInfo);
+                            flaggedOperator = operatorInfo.FlaggedOperator;
                         }
 
                         yield return new Operator.Actual(

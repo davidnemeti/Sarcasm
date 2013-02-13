@@ -113,7 +113,6 @@ namespace Sarcasm.Unparsing
             finally
             {
                 formatter.EndBnfTerm(unparsableObject.bnfTerm);
-                expressionUnparser.UpdateUnparseInfo(unparsableObject.bnfTerm);
             }
         }
 
