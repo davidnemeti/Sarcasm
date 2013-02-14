@@ -448,11 +448,15 @@ namespace Sarcasm.Unparsing
                 return utokens;
             }
 
+            #region Initialization
+
             if (initialization && examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
             {
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
                 return new Utoken[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
             }
+
+            #endregion
 
             using (initialization
                 ? new AutoCleanup(
@@ -477,26 +481,21 @@ namespace Sarcasm.Unparsing
                             NeedParentheses(GetFlaggedOperatorForOutside(@operator, initialization))
                             );
 
+                #region Initialization
+
                 if (needParentheses && initialization)
                 {
-                    Parentheses parentheses = GetSurroundingParentheses();
-                    Parentheses registeredParentheses;
-                    bool alreadyRegistered;
-
-                    if (parentheses != null &&
-                        (!(alreadyRegistered = expressionThatMayNeedParenthesesToParentheses.TryGetValue(parentheses.Expression, out registeredParentheses)) || parentheses == registeredParentheses))
+                    try
                     {
-                        if (!alreadyRegistered)
-                            expressionThatMayNeedParenthesesToParentheses.Add(parentheses.Expression, parentheses);
-
-                        expressionsThatCanCauseOthersBeingParenthesized.Add(GetExpressionOfSurroundingOperator());
+                        RegisterSurroundingParenthesesDuringInitialization();
                     }
-                    else
+                    catch (UnparserInitializationException e)
                     {
-                        // we don't have surrounding parentheses at all, or we have more than one parentheses which causes ambiguity
-                        throw new UnparserInitializationException(string.Format("Cannot automatically determine parentheses for expression '{0}'", unparsableObject.bnfTerm));
+                        throw new UnparserInitializationException(e.Message + string.Format("for expression '{0}'", unparsableObject.bnfTerm));
                     }
                 }
+
+                #endregion
 
                 if (needParentheses && !initialization)
                     utokens.AddRange(UnparseParenthesis(ParenthesisKind.Left, unparsableObject));
@@ -538,6 +537,27 @@ namespace Sarcasm.Unparsing
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
 
                 return utokens;
+            }
+        }
+
+        private void RegisterSurroundingParenthesesDuringInitialization()
+        {
+            Parentheses parentheses = GetSurroundingParentheses();
+            Parentheses registeredParentheses;
+            bool alreadyRegistered;
+
+            if (parentheses != null &&
+                (!(alreadyRegistered = expressionThatMayNeedParenthesesToParentheses.TryGetValue(parentheses.Expression, out registeredParentheses)) || parentheses == registeredParentheses))
+            {
+                if (!alreadyRegistered)
+                    expressionThatMayNeedParenthesesToParentheses.Add(parentheses.Expression, parentheses);
+
+                expressionsThatCanCauseOthersBeingParenthesized.Add(GetExpressionOfSurroundingOperator());
+            }
+            else
+            {
+                // we don't have surrounding parentheses at all, or we have more than one parentheses which causes ambiguity
+                throw new UnparserInitializationException(string.Format("Cannot automatically determine parentheses"));
             }
         }
 
