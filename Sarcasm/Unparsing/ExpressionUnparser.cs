@@ -419,7 +419,7 @@ namespace Sarcasm.Unparsing
                 Unparse(
                     new UnparsableObject(nonTerminal, obj: null),
                     childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, obj: null)),
-                    simulation: true
+                    initialization: true
                     );
             }
         }
@@ -436,48 +436,48 @@ namespace Sarcasm.Unparsing
         public IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren)
         {
             using (ongoingExpressionUnparseLevel.IncrAutoDecr())
-                return Unparse(unparsableObject, chosenChildren, simulation: false);
+                return Unparse(unparsableObject, chosenChildren, initialization: false);
         }
 
-        private IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool simulation)
+        private IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool initialization)
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
-                var utokens = chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, simulation)).ToList();
+                var utokens = chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, initialization)).ToList();
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
                 return utokens;
             }
 
-            if (simulation && examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
+            if (initialization && examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
             {
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
                 return new Utoken[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
             }
 
-            using (simulation
+            using (initialization
                 ? new AutoCleanup(
                     () => examinedBnfTermsInCurrentPath.Add(unparsableObject.bnfTerm),
                     () => examinedBnfTermsInCurrentPath.Remove(unparsableObject.bnfTerm))
                 : AutoCleanup.None)
             using (new AutoCleanup(
-                () => BeginParenthesesContext(unparsableObject.bnfTerm, simulation),
-                () => EndParenthesesContext(unparsableObject.bnfTerm, simulation)))
+                () => BeginParenthesesContext(unparsableObject.bnfTerm, initialization),
+                () => EndParenthesesContext(unparsableObject.bnfTerm, initialization)))
             {
                 var utokens = new List<Utoken>();
 
                 chosenChildren = chosenChildren.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
 
-                IReadOnlyList<Operator> operators = GetOperators(chosenChildren, simulation).ToList();
+                IReadOnlyList<Operator> operators = GetOperators(chosenChildren, initialization).ToList();
 
                 bool needParentheses =
                     operators
                         .OfType<Operator.Actual>()
                         .Any(
                             @operator => !@operator.IsInsideParentheses &&
-                            NeedParentheses(GetFlaggedOperatorForOutside(@operator, simulation))
+                            NeedParentheses(GetFlaggedOperatorForOutside(@operator, initialization))
                             );
 
-                if (needParentheses && simulation)
+                if (needParentheses && initialization)
                 {
                     Parentheses parentheses = GetSurroundingParentheses();
                     Parentheses registeredParentheses;
@@ -498,7 +498,7 @@ namespace Sarcasm.Unparsing
                     }
                 }
 
-                if (needParentheses && !simulation)
+                if (needParentheses && !initialization)
                     utokens.AddRange(UnparseParenthesis(ParenthesisKind.Left, unparsableObject));
 
                 using (var childEnumerator = chosenChildren.GetEnumerator())
@@ -510,18 +510,18 @@ namespace Sarcasm.Unparsing
                         using (new AutoCleanup(
                             () => BeginSurroundingOperatorsContext(
                                     unparsableObject.bnfTerm,
-                                    GetLeftFlaggedOperatorForInside(prevOperator, simulation),
-                                    GetRightFlaggedOperatorForInside(@operator, simulation)),
+                                    GetLeftFlaggedOperatorForInside(prevOperator, initialization),
+                                    GetRightFlaggedOperatorForInside(@operator, initialization)),
                             () => EndSurroundingOperatorsContext()))
                         {
                             while (childEnumerator.MoveNext() && (@operator == null || childEnumerator.Current.bnfTerm != @operator.BnfTerm))
-                                utokens.AddRange(UnparseRawEager(childEnumerator.Current, simulation));
+                                utokens.AddRange(UnparseRawEager(childEnumerator.Current, initialization));
                         }
 
                         if (@operator != null)
                         {
                             using (ongoingOperatorUnparseLevel.IncrAutoDecr())
-                                utokens.AddRange(UnparseRawEager(childEnumerator.Current, simulation));
+                                utokens.AddRange(UnparseRawEager(childEnumerator.Current, initialization));
 
                             // NOTE that we cannot use the utokens that we may get by GetOperators, because real unparse needs its context to be fully unparsed (see: after, before, between insertions)
 
@@ -532,7 +532,7 @@ namespace Sarcasm.Unparsing
                     }
                 }
 
-                if (needParentheses && !simulation)
+                if (needParentheses && !initialization)
                     utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, unparsableObject));
 
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
@@ -554,37 +554,37 @@ namespace Sarcasm.Unparsing
             return _operatorInfo;
         }
 
-        private BnfTerm GetLeftFlaggedOperatorForInside(Operator @operator, bool simulation)
+        private BnfTerm GetLeftFlaggedOperatorForInside(Operator @operator, bool initialization)
         {
-            return _GetFlaggedOperatorForInside(@operator, simulation, left: true);
+            return _GetFlaggedOperatorForInside(@operator, initialization, left: true);
         }
 
-        private BnfTerm GetRightFlaggedOperatorForInside(Operator @operator, bool simulation)
+        private BnfTerm GetRightFlaggedOperatorForInside(Operator @operator, bool initialization)
         {
-            return _GetFlaggedOperatorForInside(@operator, simulation, left: false);
+            return _GetFlaggedOperatorForInside(@operator, initialization, left: false);
         }
 
-        private BnfTerm _GetFlaggedOperatorForInside(Operator @operator, bool simulation, bool left)
+        private BnfTerm _GetFlaggedOperatorForInside(Operator @operator, bool initialization, bool left)
         {
             if (@operator == null)
                 return left ? GetLeftFlaggedSurroundingOperator() : GetRightFlaggedSurroundingOperator();
             else if (@operator is Operator.Parenthesis)
                 return null;
             else if (@operator is Operator.Actual)
-                return GetFlaggedOperatorForInside((Operator.Actual)@operator, simulation);
+                return GetFlaggedOperatorForInside((Operator.Actual)@operator, initialization);
             else
                 throw new ArgumentException("invalid @operator", "@operator");
         }
 
-        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool simulation)
+        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool initialization)
         {
             OperatorInfo operatorInfoUnused;
-            return UnparseRawEager(unparsableObject, simulation, out operatorInfoUnused);
+            return UnparseRawEager(unparsableObject, initialization, out operatorInfoUnused);
         }
 
-        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool simulation, out OperatorInfo operatorInfo)
+        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool initialization, out OperatorInfo operatorInfo)
         {
-            if (simulation)
+            if (initialization)
             {
                 NonTerminal nonTerminal = unparsableObject.bnfTerm as NonTerminal;
 
@@ -611,7 +611,7 @@ namespace Sarcasm.Unparsing
                     ? GetSurroundingParentheses().Left
                     : GetSurroundingParentheses().Right;
 
-                return UnparseRawEager(new UnparsableObject(parenthesis, unparsableExpression.obj), simulation: false);
+                return UnparseRawEager(new UnparsableObject(parenthesis, unparsableExpression.obj), initialization: false);
             }
             catch (UnparseException e)
             {
@@ -633,21 +633,21 @@ namespace Sarcasm.Unparsing
                 GetPrecedence(rightFlaggedOperator) == GetPrecedence(flaggedOperator) && GetAssociativity(flaggedOperator) == Associativity.Right));
         }
 
-        private BnfTerm GetFlaggedOperatorForOutside(Operator.Actual @operator, bool simulation)
+        private BnfTerm GetFlaggedOperatorForOutside(Operator.Actual @operator, bool initialization)
         {
-            return simulation
+            return initialization
                 ? this.flaggedOrDerivedOperatorToMultiOperatorInfo[@operator.FlaggedOrDerivedOperator].WeakestFlaggedOperator
                 : @operator.FlaggedOperator;
         }
 
-        private BnfTerm GetFlaggedOperatorForInside(Operator.Actual @operator, bool simulation)
+        private BnfTerm GetFlaggedOperatorForInside(Operator.Actual @operator, bool initialization)
         {
-            return simulation
+            return initialization
                 ? this.flaggedOrDerivedOperatorToMultiOperatorInfo[@operator.FlaggedOrDerivedOperator].StrongestFlaggedOperator
                 : @operator.FlaggedOperator;
         }
 
-        private IEnumerable<Operator> GetOperators(IEnumerable<UnparsableObject> children, bool simulation)
+        private IEnumerable<Operator> GetOperators(IEnumerable<UnparsableObject> children, bool initialization)
         {
             using (ongoingOperatorUnparseLevel.IncrAutoDecr())
             {
@@ -660,7 +660,7 @@ namespace Sarcasm.Unparsing
                         BnfTerm flaggedOperator;
                         IEnumerable<Utoken> utokens;
 
-                        if (simulation)
+                        if (initialization)
                         {
                             utokens = new Utoken[0];
                             flaggedOperator = null;
@@ -668,7 +668,7 @@ namespace Sarcasm.Unparsing
                         else
                         {
                             OperatorInfo operatorInfo;
-                            utokens = UnparseRawEager(child, simulation, out operatorInfo);
+                            utokens = UnparseRawEager(child, initialization, out operatorInfo);
                             flaggedOperator = operatorInfo.FlaggedOperator;
                         }
 
@@ -686,7 +686,7 @@ namespace Sarcasm.Unparsing
                         else if (child.bnfTerm.IsCloseBrace())
                             parenthesesLevel--;
 
-                        yield return new Operator.Parenthesis(child.bnfTerm, simulation ? new Utoken[0] : UnparseRawEager(child, simulation));
+                        yield return new Operator.Parenthesis(child.bnfTerm, initialization ? new Utoken[0] : UnparseRawEager(child, initialization));
                     }
                 }
             }
@@ -720,22 +720,22 @@ namespace Sarcasm.Unparsing
             return surroundingParentheses.Peek();
         }
 
-        private void BeginParenthesesContext(BnfTerm expression, bool simulation)
+        private void BeginParenthesesContext(BnfTerm expression, bool initialization)
         {
             Parentheses parentheses;
-            if (GetMappingForParenthesesContext(simulation).TryGetValue(expression, out parentheses))
+            if (GetMappingForParenthesesContext(initialization).TryGetValue(expression, out parentheses))
                 surroundingParentheses.Push(parentheses);
         }
 
-        private void EndParenthesesContext(BnfTerm expression, bool simulation)
+        private void EndParenthesesContext(BnfTerm expression, bool initialization)
         {
-            if (GetMappingForParenthesesContext(simulation).ContainsKey(expression))
+            if (GetMappingForParenthesesContext(initialization).ContainsKey(expression))
                 surroundingParentheses.Pop();
         }
 
-        private IDictionary<BnfTerm, Parentheses> GetMappingForParenthesesContext(bool simulation)
+        private IDictionary<BnfTerm, Parentheses> GetMappingForParenthesesContext(bool initialization)
         {
-            return simulation ? expressionToParentheses : expressionThatMayNeedParenthesesToParentheses;
+            return initialization ? expressionToParentheses : expressionThatMayNeedParenthesesToParentheses;
         }
 
         private void BeginSurroundingOperatorsContext(BnfTerm expression, BnfTerm leftFlaggedOperator, BnfTerm rightFlaggedOperator)
