@@ -80,7 +80,7 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Unparse
+        #region Unparse logic
 
         public IEnumerable<Utoken> Unparse(object obj, Context context = null)
         {
@@ -273,7 +273,7 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region IUnparser
+        #region IUnparser implementation
 
         int? IUnparser.GetBnfTermPriority(BnfTerm bnfTerm, object obj)
         {
