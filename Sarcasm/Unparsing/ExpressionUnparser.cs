@@ -276,9 +276,7 @@ namespace Sarcasm.Unparsing
 
         private BnfTermKind DetermineBnfTermKind(NonTerminal current)
         {
-            bool? nonTerminalLooksLikeAnOperator = null;
-            bool? nonTerminalLooksLikeALeftParenthesis = null;
-            bool? nonTerminalLooksLikeARightParenthesis = null;
+            BnfTermKind? currentKind = null;
 
             var childOperators = new List<BnfTerm>();
 
@@ -290,8 +288,8 @@ namespace Sarcasm.Unparsing
                 int otherCount = 0;
 
                 /*
-                 * NOTE: we should not read bnfTermToBnfTermInfo in this method (because of recursive definitions in grammar),
-                 * that's why we store BnfTermInfo as well
+                 * NOTE: we should not read bnfTermToBnfTermKind in this method (because of recursive definitions in grammar),
+                 * that's why we store BnfTermKind as well
                  * */
                 BnfTerm prevChild = null;
                 BnfTermKind? prevChildKind = null;
@@ -372,19 +370,31 @@ namespace Sarcasm.Unparsing
                     }
                 }
 
-                bool childBnfTermListLooksLikeAnOperator = operatorCount == 1 && leftParenthesisCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
-                bool childBnfTermListLooksLikeALeftParenthesis = leftParenthesisCount == 1 && operatorCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
-                bool childBnfTermListLooksLikeARightParenthesis = rightParenthesisCount == 1 && operatorCount == 0 && leftParenthesisCount == 0 && otherCount == 0;
+                BnfTermKind? childListLooksLike;
 
-                if (childBnfTermListLooksLikeAnOperator)
+                if (operatorCount == 1 && leftParenthesisCount == 0 && rightParenthesisCount == 0 && otherCount == 0)
+                    childListLooksLike = BnfTermKind.Operator;
+                else if (leftParenthesisCount == 1 && operatorCount == 0 && rightParenthesisCount == 0 && otherCount == 0)
+                    childListLooksLike = BnfTermKind.LeftParenthesis;
+                else if (rightParenthesisCount == 1 && operatorCount == 0 && leftParenthesisCount == 0 && otherCount == 0)
+                    childListLooksLike = BnfTermKind.RightParenthesis;
+                else
+                    childListLooksLike = BnfTermKind.Other;
+
+                if (childListLooksLike == BnfTermKind.Operator)
                     childOperators.Add(childOperator);
 
-                nonTerminalLooksLikeAnOperator = (nonTerminalLooksLikeAnOperator ?? true) && childBnfTermListLooksLikeAnOperator;
-                nonTerminalLooksLikeALeftParenthesis = (nonTerminalLooksLikeALeftParenthesis ?? true) && childBnfTermListLooksLikeALeftParenthesis;
-                nonTerminalLooksLikeARightParenthesis = (nonTerminalLooksLikeARightParenthesis ?? true) && childBnfTermListLooksLikeARightParenthesis;
+                if ((currentKind == null || currentKind == BnfTermKind.Operator) && childListLooksLike == BnfTermKind.Operator)
+                    currentKind = BnfTermKind.Operator;
+                else if ((currentKind == null || currentKind == BnfTermKind.LeftParenthesis) && childListLooksLike == BnfTermKind.LeftParenthesis)
+                    currentKind = BnfTermKind.LeftParenthesis;
+                else if ((currentKind == null || currentKind == BnfTermKind.RightParenthesis) && childListLooksLike == BnfTermKind.RightParenthesis)
+                    currentKind = BnfTermKind.RightParenthesis;
+                else
+                    currentKind = BnfTermKind.Other;
             }
 
-            if (nonTerminalLooksLikeAnOperator == true)
+            if (currentKind == BnfTermKind.Operator)
             {
                 BnfTerm strongestFlaggedChildOperator = childOperators.Aggregate(
                     (BnfTerm)null,
@@ -403,15 +413,9 @@ namespace Sarcasm.Unparsing
                     );
 
                 flaggedOrDerivedOperatorToMultiOperatorInfo.Add(current, new MultiOperatorInfo(strongestFlaggedChildOperator, weakestFlaggedChildOperator));
-
-                return BnfTermKind.Operator;
             }
-            else if (nonTerminalLooksLikeALeftParenthesis == true)
-                return BnfTermKind.LeftParenthesis;
-            else if (nonTerminalLooksLikeARightParenthesis == true)
-                return BnfTermKind.RightParenthesis;
-            else
-                return BnfTermKind.Other;
+
+            return currentKind ?? BnfTermKind.Other;
         }
 
         private void RegisteringExpressionsThatNeedParentheses()
