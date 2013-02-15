@@ -34,126 +34,6 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Types
-
-        private class OperatorInfo
-        {
-            public readonly BnfTerm FlaggedOperator;
-
-            public OperatorInfo(BnfTerm flaggedOperator)
-            {
-                this.FlaggedOperator = flaggedOperator;
-            }
-        }
-
-        private class SurroundingOperators
-        {
-            public readonly BnfTerm Expression;
-            public readonly BnfTerm LeftFlaggedOperator;
-            public readonly BnfTerm RightFlaggedOperator;
-
-            public SurroundingOperators(BnfTerm expression, BnfTerm leftFlaggedOperator, BnfTerm rightFlaggedOperator)
-            {
-                this.Expression = expression;
-                this.LeftFlaggedOperator = leftFlaggedOperator;
-                this.RightFlaggedOperator = rightFlaggedOperator;
-            }
-        }
-
-        private class Operator
-        {
-            #region Types
-
-            public class Actual : Operator
-            {
-                public readonly BnfTerm FlaggedOperator;
-                public readonly bool IsInsideParentheses;
-
-                public BnfTerm FlaggedOrDerivedOperator { get { return base.BnfTerm; } }
-
-                public Actual(BnfTerm flaggedOrDerivedOperator, BnfTerm flaggedOperator, bool isInsideParentheses, IEnumerable<Utoken> utokens)
-                    : base(flaggedOrDerivedOperator, utokens)
-                {
-                    this.FlaggedOperator = flaggedOperator;
-                    this.IsInsideParentheses = isInsideParentheses;
-                }
-            }
-
-            public class Parenthesis : Operator
-            {
-                public Parenthesis(BnfTerm parenthesis, IEnumerable<Utoken> utokens)
-                    : base(parenthesis, utokens)
-                {
-                }
-            }
-
-            #endregion
-
-            public readonly BnfTerm BnfTerm;
-            public readonly IEnumerable<Utoken> Utokens;
-
-            public Operator(BnfTerm bnfTerm, IEnumerable<Utoken> utokens)
-            {
-                this.BnfTerm = bnfTerm;
-                this.Utokens = utokens;
-            }
-        }
-
-        private class Parentheses : IEquatable<Parentheses>
-        {
-            public BnfTerm Expression;
-            public BnfTerm Left;
-            public BnfTerm Right;
-
-            public override bool Equals(object obj)
-            {
-                return obj is Parentheses && Equals((Parentheses)obj);
-            }
-
-            public bool Equals(Parentheses that)
-            {
-                return object.ReferenceEquals(this, that)
-                    ||
-                    that != null &&
-                    this.Expression == that.Expression && 
-                    this.Left == that.Left &&
-                    this.Right == that.Right;
-            }
-
-            public override int GetHashCode()
-            {
-                return Util.GetHashCodeMulti(Expression, Left, Right);
-            }
-
-            public static bool operator==(Parentheses parentheses1, Parentheses parentheses2)
-            {
-                return object.ReferenceEquals(parentheses1, parentheses2) || !object.ReferenceEquals(parentheses1, null) && parentheses1.Equals(parentheses2);
-            }
-
-            public static bool operator !=(Parentheses parentheses1, Parentheses parentheses2)
-            {
-                return !(parentheses1 == parentheses2);
-            }
-        }
-
-        private class MultiOperatorInfo
-        {
-            public readonly BnfTerm StrongestFlaggedOperator;
-            public readonly BnfTerm WeakestFlaggedOperator;
-
-            public MultiOperatorInfo(BnfTerm strongestFlaggedOperator, BnfTerm weakestFlaggedOperator)
-            {
-                this.StrongestFlaggedOperator = strongestFlaggedOperator;
-                this.WeakestFlaggedOperator = weakestFlaggedOperator;
-            }
-        }
-
-        private enum ParenthesisKind { Left, Right }
-
-        internal enum BnfTermKind { Undetermined, Other, Operator, LeftParenthesis, RightParenthesis, GrammarHint }
-
-        #endregion
-
         #region State
 
         #region Immutable after initialization
@@ -814,6 +694,126 @@ namespace Sarcasm.Unparsing
         {
             return surroundingOperators.Count > 0 ? surroundingOperators.Peek().RightFlaggedOperator : null;
         }
+
+        #endregion
+
+        #region Types
+
+        private class OperatorInfo
+        {
+            public readonly BnfTerm FlaggedOperator;
+
+            public OperatorInfo(BnfTerm flaggedOperator)
+            {
+                this.FlaggedOperator = flaggedOperator;
+            }
+        }
+
+        private class SurroundingOperators
+        {
+            public readonly BnfTerm Expression;
+            public readonly BnfTerm LeftFlaggedOperator;
+            public readonly BnfTerm RightFlaggedOperator;
+
+            public SurroundingOperators(BnfTerm expression, BnfTerm leftFlaggedOperator, BnfTerm rightFlaggedOperator)
+            {
+                this.Expression = expression;
+                this.LeftFlaggedOperator = leftFlaggedOperator;
+                this.RightFlaggedOperator = rightFlaggedOperator;
+            }
+        }
+
+        private class Operator
+        {
+            #region Types
+
+            public class Actual : Operator
+            {
+                public readonly BnfTerm FlaggedOperator;
+                public readonly bool IsInsideParentheses;
+
+                public BnfTerm FlaggedOrDerivedOperator { get { return base.BnfTerm; } }
+
+                public Actual(BnfTerm flaggedOrDerivedOperator, BnfTerm flaggedOperator, bool isInsideParentheses, IEnumerable<Utoken> utokens)
+                    : base(flaggedOrDerivedOperator, utokens)
+                {
+                    this.FlaggedOperator = flaggedOperator;
+                    this.IsInsideParentheses = isInsideParentheses;
+                }
+            }
+
+            public class Parenthesis : Operator
+            {
+                public Parenthesis(BnfTerm parenthesis, IEnumerable<Utoken> utokens)
+                    : base(parenthesis, utokens)
+                {
+                }
+            }
+
+            #endregion
+
+            public readonly BnfTerm BnfTerm;
+            public readonly IEnumerable<Utoken> Utokens;
+
+            public Operator(BnfTerm bnfTerm, IEnumerable<Utoken> utokens)
+            {
+                this.BnfTerm = bnfTerm;
+                this.Utokens = utokens;
+            }
+        }
+
+        private class Parentheses : IEquatable<Parentheses>
+        {
+            public BnfTerm Expression;
+            public BnfTerm Left;
+            public BnfTerm Right;
+
+            public override bool Equals(object obj)
+            {
+                return obj is Parentheses && Equals((Parentheses)obj);
+            }
+
+            public bool Equals(Parentheses that)
+            {
+                return object.ReferenceEquals(this, that)
+                    ||
+                    that != null &&
+                    this.Expression == that.Expression &&
+                    this.Left == that.Left &&
+                    this.Right == that.Right;
+            }
+
+            public override int GetHashCode()
+            {
+                return Util.GetHashCodeMulti(Expression, Left, Right);
+            }
+
+            public static bool operator ==(Parentheses parentheses1, Parentheses parentheses2)
+            {
+                return object.ReferenceEquals(parentheses1, parentheses2) || !object.ReferenceEquals(parentheses1, null) && parentheses1.Equals(parentheses2);
+            }
+
+            public static bool operator !=(Parentheses parentheses1, Parentheses parentheses2)
+            {
+                return !(parentheses1 == parentheses2);
+            }
+        }
+
+        private class MultiOperatorInfo
+        {
+            public readonly BnfTerm StrongestFlaggedOperator;
+            public readonly BnfTerm WeakestFlaggedOperator;
+
+            public MultiOperatorInfo(BnfTerm strongestFlaggedOperator, BnfTerm weakestFlaggedOperator)
+            {
+                this.StrongestFlaggedOperator = strongestFlaggedOperator;
+                this.WeakestFlaggedOperator = weakestFlaggedOperator;
+            }
+        }
+
+        private enum ParenthesisKind { Left, Right }
+
+        internal enum BnfTermKind { Undetermined, Other, Operator, LeftParenthesis, RightParenthesis, GrammarHint }
 
         #endregion
     }
