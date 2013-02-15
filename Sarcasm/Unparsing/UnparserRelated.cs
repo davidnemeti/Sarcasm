@@ -47,7 +47,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public delegate IEnumerable<Utoken> ValueUtokenizer<T>(IFormatProvider formatProvider, T obj);
+    public delegate IEnumerable<UtokenValue> ValueUtokenizer<T>(IFormatProvider formatProvider, T obj);
 
     public class Context
     {
@@ -110,6 +110,11 @@ namespace Sarcasm.Unparsing
         public static bool operator !=(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
         {
             return !(unparsableObject1 == unparsableObject2);
+        }
+
+        public override string ToString()
+        {
+            return string.Format("[bnfTerm: {0}, obj: {1}]", bnfTerm, obj);
         }
     }
 }

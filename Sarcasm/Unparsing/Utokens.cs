@@ -52,16 +52,6 @@ namespace Sarcasm.Unparsing
             yield return this;
         }
 
-        public static Utoken CreateText(object obj)
-        {
-            return new UtokenText(obj);
-        }
-
-        public static Utoken CreateText(string text, object obj = null)
-        {
-            return new UtokenText(text, obj);
-        }
-
         public Utoken CreateYinIfOrReturnSelf(Predicate<Utoken> shouldBeYin)
         {
             if (isInsideCreateYinIf)
@@ -125,37 +115,37 @@ namespace Sarcasm.Unparsing
 
             this.yin = yin;
         }
-
-        public static readonly Utoken NewLine = UtokenWhitespace.NewLine;
-        public static readonly Utoken EmptyLine = UtokenWhitespace.EmptyLine;
-        public static readonly Utoken Space = UtokenWhitespace.Space;
-        public static readonly Utoken Tab = UtokenWhitespace.Tab;
-
-        public static readonly Utoken IndentBlock = UtokenControl.IndentBlock;
-        public static readonly Utoken UnindentBlock = UtokenControl.UnindentBlock;
-
-        public static readonly Utoken IndentThisLine = UtokenControl.IndentThisLine;
-        public static readonly Utoken UnindentThisLine = UtokenControl.UnindentThisLine;
-        public static readonly Utoken NoIndentForThisLine = UtokenControl.NoIndentForThisLine;
-
-        public static readonly Utoken IncreaseIndentLevel = UtokenControl.IncreaseIndentLevel;
-        public static readonly Utoken DecreaseIndentLevel = UtokenControl.DecreaseIndentLevel;
-        public static readonly Utoken SetIndentLevelToNone = UtokenControl.SetIndentLevelToNone;
-
-        public static readonly Utoken NoWhitespace = UtokenControl.NoWhitespace;
     }
 
-    public class UtokenText : Utoken
+    public abstract class UtokenValue : Utoken
+    {
+        public static UtokenValue CreateText(object obj)
+        {
+            return new UtokenText(obj);
+        }
+
+        public static UtokenValue CreateText(string text, object obj = null)
+        {
+            return new UtokenText(text, obj);
+        }
+
+        public static UtokenValue FurtherUnparse(UnparsableObject unparsableObject)
+        {
+            return new UtokenToUnparse(unparsableObject);
+        }
+    }
+
+    public class UtokenText : UtokenValue
     {
         public string Text { get; private set; }
         public object Reference { get; private set; }
 
-        public UtokenText(object reference)
+        internal UtokenText(object reference)
             : this(text: null, reference: reference)
         {
         }
 
-        public UtokenText(string text, object reference = null)
+        internal UtokenText(string text, object reference = null)
         {
             this.Text = text;
             this.Reference = reference;
@@ -193,7 +183,48 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenWhitespace : Utoken
+    public class UtokenToUnparse : UtokenValue
+    {
+        public UnparsableObject UnparsableObject { get; private set; }
+
+        internal UtokenToUnparse(UnparsableObject unparsableObject)
+        {
+            this.UnparsableObject = unparsableObject;
+        }
+
+        public override string ToString(Formatting formatting)
+        {
+            throw new InvalidOperationException("Cannot convert an UtokenToUnparse to string");
+        }
+
+        public override string ToString()
+        {
+            return ToString("UtokenToUnparse: " + UnparsableObject.ToString());
+        }
+
+        internal override bool CreateYinIf(Predicate<Utoken> shouldBeYin, out Utoken createdYin)
+        {
+            throw new InvalidOperationException("Should not call CreateYinIf on an UtokenToUnparse");
+        }
+    }
+
+    public abstract class UtokenInsert : Utoken
+    {
+        public static UtokenInsert NewLine { get { return UtokenWhitespace.NewLine; } }
+        public static UtokenInsert EmptyLine { get { return UtokenWhitespace.EmptyLine; } }
+        public static UtokenInsert Space { get { return UtokenWhitespace.Space; } }
+        public static UtokenInsert Tab { get { return UtokenWhitespace.Tab; } }
+
+        public static UtokenInsert NoWhitespace { get { return UtokenControl.NoWhitespace; } }
+
+        public static UtokenInsert IndentBlock { get { return UtokenControl.IndentBlock; } }
+        public static UtokenInsert UnindentBlock { get { return UtokenControl.UnindentBlock; } }
+        public static UtokenInsert IndentThisLine { get { return UtokenControl.IndentThisLine; } }
+        public static UtokenInsert UnindentThisLine { get { return UtokenControl.UnindentThisLine; } }
+        public static UtokenInsert NoIndentForThisLine { get { return UtokenControl.NoIndentForThisLine; } }
+    }
+
+    public class UtokenWhitespace : UtokenInsert
     {
         internal enum Kind { NewLine, EmptyLine, Space, Tab, WhiteSpaceBetweenUtokens }
 
@@ -208,6 +239,8 @@ namespace Sarcasm.Unparsing
         internal static new readonly UtokenWhitespace EmptyLine = new UtokenWhitespace(Kind.EmptyLine);
         internal static new readonly UtokenWhitespace Space = new UtokenWhitespace(Kind.Space);
         internal static new readonly UtokenWhitespace Tab = new UtokenWhitespace(Kind.Tab);
+
+        // for internal use only
         internal static readonly UtokenWhitespace WhiteSpaceBetweenUtokens = new UtokenWhitespace(Kind.WhiteSpaceBetweenUtokens);
 
         public override string ToString(Formatting formatting)
@@ -255,7 +288,68 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenIndent : Utoken
+    internal class UtokenControl : UtokenInsert
+    {
+        internal enum Kind
+        {
+            NoWhitespace,
+            IndentBlock,
+            UnindentBlock,
+            IndentThisLine,
+            UnindentThisLine,
+            NoIndentForThisLine,
+
+            #region For internal use only (not useful for the user, moreover it breaks the ability of local unparse)
+
+            IncreaseIndentLevel,
+            DecreaseIndentLevel,
+            SetIndentLevelToNone
+
+            #endregion
+        }
+
+        internal readonly Kind kind;
+
+        internal UtokenControl(Kind kind)
+        {
+            this.kind = kind;
+        }
+
+        internal static new readonly UtokenControl IndentBlock = new UtokenControl(Kind.IndentBlock);
+        internal static new readonly UtokenControl UnindentBlock = new UtokenControl(Kind.UnindentBlock);
+        internal static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
+        internal static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);
+        internal static new readonly UtokenControl NoIndentForThisLine = new UtokenControl(Kind.NoIndentForThisLine);
+
+        internal static new readonly UtokenControl NoWhitespace = new UtokenControl(Kind.NoWhitespace);
+
+        public override string ToString(Formatting formatting)
+        {
+            throw new InvalidOperationException("Cannot convert an UtokenControl to string");
+        }
+
+        public override string ToString()
+        {
+            return ToString("." + kind);
+        }
+
+        internal override bool CreateYinIf(Predicate<Utoken> shouldBeYin, out Utoken createdYin)
+        {
+            if (shouldBeYin(this))
+            {
+                createdYin = new UtokenControl(this.kind);
+                createdYin.MakeYin();
+                return true;
+            }
+            else
+            {
+                createdYin = null;
+                return false;
+            }
+        }
+    }
+
+    internal class UtokenIndent : Utoken
     {
         public int IndentLevel { get; private set; }
 
@@ -282,66 +376,6 @@ namespace Sarcasm.Unparsing
             if (shouldBeYin(this))
             {
                 createdYin = new UtokenIndent(this.IndentLevel);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
-    }
-
-    internal class UtokenControl : Utoken
-    {
-        internal enum Kind
-        {
-            IndentBlock,
-            UnindentBlock,
-            IndentThisLine,
-            UnindentThisLine,
-            NoIndentForThisLine,
-            IncreaseIndentLevel,
-            DecreaseIndentLevel,
-            SetIndentLevelToNone,
-            NoWhitespace
-        }
-
-        internal readonly Kind kind;
-
-        internal UtokenControl(Kind kind)
-        {
-            this.kind = kind;
-        }
-
-        public static new readonly UtokenControl IndentBlock = new UtokenControl(Kind.IndentBlock);
-        public static new readonly UtokenControl UnindentBlock = new UtokenControl(Kind.UnindentBlock);
-        public static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
-        public static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);
-        public static new readonly UtokenControl NoIndentForThisLine = new UtokenControl(Kind.NoIndentForThisLine);
-
-        public static new readonly UtokenControl IncreaseIndentLevel = new UtokenControl(Kind.IncreaseIndentLevel);
-        public static new readonly UtokenControl DecreaseIndentLevel = new UtokenControl(Kind.DecreaseIndentLevel);
-        public static new readonly UtokenControl SetIndentLevelToNone = new UtokenControl(Kind.SetIndentLevelToNone);
-
-        public static new readonly UtokenControl NoWhitespace = new UtokenControl(Kind.NoWhitespace);
-
-        public override string ToString(Formatting formatting)
-        {
-            throw new InvalidOperationException("Cannot convert an UtokenControl to string");
-        }
-
-        public override string ToString()
-        {
-            return ToString("." + kind);
-        }
-
-        internal override bool CreateYinIf(Predicate<Utoken> shouldBeYin, out Utoken createdYin)
-        {
-            if (shouldBeYin(this))
-            {
-                createdYin = new UtokenControl(this.kind);
                 createdYin.MakeYin();
                 return true;
             }
@@ -407,16 +441,16 @@ namespace Sarcasm.Unparsing
         public readonly Kind kind;
         public readonly double priority;
         public readonly Behavior behavior;
-        public readonly IEnumerable<Utoken> utokens;
+        public readonly IEnumerable<UtokenInsert> utokens;
 
         private readonly IEnumerable<BnfTermPartialContext> affectedContexts;
 
-        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<Utoken> utokens, params BnfTermPartialContext[] affectedContexts)
+        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<UtokenInsert> utokens, params BnfTermPartialContext[] affectedContexts)
             : this(kind, priority, behavior, utokens, (IEnumerable<BnfTermPartialContext>)affectedContexts)
         {
         }
 
-        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<Utoken> utokens, IEnumerable<BnfTermPartialContext> affectedContexts)
+        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<UtokenInsert> utokens, IEnumerable<BnfTermPartialContext> affectedContexts)
         {
             this.priority = priority;
             this.kind = kind;
@@ -483,15 +517,15 @@ namespace Sarcasm.Unparsing
         internal override bool CreateYinIf(Predicate<Utoken> shouldBeYin, out Utoken createdYin)
         {
             bool existYinChild = false;
-            var createdYinChildOrSelfList = new List<Utoken>();
+            var createdYinChildOrSelfList = new List<UtokenInsert>();
 
-            foreach (Utoken child in this.utokens)
+            foreach (UtokenInsert child in this.utokens)
             {
-                Utoken createdYinChild;
+                Utoken createdYinChild;     // it's an UtokenInsert actually
 
                 if (child.CreateYinIf(shouldBeYin, out createdYinChild))
                 {
-                    createdYinChildOrSelfList.Add(createdYinChild);
+                    createdYinChildOrSelfList.Add((UtokenInsert)createdYinChild);
                     existYinChild = true;
                 }
                 else
@@ -514,7 +548,7 @@ namespace Sarcasm.Unparsing
         // just to avoid cast where using CreateYinIfOrReturnSelf
         public new InsertedUtokens CreateYinIfOrReturnSelf(Predicate<Utoken> shouldBeYin)
         {
-            return (InsertedUtokens)base.CreateYinIfOrReturnSelf(shouldBeYin);
+            return (InsertedUtokens)base.CreateYinIfOrReturnSelf(utoken => shouldBeYin(utoken));
         }
     }
 }

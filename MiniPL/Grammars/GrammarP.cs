@@ -398,28 +398,28 @@ namespace MiniPL
 
             #region Unparse
 
-            UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.LEFT_PAREN, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.COMMA, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.UnaryOperator, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, Utoken.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, Utoken.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.COMMA, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.UnaryOperator, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
 
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.Statement, Utoken.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.Statement, Utoken.NewLine, Utoken.IndentBlock);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), Utoken.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), Utoken.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.BEGIN, Utoken.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.BEGIN, Utoken.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.END, Utoken.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.END, Utoken.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), Utoken.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.Statement, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.Statement, UtokenInsert.NewLine, UtokenInsert.IndentBlock);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.BEGIN, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.BEGIN, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.END, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.END, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.IF, Utoken.Space);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.IF, UtokenInsert.Space);
 
             #endregion
         }

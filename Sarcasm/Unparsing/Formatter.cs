@@ -125,11 +125,11 @@ namespace Sarcasm.Unparsing
 
             foreach (InsertedUtokens utokenBetweenOrAfter in @params.utokensBetweenAndBefore)
             {
-                var autoCloseIndents = new List<Utoken>();
+                var autoCloseIndents = new List<UtokenInsert>();
 
-                foreach (Utoken utoken in utokenBetweenOrAfter.utokens)
+                foreach (UtokenInsert utoken in utokenBetweenOrAfter.utokens)
                 {
-                    Utoken closeIndent;
+                    UtokenControl closeIndent;
 
                     if (TryCreateAutoCloseIndent(utoken, out closeIndent))
                     {
@@ -161,16 +161,16 @@ namespace Sarcasm.Unparsing
 
         private static bool NeedsAutoCloseIndent(Utoken utoken)
         {
-            Utoken closeIndent;
+            UtokenControl closeIndent;
             return TryCreateAutoCloseIndent(utoken, preventCreation: true, closeIndent: out closeIndent);
         }
 
-        private static bool TryCreateAutoCloseIndent(Utoken utoken, out Utoken closeIndent)
+        private static bool TryCreateAutoCloseIndent(Utoken utoken, out UtokenControl closeIndent)
         {
             return TryCreateAutoCloseIndent(utoken, preventCreation: false, closeIndent: out closeIndent);
         }
 
-        private static bool TryCreateAutoCloseIndent(Utoken utoken, bool preventCreation, out Utoken closeIndent)
+        private static bool TryCreateAutoCloseIndent(Utoken utoken, bool preventCreation, out UtokenControl closeIndent)
         {
             UtokenControl utokenControl = utoken as UtokenControl;
 
