@@ -82,5 +82,34 @@ namespace Sarcasm.Unparsing
             this.bnfTerm = bnfTerm;
             this.obj = obj;
         }
+
+        public bool Equals(UnparsableObject that)
+        {
+            return object.ReferenceEquals(this, that)
+                ||
+                that != null &&
+                this.bnfTerm == that.bnfTerm &&
+                this.obj == that.obj;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is UnparsableObject && Equals((UnparsableObject)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Util.GetHashCodeMulti(bnfTerm, obj);
+        }
+
+        public static bool operator ==(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
+        {
+            return object.ReferenceEquals(unparsableObject1, unparsableObject2) || !object.ReferenceEquals(unparsableObject1, null) && unparsableObject1.Equals(unparsableObject2);
+        }
+
+        public static bool operator !=(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
+        {
+            return !(unparsableObject1 == unparsableObject2);
+        }
     }
 }

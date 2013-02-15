@@ -312,7 +312,10 @@ namespace Sarcasm.Unparsing
 
         public bool Equals(BnfTermPartialContext that)
         {
-            return this.ancestorsAndTarget.Length == that.ancestorsAndTarget.Length &&
+            return object.ReferenceEquals(this, that)
+                ||
+                that != null &&
+                this.ancestorsAndTarget.Length == that.ancestorsAndTarget.Length &&
                 this.ancestorsAndTarget.SequenceEqual(that.ancestorsAndTarget);
         }
 
@@ -324,6 +327,16 @@ namespace Sarcasm.Unparsing
         public override int GetHashCode()
         {
             return this.ancestorsAndTarget.GetHashCodeMulti();
+        }
+
+        public static bool operator ==(BnfTermPartialContext context1, BnfTermPartialContext context2)
+        {
+            return object.ReferenceEquals(context1, context2) || !object.ReferenceEquals(context1, null) && context1.Equals(context2);
+        }
+
+        public static bool operator !=(BnfTermPartialContext context1, BnfTermPartialContext context2)
+        {
+            return !(context1 == context2);
         }
 
         public override string ToString()
