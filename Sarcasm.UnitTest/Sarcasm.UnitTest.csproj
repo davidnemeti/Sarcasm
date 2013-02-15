@@ -92,6 +92,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Tests\CommonTest.cs" />
+    <Compile Include="Tests\GrammarTest.cs" />
     <Compile Include="Tests\UnparserTest.generated.cs">
       <DependentUpon>UnparserTest.tt</DependentUpon>
       <AutoGen>True</AutoGen>

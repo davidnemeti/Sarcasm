@@ -26,7 +26,7 @@ namespace Sarcasm.UnitTest
         [ClassInitialize]
         public static void InitializeUnparser(TestContext testContext)
         {
-            CommonTest.Initialize();
+            CommonTest.InitializeParser();
             Directory.CreateDirectory(actualUnparsedFilesDir);
             unparser = new Unparser(grammar);
         }

@@ -30,15 +30,13 @@ namespace Sarcasm.UnitTest
         protected static Parser parser;
         protected static Parser exprParser;
 
-        private static bool initialized = false;
+        private static bool initializedGrammar = false;
+        private static bool initializedParser = false;
 
-        protected static void Initialize()
+        protected static void InitializeGrammar()
         {
-            if (initialized)
+            if (initializedGrammar)
                 return;
-
-            Directory.Delete(actualResultsDir, recursive: true);
-            Directory.CreateDirectory(actualResultsDir);
 
             grammar = new MiniPL.GrammarP();
 
@@ -48,12 +46,25 @@ namespace Sarcasm.UnitTest
 
             Assert.IsNotNull(grammar.Root, "Root is null");
 
+            initializedGrammar = true;
+        }
+
+        protected static void InitializeParser()
+        {
+            if (initializedParser)
+                return;
+
+            InitializeGrammar();
+
+            Directory.Delete(actualResultsDir, recursive: true);
+            Directory.CreateDirectory(actualResultsDir);
+
             parser = new Parser(grammar);
             exprParser = new Parser(parser.Language, grammar.B.Expression);
 
             Assert.IsTrue(parser.Language.ErrorLevel <= GrammarErrorLevel.Info, "Grammar error:\n{0}", string.Join("\n", parser.Language.Errors));
 
-            initialized = true;
+            initializedParser = true;
         }
 
         protected static ParseTree ParseFileAndCheck(Parser parser, string parseFileName)
