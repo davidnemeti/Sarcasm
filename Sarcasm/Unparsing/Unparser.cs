@@ -75,7 +75,7 @@ namespace Sarcasm.Unparsing
             this.Grammar = grammar;
             this.Formatting = unparseControl.DefaultFormatting;     // also set Formatter
             this.unparseControl = unparseControl;
-            this.expressionUnparser = new ExpressionUnparser(this);
+            this.expressionUnparser = new ExpressionUnparser(this, unparseControl);
         }
 
         #endregion
