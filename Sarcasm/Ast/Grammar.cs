@@ -42,6 +42,7 @@ namespace Sarcasm.Ast
             this.AstCreation = astCreation;
             this.EmptyCollectionHandling = emptyCollectionHandling;
             this.ErrorHandling = errorHandling;
+            this.UnparseControl = new UnparseControl(this);
         }
 
         #endregion
@@ -303,17 +304,7 @@ namespace Sarcasm.Ast
 
         #region Unparsing
 
-        private Formatting _defaultFormatting;
-        public Formatting DefaultFormatting
-        {
-            get
-            {
-                if (_defaultFormatting == null)
-                    _defaultFormatting = Formatting.CreateDefaultFormattingForGrammar(this);
-
-                return _defaultFormatting;
-            }
-        }
+        public UnparseControl UnparseControl { get; private set; }
 
         public static ValueConverter<object, object> NoUnparseByInverse()
         {

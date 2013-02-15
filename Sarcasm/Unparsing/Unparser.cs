@@ -45,9 +45,20 @@ namespace Sarcasm.Unparsing
         #region State
 
         public Grammar Grammar { get; private set; }
-        public Formatting Formatting { get; private set; }
+        public Formatting Formatting
+        {
+            get { return formatting; }
 
-        private readonly Formatter formatter;
+            private set
+            {
+                formatting = value;
+                formatter = new Formatter(value);
+            }
+        }
+
+        private Formatting formatting;
+        private Formatter formatter;
+        private readonly UnparseControl unparseControl;
         private readonly ExpressionUnparser expressionUnparser;
 
         #endregion
@@ -55,16 +66,15 @@ namespace Sarcasm.Unparsing
         #region Construction
 
         public Unparser(Grammar grammar)
-            : this(grammar, grammar.DefaultFormatting)
+            : this(grammar, grammar.UnparseControl)
         {
         }
 
-        public Unparser(Grammar grammar, Formatting formatting)
+        public Unparser(Grammar grammar, UnparseControl unparseControl)
         {
             this.Grammar = grammar;
-            this.Formatting = formatting;
-
-            this.formatter = new Formatter(formatting);
+            this.Formatting = unparseControl.DefaultFormatting;     // also set Formatter
+            this.unparseControl = unparseControl;
             this.expressionUnparser = new ExpressionUnparser(this);
         }
 
