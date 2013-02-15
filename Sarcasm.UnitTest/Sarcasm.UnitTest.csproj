@@ -91,19 +91,19 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="CommonTest.cs" />
-    <Compile Include="UnparserTest.generated.cs">
+    <Compile Include="Tests\CommonTest.cs" />
+    <Compile Include="Tests\UnparserTest.generated.cs">
       <DependentUpon>UnparserTest.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="ParserTest.generated.cs">
+    <Compile Include="Tests\ParserTest.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>ParserTest.tt</DependentUpon>
     </Compile>
-    <Compile Include="UnparserTest.cs" />
-    <Compile Include="ParserTest.cs" />
+    <Compile Include="Tests\UnparserTest.cs" />
+    <Compile Include="Tests\ParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -129,7 +129,7 @@
     <None Include="Test files\Unary4.expr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="UnparserTest.tt">
+    <None Include="Tests\UnparserTest.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>UnparserTest.generated.cs</LastGenOutput>
     </None>
@@ -149,7 +149,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="ParserTest.tt">
+    <None Include="Tests\ParserTest.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ParserTest.generated.cs</LastGenOutput>
     </None>

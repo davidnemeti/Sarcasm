@@ -25,17 +25,17 @@ using Grammar = Sarcasm.Ast.Grammar;
 
 namespace Sarcasm.UnitTest
 {
-    public partial class UnparserTest
+    public partial class ParserTest
     {
 <#
-	string testFileDirPath = Host.ResolvePath("Test files");
+	string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
 #>
         [TestMethod]
-        public void Unparse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
+        public void Parse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
         {
-            UnparseSaveUnparsedAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "exprParser" : "parser" #>, <#= Path.GetExtension(filePath) == ".expr" ? "grammar.B.Expression" : "grammar.B.Program" #>, "<#= Path.GetFileName(filePath) #>");
+            ParseFileSaveAstAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "exprParser" : "parser" #>, "<#= Path.GetFileName(filePath) #>");
         }
 
 <#
