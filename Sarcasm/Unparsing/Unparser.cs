@@ -94,7 +94,7 @@ namespace Sarcasm.Unparsing
                 .Cook();
         }
 
-        internal IEnumerable<Utoken> UnparseRaw(UnparsableObject unparsableObject)
+        internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject unparsableObject)
         {
             if (unparsableObject.bnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
@@ -117,7 +117,7 @@ namespace Sarcasm.Unparsing
                     formatter.YieldAfter(unparsableObject.bnfTerm, @params)
                     );
 
-                foreach (Utoken utoken in utokens)
+                foreach (UtokenBase utoken in utokens)
                     yield return utoken;
             }
             finally
@@ -126,7 +126,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<Utoken> UnparseRawMiddle(UnparsableObject unparsableObject)
+        private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject unparsableObject)
         {
             BnfTerm bnfTerm = unparsableObject.bnfTerm;
             object obj = unparsableObject.obj;
@@ -153,12 +153,12 @@ namespace Sarcasm.Unparsing
                     if (unparsable == null)
                         throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, bnfTerm.Name));
 
-                    IEnumerable<Utoken> directUtokens;
+                    IEnumerable<UtokenValue> directUtokens;
 
                     if (unparsable.TryGetUtokensDirectly(this, obj, out directUtokens))
                     {
-                        foreach (Utoken utoken in directUtokens)
-                            yield return utoken;
+                        foreach (UtokenValue directUtoken in directUtokens)
+                            yield return directUtoken;
 
                         tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
                     }
@@ -174,13 +174,13 @@ namespace Sarcasm.Unparsing
 
                         if (expressionUnparser.NeedsExpressionUnparse(bnfTerm))
                         {
-                            foreach (Utoken utoken in expressionUnparser.Unparse(unparsableObject, chosenChildren))
+                            foreach (UtokenBase utoken in expressionUnparser.Unparse(unparsableObject, chosenChildren))
                                 yield return utoken;
                         }
                         else
                         {
                             foreach (UnparsableObject childValue in chosenChildren)
-                                foreach (Utoken utoken in UnparseRaw(childValue))
+                                foreach (UtokenBase utoken in UnparseRaw(childValue))
                                     yield return utoken;
                         }
                     }
@@ -200,15 +200,15 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private static IEnumerable<Utoken> ConcatIfAnyMiddle(IEnumerable<Utoken> utokensBefore, IEnumerable<Utoken> utokensMiddle, IEnumerable<Utoken> utokensAfter)
+        private static IEnumerable<UtokenBase> ConcatIfAnyMiddle(IEnumerable<UtokenBase> utokensBefore, IEnumerable<UtokenBase> utokensMiddle, IEnumerable<UtokenBase> utokensAfter)
         {
             bool isAnyUtokenMiddle = false;
 
-            foreach (Utoken utokenMiddle in utokensMiddle)
+            foreach (UtokenBase utokenMiddle in utokensMiddle)
             {
                 if (!isAnyUtokenMiddle)
                 {
-                    foreach (Utoken utokenBefore in utokensBefore)
+                    foreach (UtokenBase utokenBefore in utokensBefore)
                         yield return utokenBefore;
                 }
 
@@ -219,7 +219,7 @@ namespace Sarcasm.Unparsing
 
             if (isAnyUtokenMiddle)
             {
-                foreach (Utoken utokenAfter in utokensAfter)
+                foreach (UtokenBase utokenAfter in utokensAfter)
                     yield return utokenAfter;
             }
         }

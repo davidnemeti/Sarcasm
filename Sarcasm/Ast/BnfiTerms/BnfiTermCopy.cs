@@ -35,7 +35,7 @@ namespace Sarcasm.Ast
 
         #region Unparse
 
-        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens)
+        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;

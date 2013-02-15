@@ -359,13 +359,13 @@ namespace Sarcasm.Unparsing
             return ongoingExpressionUnparseLevel > 0 || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
-        public IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren)
+        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren)
         {
             using (ongoingExpressionUnparseLevel.IncrAutoDecr())
                 return Unparse(unparsableObject, chosenChildren, initialization: false);
         }
 
-        private IReadOnlyList<Utoken> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool initialization)
+        private IReadOnlyList<UtokenBase> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool initialization)
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
@@ -379,7 +379,7 @@ namespace Sarcasm.Unparsing
             if (initialization && _examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
             {
                 UpdateOperatorInfo(unparsableObject.bnfTerm);
-                return new Utoken[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
+                return new UtokenBase[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
             }
 
             #endregion
@@ -393,7 +393,7 @@ namespace Sarcasm.Unparsing
                 () => BeginParenthesesContext(unparsableObject.bnfTerm, initialization),
                 () => EndParenthesesContext(unparsableObject.bnfTerm, initialization)))
             {
-                var utokens = new List<Utoken>();
+                var utokens = new List<UtokenBase>();
 
                 chosenChildren = chosenChildren.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
 
@@ -522,13 +522,13 @@ namespace Sarcasm.Unparsing
                 throw new ArgumentException("invalid @operator", "@operator");
         }
 
-        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool initialization)
+        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableObject unparsableObject, bool initialization)
         {
             OperatorInfo operatorInfoUnused;
             return UnparseRawEager(unparsableObject, initialization, out operatorInfoUnused);
         }
 
-        private IReadOnlyList<Utoken> UnparseRawEager(UnparsableObject unparsableObject, bool initialization, out OperatorInfo operatorInfo)
+        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableObject unparsableObject, bool initialization, out OperatorInfo operatorInfo)
         {
             if (initialization)
             {
@@ -538,7 +538,7 @@ namespace Sarcasm.Unparsing
                     RegisteringExpressionsThatNeedParentheses(nonTerminal);
 
                 operatorInfo = null;
-                return new Utoken[0];
+                return new UtokenBase[0];
             }
             else
             {
@@ -549,7 +549,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<Utoken> UnparseParenthesis(ParenthesisKind parenthesisKind, UnparsableObject unparsableExpression)
+        private IEnumerable<UtokenBase> UnparseParenthesis(ParenthesisKind parenthesisKind, UnparsableObject unparsableExpression)
         {
             try
             {
@@ -604,11 +604,11 @@ namespace Sarcasm.Unparsing
                     if (IsFlaggedOrDerivedOperator(child.bnfTerm))
                     {
                         BnfTerm flaggedOperator;
-                        IEnumerable<Utoken> utokens;
+                        IEnumerable<UtokenBase> utokens;
 
                         if (initialization)
                         {
-                            utokens = new Utoken[0];
+                            utokens = new UtokenBase[0];
                             flaggedOperator = null;
                         }
                         else
@@ -632,7 +632,7 @@ namespace Sarcasm.Unparsing
                         else if (child.bnfTerm.IsCloseBrace())
                             parenthesesLevel--;
 
-                        yield return new Operator.Parenthesis(child.bnfTerm, initialization ? new Utoken[0] : UnparseRawEager(child, initialization));
+                        yield return new Operator.Parenthesis(child.bnfTerm, initialization ? new UtokenBase[0] : UnparseRawEager(child, initialization));
                     }
                 }
             }
@@ -754,7 +754,7 @@ namespace Sarcasm.Unparsing
 
                 public BnfTerm FlaggedOrDerivedOperator { get { return base.BnfTerm; } }
 
-                public Actual(BnfTerm flaggedOrDerivedOperator, BnfTerm flaggedOperator, bool isInsideParentheses, IEnumerable<Utoken> utokens)
+                public Actual(BnfTerm flaggedOrDerivedOperator, BnfTerm flaggedOperator, bool isInsideParentheses, IEnumerable<UtokenBase> utokens)
                     : base(flaggedOrDerivedOperator, utokens)
                 {
                     this.FlaggedOperator = flaggedOperator;
@@ -764,7 +764,7 @@ namespace Sarcasm.Unparsing
 
             public class Parenthesis : Operator
             {
-                public Parenthesis(BnfTerm parenthesis, IEnumerable<Utoken> utokens)
+                public Parenthesis(BnfTerm parenthesis, IEnumerable<UtokenBase> utokens)
                     : base(parenthesis, utokens)
                 {
                 }
@@ -773,9 +773,9 @@ namespace Sarcasm.Unparsing
             #endregion
 
             public readonly BnfTerm BnfTerm;
-            public readonly IEnumerable<Utoken> Utokens;
+            public readonly IEnumerable<UtokenBase> Utokens;
 
-            public Operator(BnfTerm bnfTerm, IEnumerable<Utoken> utokens)
+            public Operator(BnfTerm bnfTerm, IEnumerable<UtokenBase> utokens)
             {
                 this.BnfTerm = bnfTerm;
                 this.Utokens = utokens;

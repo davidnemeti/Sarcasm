@@ -41,7 +41,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal static IEnumerable<Utoken> Cook(this IEnumerable<Utoken> utokens)
+        internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens)
         {
             return Formatter.PostProcess(utokens);
         }
@@ -61,7 +61,7 @@ namespace Sarcasm.Unparsing
 
     public interface IUnparsable : INonTerminal
     {
-        bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<Utoken> utokens);
+        bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);
         IEnumerable<UnparsableObject> GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj);
         int? GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects);
     }

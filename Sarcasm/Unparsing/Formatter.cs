@@ -105,16 +105,16 @@ namespace Sarcasm.Unparsing
             selfAndAncestors.Pop();
         }
 
-        public IEnumerable<Utoken> YieldBefore(BnfTerm bnfTerm, Params @params)
+        public IEnumerable<UtokenBase> YieldBefore(BnfTerm bnfTerm, Params @params)
         {
-            foreach (Utoken utokenBetweenOrBefore in @params.utokensBetweenAndBefore)
+            foreach (UtokenBase utokenBetweenOrBefore in @params.utokensBetweenAndBefore)
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
                 yield return utokenBetweenOrBefore;
             }
         }
 
-        public IEnumerable<Utoken> YieldAfter(BnfTerm bnfTerm, Params @params)
+        public IEnumerable<UtokenBase> YieldAfter(BnfTerm bnfTerm, Params @params)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(selfAndAncestors, out insertedUtokensAfter))
@@ -144,7 +144,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public static IEnumerable<Utoken> PostProcess(IEnumerable<Utoken> utokens)
+        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens)
         {
             return utokens
                 .DebugWriteLines(Formatter.tsUnfiltered)
@@ -156,21 +156,22 @@ namespace Sarcasm.Unparsing
                 .DebugWriteLines(Formatter.tsProcessedDependents)
                 .ProcessControls()
                 .DebugWriteLines(Formatter.tsProcessedControls)
+                .Cast<Utoken>()
                 ;
         }
 
-        private static bool NeedsAutoCloseIndent(Utoken utoken)
+        private static bool NeedsAutoCloseIndent(UtokenBase utoken)
         {
             UtokenControl closeIndent;
             return TryCreateAutoCloseIndent(utoken, preventCreation: true, closeIndent: out closeIndent);
         }
 
-        private static bool TryCreateAutoCloseIndent(Utoken utoken, out UtokenControl closeIndent)
+        private static bool TryCreateAutoCloseIndent(UtokenBase utoken, out UtokenControl closeIndent)
         {
             return TryCreateAutoCloseIndent(utoken, preventCreation: false, closeIndent: out closeIndent);
         }
 
-        private static bool TryCreateAutoCloseIndent(Utoken utoken, bool preventCreation, out UtokenControl closeIndent)
+        private static bool TryCreateAutoCloseIndent(UtokenBase utoken, bool preventCreation, out UtokenControl closeIndent)
         {
             UtokenControl utokenControl = utoken as UtokenControl;
 
@@ -234,11 +235,11 @@ namespace Sarcasm.Unparsing
          * of InsertedUtokens have strength in descending order: Between, Before, After
          * */
 
-        public static IEnumerable<Utoken> FilterInsertedUtokens(this IEnumerable<Utoken> utokens)
+        public static IEnumerable<UtokenBase> FilterInsertedUtokens(this IEnumerable<UtokenBase> utokens)
         {
             InsertedUtokens leftInsertedUtokensToBeYield = null;
 
-            foreach (Utoken utoken in utokens)
+            foreach (UtokenBase utoken in utokens)
             {
                 if (utoken is InsertedUtokens)
                 {
@@ -291,16 +292,16 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        public static IEnumerable<Utoken> Flatten(this IEnumerable<Utoken> utokens)
+        public static IEnumerable<UtokenBase> Flatten(this IEnumerable<UtokenBase> utokens)
         {
             return utokens.SelectMany(utoken => utoken.Flatten());
         }
 
-        public static IEnumerable<Utoken> ProcessDependents(this IEnumerable<Utoken> utokens)
+        public static IEnumerable<UtokenBase> ProcessDependents(this IEnumerable<UtokenBase> utokens)
         {
-            ISet<Utoken> seenDependers = new HashSet<Utoken>();
+            ISet<UtokenBase> seenDependers = new HashSet<UtokenBase>();
 
-            foreach (Utoken utoken in utokens)
+            foreach (UtokenBase utoken in utokens)
             {
                 if (utoken.IsYin())
                 {
@@ -317,15 +318,15 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public static IEnumerable<Utoken> ProcessControls(this IEnumerable<Utoken> utokens)
+        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens)
         {
             int indentLevel = 0;
             int? temporaryIndentLevel = null;
             bool firstUtokenInLine = true;
             bool allowWhitespaceBetweenUtokens = true;
-            Utoken prevUtoken = null;
+            UtokenBase prevUtoken = null;
 
-            foreach (Utoken utoken in utokens)
+            foreach (UtokenBase utoken in utokens)
             {
                 if (utoken is UtokenControl)
                 {
