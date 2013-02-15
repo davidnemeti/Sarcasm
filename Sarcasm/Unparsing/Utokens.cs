@@ -130,33 +130,43 @@ namespace Sarcasm.Unparsing
 
     public abstract class UtokenValue : UtokenBase
     {
-        public static UtokenValue CreateText(object obj)
+        public static UtokenValue CreateText(UnparsableObject reference)
         {
-            return new UtokenText(obj);
+            return new UtokenText(reference);
         }
 
-        public static UtokenValue CreateText(string text, object obj = null)
+        public static UtokenValue CreateText(string text)
         {
-            return new UtokenText(text, obj);
+            return new UtokenText(text);
+        }
+
+        public static UtokenValue CreateText(string text, UnparsableObject reference)
+        {
+            return new UtokenText(text, reference);
         }
 
         public static UtokenValue FurtherUnparse(UnparsableObject unparsableObject)
         {
             return new UtokenToUnparse(unparsableObject);
         }
+
+        public static implicit operator UtokenValue(string text)
+        {
+            return CreateText(text);
+        }
     }
 
     public class UtokenText : UtokenValue, Utoken
     {
         public string Text { get; private set; }
-        public object Reference { get; private set; }
+        public UnparsableObject Reference { get; private set; }
 
-        internal UtokenText(object reference)
+        internal UtokenText(UnparsableObject reference)
             : this(text: null, reference: reference)
         {
         }
 
-        internal UtokenText(string text, object reference = null)
+        internal UtokenText(string text, UnparsableObject reference = null)
         {
             this.Text = text;
             this.Reference = reference;
@@ -169,7 +179,7 @@ namespace Sarcasm.Unparsing
 
         public string ToString(Formatting formatting)
         {
-            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference);
+            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.obj);
         }
 
         public override string ToString()

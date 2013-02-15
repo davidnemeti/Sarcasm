@@ -134,12 +134,12 @@ namespace Sarcasm.Unparsing
             if (bnfTerm is KeyTerm)
             {
                 tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                yield return UtokenValue.CreateText(((KeyTerm)bnfTerm).Text, obj);
+                yield return UtokenValue.CreateText(((KeyTerm)bnfTerm).Text, unparsableObject);
             }
             else if (bnfTerm is Terminal)
             {
                 tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                yield return UtokenValue.CreateText(obj);
+                yield return UtokenValue.CreateText(unparsableObject);
             }
             else if (bnfTerm is NonTerminal)
             {
