@@ -158,7 +158,15 @@ namespace Sarcasm.Unparsing
                     if (unparsable.TryGetUtokensDirectly(this, obj, out directUtokens))
                     {
                         foreach (UtokenValue directUtoken in directUtokens)
-                            yield return directUtoken;
+                        {
+                            if (directUtoken is UtokenToUnparse)
+                            {
+                                foreach (UtokenBase utoken in UnparseRaw(((UtokenToUnparse)directUtoken).UnparsableObject))
+                                    yield return utoken;
+                            }
+                            else
+                                yield return directUtoken;
+                        }
 
                         tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
                     }
