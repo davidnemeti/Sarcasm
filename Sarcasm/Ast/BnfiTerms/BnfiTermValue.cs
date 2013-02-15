@@ -501,7 +501,7 @@ namespace Sarcasm.Ast
             if (IsMainChild(childBnfTerm))
                 return this.inverseValueConverterForUnparse(obj);
             else
-                return null;
+                return obj;
         }
 
         private static readonly ValueConverter<object, object> noUnparseByInverse =

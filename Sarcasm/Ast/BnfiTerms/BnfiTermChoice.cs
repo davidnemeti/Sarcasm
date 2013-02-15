@@ -37,13 +37,7 @@ namespace Sarcasm.Ast
 
         IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
-            return childBnfTerms
-                .Select(childBnfTerm =>
-                    new UnparsableObject(
-                        childBnfTerm,
-                        IsMainChild(childBnfTerm) ? obj : null
-                        )
-                    );
+            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, obj));
         }
 
         int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)

@@ -205,7 +205,7 @@ namespace Sarcasm.Ast
                 else if (childRuleIndexedBnfTerm.BnfTerm is BnfiTermCopy)
                     childObj = obj;
                 else
-                    childObj = null;
+                    childObj = obj;
 
                 yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childObj);
             }

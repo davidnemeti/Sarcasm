@@ -457,7 +457,7 @@ namespace Sarcasm.Ast
             foreach (object element in collection)
             {
                 if (!firstElement && this.delimiter != null)
-                    yield return new UnparsableObject(this.delimiter, null);
+                    yield return new UnparsableObject(this.delimiter, obj);
 
                 yield return new UnparsableObject(this.element, element);
 
