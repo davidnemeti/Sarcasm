@@ -242,156 +242,12 @@ namespace Sarcasm.Unparsing
 
             // need to "label" every bnfterm
             if (current is NonTerminal)
-            {
-                bool? nonTerminalLooksLikeAnOperator = null;
-                bool? nonTerminalLooksLikeALeftParenthesis = null;
-                bool? nonTerminalLooksLikeARightParenthesis = null;
-
-                var childOperators = new List<BnfTerm>();
-
-                foreach (BnfTermList children in Unparser.GetChildBnfTermLists((NonTerminal)current))
-                {
-                    int operatorCount = 0;
-                    int leftParenthesisCount = 0;
-                    int rightParenthesisCount = 0;
-                    int otherCount = 0;
-
-                    /*
-                     * NOTE: we should not read bnfTermToBnfTermInfo in this method (because of recursive definitions in grammar),
-                     * that's why we store BnfTermInfo as well
-                     * */
-                    BnfTerm prevChild = null;
-                    BnfTermKind? prevChildKind = null;
-                    Parentheses parentheses = null;
-                    BnfTerm childExpression = null;
-
-                    if (children.Count == 0)
-                        continue;
-
-                    BnfTerm childOperator = null;
-
-                    foreach (BnfTerm child in children)
-                    {
-                        BnfTermKind childKind = CalculateBnfTermKind(child);
-
-                        Debug.Assert(childKind != BnfTermKind.Undetermined);
-
-                        switch (childKind)
-                        {
-                            case BnfTermKind.Operator:
-                                operatorCount++;
-                                childOperator = child;
-                                childExpression = null;
-                                parentheses = null;
-                                break;
-
-                            case BnfTermKind.LeftParenthesis:
-                                leftParenthesisCount++;
-                                parentheses = new Parentheses() { Left = child };
-                                childExpression = null;
-                                break;
-
-                            case BnfTermKind.RightParenthesis:
-                                rightParenthesisCount++;
-                                if (prevChildKind == BnfTermKind.Other && childExpression == prevChild)
-                                {
-                                    Debug.Assert(parentheses != null && parentheses.Left != null && parentheses.Expression != null);
-
-                                    parentheses.Right = child;
-
-                                    Parentheses registeredParentheses;
-                                    if (expressionToParentheses.TryGetValue(childExpression, out registeredParentheses))
-                                    {
-                                        if (parentheses != registeredParentheses)
-                                            expressionToParentheses[childExpression] = null;  // ambiguous parentheses -> set to null, and check later (we might not need the parentheses at all)
-                                    }
-                                    else
-                                        expressionToParentheses.Add(childExpression, parentheses);
-                                }
-                                childExpression = null;
-                                parentheses = null;
-                                break;
-
-                            case BnfTermKind.Other:
-                                otherCount++;
-                                if (prevChildKind == BnfTermKind.LeftParenthesis)
-                                {
-                                    Debug.Assert(parentheses != null && parentheses.Left != null);
-                                    childExpression = child;
-                                    parentheses.Expression = childExpression;
-                                }
-                                else
-                                {
-                                    childExpression = null;
-                                    parentheses = null;
-                                }
-                                break;
-                        }
-
-                        if (childKind != BnfTermKind.GrammarHint)
-                        {
-                            prevChild = child;
-                            prevChildKind = childKind;
-                        }
-                    }
-
-                    bool childBnfTermListLooksLikeAnOperator = operatorCount == 1 && leftParenthesisCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
-                    bool childBnfTermListLooksLikeALeftParenthesis = leftParenthesisCount == 1 && operatorCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
-                    bool childBnfTermListLooksLikeARightParenthesis = rightParenthesisCount == 1 && operatorCount == 0 && leftParenthesisCount == 0 && otherCount == 0;
-
-                    if (childBnfTermListLooksLikeAnOperator)
-                        childOperators.Add(childOperator);
-
-                    nonTerminalLooksLikeAnOperator = (nonTerminalLooksLikeAnOperator ?? true) && childBnfTermListLooksLikeAnOperator;
-                    nonTerminalLooksLikeALeftParenthesis = (nonTerminalLooksLikeALeftParenthesis ?? true) && childBnfTermListLooksLikeALeftParenthesis;
-                    nonTerminalLooksLikeARightParenthesis = (nonTerminalLooksLikeARightParenthesis ?? true) && childBnfTermListLooksLikeARightParenthesis;
-                }
-
-                if (nonTerminalLooksLikeAnOperator == true)
-                {
-                    currentKind = BnfTermKind.Operator;
-
-                    BnfTerm strongestFlaggedChildOperator = childOperators.Aggregate(
-                        (BnfTerm)null,
-                        (strongestFlaggedChildOperatorSoFar, childOperator) => strongestFlaggedChildOperatorSoFar == null ||
-                            GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[strongestFlaggedChildOperatorSoFar].StrongestFlaggedOperator)
-                            ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator
-                            : strongestFlaggedChildOperatorSoFar
-                        );
-
-                    BnfTerm weakestFlaggedChildOperator = childOperators.Aggregate(
-                        (BnfTerm)null,
-                        (weakestFlaggedChildOperatorSoFar, childOperator) => weakestFlaggedChildOperatorSoFar == null ||
-                            GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[weakestFlaggedChildOperatorSoFar].WeakestFlaggedOperator)
-                            ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator
-                            : weakestFlaggedChildOperatorSoFar
-                        );
-
-                    flaggedOrDerivedOperatorToMultiOperatorInfo.Add(current, new MultiOperatorInfo(strongestFlaggedChildOperator, weakestFlaggedChildOperator));
-                }
-                else if (nonTerminalLooksLikeALeftParenthesis == true)
-                    currentKind = BnfTermKind.LeftParenthesis;
-                else if (nonTerminalLooksLikeARightParenthesis == true)
-                    currentKind = BnfTermKind.RightParenthesis;
-                else
-                    currentKind = BnfTermKind.Other;
-            }
+                currentKind = DetermineBnfTermKind((NonTerminal)current);
             else
                 currentKind = BnfTermKind.Other;
 
-            // e.g. operator can be non-terminal and terminal as well (or at least they can be flagged so); if it is non-terminal, then we override bnfTermInfo
-            if (IsFlaggedOperator(current))
-            {
-                currentKind = BnfTermKind.Operator;
-
-                flaggedOrDerivedOperatorToMultiOperatorInfo[current] = new MultiOperatorInfo(current, current);
-            }
-            else if (current.IsOpenBrace())
-                currentKind = BnfTermKind.LeftParenthesis;
-            else if (current.IsCloseBrace())
-                currentKind = BnfTermKind.RightParenthesis;
-            else if (current is GrammarHint)
-                currentKind = BnfTermKind.GrammarHint;
+            // e.g. operator can be non-terminal and terminal as well (or at least they can be flagged so); if it is non-terminal, then we override currentKind
+            OverrideBnfTermKindInCaseOfSpecificInfo(current, ref currentKind);
 
             tsParentheses.Unindent();
             currentKind.DebugWriteLineBnfTermKind(tsParentheses, current);
@@ -401,6 +257,161 @@ namespace Sarcasm.Unparsing
             this.bnfTermToBnfTermKind[current] = currentKind;        // not using Add, because bnfTermToBnfTermKind[current] has already been set to Undetermined or Other
 
             return currentKind;
+        }
+
+        private void OverrideBnfTermKindInCaseOfSpecificInfo(BnfTerm current, ref BnfTermKind currentKind)
+        {
+            if (IsFlaggedOperator(current))
+            {
+                currentKind = BnfTermKind.Operator;
+                flaggedOrDerivedOperatorToMultiOperatorInfo[current] = new MultiOperatorInfo(current, current);
+            }
+            else if (current.IsOpenBrace())
+                currentKind = BnfTermKind.LeftParenthesis;
+            else if (current.IsCloseBrace())
+                currentKind = BnfTermKind.RightParenthesis;
+            else if (current is GrammarHint)
+                currentKind = BnfTermKind.GrammarHint;
+        }
+
+        private BnfTermKind DetermineBnfTermKind(NonTerminal current)
+        {
+            bool? nonTerminalLooksLikeAnOperator = null;
+            bool? nonTerminalLooksLikeALeftParenthesis = null;
+            bool? nonTerminalLooksLikeARightParenthesis = null;
+
+            var childOperators = new List<BnfTerm>();
+
+            foreach (BnfTermList children in Unparser.GetChildBnfTermLists(current))
+            {
+                int operatorCount = 0;
+                int leftParenthesisCount = 0;
+                int rightParenthesisCount = 0;
+                int otherCount = 0;
+
+                /*
+                 * NOTE: we should not read bnfTermToBnfTermInfo in this method (because of recursive definitions in grammar),
+                 * that's why we store BnfTermInfo as well
+                 * */
+                BnfTerm prevChild = null;
+                BnfTermKind? prevChildKind = null;
+                Parentheses parentheses = null;
+                BnfTerm childExpression = null;
+
+                if (children.Count == 0)
+                    continue;
+
+                BnfTerm childOperator = null;
+
+                foreach (BnfTerm child in children)
+                {
+                    BnfTermKind childKind = CalculateBnfTermKind(child);
+
+                    Debug.Assert(childKind != BnfTermKind.Undetermined);
+
+                    #region Handle childKind
+
+                    switch (childKind)
+                    {
+                        case BnfTermKind.Operator:
+                            operatorCount++;
+                            childOperator = child;
+                            childExpression = null;
+                            parentheses = null;
+                            break;
+
+                        case BnfTermKind.LeftParenthesis:
+                            leftParenthesisCount++;
+                            parentheses = new Parentheses() { Left = child };
+                            childExpression = null;
+                            break;
+
+                        case BnfTermKind.RightParenthesis:
+                            rightParenthesisCount++;
+                            if (prevChildKind == BnfTermKind.Other && childExpression == prevChild)
+                            {
+                                Debug.Assert(parentheses != null && parentheses.Left != null && parentheses.Expression != null);
+
+                                parentheses.Right = child;
+
+                                Parentheses registeredParentheses;
+                                if (expressionToParentheses.TryGetValue(childExpression, out registeredParentheses))
+                                {
+                                    if (parentheses != registeredParentheses)
+                                        expressionToParentheses[childExpression] = null;  // ambiguous parentheses -> set to null, and check later (we might not need the parentheses at all)
+                                }
+                                else
+                                    expressionToParentheses.Add(childExpression, parentheses);
+                            }
+                            childExpression = null;
+                            parentheses = null;
+                            break;
+
+                        case BnfTermKind.Other:
+                            otherCount++;
+                            if (prevChildKind == BnfTermKind.LeftParenthesis)
+                            {
+                                Debug.Assert(parentheses != null && parentheses.Left != null);
+                                childExpression = child;
+                                parentheses.Expression = childExpression;
+                            }
+                            else
+                            {
+                                childExpression = null;
+                                parentheses = null;
+                            }
+                            break;
+                    }
+
+                    #endregion
+
+                    if (childKind != BnfTermKind.GrammarHint)
+                    {
+                        prevChild = child;
+                        prevChildKind = childKind;
+                    }
+                }
+
+                bool childBnfTermListLooksLikeAnOperator = operatorCount == 1 && leftParenthesisCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
+                bool childBnfTermListLooksLikeALeftParenthesis = leftParenthesisCount == 1 && operatorCount == 0 && rightParenthesisCount == 0 && otherCount == 0;
+                bool childBnfTermListLooksLikeARightParenthesis = rightParenthesisCount == 1 && operatorCount == 0 && leftParenthesisCount == 0 && otherCount == 0;
+
+                if (childBnfTermListLooksLikeAnOperator)
+                    childOperators.Add(childOperator);
+
+                nonTerminalLooksLikeAnOperator = (nonTerminalLooksLikeAnOperator ?? true) && childBnfTermListLooksLikeAnOperator;
+                nonTerminalLooksLikeALeftParenthesis = (nonTerminalLooksLikeALeftParenthesis ?? true) && childBnfTermListLooksLikeALeftParenthesis;
+                nonTerminalLooksLikeARightParenthesis = (nonTerminalLooksLikeARightParenthesis ?? true) && childBnfTermListLooksLikeARightParenthesis;
+            }
+
+            if (nonTerminalLooksLikeAnOperator == true)
+            {
+                BnfTerm strongestFlaggedChildOperator = childOperators.Aggregate(
+                    (BnfTerm)null,
+                    (strongestFlaggedChildOperatorSoFar, childOperator) => strongestFlaggedChildOperatorSoFar == null ||
+                        GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[strongestFlaggedChildOperatorSoFar].StrongestFlaggedOperator)
+                        ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator
+                        : strongestFlaggedChildOperatorSoFar
+                    );
+
+                BnfTerm weakestFlaggedChildOperator = childOperators.Aggregate(
+                    (BnfTerm)null,
+                    (weakestFlaggedChildOperatorSoFar, childOperator) => weakestFlaggedChildOperatorSoFar == null ||
+                        GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[weakestFlaggedChildOperatorSoFar].WeakestFlaggedOperator)
+                        ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator
+                        : weakestFlaggedChildOperatorSoFar
+                    );
+
+                flaggedOrDerivedOperatorToMultiOperatorInfo.Add(current, new MultiOperatorInfo(strongestFlaggedChildOperator, weakestFlaggedChildOperator));
+
+                return BnfTermKind.Operator;
+            }
+            else if (nonTerminalLooksLikeALeftParenthesis == true)
+                return BnfTermKind.LeftParenthesis;
+            else if (nonTerminalLooksLikeARightParenthesis == true)
+                return BnfTermKind.RightParenthesis;
+            else
+                return BnfTermKind.Other;
         }
 
         private void RegisteringExpressionsThatNeedParentheses()
