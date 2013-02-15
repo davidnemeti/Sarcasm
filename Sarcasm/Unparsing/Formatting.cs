@@ -54,8 +54,6 @@ namespace Sarcasm.Unparsing
 
         #region State
 
-        private readonly Grammar grammar;
-
         private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensBefore = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
         private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensAfter = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
         private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens> contextToUtokensBetween = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens>();
@@ -67,27 +65,28 @@ namespace Sarcasm.Unparsing
         #region Construction
 
         public Formatting()
-            : this(grammar: null)
+            : this(formatProviderDefault)
         {
         }
 
-        protected Formatting(Grammar grammar)
+        public Formatting(Grammar grammar)
+            : this(grammar.DefaultCulture)
         {
-            this.grammar = grammar;
+        }
 
+        public Formatting(Parser parser)
+            : this(parser.Context.Culture)
+        {
+        }
+
+        protected Formatting(IFormatProvider formatProvider)
+        {
             this.NewLine = newLineDefault;
             this.Space = spaceDefault;
             this.Tab = tabDefault;
             this.IndentUnit = indentUnitDefault;
             this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
-
-            if (this.FormatProvider == null)
-                this.FormatProvider = formatProviderDefault;
-        }
-
-        internal static Formatting CreateDefaultFormattingForGrammar(Grammar grammar)
-        {
-            return new Formatting(grammar);
+            this.FormatProvider = formatProvider;
         }
 
         #endregion
@@ -101,22 +100,24 @@ namespace Sarcasm.Unparsing
         public string Tab { get; set; }
         public string IndentUnit { get; set; }
         public string WhiteSpaceBetweenUtokens { get; set; }
+        public IFormatProvider FormatProvider { get; private set; }
+        public CultureInfo CultureInfo { get { return FormatProvider as CultureInfo; } }
 
-        IFormatProvider formatProvider = null;
-
-        public IFormatProvider FormatProvider
+        public void SetFormatProviderIndependentlyFromParser(IFormatProvider formatProvider)
         {
-            get
-            {
-                return grammar != null ? grammar.DefaultCulture : this.formatProvider;
-            }
-            set
-            {
-                if (grammar != null)
-                    grammar.DefaultCulture = (CultureInfo)value;    // note: this will throw an InvalidCastException if the value is not a CultureInfo
-                else
-                    this.formatProvider = value;
-            }
+            this.FormatProvider = formatProvider;
+
+        }
+
+        public void SetCultureInfoIndependentlyFromParser(CultureInfo cultureInfo)
+        {
+            SetFormatProviderIndependentlyFromParser(cultureInfo);
+        }
+
+        public void SetCultureInfo(CultureInfo cultureInfo, Parser parser)
+        {
+            SetCultureInfoIndependentlyFromParser(cultureInfo);
+            parser.Context.Culture = cultureInfo;
         }
 
         #endregion

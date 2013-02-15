@@ -17,11 +17,6 @@ namespace Sarcasm
 {
     public static class Misc
     {
-        public static void SetFormatting(this Parser parser, Formatting formatting)
-        {
-            parser.Context.Culture = (CultureInfo)formatting.FormatProvider;    // note: this will throw an InvalidCastException if the value is not a CultureInfo
-        }
-
         internal static int? DebugWriteLinePriority(this int? priority, TraceSource ts, BnfTerm bnfTerm, object obj, string messageBefore = "", string messageAfter = "", string messageInside = "")
         {
             ts.Debug(

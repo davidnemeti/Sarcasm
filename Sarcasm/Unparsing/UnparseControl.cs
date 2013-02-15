@@ -23,7 +23,7 @@ namespace Sarcasm.Unparsing
             get
             {
                 if (_defaultFormatting == null)
-                    _defaultFormatting = Formatting.CreateDefaultFormattingForGrammar(grammar);
+                    _defaultFormatting = new Formatting(grammar);
 
                 return _defaultFormatting;
             }
