@@ -242,7 +242,7 @@ namespace Sarcasm.Unparsing
 
             // need to "label" every bnfterm
             if (current is NonTerminal)
-                currentKind = DetermineBnfTermKind((NonTerminal)current);
+                currentKind = CalculateBnfTermKindForNonTerminal((NonTerminal)current);
             else
                 currentKind = BnfTermKind.Other;
 
@@ -274,7 +274,7 @@ namespace Sarcasm.Unparsing
                 currentKind = BnfTermKind.GrammarHint;
         }
 
-        private BnfTermKind DetermineBnfTermKind(NonTerminal current)
+        private BnfTermKind CalculateBnfTermKindForNonTerminal(NonTerminal current)
         {
             BnfTermKind? currentKind = null;
 
@@ -370,6 +370,8 @@ namespace Sarcasm.Unparsing
                     }
                 }
 
+                #region Determine childListLooksLike
+
                 BnfTermKind? childListLooksLike;
 
                 if (operatorCount == 1 && leftParenthesisCount == 0 && rightParenthesisCount == 0 && otherCount == 0)
@@ -381,8 +383,12 @@ namespace Sarcasm.Unparsing
                 else
                     childListLooksLike = BnfTermKind.Other;
 
+                #endregion
+
                 if (childListLooksLike == BnfTermKind.Operator)
                     childOperators.Add(childOperator);
+
+                #region Determine currentKind
 
                 if ((currentKind == null || currentKind == BnfTermKind.Operator) && childListLooksLike == BnfTermKind.Operator)
                     currentKind = BnfTermKind.Operator;
@@ -392,30 +398,35 @@ namespace Sarcasm.Unparsing
                     currentKind = BnfTermKind.RightParenthesis;
                 else
                     currentKind = BnfTermKind.Other;
+
+                #endregion
             }
 
             if (currentKind == BnfTermKind.Operator)
-            {
-                BnfTerm strongestFlaggedChildOperator = childOperators.Aggregate(
-                    (BnfTerm)null,
-                    (strongestFlaggedChildOperatorSoFar, childOperator) => strongestFlaggedChildOperatorSoFar == null ||
-                        GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[strongestFlaggedChildOperatorSoFar].StrongestFlaggedOperator)
-                        ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator
-                        : strongestFlaggedChildOperatorSoFar
-                    );
-
-                BnfTerm weakestFlaggedChildOperator = childOperators.Aggregate(
-                    (BnfTerm)null,
-                    (weakestFlaggedChildOperatorSoFar, childOperator) => weakestFlaggedChildOperatorSoFar == null ||
-                        GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[weakestFlaggedChildOperatorSoFar].WeakestFlaggedOperator)
-                        ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator
-                        : weakestFlaggedChildOperatorSoFar
-                    );
-
-                flaggedOrDerivedOperatorToMultiOperatorInfo.Add(current, new MultiOperatorInfo(strongestFlaggedChildOperator, weakestFlaggedChildOperator));
-            }
+                HandleOperators(current, childOperators);
 
             return currentKind ?? BnfTermKind.Other;
+        }
+
+        private void HandleOperators(BnfTerm @operator, IEnumerable<BnfTerm> childOperators)
+        {
+            BnfTerm strongestFlaggedChildOperator = childOperators.Aggregate(
+                (BnfTerm)null,
+                (strongestFlaggedChildOperatorSoFar, childOperator) => strongestFlaggedChildOperatorSoFar == null ||
+                    GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[strongestFlaggedChildOperatorSoFar].StrongestFlaggedOperator)
+                    ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].StrongestFlaggedOperator
+                    : strongestFlaggedChildOperatorSoFar
+                );
+
+            BnfTerm weakestFlaggedChildOperator = childOperators.Aggregate(
+                (BnfTerm)null,
+                (weakestFlaggedChildOperatorSoFar, childOperator) => weakestFlaggedChildOperatorSoFar == null ||
+                    GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator) > GetPrecedence(flaggedOrDerivedOperatorToMultiOperatorInfo[weakestFlaggedChildOperatorSoFar].WeakestFlaggedOperator)
+                    ? flaggedOrDerivedOperatorToMultiOperatorInfo[childOperator].WeakestFlaggedOperator
+                    : weakestFlaggedChildOperatorSoFar
+                );
+
+            flaggedOrDerivedOperatorToMultiOperatorInfo.Add(@operator, new MultiOperatorInfo(strongestFlaggedChildOperator, weakestFlaggedChildOperator));
         }
 
         private void RegisteringExpressionsThatNeedParentheses()
