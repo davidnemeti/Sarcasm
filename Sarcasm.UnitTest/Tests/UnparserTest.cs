@@ -19,6 +19,8 @@ namespace Sarcasm.UnitTest
     [TestClass]
     public partial class UnparserTest : CommonTest
     {
+        protected const string category = "UnparserTest";
+
         protected readonly static string actualUnparsedFilesDir = Path.Combine(actualResultsDir, @"Unparsed files");
 
         protected static Unparser unparser;

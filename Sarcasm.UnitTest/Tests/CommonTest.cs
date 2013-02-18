@@ -30,6 +30,8 @@ namespace Sarcasm.UnitTest
         protected static Parser parser;
         protected static Parser exprParser;
 
+        protected static MiniPL.GrammarP.BnfTerms B { get { return grammar.B; } }
+
         private static bool initializedGrammar = false;
         private static bool initializedParser = false;
 

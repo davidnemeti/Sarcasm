@@ -19,7 +19,10 @@ namespace Sarcasm.UnitTest
     [TestClass]
     public class GrammarTest : CommonTest
     {
+        protected const string category = "GrammarTest";
+
         [TestMethod]
+        [TestCategory(category)]
         public void GrammarCheck()
         {
             CommonTest.InitializeGrammar();

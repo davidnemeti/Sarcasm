@@ -19,6 +19,8 @@ namespace Sarcasm.UnitTest
     [TestClass]
     public partial class ParserTest : CommonTest
     {
+        protected const string category = "ParserTest";
+
         protected readonly static string expectedAstDir = Path.Combine(expectedResultsDir, @"ASTs");
         protected readonly static string actualAstTreesDir = Path.Combine(actualResultsDir, @"ASTs");
 

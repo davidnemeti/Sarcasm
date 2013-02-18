@@ -33,9 +33,10 @@ namespace Sarcasm.UnitTest
     {
 #>
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
         {
-            UnparseSaveUnparsedAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "exprParser" : "parser" #>, <#= Path.GetExtension(filePath) == ".expr" ? "grammar.B.Expression" : "grammar.B.Program" #>, "<#= Path.GetFileName(filePath) #>");
+            UnparseSaveUnparsedAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "exprParser" : "parser" #>, <#= Path.GetExtension(filePath) == ".expr" ? "B.Expression" : "B.Program" #>, "<#= Path.GetFileName(filePath) #>");
         }
 
 <#
