@@ -49,16 +49,6 @@ namespace Sarcasm.Unparsing
 
     public delegate IEnumerable<UtokenValue> ValueUtokenizer<T>(IFormatProvider formatProvider, T obj);
 
-    public class Context
-    {
-        public MemberInfo MemberInfo { get; private set; }
-
-        public Context(MemberInfo memberInfo)
-        {
-            this.MemberInfo = memberInfo;
-        }
-    }
-
     public interface IUnparsable : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);

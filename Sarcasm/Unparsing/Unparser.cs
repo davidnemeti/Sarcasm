@@ -82,10 +82,9 @@ namespace Sarcasm.Unparsing
 
         #region Unparse logic
 
-        public IEnumerable<Utoken> Unparse(object obj, Context context = null)
+        public IEnumerable<Utoken> Unparse(object obj)
         {
-            BnfTerm bnfTerm = GetBnfTerm(obj, context);
-            return Unparse(obj, bnfTerm);
+            return Unparse(obj, Grammar.Root);
         }
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
@@ -271,12 +270,6 @@ namespace Sarcasm.Unparsing
         internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
         {
             return nonTerminal.Productions.Select(production => production.RValues);
-        }
-
-        private BnfTerm GetBnfTerm(object obj, Context context)
-        {
-            return Grammar.Root;
-            // TODO: do this by choosing by context
         }
 
         #endregion
