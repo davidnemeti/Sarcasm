@@ -245,12 +245,38 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void TypesafetyCheck_BindMember_DeclaringTypeMismatch()
         {
-            string sourceCodeWithRule = @"
+            string sourceCodeFail = @"
                 B.Program.Rule = B.Type.BindMember(B.LocalVariable, t => t.Type);
             ";
 
-            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
-            CompileAndCheck_RuleTypelessShouldSucceed(sourceCodeWithRule);
+            // with typeless bnfterms it is okay
+            string sourceCodeSuccess = @"
+                B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_DeclaringTypeMismatch_ComplexRule()
+        {
+            string sourceCodeFail = @"
+                B.Program.RuleTypeless =
+                    B.Type.BindMember(B.LocalVariable, t => t.Type)
+                    + B.Expression.BindMember(B.LocalVariable, t => t.InitValue);
+            ";
+
+            // with typeless bnfterms it is okay
+            string sourceCodeSuccess = @"
+                B.Program.RuleTypeless =
+                    new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type)
+                    + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindMember(() => new MiniPL.DomainModel.LocalVariable().InitValue);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
         }
 
         #region Helpers
