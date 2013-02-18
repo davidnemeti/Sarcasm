@@ -113,7 +113,8 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void TypesafetyCheck_BindMemberForChoice()
         {
-            string sourceCodeWithRule = @"
+            // BindMember for Choice is not good
+            string sourceCodeFail = @"
                 var numberLiteral = new BnfiTermChoice<MiniPL.DomainModel.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
@@ -121,8 +122,17 @@ namespace Sarcasm.UnitTest
                     + B.RIGHT_PAREN;
             ";
 
-            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
-            CompileAndCheck_RuleRawShouldSucceed(sourceCodeWithRule);
+            // BindMember for Type is good
+            string sourceCodeSuccess = @"
+                var numberLiteral = new BnfiTermType<MiniPL.DomainModel.NumberLiteral>();
+                numberLiteral.Rule =
+                    B.LEFT_PAREN
+                    + B.Expression.BindMember(numberLiteral, t => t.Value)
+                    + B.RIGHT_PAREN;
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
         }
 
         [TestMethod]
