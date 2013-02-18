@@ -137,14 +137,17 @@ namespace Sarcasm.UnitTest
                 var foo = B.Expression.BindMember(logicalBinaryBoolExpression, t => t.Term1);
             ";
 
+            // typeless binding is okay
             string sourceCodeSuccess = @"
                 var foo2 = expressionTL.BindMember(logicalBinaryBoolExpression, t => t.Term1);
             ";
 
+            // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
                 var foo3 = expressionTL.BindMember(() => new MiniPLExtension.LogicalBinaryBoolExpression().Term1);
             ";
 
+            // opposite situation with type safety is okay
             string sourceCodeSuccess3 = @"
                 var foo4 = boolExpression.BindMember(B.BinaryExpression, t => t.Term1);
             ";
