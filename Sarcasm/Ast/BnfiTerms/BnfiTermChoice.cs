@@ -97,7 +97,7 @@ namespace Sarcasm.Ast
             return base.Q();
         }
 
-        public BnfiExpression RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionChoiceTL RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
 
