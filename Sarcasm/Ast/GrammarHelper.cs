@@ -111,6 +111,11 @@ namespace Sarcasm.Ast
             return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
         }
 
+        public static BnfiTermMemberTL BindMember<TMemberType>(this IBnfiTermTL bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        {
+            return BnfiTermMember.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
+        }
+
         public static BnfiTermMemberTL BindMember<TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TValueType : TMemberType
         {

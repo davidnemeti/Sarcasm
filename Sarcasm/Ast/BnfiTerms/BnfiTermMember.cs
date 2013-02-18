@@ -59,6 +59,11 @@ namespace Sarcasm.Ast
             return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
 
+        public static BnfiTermMemberTL Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTermTL bnfiTerm)
+        {
+            return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
+        }
+
         public static BnfiTermMemberTL Bind(PropertyInfo propertyInfo, BnfTerm bnfTerm)
         {
             return new BnfiTermMemberTL(propertyInfo, bnfTerm);
