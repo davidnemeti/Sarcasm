@@ -64,13 +64,13 @@ namespace Sarcasm.Unparsing
 
     public class UnparsableObject
     {
-        public readonly BnfTerm bnfTerm;
-        public readonly object obj;
+        public readonly BnfTerm BnfTerm;
+        public readonly object Obj;
 
         public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
-            this.bnfTerm = bnfTerm;
-            this.obj = obj;
+            this.BnfTerm = bnfTerm;
+            this.Obj = obj;
         }
 
         public bool Equals(UnparsableObject that)
@@ -78,8 +78,8 @@ namespace Sarcasm.Unparsing
             return object.ReferenceEquals(this, that)
                 ||
                 that != null &&
-                this.bnfTerm == that.bnfTerm &&
-                this.obj == that.obj;
+                this.BnfTerm == that.BnfTerm &&
+                this.Obj == that.Obj;
         }
 
         public override bool Equals(object obj)
@@ -89,7 +89,7 @@ namespace Sarcasm.Unparsing
 
         public override int GetHashCode()
         {
-            return Util.GetHashCodeMulti(bnfTerm, obj);
+            return Util.GetHashCodeMulti(BnfTerm, Obj);
         }
 
         public static bool operator ==(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
@@ -104,7 +104,7 @@ namespace Sarcasm.Unparsing
 
         public override string ToString()
         {
-            return string.Format("[bnfTerm: {0}, obj: {1}]", bnfTerm, obj);
+            return string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj);
         }
     }
 }

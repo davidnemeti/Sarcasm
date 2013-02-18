@@ -490,7 +490,7 @@ namespace Sarcasm.Ast
         {
             return this.bnfTerm != null
                 ? new UnparsableObject(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
-                : children.Single(child => IsMainChild(child.bnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+                : children.Single(child => IsMainChild(child.BnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
         }
 
         private object ConvertObjectForChild(object obj, BnfTerm childBnfTerm)

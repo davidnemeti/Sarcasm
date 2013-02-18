@@ -95,12 +95,12 @@ namespace Sarcasm.Unparsing
 
         internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject unparsableObject)
         {
-            if (unparsableObject.bnfTerm == null)
+            if (unparsableObject.BnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
 
             Formatter.Params @params;
 
-            formatter.BeginBnfTerm(unparsableObject.bnfTerm, out @params);
+            formatter.BeginBnfTerm(unparsableObject.BnfTerm, out @params);
 
             try
             {
@@ -111,9 +111,9 @@ namespace Sarcasm.Unparsing
                  * */
 
                 var utokens = ConcatIfAnyMiddle(
-                    formatter.YieldBefore(unparsableObject.bnfTerm, @params),
+                    formatter.YieldBefore(unparsableObject.BnfTerm, @params),
                     UnparseRawMiddle(unparsableObject),
-                    formatter.YieldAfter(unparsableObject.bnfTerm, @params)
+                    formatter.YieldAfter(unparsableObject.BnfTerm, @params)
                     );
 
                 foreach (UtokenBase utoken in utokens)
@@ -121,14 +121,14 @@ namespace Sarcasm.Unparsing
             }
             finally
             {
-                formatter.EndBnfTerm(unparsableObject.bnfTerm);
+                formatter.EndBnfTerm(unparsableObject.BnfTerm);
             }
         }
 
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject unparsableObject)
         {
-            BnfTerm bnfTerm = unparsableObject.bnfTerm;
-            object obj = unparsableObject.obj;
+            BnfTerm bnfTerm = unparsableObject.BnfTerm;
+            object obj = unparsableObject.Obj;
 
             if (bnfTerm is KeyTerm)
             {
@@ -235,8 +235,8 @@ namespace Sarcasm.Unparsing
         {
             // TODO: we should check whether any bnfTermList has an UnparseHint
 
-            object obj = unparsableObject.obj;
-            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)unparsableObject.bnfTerm;
+            object obj = unparsableObject.Obj;
+            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)unparsableObject.BnfTerm;
 
             tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
             tsPriorities.Indent();
@@ -279,7 +279,7 @@ namespace Sarcasm.Unparsing
 
         int? IUnparser.GetPriority(UnparsableObject unparsableObject)
         {
-            IUnparsableNonTerminal unparsable = unparsableObject.bnfTerm as IUnparsableNonTerminal;
+            IUnparsableNonTerminal unparsable = unparsableObject.BnfTerm as IUnparsableNonTerminal;
 
             if (unparsable != null)
             {
@@ -287,7 +287,7 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.obj, unparsable.GetChildren(childBnfTerms, unparsableObject.obj))
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.Obj, unparsable.GetChildren(childBnfTerms, unparsableObject.Obj))
                         .DebugWriteLinePriority(tsPriorities, unparsableObject));
 
                 tsPriorities.Unindent();

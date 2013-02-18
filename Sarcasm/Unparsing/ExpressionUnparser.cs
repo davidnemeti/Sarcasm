@@ -370,15 +370,15 @@ namespace Sarcasm.Unparsing
             if (ongoingOperatorUnparseLevel > 0)
             {
                 var utokens = chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, initialization)).ToList();
-                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                UpdateOperatorInfo(unparsableObject.BnfTerm);
                 return utokens;
             }
 
             #region Initialization
 
-            if (initialization && _examinedBnfTermsInCurrentPath.GetCount(unparsableObject.bnfTerm) == 2)
+            if (initialization && _examinedBnfTermsInCurrentPath.GetCount(unparsableObject.BnfTerm) == 2)
             {
-                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                UpdateOperatorInfo(unparsableObject.BnfTerm);
                 return new UtokenBase[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
             }
 
@@ -386,12 +386,12 @@ namespace Sarcasm.Unparsing
 
             using (initialization
                 ? new AutoCleanup(
-                    () => _examinedBnfTermsInCurrentPath.Add(unparsableObject.bnfTerm),
-                    () => _examinedBnfTermsInCurrentPath.Remove(unparsableObject.bnfTerm))
+                    () => _examinedBnfTermsInCurrentPath.Add(unparsableObject.BnfTerm),
+                    () => _examinedBnfTermsInCurrentPath.Remove(unparsableObject.BnfTerm))
                 : AutoCleanup.None)
             using (new AutoCleanup(
-                () => BeginParenthesesContext(unparsableObject.bnfTerm, initialization),
-                () => EndParenthesesContext(unparsableObject.bnfTerm, initialization)))
+                () => BeginParenthesesContext(unparsableObject.BnfTerm, initialization),
+                () => EndParenthesesContext(unparsableObject.BnfTerm, initialization)))
             {
                 var utokens = new List<UtokenBase>();
 
@@ -417,7 +417,7 @@ namespace Sarcasm.Unparsing
                     }
                     catch (UnparserInitializationException e)
                     {
-                        throw new UnparserInitializationException(e.Message + string.Format("for expression '{0}'", unparsableObject.bnfTerm));
+                        throw new UnparserInitializationException(e.Message + string.Format("for expression '{0}'", unparsableObject.BnfTerm));
                     }
                 }
 
@@ -434,12 +434,12 @@ namespace Sarcasm.Unparsing
                     {
                         using (new AutoCleanup(
                             () => BeginSurroundingOperatorsContext(
-                                    unparsableObject.bnfTerm,
+                                    unparsableObject.BnfTerm,
                                     GetLeftFlaggedOperatorForInside(prevOperator, initialization),
                                     GetRightFlaggedOperatorForInside(@operator, initialization)),
                             () => EndSurroundingOperatorsContext()))
                         {
-                            while (childEnumerator.MoveNext() && (@operator == null || childEnumerator.Current.bnfTerm != @operator.BnfTerm))
+                            while (childEnumerator.MoveNext() && (@operator == null || childEnumerator.Current.BnfTerm != @operator.BnfTerm))
                                 utokens.AddRange(UnparseRawEager(childEnumerator.Current, initialization));
                         }
 
@@ -460,7 +460,7 @@ namespace Sarcasm.Unparsing
                 if (needParentheses && !initialization)
                     utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, unparsableObject));
 
-                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                UpdateOperatorInfo(unparsableObject.BnfTerm);
 
                 return utokens;
             }
@@ -532,7 +532,7 @@ namespace Sarcasm.Unparsing
         {
             if (initialization)
             {
-                NonTerminal nonTerminal = unparsableObject.bnfTerm as NonTerminal;
+                NonTerminal nonTerminal = unparsableObject.BnfTerm as NonTerminal;
 
                 if (nonTerminal != null)
                     RegisteringExpressionsThatNeedParentheses(nonTerminal);
@@ -543,7 +543,7 @@ namespace Sarcasm.Unparsing
             else
             {
                 var utokens = unparser.UnparseRaw(unparsableObject).ToList();
-                UpdateOperatorInfo(unparsableObject.bnfTerm);
+                UpdateOperatorInfo(unparsableObject.BnfTerm);
                 operatorInfo = GetOperatorInfo();
                 return utokens;
             }
@@ -557,11 +557,11 @@ namespace Sarcasm.Unparsing
                     ? GetSurroundingParentheses().Left
                     : GetSurroundingParentheses().Right;
 
-                return UnparseRawEager(new UnparsableObject(parenthesis, unparsableExpression.obj), initialization: false);
+                return UnparseRawEager(new UnparsableObject(parenthesis, unparsableExpression.Obj), initialization: false);
             }
             catch (UnparseException e)
             {
-                throw new UnparseException(e.Message + " for " + unparsableExpression.bnfTerm.ToString());
+                throw new UnparseException(e.Message + " for " + unparsableExpression.BnfTerm.ToString());
             }
         }
 
@@ -601,7 +601,7 @@ namespace Sarcasm.Unparsing
 
                 foreach (UnparsableObject child in children)
                 {
-                    if (IsFlaggedOrDerivedOperator(child.bnfTerm))
+                    if (IsFlaggedOrDerivedOperator(child.BnfTerm))
                     {
                         BnfTerm flaggedOperator;
                         IEnumerable<UtokenBase> utokens;
@@ -619,20 +619,20 @@ namespace Sarcasm.Unparsing
                         }
 
                         yield return new Operator.Actual(
-                            flaggedOrDerivedOperator: child.bnfTerm,
+                            flaggedOrDerivedOperator: child.BnfTerm,
                             flaggedOperator: flaggedOperator,
                             isInsideParentheses: parenthesesLevel > 0,
                             utokens: utokens
                             );
                     }
-                    else if (child.bnfTerm.IsBrace())
+                    else if (child.BnfTerm.IsBrace())
                     {
-                        if (child.bnfTerm.IsOpenBrace())
+                        if (child.BnfTerm.IsOpenBrace())
                             parenthesesLevel++;
-                        else if (child.bnfTerm.IsCloseBrace())
+                        else if (child.BnfTerm.IsCloseBrace())
                             parenthesesLevel--;
 
-                        yield return new Operator.Parenthesis(child.bnfTerm, initialization ? new UtokenBase[0] : UnparseRawEager(child, initialization));
+                        yield return new Operator.Parenthesis(child.BnfTerm, initialization ? new UtokenBase[0] : UnparseRawEager(child, initialization));
                     }
                 }
             }

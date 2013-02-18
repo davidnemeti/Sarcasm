@@ -22,9 +22,9 @@ namespace Sarcasm
             ts.Debug(
                 "{0}{1}{2} obj: {3}; priority = {4}{5}",
                 messageBefore,
-                unparsableObject.bnfTerm,
+                unparsableObject.BnfTerm,
                 messageInside != "" ? " " + messageInside : messageInside,
-                unparsableObject.obj != null ? unparsableObject.obj.ToString() : "<<NULL>>",
+                unparsableObject.Obj != null ? unparsableObject.Obj.ToString() : "<<NULL>>",
                 priority.HasValue ? priority.ToString() : "NULL",
                 messageAfter
                 );

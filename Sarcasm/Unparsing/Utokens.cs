@@ -179,7 +179,7 @@ namespace Sarcasm.Unparsing
 
         public string ToString(Formatting formatting)
         {
-            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.obj);
+            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.Obj);
         }
 
         public override string ToString()

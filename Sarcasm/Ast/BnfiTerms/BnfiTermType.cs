@@ -215,7 +215,7 @@ namespace Sarcasm.Ast
         {
             return children
                 .SumIncludingNullValues(
-                    (child, ruleIndex) => IsMemberByRuleIndex(child.bnfTerm, ruleIndex)
+                    (child, ruleIndex) => IsMemberByRuleIndex(child.BnfTerm, ruleIndex)
                         ? GetBnfTermPriorityForMember(unparser, child)
                         : unparser.GetPriority(child)
                     );
@@ -223,9 +223,9 @@ namespace Sarcasm.Ast
 
         private static int? GetBnfTermPriorityForMember(IUnparser unparser, UnparsableObject unparsableObject)
         {
-            if (unparsableObject.obj != null)
+            if (unparsableObject.Obj != null)
                 return 1;
-            else if (unparsableObject.bnfTerm is BnfiTermCollection)
+            else if (unparsableObject.BnfTerm is BnfiTermCollection)
                 return unparser.GetPriority(unparsableObject);
             else
                 return null;
