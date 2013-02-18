@@ -478,10 +478,7 @@ namespace Sarcasm.Ast
             if (this.value != null)
                 return this.value.Equals(obj) ? (int?)1 : null;
             else
-            {
-                UnparsableObject mainChild = GetMainChild(obj, children);
-                return unparser.GetPriority(mainChild.bnfTerm, mainChild.obj);
-            }
+                return unparser.GetPriority(GetMainChild(obj, children));
         }
 
         private static bool IsMainChild(BnfTerm bnfTerm)

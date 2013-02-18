@@ -48,7 +48,7 @@ namespace Sarcasm.Ast
 
         int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
         {
-            return children.SumIncludingNullValues(child => unparser.GetPriority(child.bnfTerm, child.obj));
+            return children.SumIncludingNullValues(child => unparser.GetPriority(child));
         }
 
         #endregion

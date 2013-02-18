@@ -216,17 +216,17 @@ namespace Sarcasm.Ast
             return children
                 .SumIncludingNullValues(
                     (child, ruleIndex) => IsMemberByRuleIndex(child.bnfTerm, ruleIndex)
-                        ? GetBnfTermPriorityForMember(unparser, child.bnfTerm, child.obj)
-                        : unparser.GetPriority(child.bnfTerm, child.obj)
+                        ? GetBnfTermPriorityForMember(unparser, child)
+                        : unparser.GetPriority(child)
                     );
         }
 
-        private static int? GetBnfTermPriorityForMember(IUnparser unparser, BnfTerm bnfTerm, object obj)
+        private static int? GetBnfTermPriorityForMember(IUnparser unparser, UnparsableObject unparsableObject)
         {
-            if (obj != null)
+            if (unparsableObject.obj != null)
                 return 1;
-            else if (bnfTerm is BnfiTermCollection)
-                return unparser.GetPriority(bnfTerm, obj);
+            else if (unparsableObject.bnfTerm is BnfiTermCollection)
+                return unparser.GetPriority(unparsableObject);
             else
                 return null;
         }
