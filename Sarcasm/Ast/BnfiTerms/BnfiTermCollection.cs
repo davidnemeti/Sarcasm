@@ -446,7 +446,7 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 
@@ -465,7 +465,7 @@ namespace Sarcasm.Ast
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 

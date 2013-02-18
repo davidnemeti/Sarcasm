@@ -194,7 +194,7 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
         {
             foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, ruleIndex) => new { BnfTerm = childBnfTerm, RuleIndex = ruleIndex }))
             {
@@ -211,13 +211,13 @@ namespace Sarcasm.Ast
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
         {
-            return childUnparsableObjects
+            return children
                 .SumIncludingNullValues(
-                    (childUnparsableObject, ruleIndex) => IsMemberByRuleIndex(childUnparsableObject.bnfTerm, ruleIndex)
-                        ? GetBnfTermPriorityForMember(unparser, childUnparsableObject.bnfTerm, childUnparsableObject.obj)
-                        : unparser.GetBnfTermPriority(childUnparsableObject.bnfTerm, childUnparsableObject.obj)
+                    (child, ruleIndex) => IsMemberByRuleIndex(child.bnfTerm, ruleIndex)
+                        ? GetBnfTermPriorityForMember(unparser, child.bnfTerm, child.obj)
+                        : unparser.GetPriority(child.bnfTerm, child.obj)
                     );
         }
 
@@ -226,7 +226,7 @@ namespace Sarcasm.Ast
             if (obj != null)
                 return 1;
             else if (bnfTerm is BnfiTermCollection)
-                return unparser.GetBnfTermPriority(bnfTerm, obj);
+                return unparser.GetPriority(bnfTerm, obj);
             else
                 return null;
         }

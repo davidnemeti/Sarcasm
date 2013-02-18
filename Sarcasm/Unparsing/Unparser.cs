@@ -246,19 +246,19 @@ namespace Sarcasm.Unparsing
                 return GetChildBnfTermLists(unparsable.AsNonTerminal())
                     .Select(childBnfTerms =>
                         {
-                            var childUnparsableObjects = unparsable.GetChildUnparsableObjects(childBnfTerms, obj);
+                            var children = unparsable.GetChildren(childBnfTerms, obj);
                             return new
                             {
-                                UnparsableObjects = childUnparsableObjects,
-                                Priority = unparsable.GetChildBnfTermListPriority(this, obj, childUnparsableObjects)
+                                UnparsableObjects = children,
+                                Priority = unparsable.GetChildrenPriority(this, obj, children)
                                     .DebugWriteLinePriority(tsPriorities, unparsable.AsNonTerminal(), obj)
                             };
                         }
                     )
-                    .Where(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.HasValue)
-                    .OrderByDescending(childBnfTermsWithPriority => childBnfTermsWithPriority.Priority.Value)
-                    .Select(childBnfTermsWithPriority => childBnfTermsWithPriority.UnparsableObjects)
-                    .FirstOrDefault(unparsableObjects => !unparsableObjects.Contains(unparsableObject));    // NOTE: filter here (after ordering) to minimize the number of comparisons
+                    .Where(childrenWithPriority => childrenWithPriority.Priority.HasValue)
+                    .OrderByDescending(childrenWithPriority => childrenWithPriority.Priority.Value)
+                    .Select(childrenWithPriority => childrenWithPriority.UnparsableObjects)
+                    .FirstOrDefault(children => !children.Contains(unparsableObject));    // NOTE: filter here (after ordering) to minimize the number of comparisons
             }
             finally
             {
@@ -277,7 +277,7 @@ namespace Sarcasm.Unparsing
 
         #region IUnparser implementation
 
-        int? IUnparser.GetBnfTermPriority(BnfTerm bnfTerm, object obj)
+        int? IUnparser.GetPriority(BnfTerm bnfTerm, object obj)
         {
             if (bnfTerm is NonTerminal && bnfTerm is IUnparsableNonTerminal)
             {
@@ -287,7 +287,7 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(nonTerminal)
-                    .Max(childBnfTerms => unparsable.GetChildBnfTermListPriority(this, obj, unparsable.GetChildUnparsableObjects(childBnfTerms, obj))
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, obj, unparsable.GetChildren(childBnfTerms, obj))
                         .DebugWriteLinePriority(tsPriorities, bnfTerm, obj));
 
                 tsPriorities.Unindent();

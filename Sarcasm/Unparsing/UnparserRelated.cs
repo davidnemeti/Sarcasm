@@ -52,13 +52,13 @@ namespace Sarcasm.Unparsing
     public interface IUnparsableNonTerminal : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableObject> GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj);
-        int? GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects);
+        IEnumerable<UnparsableObject> GetChildren(BnfTermList childBnfTerms, object obj);
+        int? GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children);
     }
 
     public interface IUnparser
     {
-        int? GetBnfTermPriority(BnfTerm bnfTerm, object obj);
+        int? GetPriority(BnfTerm bnfTerm, object obj);
         IFormatProvider FormatProvider { get; }
     }
 
