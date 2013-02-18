@@ -65,7 +65,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck_RuleShouldFail_RuleRawShouldSucceed(sourceCodeWithRule);
+            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
+            CompileAndCheck_RuleRawShouldSucceed(sourceCodeWithRule);
         }
 
         [TestMethod]
@@ -104,7 +105,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck_RuleShouldFail_RuleTypelessShouldSucceed(sourceCodeWithRule);
+            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
+            CompileAndCheck_RuleTypelessShouldSucceed(sourceCodeWithRule);
         }
 
         [TestMethod]
@@ -119,7 +121,8 @@ namespace Sarcasm.UnitTest
                     + B.RIGHT_PAREN;
             ";
 
-            CompileAndCheck_RuleShouldFail_RuleRawShouldSucceed(sourceCodeWithRule);
+            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
+            CompileAndCheck_RuleRawShouldSucceed(sourceCodeWithRule);
         }
 
         [TestMethod]
@@ -204,19 +207,66 @@ namespace Sarcasm.UnitTest
             CompileAndCheck(sourceCodeSuccess2, shouldCompile: true);
         }
 
-        #region Helpers
-
-        private void CompileAndCheck_RuleShouldFail_RuleTypelessShouldSucceed(string sourceCodeWithRule)
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_MissingDeclaringType()
         {
-            CompileAndCheck(sourceCodeWithRule, shouldCompile: false);
-            CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleTypelessString), shouldCompile: true);
-            CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleRawString), shouldCompile: true);
+            string sourceCodeFail = @"
+                var foo = B.Statement.BindMember(t => t.Body);
+            ";
+
+            // with declaring type specified it is okay
+            string sourceCodeSuccess = @"
+                var foo2 = B.Statement.BindMember(B.While, t => t.Body);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
         }
 
-        private void CompileAndCheck_RuleShouldFail_RuleRawShouldSucceed(string sourceCodeWithRule)
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_NonExistentMember()
+        {
+            string sourceCodeFail = @"
+                var foo = B.Statement.BindMember(B.Return, t => t.Body);
+            ";
+
+            // with proper declaring type it is okay
+            string sourceCodeSuccess = @"
+                var foo2 = B.Statement.BindMember(B.While, t => t.Body);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_DeclaringTypeMismatch()
+        {
+            string sourceCodeWithRule = @"
+                B.Program.Rule = B.Type.BindMember(B.LocalVariable, t => t.Type);
+            ";
+
+            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
+            CompileAndCheck_RuleTypelessShouldSucceed(sourceCodeWithRule);
+        }
+
+        #region Helpers
+
+        private void CompileAndCheck_RuleShouldFail(string sourceCodeWithRule)
         {
             CompileAndCheck(sourceCodeWithRule, shouldCompile: false);
-            CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleTypelessString), shouldCompile: false);
+        }
+
+        private void CompileAndCheck_RuleTypelessShouldSucceed(string sourceCodeWithRule)
+        {
+            CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleTypelessString), shouldCompile: true);
+        }
+
+        private void CompileAndCheck_RuleRawShouldSucceed(string sourceCodeWithRule)
+        {
             CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleRawString), shouldCompile: true);
         }
 
