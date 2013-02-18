@@ -53,8 +53,7 @@ namespace Sarcasm.Ast
             return Bind(exprForFieldOrPropertyAccess, bnfTerm);
         }
 
-        // NOTE: the method's name is Bind_ instead of Bind to avoid too loose typesafety
-        public static BnfiTermMemberTL Bind_<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTermTL bnfiTerm)
+        public static BnfiTermMemberTL Bind<TMemberType>(Expression<Func<TMemberType>> exprForFieldOrPropertyAccess, IBnfiTermTL bnfiTerm)
         {
             return Bind(exprForFieldOrPropertyAccess, bnfiTerm.AsBnfTerm());
         }
