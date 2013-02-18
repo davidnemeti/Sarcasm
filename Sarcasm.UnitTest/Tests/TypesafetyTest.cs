@@ -158,6 +158,52 @@ namespace Sarcasm.UnitTest
             CompileAndCheck(sourceCodeInit + sourceCodeSuccess3, shouldCompile: true);
         }
 
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_ValueTypeMemberTypeMismatch()
+        {
+            string sourceCodeFail = @"
+                var foo = B.Function.BindMember(B.While, t => t.Body);
+            ";
+
+            // typeless binding is okay
+            string sourceCodeSuccess = @"
+                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(B.While, t => t.Body);
+            ";
+
+            // another form of typeless binding is okay
+            string sourceCodeSuccess2 = @"
+                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(() => new MiniPL.DomainModel.While().Body);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileAndCheck(sourceCodeSuccess2, shouldCompile: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_BindMember_ValueTypeMemberTypeMismatchForCollection()
+        {
+            string sourceCodeFail = @"
+                var foo = B.Function.PlusList().BindMember(B.Write, t => t.Arguments);
+            ";
+
+            // typeless binding is okay
+            string sourceCodeSuccess = @"
+                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(B.While, t => t.Body);
+            ";
+
+            // another form of typeless binding is okay
+            string sourceCodeSuccess2 = @"
+                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(() => new MiniPL.DomainModel.While().Body);
+            ";
+
+            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileAndCheck(sourceCodeSuccess2, shouldCompile: true);
+        }
+
         #region Helpers
 
         private void CompileAndCheck_RuleShouldFail_RuleTypelessShouldSucceed(string sourceCodeWithRule)
