@@ -251,7 +251,7 @@ namespace Sarcasm.Unparsing
                             {
                                 UnparsableObjects = children,
                                 Priority = unparsable.GetChildrenPriority(this, obj, children)
-                                    .DebugWriteLinePriority(tsPriorities, unparsable.AsNonTerminal(), obj)
+                                    .DebugWriteLinePriority(tsPriorities, unparsableObject)
                             };
                         }
                     )
@@ -277,28 +277,28 @@ namespace Sarcasm.Unparsing
 
         #region IUnparser implementation
 
-        int? IUnparser.GetPriority(BnfTerm bnfTerm, object obj)
+        int? IUnparser.GetPriority(UnparsableObject unparsableObject)
         {
-            if (bnfTerm is NonTerminal && bnfTerm is IUnparsableNonTerminal)
+            IUnparsableNonTerminal unparsable = unparsableObject.bnfTerm as IUnparsableNonTerminal;
+
+            if (unparsable != null)
             {
-                NonTerminal nonTerminal = (NonTerminal)bnfTerm;
-                IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)bnfTerm;
 
                 tsPriorities.Indent();
 
-                int? priority = GetChildBnfTermLists(nonTerminal)
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, obj, unparsable.GetChildren(childBnfTerms, obj))
-                        .DebugWriteLinePriority(tsPriorities, bnfTerm, obj));
+                int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.obj, unparsable.GetChildren(childBnfTerms, unparsableObject.obj))
+                        .DebugWriteLinePriority(tsPriorities, unparsableObject));
 
                 tsPriorities.Unindent();
 
-                priority.DebugWriteLinePriority(tsPriorities, bnfTerm, obj, messageAfter: " (MAX)");
+                priority.DebugWriteLinePriority(tsPriorities, unparsableObject, messageAfter: " (MAX)");
 
                 return priority;
             }
             else
             {
-                Misc.DebugWriteLinePriority(0, tsPriorities, bnfTerm, obj, messageAfter: " (for terminal)");
+                Misc.DebugWriteLinePriority(0, tsPriorities, unparsableObject, messageAfter: " (for terminal)");
                 return 0;
             }
         }

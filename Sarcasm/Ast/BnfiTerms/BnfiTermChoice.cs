@@ -42,24 +42,24 @@ namespace Sarcasm.Ast
 
         int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
         {
-            BnfTerm mainChildBnfTerm = children.Single(childValue => IsMainChild(childValue.bnfTerm)).bnfTerm;
+            UnparsableObject mainChild = children.Single(childValue => IsMainChild(childValue.bnfTerm));
 
             if (obj.GetType() == this.type)
-                return unparser.GetPriority(mainChildBnfTerm, obj);
+                return unparser.GetPriority(mainChild);
             else
             {
-                IHasType mainChildBnfTermWithType = mainChildBnfTerm as IHasType;
+                IHasType mainChildBnfTermWithType = mainChild.bnfTerm as IHasType;
 
                 if (mainChildBnfTermWithType == null)
                 {
                     throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
-                        obj, obj.GetType().Name, mainChildBnfTerm.Name));
+                        obj, obj.GetType().Name, mainChild.bnfTerm));
                 }
 
                 int? priority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(obj);
 
                 Unparser.tsPriorities.Indent();
-                priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChildBnfTerm, obj);
+                priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);
                 Unparser.tsPriorities.Unindent();
 
                 return priority;

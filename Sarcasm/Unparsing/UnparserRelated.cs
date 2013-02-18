@@ -58,16 +58,8 @@ namespace Sarcasm.Unparsing
 
     public interface IUnparser
     {
-        int? GetPriority(BnfTerm bnfTerm, object obj);
+        int? GetPriority(UnparsableObject unparsableObject);
         IFormatProvider FormatProvider { get; }
-    }
-
-    public static class IUnparserExtensions
-    {
-        public static int? GetPriority(this IUnparser unparser, UnparsableObject unparsableObject)
-        {
-            return unparser.GetPriority(unparsableObject.bnfTerm, unparsableObject.obj);
-        }
     }
 
     public class UnparsableObject
