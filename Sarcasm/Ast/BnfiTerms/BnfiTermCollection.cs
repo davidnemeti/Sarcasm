@@ -28,7 +28,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public abstract partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsable
+    public abstract partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsableNonTerminal
     {
         #region Types
 
@@ -440,13 +440,13 @@ namespace Sarcasm.Ast
 
         #region Unparse
 
-        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 
@@ -465,7 +465,7 @@ namespace Sarcasm.Ast
             }
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
+        int? IUnparsableNonTerminal.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 

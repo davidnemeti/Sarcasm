@@ -11,7 +11,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public abstract partial class BnfiTermCopy : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
+    public abstract partial class BnfiTermCopy : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         private readonly BnfTerm childBnfTerm;
 
@@ -35,18 +35,18 @@ namespace Sarcasm.Ast
 
         #region Unparse
 
-        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, obj));
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
+        int? IUnparsableNonTerminal.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             return childUnparsableObjects.SumIncludingNullValues(childValue => unparser.GetBnfTermPriority(childValue.bnfTerm, childValue.obj));
         }

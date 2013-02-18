@@ -14,7 +14,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public abstract partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsable
+    public abstract partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         #region State
 
@@ -452,7 +452,7 @@ namespace Sarcasm.Ast
 
         #region Unparse
 
-        bool IUnparsable.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
         {
             if (this.UtokenizerForUnparse != null)
             {
@@ -468,12 +468,12 @@ namespace Sarcasm.Ast
                 throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<UnparsableObject> IUnparsable.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
         }
 
-        int? IUnparsable.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
+        int? IUnparsableNonTerminal.GetChildBnfTermListPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> childUnparsableObjects)
         {
             if (this.value != null)
                 return this.value.Equals(obj) ? (int?)1 : null;

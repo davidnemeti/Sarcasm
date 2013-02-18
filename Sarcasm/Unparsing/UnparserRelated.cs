@@ -49,7 +49,7 @@ namespace Sarcasm.Unparsing
 
     public delegate IEnumerable<UtokenValue> ValueUtokenizer<T>(IFormatProvider formatProvider, T obj);
 
-    public interface IUnparsable : INonTerminal
+    public interface IUnparsableNonTerminal : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);
         IEnumerable<UnparsableObject> GetChildUnparsableObjects(BnfTermList childBnfTerms, object obj);
