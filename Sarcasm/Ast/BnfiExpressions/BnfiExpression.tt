@@ -46,7 +46,7 @@ namespace Sarcasm.Ast
 		"BnfiExpressionTypeTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermMember", "BnfiTermCopyTL"},
+		bnfTermCoreTypeNames: new[]{"Member", "BnfiTermCopyTL"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
 	);
@@ -55,7 +55,7 @@ namespace Sarcasm.Ast
 		"BnfiExpressionType<T>",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermPlusAbleForType<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermMember<TDeclaringType>", "BnfiTermCopy<T>"},
+		bnfTermCoreTypeNames: new[]{"Member<TDeclaringType>", "BnfiTermCopy<T>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
 	);

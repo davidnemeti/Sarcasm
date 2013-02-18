@@ -30,7 +30,7 @@ namespace Sarcasm.Ast
             }
         }
 
-        private IDictionary<ParseIndexedBnfTerm, BnfiTermMember> parseIndexedBnfTermToMember = new Dictionary<ParseIndexedBnfTerm, BnfiTermMember>();
+        private IDictionary<ParseIndexedBnfTerm, Member> parseIndexedBnfTermToMember = new Dictionary<ParseIndexedBnfTerm, Member>();
         private IDictionary<int, int> ruleIndexToParseIndex = new Dictionary<int, int>();
 
         protected BnfiTermType(Type type, string name)
@@ -127,12 +127,12 @@ namespace Sarcasm.Ast
         {
             set
             {
-                ConvertAndStoreBnfiTermMembers(value);
+                ConvertAndStoreMembers(value);
                 base.Rule = value;
             }
         }
 
-        private void ConvertAndStoreBnfiTermMembers(BnfiExpression bnfiExpression)
+        private void ConvertAndStoreMembers(BnfiExpression bnfiExpression)
         {
             foreach (BnfTermList bnfterms in bnfiExpression.GetBnfTermsList())
             {
@@ -140,12 +140,12 @@ namespace Sarcasm.Ast
 
                 for (int ruleIndex = 0; ruleIndex < bnfterms.Count; ruleIndex++)
                 {
-                    if (bnfterms[ruleIndex] is BnfiTermMember)
+                    if (bnfterms[ruleIndex] is Member)
                     {
-                        BnfiTermMember bnfiTermMember = (BnfiTermMember)bnfterms[ruleIndex];
+                        Member member = (Member)bnfterms[ruleIndex];
 
-                        RegisterMember(bnfiTermMember.BnfTerm, parseIndex, ruleIndex, bnfiTermMember);
-                        bnfterms[ruleIndex] = bnfiTermMember.BnfTerm;
+                        RegisterMember(member.BnfTerm, parseIndex, ruleIndex, member);
+                        bnfterms[ruleIndex] = member.BnfTerm;
                     }
 
                     if (!bnfterms[ruleIndex].IsPunctuation())
@@ -154,11 +154,11 @@ namespace Sarcasm.Ast
             }
         }
 
-        private void RegisterMember(ParseIndexedBnfTerm parseIndexedBnfTerm, int ruleIndex, BnfiTermMember member)
+        private void RegisterMember(ParseIndexedBnfTerm parseIndexedBnfTerm, int ruleIndex, Member member)
         {
         }
 
-        private void RegisterMember(BnfTerm bnfTerm, int parseIndex, int ruleIndex, BnfiTermMember member)
+        private void RegisterMember(BnfTerm bnfTerm, int parseIndex, int ruleIndex, Member member)
         {
             this.parseIndexedBnfTermToMember.Add(new ParseIndexedBnfTerm(bnfTerm, parseIndex), member);
             this.ruleIndexToParseIndex.Add(ruleIndex, parseIndex);
@@ -175,12 +175,12 @@ namespace Sarcasm.Ast
             return this.ruleIndexToParseIndex.TryGetValue(ruleIndex, out parseIndex) && IsMemberByParseIndex(bnfTerm, parseIndex);
         }
 
-        private BnfiTermMember GetMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
+        private Member GetMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
         {
             return this.parseIndexedBnfTermToMember[new ParseIndexedBnfTerm(bnfTerm, parseIndex)];
         }
 
-        private BnfiTermMember GetMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
+        private Member GetMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
         {
             int parseIndex = this.ruleIndexToParseIndex[ruleIndex];
             return GetMemberByParseIndex(bnfTerm, parseIndex);
