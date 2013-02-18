@@ -64,8 +64,8 @@ namespace Sarcasm.Unparsing
 
     public class UnparsableObject
     {
-        public readonly BnfTerm BnfTerm;
-        public readonly object Obj;
+        public BnfTerm BnfTerm { get; private set; }
+        public object Obj { get; private set; }
 
         public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
