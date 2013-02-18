@@ -17,12 +17,7 @@ using Grammar = Sarcasm.Ast.Grammar;
 namespace Sarcasm.UnitTest
 {
     [TestClass]
-    public class GrammarTest : CommonTest
+    public partial class TypesafetyTest : CommonTest
     {
-        [TestMethod]
-        public void GrammarCheck()
-        {
-            CommonTest.InitializeGrammar();
-        }
     }
 }
