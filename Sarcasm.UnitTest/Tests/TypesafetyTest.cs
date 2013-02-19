@@ -189,7 +189,7 @@ namespace Sarcasm.UnitTest
                 var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(() => new MiniPL.DomainModel.While().Body);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS0311");
             CompileShouldSucceed(sourceCodeSuccess);
             CompileShouldSucceed(sourceCodeSuccess2);
         }
@@ -341,7 +341,9 @@ namespace Sarcasm.UnitTest
 
                 if (expectedErrorCodes.Length > 0)
                 {
-                    CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes.ToList(), "Failed properly, but not with the expected errors:\n{0}", methodBodySourceCode);
+                    CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes.ToList(),
+                        "Failed:\n{0}\nbut not with the expected errors.\nExpected errors: {1}\nActual errors: {2}",
+                        methodBodySourceCode, string.Join(", ", expectedErrorCodes), string.Join(", ", actualErrorCodes));
                 }
             }
         }
