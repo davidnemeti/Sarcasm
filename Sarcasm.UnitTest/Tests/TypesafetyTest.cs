@@ -51,8 +51,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -65,8 +65,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
-            CompileAndCheck_RuleRawShouldSucceed(sourceCodeWithRule);
+            CompileShouldFail_Rule(sourceCodeWithRule);
+            CompileShouldSucceed_RuleRaw(sourceCodeWithRule);
         }
 
         [TestMethod]
@@ -89,8 +89,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -105,8 +105,8 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileAndCheck_RuleShouldFail(sourceCodeWithRule);
-            CompileAndCheck_RuleTypelessShouldSucceed(sourceCodeWithRule);
+            CompileShouldFail_Rule(sourceCodeWithRule);
+            CompileShouldSucceed_RuleTypeless(sourceCodeWithRule);
         }
 
         [TestMethod]
@@ -131,8 +131,8 @@ namespace Sarcasm.UnitTest
                     + B.RIGHT_PAREN;
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -165,10 +165,10 @@ namespace Sarcasm.UnitTest
                 var foo4 = boolExpression.BindMember(B.BinaryExpression, t => t.Term1);
             ";
 
-            CompileAndCheck(sourceCodeInit + sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeInit + sourceCodeSuccess, shouldCompile: true);
-            CompileAndCheck(sourceCodeInit + sourceCodeSuccess2, shouldCompile: true);
-            CompileAndCheck(sourceCodeInit + sourceCodeSuccess3, shouldCompile: true);
+            CompileShouldFail(sourceCodeInit + sourceCodeFail);
+            CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess);
+            CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess2);
+            CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess3);
         }
 
         [TestMethod]
@@ -189,9 +189,9 @@ namespace Sarcasm.UnitTest
                 var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(() => new MiniPL.DomainModel.While().Body);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
-            CompileAndCheck(sourceCodeSuccess2, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
+            CompileShouldSucceed(sourceCodeSuccess2);
         }
 
         [TestMethod]
@@ -212,9 +212,9 @@ namespace Sarcasm.UnitTest
                 var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(() => new MiniPL.DomainModel.While().Body);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
-            CompileAndCheck(sourceCodeSuccess2, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
+            CompileShouldSucceed(sourceCodeSuccess2);
         }
 
         [TestMethod]
@@ -230,8 +230,8 @@ namespace Sarcasm.UnitTest
                 var foo2 = B.Statement.BindMember(B.While, t => t.Body);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -247,8 +247,8 @@ namespace Sarcasm.UnitTest
                 var foo2 = B.Statement.BindMember(B.While, t => t.Body);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -264,8 +264,8 @@ namespace Sarcasm.UnitTest
                 B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         [TestMethod]
@@ -285,28 +285,38 @@ namespace Sarcasm.UnitTest
                     + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindMember(() => new MiniPL.DomainModel.LocalVariable().InitValue);
             ";
 
-            CompileAndCheck(sourceCodeFail, shouldCompile: false);
-            CompileAndCheck(sourceCodeSuccess, shouldCompile: true);
+            CompileShouldFail(sourceCodeFail);
+            CompileShouldSucceed(sourceCodeSuccess);
         }
 
         #region Helpers
 
-        private void CompileAndCheck_RuleShouldFail(string sourceCodeWithRule)
+        private void CompileShouldFail_Rule(string sourceCodeWithRule, params string[] expectedErrorCodes)
         {
-            CompileAndCheck(sourceCodeWithRule, shouldCompile: false);
+            CompileAndCheck(sourceCodeWithRule, shouldCompile: false, expectedErrorCodes: expectedErrorCodes);
         }
 
-        private void CompileAndCheck_RuleTypelessShouldSucceed(string sourceCodeWithRule)
+        private void CompileShouldSucceed_RuleTypeless(string sourceCodeWithRule)
         {
             CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleTypelessString), shouldCompile: true);
         }
 
-        private void CompileAndCheck_RuleRawShouldSucceed(string sourceCodeWithRule)
+        private void CompileShouldSucceed_RuleRaw(string sourceCodeWithRule)
         {
             CompileAndCheck(ReplaceWithCheck(sourceCodeWithRule, ruleString, ruleRawString), shouldCompile: true);
         }
 
-        private void CompileAndCheck(string methodBodySourceCode, bool shouldCompile)
+        private void CompileShouldSucceed(string methodBodySourceCode)
+        {
+            CompileAndCheck(methodBodySourceCode, shouldCompile: true);
+        }
+
+        private void CompileShouldFail(string methodBodySourceCode, params string[] expectedErrorCodes)
+        {
+            CompileAndCheck(methodBodySourceCode, shouldCompile: false, expectedErrorCodes: expectedErrorCodes);
+        }
+
+        private void CompileAndCheck(string methodBodySourceCode, bool shouldCompile, params string[] expectedErrorCodes)
         {
             CSharpCodeProvider provider = new CSharpCodeProvider();
             CompilerParameters parameters = new CompilerParameters();
@@ -325,7 +335,15 @@ namespace Sarcasm.UnitTest
             if (shouldCompile)
                 Assert.IsTrue(results.Errors.Count == 0, string.Join("\n", results.Errors.Cast<CompilerError>()));
             else
+            {
                 Assert.IsTrue(results.Errors.Count > 0, "This should have failed, but has been compiled with success:\n{0}", methodBodySourceCode);
+                var actualErrorCodes = results.Errors.Cast<CompilerError>().Select(error => error.ErrorNumber);
+
+                if (expectedErrorCodes.Length > 0)
+                {
+                    CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes.ToList(), "Failed properly, but not with the expected errors:\n{0}", methodBodySourceCode);
+                }
+            }
         }
 
         private static string GetFullSourceCodeFromMethodBody(string methodBodySourceCode)
