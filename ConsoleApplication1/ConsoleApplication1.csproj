@@ -51,6 +51,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MiniPL\MiniPL.csproj">
+      <Project>{30c09358-f048-417b-9df6-75d51ca96349}</Project>
+      <Name>MiniPL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Sarcasm\Sarcasm.csproj">
       <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
       <Name>Sarcasm</Name>

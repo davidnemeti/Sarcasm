@@ -33,13 +33,13 @@ namespace Sarcasm.UnitTest
             unparser = new Unparser(grammar);
         }
 
-        protected void UnparseSaveUnparsedAndCheck(Parser parser, BnfTerm bnfTerm, string parseFileName)
+        protected void UnparseSaveUnparsedAndCheck(NonTerminal root, string parseFileName)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
 
-            ParseTree parseTree = ParseTextAndCheck(parser, sourceText, parseFileName);
+            ParseTree parseTree = ParseTextAndCheck(root, sourceText, parseFileName);
             object value = GrammarHelper.AstNodeToValue(parseTree.Root.AstNode);
-            string unparsedText = unparser.Unparse(value, bnfTerm).AsString(unparser);
+            string unparsedText = unparser.Unparse(value, root).AsString(unparser);
 
             string actualUnparsedFilePath = Path.Combine(actualUnparsedFilesDir, parseFileName);
             File.WriteAllText(actualUnparsedFilePath, unparsedText);

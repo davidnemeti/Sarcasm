@@ -32,9 +32,9 @@ namespace Sarcasm.UnitTest
             Directory.CreateDirectory(actualAstTreesDir);
         }
 
-        protected void ParseFileSaveAstAndCheck(Parser parser, string parseFileName)
+        protected void ParseFileSaveAstAndCheck(NonTerminal root, string parseFileName)
         {
-            string actualAstContent = ParseFileAndCheck(parser, parseFileName).Root.AstNode.ToJson();
+            string actualAstContent = ParseFileAndCheck(root, parseFileName).Root.AstNode.ToJson();
 
             string astFileName = Path.GetFileNameWithoutExtension(parseFileName) + ".json";
 
@@ -48,14 +48,14 @@ namespace Sarcasm.UnitTest
             Assert.AreEqual(expectedAstContent, actualAstContent, string.Format("Expected and actual parsed tree differs for file: '{0}'", parseFileName));
         }
 
-        protected string ParseFileToAstAndCheck(Parser parser, string parseFileName)
+        protected string ParseFileToAstAndCheck(NonTerminal root, string parseFileName)
         {
-            return ParseFileAndCheck(parser, parseFileName).Root.AstNode.ToJson();
+            return ParseFileAndCheck(root, parseFileName).Root.AstNode.ToJson();
         }
 
-        protected string ParseTextToAstAndCheck(Parser parser, string sourceText, string parseFileName = null)
+        protected string ParseTextToAstAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
-            return ParseTextAndCheck(parser, sourceText, parseFileName).Root.AstNode.ToJson();
+            return ParseTextAndCheck(root, sourceText, parseFileName).Root.AstNode.ToJson();
         }
     }
 }

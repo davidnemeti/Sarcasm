@@ -12,6 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Ast;
+using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 namespace ConsoleApplication1
@@ -22,12 +23,19 @@ namespace ConsoleApplication1
 
         static void Main(string[] args)
         {
-            //var grammar = new Grammar();
-            //Console.WriteLine(grammar.GetNonTerminalsAsText());
-            ////Console.WriteLine();
-            ////Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
+            //var grammar = new MiniPL.GrammarP();
+            ////Console.WriteLine(grammar.GetNonTerminalsAsText());
+            //////Console.WriteLine();
+            //////Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
 
-            //var parser = new Parser(grammar);
+            //var stopwatch = Stopwatch.StartNew();
+            //var parser = new MultiParser(grammar, MultiParser.SubParserCreation.Eager);
+            //stopwatch.Stop();
+            //Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            //stopwatch.Start();
+            //var parser2 = new MultiParser(grammar, MultiParser.SubParserCreation.Lazy);
+            //stopwatch.Stop();
+            //Console.WriteLine(stopwatch.ElapsedMilliseconds);
             //ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
 
             //Unparser unparser = new Unparser(grammar);

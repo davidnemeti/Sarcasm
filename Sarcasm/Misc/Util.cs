@@ -9,6 +9,22 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static IEnumerable<T> Concat<T>(this IEnumerable<T> items, T last)
+        {
+            foreach (T item in items)
+                yield return item;
+
+            yield return last;
+        }
+
+        public static IEnumerable<T> Concat<T>(T first, IEnumerable<T> items)
+        {
+            yield return first;
+
+            foreach (T item in items)
+                yield return item;
+        }
+
         public static T SingleOrDefaultNoException<T>(this IEnumerable<T> items)
         {
             using (var enumerator = items.GetEnumerator())

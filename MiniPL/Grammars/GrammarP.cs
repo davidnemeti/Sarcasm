@@ -183,7 +183,6 @@ namespace MiniPL
             B = new BnfTerms(this);
 
             this.Root = B.Program;
-            this.SnippetRoots.Add(B.Expression);
 
             B.Program.Rule =
                 B.PROGRAM

@@ -11,6 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Ast;
+using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 using MiniPL.DomainModel;
@@ -27,8 +28,7 @@ namespace Sarcasm.UnitTest
         protected const string actualResultsDir = @"Actual results";
 
         protected static MiniPL.GrammarP grammar;
-        protected static Parser parser;
-        protected static Parser exprParser;
+        protected static MultiParser parser;
 
         protected static MiniPL.GrammarP.BnfTerms B { get { return grammar.B; } }
 
@@ -61,24 +61,23 @@ namespace Sarcasm.UnitTest
             Directory.Delete(actualResultsDir, recursive: true);
             Directory.CreateDirectory(actualResultsDir);
 
-            parser = new Parser(grammar);
-            exprParser = new Parser(parser.Language, grammar.B.Expression);
+            parser = new MultiParser(grammar);
 
-            Assert.IsTrue(parser.Language.ErrorLevel <= GrammarErrorLevel.Info, "Grammar error:\n{0}", string.Join("\n", parser.Language.Errors));
+            Assert.IsTrue(parser.GrammarErrorLevel <= GrammarErrorLevel.Info, "Grammar error(s):\n{0}", string.Join("\n", parser.GrammarErrors));
 
             initializedParser = true;
         }
 
-        protected static ParseTree ParseFileAndCheck(Parser parser, string parseFileName)
+        protected static ParseTree ParseFileAndCheck(NonTerminal root, string parseFileName)
         {
-            return ParseTextAndCheck(parser, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
+            return ParseTextAndCheck(root, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
         }
 
-        protected static ParseTree ParseTextAndCheck(Parser parser, string sourceText, string parseFileName = null)
+        protected static ParseTree ParseTextAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
             ParseTree parseTree = parseFileName != null
-                ? parser.Parse(sourceText, parseFileName)
-                : parser.Parse(sourceText);
+                ? parser.Parse(sourceText, parseFileName, root)
+                : parser.Parse(sourceText, root);
 
             Assert.IsNotNull(parseTree, "Parser error: parse tree is null");
 

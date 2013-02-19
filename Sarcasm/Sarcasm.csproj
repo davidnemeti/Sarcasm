@@ -119,6 +119,7 @@
     <Compile Include="Misc\Bag.cs" />
     <Compile Include="Misc\AutoCleanup.cs" />
     <Compile Include="Misc\Misc.cs" />
+    <Compile Include="Parsing\MultiParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unparsing\ExpressionUnparser.cs" />
     <Compile Include="Unparsing\Formatter.cs" />

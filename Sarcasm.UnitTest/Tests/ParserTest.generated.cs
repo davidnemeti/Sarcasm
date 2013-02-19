@@ -24,63 +24,63 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Binary1()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Binary1.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Binary1.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary2()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Binary2.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Binary2.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary3()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Binary3.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Binary3.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary4()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Binary4.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Binary4.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_MiniPL()
         {
-            ParseFileSaveAstAndCheck(parser, "MiniPL.mplp");
+            ParseFileSaveAstAndCheck(B.Program, "MiniPL.mplp");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary1()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Unary1.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Unary1.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary2()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Unary2.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Unary2.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary3()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Unary3.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Unary3.expr");
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary4()
         {
-            ParseFileSaveAstAndCheck(exprParser, "Unary4.expr");
+            ParseFileSaveAstAndCheck(B.Expression, "Unary4.expr");
         }
 
 	}
