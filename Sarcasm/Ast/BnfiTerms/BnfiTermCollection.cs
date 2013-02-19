@@ -16,6 +16,8 @@ namespace Sarcasm.Ast
 {
     public enum ListKind { Star, Plus }
 
+    #region IBnfiTermCollection
+
     public interface IBnfiTermCollection : IBnfiTerm
     {
     }
@@ -27,6 +29,8 @@ namespace Sarcasm.Ast
     public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollection, IBnfiTerm<IEnumerable<TElementType>>
     {
     }
+
+    #endregion
 
     public abstract partial class BnfiTermCollection : BnfiTermNonTerminal, IBnfiTermCollection, IUnparsableNonTerminal
     {

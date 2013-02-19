@@ -160,6 +160,7 @@ namespace Sarcasm.Unparsing
     {
         public string Text { get; private set; }
         public UnparsableObject Reference { get; private set; }
+        public object Tag { get; set; }
 
         internal UtokenText(UnparsableObject reference)
             : this(text: null, reference: reference)
@@ -192,7 +193,7 @@ namespace Sarcasm.Unparsing
         {
             if (shouldBeYin(this))
             {
-                createdYin = new UtokenText(this.Text, this.Reference);
+                createdYin = new UtokenText(this.Text, this.Reference) { Tag = this.Tag };
                 createdYin.MakeYin();
                 return true;
             }

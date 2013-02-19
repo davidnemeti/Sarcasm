@@ -21,5 +21,7 @@ namespace Sarcasm.Ast
         {
             return this;
         }
+
+        public object Tag { get; set; }
     }
 }

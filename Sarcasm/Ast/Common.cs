@@ -116,5 +116,7 @@ namespace Sarcasm.Ast
         }
 
         public bool verboseToString = false;
+
+        public object Tag { get; set; }
     }
 }

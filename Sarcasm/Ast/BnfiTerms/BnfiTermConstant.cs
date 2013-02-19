@@ -47,5 +47,7 @@ namespace Sarcasm.Ast
         {
             return GetEnumerator();
         }
+
+        public object Tag { get; set; }
     }
 }
