@@ -51,7 +51,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -65,7 +65,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail_Rule(sourceCodeWithRule);
+            CompileShouldFail_Rule(sourceCodeWithRule, "CS0029");
             CompileShouldSucceed_RuleRaw(sourceCodeWithRule);
         }
 
@@ -89,7 +89,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -105,7 +105,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail_Rule(sourceCodeWithRule);
+            CompileShouldFail_Rule(sourceCodeWithRule, "CS0029");
             CompileShouldSucceed_RuleTypeless(sourceCodeWithRule);
         }
 
@@ -131,7 +131,7 @@ namespace Sarcasm.UnitTest
                     + B.RIGHT_PAREN;
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS0029");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -165,7 +165,7 @@ namespace Sarcasm.UnitTest
                 var foo4 = boolExpression.BindMember(B.BinaryExpression, t => t.Term1);
             ";
 
-            CompileShouldFail(sourceCodeInit + sourceCodeFail);
+            CompileShouldFail(sourceCodeInit + sourceCodeFail, "CS0311");
             CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess);
             CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess2);
             CompileShouldSucceed(sourceCodeInit + sourceCodeSuccess3);
@@ -212,7 +212,7 @@ namespace Sarcasm.UnitTest
                 var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(() => new MiniPL.DomainModel.While().Body);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS0311");
             CompileShouldSucceed(sourceCodeSuccess);
             CompileShouldSucceed(sourceCodeSuccess2);
         }
@@ -230,7 +230,7 @@ namespace Sarcasm.UnitTest
                 var foo2 = B.Statement.BindMember(B.While, t => t.Body);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS1660");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -247,7 +247,7 @@ namespace Sarcasm.UnitTest
                 var foo2 = B.Statement.BindMember(B.While, t => t.Body);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS1061");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -264,7 +264,7 @@ namespace Sarcasm.UnitTest
                 B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS0029");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -285,7 +285,7 @@ namespace Sarcasm.UnitTest
                     + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindMember(() => new MiniPL.DomainModel.LocalVariable().InitValue);
             ";
 
-            CompileShouldFail(sourceCodeFail);
+            CompileShouldFail(sourceCodeFail, "CS0029");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
