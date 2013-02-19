@@ -21,54 +21,63 @@ namespace Sarcasm.UnitTest
     public partial class UnparserTest
     {
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Binary1()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Binary1.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Binary2()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Binary2.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Binary3()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Binary3.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Binary4()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Binary4.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_MiniPL()
         {
             UnparseSaveUnparsedAndCheck(B.Program, "MiniPL.mplp");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Unary1()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Unary1.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Unary2()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Unary2.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Unary3()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Unary3.expr");
         }
 
         [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Unary4()
         {
             UnparseSaveUnparsedAndCheck(B.Expression, "Unary4.expr");

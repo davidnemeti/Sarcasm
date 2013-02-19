@@ -64,6 +64,8 @@ namespace Sarcasm.Parsing
 
         #endregion
 
+        #region Misc
+
         public GrammarErrorList GrammarErrors { get { return language.Errors; } }
 
         public GrammarErrorLevel GrammarErrorLevel { get { return language.ErrorLevel; } }
@@ -89,6 +91,8 @@ namespace Sarcasm.Parsing
         {
             return GetParser(root).Context;
         }
+
+        #endregion
 
         #region Parse
 
