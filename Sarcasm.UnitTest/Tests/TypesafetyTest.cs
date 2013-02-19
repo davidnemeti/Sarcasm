@@ -337,12 +337,13 @@ namespace Sarcasm.UnitTest
             else
             {
                 Assert.IsTrue(results.Errors.Count > 0, "This should have failed, but has been compiled with success:\n{0}", methodBodySourceCode);
+
                 var actualErrorCodes = results.Errors.Cast<CompilerError>().Select(error => error.ErrorNumber);
 
                 if (expectedErrorCodes.Length > 0)
                 {
                     CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes.ToList(),
-                        "Failed:\n{0}\nbut not with the expected errors.\nExpected errors: {1}\nActual errors: {2}",
+                        "Failed:\n{0}\nbut not with the expected errors. (Probably the test sourcecode needs to be updated.)\nExpected errors: {1}\nActual errors: {2}",
                         methodBodySourceCode, string.Join(", ", expectedErrorCodes), string.Join(", ", actualErrorCodes));
                 }
             }
