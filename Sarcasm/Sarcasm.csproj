@@ -114,7 +114,7 @@
     <Compile Include="Ast\BnfiTerms\BnfiTermChoice.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermCollection.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermType.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermMember.cs" />
+    <Compile Include="Ast\BnfiTerms\Member.cs" />
     <Compile Include="Ast\Grammar.cs" />
     <Compile Include="Misc\Bag.cs" />
     <Compile Include="Misc\AutoCleanup.cs" />
