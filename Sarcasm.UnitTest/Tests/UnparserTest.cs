@@ -14,7 +14,6 @@ using Sarcasm.Unparsing;
 using MiniPL.DomainModel;
 
 using Grammar = Sarcasm.Ast.Grammar;
-using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Sarcasm.UnitTest
 {
@@ -39,8 +38,8 @@ namespace Sarcasm.UnitTest
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
 
-            ParseTree parseTree = ParseTextAndCheck(root, sourceText, parseFileName);
-            string unparsedText = unparser.Unparse(parseTree.RootAstValue, root).AsString(unparser);
+            object astValue = ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue;
+            string unparsedText = unparser.Unparse(astValue, root).AsString(unparser);
 
             string actualUnparsedFilePath = Path.Combine(actualUnparsedFilesDir, parseFileName);
             File.WriteAllText(actualUnparsedFilePath, unparsedText);

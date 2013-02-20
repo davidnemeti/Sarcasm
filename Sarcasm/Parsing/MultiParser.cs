@@ -202,32 +202,32 @@ namespace Sarcasm.Parsing
 
         public new ParseTree<TMainRoot> Parse(string sourceText)
         {
-            return (ParseTree<TMainRoot>)base.Parse(sourceText);
+            return base.Parse(sourceText).ConvertToTypesafe<TMainRoot>();
         }
 
         public ParseTree<TRoot> Parse<TRoot>(string sourceText, INonTerminal<TRoot> root)
         {
-            return (ParseTree<TRoot>)base.Parse(sourceText, root.AsNonTerminal());
+            return base.Parse(sourceText, root.AsNonTerminal()).ConvertToTypesafe<TRoot>();
         }
 
         public new ParseTree<TMainRoot> Parse(string sourceText, string fileName)
         {
-            return (ParseTree<TMainRoot>)base.Parse(sourceText, fileName);
+            return base.Parse(sourceText, fileName).ConvertToTypesafe<TMainRoot>();
         }
 
         public ParseTree<TRoot> Parse<TRoot>(string sourceText, string fileName, INonTerminal<TRoot> root)
         {
-            return (ParseTree<TRoot>)base.Parse(sourceText, fileName, root.AsNonTerminal());
+            return base.Parse(sourceText, fileName, root.AsNonTerminal()).ConvertToTypesafe<TRoot>();
         }
 
         public new ParseTree<TMainRoot> ScanOnly(string sourceText, string fileName)
         {
-            return (ParseTree<TMainRoot>)base.ScanOnly(sourceText, fileName);
+            return base.ScanOnly(sourceText, fileName).ConvertToTypesafe<TMainRoot>();
         }
 
         public ParseTree<TRoot> ScanOnly<TRoot>(string sourceText, string fileName, INonTerminal<TRoot> root)
         {
-            return (ParseTree<TRoot>)base.ScanOnly(sourceText, fileName, root.AsNonTerminal());
+            return base.ScanOnly(sourceText, fileName, root.AsNonTerminal()).ConvertToTypesafe<TRoot>();
         }
 
         #endregion

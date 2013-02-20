@@ -47,6 +47,11 @@ namespace Sarcasm.Parsing
         {
             return parseTree.parseTree;
         }
+
+        public ParseTree<TRoot> ConvertToTypesafe<TRoot>()
+        {
+            return new ParseTree<TRoot>(this.parseTree);
+        }
     }
 
     public class ParseTree<TRoot> : ParseTree

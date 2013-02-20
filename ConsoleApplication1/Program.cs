@@ -15,28 +15,35 @@ using Sarcasm.Ast;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
+using ParseTree = Sarcasm.Parsing.ParseTree;
+
 namespace ConsoleApplication1
 {
     class Program
     {
-//        static string path = @"";
+        static string path = @"..\..\..\Sarcasm.UnitTest\Test files\MiniPL.mplp";
+        static string path2 = @"..\..\..\Sarcasm.UnitTest\Test files\Binary1.expr";
 
         static void Main(string[] args)
         {
-            //var grammar = new MiniPL.GrammarP();
+            var grammar = new MiniPL.GrammarP();
             ////Console.WriteLine(grammar.GetNonTerminalsAsText());
             //////Console.WriteLine();
             //////Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
 
             //var stopwatch = Stopwatch.StartNew();
-            //var parser = new MultiParser(grammar, MultiParser.SubParserCreation.Eager);
+            var parser = MultiParser.Create(grammar);
             //stopwatch.Stop();
             //Console.WriteLine(stopwatch.ElapsedMilliseconds);
             //stopwatch.Start();
-            //var parser2 = new MultiParser(grammar, MultiParser.SubParserCreation.Lazy);
+            //var parser2 = MultiParser.Create(grammar);
             //stopwatch.Stop();
             //Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            //ParseTree parseTree = parser.Parse(File.ReadAllText(path), path);
+            var parseTree = parser.Parse(File.ReadAllText(path), path);
+            MiniPL.DomainModel.Program astValue = parseTree.RootAstValue;
+
+            var parseTree2 = parser.Parse(File.ReadAllText(path2), path2, grammar.B.Expression);
+            MiniPL.DomainModel.Expression astValue2 = parseTree2.RootAstValue;
 
             //Unparser unparser = new Unparser(grammar);
 
