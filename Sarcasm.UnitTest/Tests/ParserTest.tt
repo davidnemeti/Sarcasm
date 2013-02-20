@@ -31,36 +31,41 @@ namespace Sarcasm.UnitTest
 	string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
-#>
-        [TestMethod]
-        [TestCategory(category)]
-        public void Parse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
-        {
-<#
-        string extension = Path.GetExtension(filePath);
-        string filename = Path.GetFileName(filePath);
-
-        if (extension == ".mplp")
-        {
-#>
-            ParseFileSaveAstAndCheckTS(B.Program, "<#= filename #>");
-            ParseFileSaveAstAndCheck(B.Program, "<#= filename #>");
-<#
-        }
-        else if (extension == ".expr")
-        {
-#>
-            ParseFileSaveAstAndCheckTS(B.Expression, "<#= filename #>");
-            ParseFileSaveAstAndCheck(B.Expression, "<#= filename #>");
-<#
-        }
-        else
-            throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
-#>
-        }
-
-<#
+        GenerateTestMethod(filePath, typesafe: true);
+        GenerateTestMethod(filePath, typesafe: false);
     }
 #>
 	}
 }
+
+<#+
+void GenerateTestMethod(string filePath, bool typesafe)
+{
+    string extension = Path.GetExtension(filePath);
+    string filename = Path.GetFileName(filePath);
+    string parseMethodName = typesafe ? "ParseFileSaveAstAndCheckTS" : "ParseFileSaveAstAndCheck";
+#>
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_<#= Path.GetFileNameWithoutExtension(filePath) + (typesafe ? "_TS" : string.Empty) #>()
+        {
+<#+
+    if (extension == ".mplp")
+    {
+#>
+            <#= parseMethodName #>(B.Program, "<#= filename #>");
+<#+
+    }
+    else if (extension == ".expr")
+    {
+#>
+            <#= parseMethodName #>(B.Expression, "<#= filename #>");
+<#+
+    }
+    else
+        throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
+#>
+        }
+<#+
+}
+#>

@@ -31,36 +31,41 @@ namespace Sarcasm.UnitTest
 	string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
-#>
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
-        {
-<#
-        string extension = Path.GetExtension(filePath);
-        string filename = Path.GetFileName(filePath);
-
-        if (extension == ".mplp")
-        {
-#>
-            ReunparseCheckTS(B.Program, "<#= filename #>");
-            ReunparseCheck(B.Program, "<#= filename #>");
-<#
-        }
-        else if (extension == ".expr")
-        {
-#>
-            ReunparseCheckTS(B.Expression, "<#= filename #>");
-            ReunparseCheck(B.Expression, "<#= filename #>");
-<#
-        }
-        else
-            throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
-#>
-        }
-
-<#
+        GenerateTestMethod(filePath, typesafe: true);
+        GenerateTestMethod(filePath, typesafe: false);
     }
 #>
 	}
 }
+
+<#+
+void GenerateTestMethod(string filePath, bool typesafe)
+{
+    string extension = Path.GetExtension(filePath);
+    string filename = Path.GetFileName(filePath);
+    string reunparseMethodName = typesafe ? "ReunparseCheckTS" : "ReunparseCheck";
+#>
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_<#= Path.GetFileNameWithoutExtension(filePath) + (typesafe ? "_TS" : string.Empty) #>()
+        {
+<#+
+    if (extension == ".mplp")
+    {
+#>
+            <#= reunparseMethodName #>(B.Program, "<#= filename #>");
+<#+
+    }
+    else if (extension == ".expr")
+    {
+#>
+            <#= reunparseMethodName #>(B.Expression, "<#= filename #>");
+<#+
+    }
+    else
+        throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
+#>
+        }
+<#+
+}
+#>
