@@ -48,4 +48,24 @@ namespace Sarcasm.Parsing
             return parseTree.parseTree;
         }
     }
+
+    public class ParseTree<TRoot> : ParseTree
+    {
+        public ParseTree(Irony.Parsing.ParseTree parseTree)
+            : base(parseTree)
+        {
+        }
+
+        public new TRoot RootAstValue { get { return (TRoot)base.RootAstValue; } }
+
+        public static explicit operator ParseTree<TRoot>(Irony.Parsing.ParseTree parseTree)
+        {
+            return new ParseTree<TRoot>(parseTree);
+        }
+
+        public static implicit operator Irony.Parsing.ParseTree(ParseTree<TRoot> parseTree)
+        {
+            return parseTree;
+        }
+    }
 }

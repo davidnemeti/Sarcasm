@@ -16,6 +16,8 @@ namespace Sarcasm.Parsing
 {
     public class MultiParser
     {
+        protected const bool makeParsableEveryNonTerminalDefault = true;
+
         #region State
 
         private readonly Grammar grammar;
@@ -38,7 +40,7 @@ namespace Sarcasm.Parsing
         /// If true then gather all nonterminals from grammar (going down from root recursively), and add them to SnippetRoots if needed.
         /// If false then SnippetRoots will not be changed.
         /// </param>
-        public MultiParser(Grammar grammar, bool makeParsableEveryNonTerminal = true)
+        internal MultiParser(Grammar grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
         {
             if (makeParsableEveryNonTerminal)
             {
@@ -62,34 +64,14 @@ namespace Sarcasm.Parsing
                 this.rootToParser.Add(nonTerminal, new Parser(language, nonTerminal));
         }
 
-        #endregion
-
-        #region Misc
-
-        public GrammarErrorList GrammarErrors { get { return language.Errors; } }
-
-        public GrammarErrorLevel GrammarErrorLevel { get { return language.ErrorLevel; } }
-
-        public NonTerminal MainRoot { get { return grammar.Root; } }
-
-        public Scanner GetMainScanner()
+        public static MultiParser Create(Grammar grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
         {
-            return mainParser.Scanner;
+            return new MultiParser(grammar, makeParsableEveryNonTerminal);
         }
 
-        public Scanner GetScanner(NonTerminal root)
+        public static MultiParser<TMainRoot> Create<TMainRoot>(Grammar<TMainRoot> grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
         {
-            return GetParser(root).Scanner;
-        }
-
-        public ParsingContext GetMainContext()
-        {
-            return mainParser.Context;
-        }
-
-        public ParsingContext GetContext(NonTerminal root)
-        {
-            return GetParser(root).Context;
+            return new MultiParser<TMainRoot>(grammar, makeParsableEveryNonTerminal);
         }
 
         #endregion
@@ -124,6 +106,36 @@ namespace Sarcasm.Parsing
         public ParseTree ScanOnly(string sourceText, string fileName, NonTerminal root)
         {
             return (ParseTree)GetParser(root).ScanOnly(sourceText, fileName);
+        }
+
+        #endregion
+
+        #region Misc
+
+        public GrammarErrorList GrammarErrors { get { return language.Errors; } }
+
+        public GrammarErrorLevel GrammarErrorLevel { get { return language.ErrorLevel; } }
+
+        public NonTerminal MainRoot { get { return grammar.Root; } }
+
+        public Scanner GetMainScanner()
+        {
+            return mainParser.Scanner;
+        }
+
+        public Scanner GetScanner(NonTerminal root)
+        {
+            return GetParser(root).Scanner;
+        }
+
+        public ParsingContext GetMainContext()
+        {
+            return mainParser.Context;
+        }
+
+        public ParsingContext GetContext(NonTerminal root)
+        {
+            return GetParser(root).Context;
         }
 
         #endregion
@@ -170,6 +182,59 @@ namespace Sarcasm.Parsing
                 .Where(child => !visitedNonTerminals.Contains(child))
                 .SelectMany(child => Util.Concat(child, GetDescendantNonTerminalsExcludingSelf(child, visitedNonTerminals)));
         }
+
+        #endregion
+    }
+
+    public class MultiParser<TMainRoot> : MultiParser
+    {
+        #region Construction
+
+        /// <see cref="MultiParser.MultiParser(Grammar, bool)"/>
+        internal MultiParser(Grammar<TMainRoot> grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
+            : base(grammar, makeParsableEveryNonTerminal)
+        {
+        }
+
+        #endregion
+
+        #region Parse
+
+        public new ParseTree<TMainRoot> Parse(string sourceText)
+        {
+            return (ParseTree<TMainRoot>)base.Parse(sourceText);
+        }
+
+        public ParseTree<TRoot> Parse<TRoot>(string sourceText, INonTerminal<TRoot> root)
+        {
+            return (ParseTree<TRoot>)base.Parse(sourceText, root.AsNonTerminal());
+        }
+
+        public new ParseTree<TMainRoot> Parse(string sourceText, string fileName)
+        {
+            return (ParseTree<TMainRoot>)base.Parse(sourceText, fileName);
+        }
+
+        public ParseTree<TRoot> Parse<TRoot>(string sourceText, string fileName, INonTerminal<TRoot> root)
+        {
+            return (ParseTree<TRoot>)base.Parse(sourceText, fileName, root.AsNonTerminal());
+        }
+
+        public new ParseTree<TMainRoot> ScanOnly(string sourceText, string fileName)
+        {
+            return (ParseTree<TMainRoot>)base.ScanOnly(sourceText, fileName);
+        }
+
+        public ParseTree<TRoot> ScanOnly<TRoot>(string sourceText, string fileName, INonTerminal<TRoot> root)
+        {
+            return (ParseTree<TRoot>)base.ScanOnly(sourceText, fileName, root.AsNonTerminal());
+        }
+
+        #endregion
+
+        #region Misc
+
+        public new INonTerminal<TMainRoot> MainRoot { get { return (INonTerminal<TMainRoot>)base.MainRoot; } }
 
         #endregion
     }

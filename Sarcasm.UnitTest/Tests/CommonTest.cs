@@ -29,7 +29,7 @@ namespace Sarcasm.UnitTest
         protected const string actualResultsDir = @"Actual results";
 
         protected static MiniPL.GrammarP grammar;
-        protected static MultiParser parser;
+        protected static MultiParser<MiniPL.DomainModel.Program> parser;
 
         protected static MiniPL.GrammarP.BnfTerms B { get { return grammar.B; } }
 
@@ -62,7 +62,7 @@ namespace Sarcasm.UnitTest
             Directory.Delete(actualResultsDir, recursive: true);
             Directory.CreateDirectory(actualResultsDir);
 
-            parser = new MultiParser(grammar);
+            parser = MultiParser.Create(grammar);
 
             Assert.IsTrue(parser.GrammarErrorLevel <= GrammarErrorLevel.Info, "Grammar error(s):\n{0}", string.Join("\n", parser.GrammarErrors));
 

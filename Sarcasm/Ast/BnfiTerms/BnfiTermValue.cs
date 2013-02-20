@@ -320,7 +320,7 @@ namespace Sarcasm.Ast
 
         public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
         {
-            return Parse<TOut>(terminal, (context, parseNode) => (TOut)GrammarHelper.AstNodeToValue(parseNode.Token.Value), IdentityFunctionForceCast<TOut, object>);
+            return Parse<TOut>(terminal, (context, parseNode) => GrammarHelper.AstNodeToValue<TOut>(parseNode.Token.Value), IdentityFunctionForceCast<TOut, object>);
         }
 
         #endregion

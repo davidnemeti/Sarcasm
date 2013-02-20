@@ -37,8 +37,8 @@ namespace Sarcasm.UnitTest
             string actualAstContent = ParseFileAndCheck(root, parseFileName).RootAstValue.ToJson();
 
             string astFileName = Path.GetFileNameWithoutExtension(parseFileName) + ".json";
-
             string actualAstPath = Path.Combine(actualAstTreesDir, astFileName);
+
             File.WriteAllText(actualAstPath, actualAstContent);
 
             string expectedAstPath = Path.Combine(expectedAstDir, astFileName);
