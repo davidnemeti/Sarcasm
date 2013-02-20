@@ -43,29 +43,34 @@ void GenerateTestMethod(string filePath, bool typesafe)
 {
     string extension = Path.GetExtension(filePath);
     string filename = Path.GetFileName(filePath);
+    string reunparseTestMethodName = "Unparse_" + Path.GetFileNameWithoutExtension(filePath) + (typesafe ? "_TS" : string.Empty);
     string reunparseMethodName = typesafe ? "ReunparseCheckTS" : "ReunparseCheck";
-#>
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_<#= Path.GetFileNameWithoutExtension(filePath) + (typesafe ? "_TS" : string.Empty) #>()
-        {
-<#+
+
     if (extension == ".mplp")
     {
 #>
+        [TestMethod]
+        [TestCategory(category)]
+        public void <#= reunparseTestMethodName #>()
+        {
             <#= reunparseMethodName #>(B.Program, "<#= filename #>");
+        }
+
 <#+
     }
     else if (extension == ".expr")
     {
 #>
+        [TestMethod]
+        [TestCategory(category)]
+        public void <#= reunparseTestMethodName #>()
+        {
             <#= reunparseMethodName #>(B.Expression, "<#= filename #>");
+        }
+
 <#+
     }
     else
         throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
-#>
-        }
-<#+
 }
 #>

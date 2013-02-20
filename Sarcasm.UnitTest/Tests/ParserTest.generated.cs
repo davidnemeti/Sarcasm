@@ -26,108 +26,126 @@ namespace Sarcasm.UnitTest
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Binary1.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary1()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Binary1.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary2_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Binary2.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary2()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Binary2.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary3_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Binary3.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary3()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Binary3.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary4_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Binary4.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Binary4()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Binary4.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_MiniPL_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Program, "MiniPL.mplp");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_MiniPL()
         {
             ParseFileSaveAstAndCheck(B.Program, "MiniPL.mplp");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary1_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary1.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary1()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Unary1.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary2_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary2.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary2()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Unary2.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary3_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary3.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary3()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Unary3.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary4_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary4.expr");
         }
+
         [TestMethod]
         [TestCategory(category)]
         public void Parse_Unary4()
         {
             ParseFileSaveAstAndCheck(B.Expression, "Unary4.expr");
         }
+
 	}
 }
 
