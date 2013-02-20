@@ -107,10 +107,11 @@
       <DependentUpon>BnfiTermValueForDataAndNumber.tt</DependentUpon>
     </Compile>
     <Compile Include="Ast\Common.cs" />
+    <Compile Include="Parsing\ParseTree.cs" />
     <Compile Include="Ast\GrammarHelper.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermConstant.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermValue.cs" />
-    <Compile Include="Ast\ParseTreeNodeWithOutAst.cs" />
+    <Compile Include="Parsing\ParseTreeNodeWithoutAst.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermChoice.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermCollection.cs" />
     <Compile Include="Ast\BnfiTerms\BnfiTermType.cs" />

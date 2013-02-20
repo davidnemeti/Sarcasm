@@ -34,7 +34,7 @@ namespace Sarcasm.UnitTest
 
         protected void ParseFileSaveAstAndCheck(NonTerminal root, string parseFileName)
         {
-            string actualAstContent = ParseFileAndCheck(root, parseFileName).Root.AstNode.ToJson();
+            string actualAstContent = ParseFileAndCheck(root, parseFileName).RootAstValue.ToJson();
 
             string astFileName = Path.GetFileNameWithoutExtension(parseFileName) + ".json";
 
@@ -50,12 +50,12 @@ namespace Sarcasm.UnitTest
 
         protected string ParseFileToAstAndCheck(NonTerminal root, string parseFileName)
         {
-            return ParseFileAndCheck(root, parseFileName).Root.AstNode.ToJson();
+            return ParseFileAndCheck(root, parseFileName).RootAstValue.ToJson();
         }
 
         protected string ParseTextToAstAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
-            return ParseTextAndCheck(root, sourceText, parseFileName).Root.AstNode.ToJson();
+            return ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue.ToJson();
         }
     }
 }

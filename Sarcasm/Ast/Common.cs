@@ -10,10 +10,11 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Sarcasm.Parsing;
 
 namespace Sarcasm.Ast
 {
-    public delegate T ValueParser<T>(AstContext context, ParseTreeNodeWithOutAst parseTreeNode);
+    public delegate T ValueParser<T>(AstContext context, ParseTreeNodeWithoutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
 
     public interface IBnfiTerm

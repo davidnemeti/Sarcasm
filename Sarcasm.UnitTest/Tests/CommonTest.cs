@@ -17,6 +17,7 @@ using Sarcasm.Unparsing;
 using MiniPL.DomainModel;
 
 using Grammar = Sarcasm.Ast.Grammar;
+using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Sarcasm.UnitTest
 {
@@ -104,10 +105,8 @@ namespace Sarcasm.UnitTest
 
     internal static class JsonExtensions
     {
-        public static string ToJson(this object astNode)
+        public static string ToJson(this object astValue)
         {
-            object value = GrammarHelper.AstNodeToValue(astNode);
-
             var settings = new JsonSerializerSettings()
                 {
                     Formatting = Newtonsoft.Json.Formatting.Indented,
@@ -116,7 +115,7 @@ namespace Sarcasm.UnitTest
                 };
             settings.Converters.Add(new StringEnumConverter());
 
-            return JsonConvert.SerializeObject(value, settings);
+            return JsonConvert.SerializeObject(astValue, settings);
         }
     }
 }

@@ -98,32 +98,32 @@ namespace Sarcasm.Parsing
 
         public ParseTree Parse(string sourceText)
         {
-            return mainParser.Parse(sourceText);
+            return (ParseTree)mainParser.Parse(sourceText);
         }
 
         public ParseTree Parse(string sourceText, NonTerminal root)
         {
-            return GetParser(root).Parse(sourceText);
+            return (ParseTree)GetParser(root).Parse(sourceText);
         }
 
         public ParseTree Parse(string sourceText, string fileName)
         {
-            return mainParser.Parse(sourceText, fileName);
+            return (ParseTree)mainParser.Parse(sourceText, fileName);
         }
 
         public ParseTree Parse(string sourceText, string fileName, NonTerminal root)
         {
-            return GetParser(root).Parse(sourceText, fileName);
+            return (ParseTree)GetParser(root).Parse(sourceText, fileName);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName)
         {
-            return mainParser.ScanOnly(sourceText, fileName);
+            return (ParseTree)mainParser.ScanOnly(sourceText, fileName);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName, NonTerminal root)
         {
-            return GetParser(root).ScanOnly(sourceText, fileName);
+            return (ParseTree)GetParser(root).ScanOnly(sourceText, fileName);
         }
 
         #endregion

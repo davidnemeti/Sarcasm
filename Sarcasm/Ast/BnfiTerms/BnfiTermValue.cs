@@ -10,6 +10,7 @@ using System.IO;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
@@ -66,7 +67,7 @@ namespace Sarcasm.Ast
                 : bnfTerm.ToBnfExpression();
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueParser(context, new ParseTreeNodeWithOutAst(parseTreeNode)), context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueParser(context, new ParseTreeNodeWithoutAst(parseTreeNode)), context, parseTreeNode);
 
             this.inverseValueConverterForUnparse = inverseValueConverterForUnparse;
         }
