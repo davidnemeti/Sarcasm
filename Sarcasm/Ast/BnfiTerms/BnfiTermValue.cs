@@ -585,7 +585,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionValueTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>
+    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, INonTerminal<T>
     {
         public BnfiTermValue(string name = null)
             : base(typeof(T), name)

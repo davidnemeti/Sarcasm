@@ -26,7 +26,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollection, IBnfiTerm<IEnumerable<TElementType>>
+    public interface IBnfiTermCollection<out TElementType> : IBnfiTermCollection, IBnfiTerm<IEnumerable<TElementType>>, INonTerminal<IEnumerable<TElementType>>
     {
     }
 
@@ -525,7 +525,8 @@ namespace Sarcasm.Ast
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollectionWithCollectionType<TCollectionType>, IBnfiTermCollection<TElementType>, IBnfiTermOrAbleForChoice<TCollectionType>
+    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollectionWithCollectionType<TCollectionType>, IBnfiTermCollection<TElementType>,
+        IBnfiTermOrAbleForChoice<TCollectionType>
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string name = null)

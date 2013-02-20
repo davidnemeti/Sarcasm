@@ -27,6 +27,10 @@ namespace Sarcasm.Ast
         NonTerminal AsNonTerminal();
     }
 
+    public interface INonTerminal<out T> : INonTerminal
+    {
+    }
+
     /// <summary>
     /// Typeless IBnfiTerm
     /// </summary>

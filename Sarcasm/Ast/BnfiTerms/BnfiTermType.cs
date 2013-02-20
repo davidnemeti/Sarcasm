@@ -244,7 +244,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionTypeTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>
+    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }

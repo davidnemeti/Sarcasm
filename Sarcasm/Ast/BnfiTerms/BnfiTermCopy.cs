@@ -63,7 +63,7 @@ namespace Sarcasm.Ast
     }
 
     // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
-    public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>, IBnfiTermPlusAbleForType<T>
+    public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>, IBnfiTermPlusAbleForType<T>, INonTerminal<T>
     {
         internal BnfiTermCopy(BnfTerm bnfTerm)
             : base(typeof(T), bnfTerm)

@@ -22,7 +22,7 @@ using StringLiteral = MiniPL.DomainModel.StringLiteral;
 namespace MiniPL
 {
     [Grammar(typeof(MiniPLDomain), "Pascal-like grammar")]
-    public class GrammarP : Sarcasm.Ast.Grammar
+    public class GrammarP : Sarcasm.Ast.Grammar<MiniPL.DomainModel.Program>
     {
         public class BnfTerms
         {

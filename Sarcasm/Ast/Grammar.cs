@@ -323,4 +323,27 @@ namespace Sarcasm.Ast
 
         #endregion
     }
+
+    public class Grammar<TRoot> : Grammar
+    {
+        #region Construction
+
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
+            : base(astCreation, emptyCollectionHandling, errorHandling)
+        {
+        }
+
+        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling, bool caseSensitive)
+            : base(astCreation, emptyCollectionHandling, errorHandling, caseSensitive)
+        {
+        }
+
+        #endregion
+
+        public new INonTerminal<TRoot> Root
+        {
+            get { return (INonTerminal<TRoot>)base.Root; }
+            protected set { base.Root = value.AsNonTerminal(); }
+        }
+    }
 }

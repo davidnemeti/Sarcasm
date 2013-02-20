@@ -84,7 +84,7 @@ namespace Sarcasm.Ast
         public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>, IBnfiTermOrAbleForChoice<TType>
+    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
     {
         public BnfiTermChoice(string name = null)
             : base(typeof(TType), name)
