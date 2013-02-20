@@ -11,6 +11,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Ast;
+using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 using MiniPL.DomainModel;
@@ -28,6 +29,23 @@ namespace Sarcasm.UnitTest
         private const string ruleString = ".Rule";
         private const string ruleTypelessString = ".RuleTypeless";
         private const string ruleRawString = ".RuleRaw";
+
+        private static void TypesafetyCheck_BodyShouldCompile()
+        {
+            // NOTE: This is just to test whether these calls compile successfully. There is no need to actually call the Parse methods.
+
+            // ensure that parser is typesafe
+            MultiParser<MiniPL.DomainModel.Program> _parser = parser;
+
+            parser.Parse(string.Empty);
+            parser.Parse(string.Empty, string.Empty);
+
+            parser.Parse(string.Empty, grammar.B.Expression);
+            parser.Parse(string.Empty, string.Empty, grammar.B.Expression);
+
+            parser.Parse(string.Empty, (NonTerminal)grammar.B.Expression);
+            parser.Parse(string.Empty, string.Empty, (NonTerminal)grammar.B.Expression);
+        }
 
         [TestMethod]
         [TestCategory(category)]

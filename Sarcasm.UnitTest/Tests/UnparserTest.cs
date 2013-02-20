@@ -34,18 +34,29 @@ namespace Sarcasm.UnitTest
             unparser = new Unparser(grammar);
         }
 
-        protected void UnparseSaveUnparsedAndCheck(NonTerminal root, string parseFileName)
+        protected void ReunparseCheck(NonTerminal root, string parseFileName)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
-
             object astValue = ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue;
-            string unparsedText = unparser.Unparse(astValue, root).AsString(unparser);
+            ReunparseCheck(root, astValue, sourceText, parseFileName);
+        }
+
+        protected void ReunparseCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName)
+        {
+            string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
+            object astValue = ParseTextAndCheckTS(root, sourceText, parseFileName).RootAstValue;
+            ReunparseCheck(root.AsNonTerminal(), astValue, sourceText, parseFileName);
+        }
+
+        private void ReunparseCheck(NonTerminal root, object astValue, string originalSourceText, string parseFileName)
+        {
+            string unparsedSourceText = unparser.Unparse(astValue, root).AsString(unparser);
 
             string actualUnparsedFilePath = Path.Combine(actualUnparsedFilesDir, parseFileName);
-            File.WriteAllText(actualUnparsedFilePath, unparsedText);
+            File.WriteAllText(actualUnparsedFilePath, unparsedSourceText);
 
             // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
-            Assert.AreEqual(expected: sourceText, actual: unparsedText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
+            Assert.AreEqual(expected: originalSourceText, actual: unparsedSourceText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
         }
     }
 }

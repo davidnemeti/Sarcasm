@@ -36,7 +36,27 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_<#= Path.GetFileNameWithoutExtension(filePath) #>()
         {
-            ParseFileSaveAstAndCheck(<#= Path.GetExtension(filePath) == ".expr" ? "B.Expression" : "B.Program" #>, "<#= Path.GetFileName(filePath) #>");
+<#
+        string extension = Path.GetExtension(filePath);
+        string filename = Path.GetFileName(filePath);
+
+        if (extension == ".mplp")
+        {
+#>
+            ParseFileSaveAstAndCheckTS(B.Program, "<#= filename #>");
+            ParseFileSaveAstAndCheck(B.Program, "<#= filename #>");
+<#
+        }
+        else if (extension == ".expr")
+        {
+#>
+            ParseFileSaveAstAndCheckTS(B.Expression, "<#= filename #>");
+            ParseFileSaveAstAndCheck(B.Expression, "<#= filename #>");
+<#
+        }
+        else
+            throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
+#>
         }
 
 <#

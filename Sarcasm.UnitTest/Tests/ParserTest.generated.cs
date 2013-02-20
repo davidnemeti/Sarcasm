@@ -24,6 +24,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Binary1()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Binary1.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Binary1.expr");
         }
 
@@ -31,6 +32,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Binary2()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Binary2.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Binary2.expr");
         }
 
@@ -38,6 +40,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Binary3()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Binary3.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Binary3.expr");
         }
 
@@ -45,6 +48,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Binary4()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Binary4.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Binary4.expr");
         }
 
@@ -52,6 +56,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_MiniPL()
         {
+            ParseFileSaveAstAndCheckTS(B.Program, "MiniPL.mplp");
             ParseFileSaveAstAndCheck(B.Program, "MiniPL.mplp");
         }
 
@@ -59,6 +64,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Unary1()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Unary1.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Unary1.expr");
         }
 
@@ -66,6 +72,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Unary2()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Unary2.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Unary2.expr");
         }
 
@@ -73,6 +80,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Unary3()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Unary3.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Unary3.expr");
         }
 
@@ -80,6 +88,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void Parse_Unary4()
         {
+            ParseFileSaveAstAndCheckTS(B.Expression, "Unary4.expr");
             ParseFileSaveAstAndCheck(B.Expression, "Unary4.expr");
         }
 

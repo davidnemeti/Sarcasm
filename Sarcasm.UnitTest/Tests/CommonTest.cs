@@ -74,12 +74,35 @@ namespace Sarcasm.UnitTest
             return ParseTextAndCheck(root, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
         }
 
+        protected static ParseTree<TRoot> ParseFileAndCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName)
+        {
+            return ParseTextAndCheckTS(root, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
+        }
+
         protected static ParseTree ParseTextAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
             ParseTree parseTree = parseFileName != null
                 ? parser.Parse(sourceText, parseFileName, root)
                 : parser.Parse(sourceText, root);
 
+            CheckParseTree(parseTree);
+
+            return parseTree;
+        }
+
+        protected static ParseTree<TRoot> ParseTextAndCheckTS<TRoot>(INonTerminal<TRoot> root, string sourceText, string parseFileName = null)
+        {
+            ParseTree<TRoot> parseTree = parseFileName != null
+                ? parser.Parse(sourceText, parseFileName, root)
+                : parser.Parse(sourceText, root);
+
+            CheckParseTree(parseTree);
+
+            return parseTree;
+        }
+
+        private static void CheckParseTree(ParseTree parseTree)
+        {
             Assert.IsNotNull(parseTree, "Parser error: parse tree is null");
 
             Assert.AreEqual(ParseTreeStatus.Parsed, parseTree.Status, "Parser error:\n{0}",
@@ -87,8 +110,6 @@ namespace Sarcasm.UnitTest
                     parseTree.ParserMessages.Select(parserMessage => string.Format("{0} {1}: {2}", parseTree.FileName, parserMessage.Location.ToString(), parserMessage.Message))
                     )
                 );
-
-            return parseTree;
         }
 
         protected static string GetParseFilePath(string parseFileName)

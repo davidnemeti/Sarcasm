@@ -35,7 +35,17 @@ namespace Sarcasm.UnitTest
         protected void ParseFileSaveAstAndCheck(NonTerminal root, string parseFileName)
         {
             string actualAstContent = ParseFileAndCheck(root, parseFileName).RootAstValue.ToJson();
+            SaveAstAndCheck(actualAstContent, parseFileName);
+        }
 
+        protected void ParseFileSaveAstAndCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName)
+        {
+            string actualAstContent = ParseFileAndCheckTS(root, parseFileName).RootAstValue.ToJson();
+            SaveAstAndCheck(actualAstContent, parseFileName);
+        }
+
+        private void SaveAstAndCheck(string actualAstContent, string parseFileName)
+        {
             string astFileName = Path.GetFileNameWithoutExtension(parseFileName) + ".json";
             string actualAstPath = Path.Combine(actualAstTreesDir, astFileName);
 
@@ -53,9 +63,19 @@ namespace Sarcasm.UnitTest
             return ParseFileAndCheck(root, parseFileName).RootAstValue.ToJson();
         }
 
+        protected string ParseFileToAstAndCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName)
+        {
+            return ParseFileAndCheckTS(root, parseFileName).RootAstValue.ToJson();
+        }
+
         protected string ParseTextToAstAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
             return ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue.ToJson();
+        }
+
+        protected string ParseTextToAstAndCheckTS<TRoot>(INonTerminal<TRoot> root, string sourceText, string parseFileName = null)
+        {
+            return ParseTextAndCheckTS(root, sourceText, parseFileName).RootAstValue.ToJson();
         }
     }
 }
