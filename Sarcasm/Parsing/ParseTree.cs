@@ -31,7 +31,6 @@ namespace Sarcasm.Parsing
         public ParseTreeStatus Status { get { return parseTree.Status; } }
 
         public ParseTreeNode Root { get { return parseTree.Root; } }
-        public object RootAstNode { get { return parseTree.Root.AstNode; } }
         public object RootAstValue { get { return GrammarHelper.AstNodeToValue(parseTree.Root.AstNode); } }
 
         public bool HasErrors()
