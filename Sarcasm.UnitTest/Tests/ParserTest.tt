@@ -51,6 +51,13 @@ void GenerateTestMethod(string filePath, bool typesafe)
 #>
         [TestMethod]
         [TestCategory(category)]
+        public void <#= parseTestMethodName #>_Root()
+        {
+            <#= parseMethodName.Replace("TS", string.Empty) #>("<#= filename #>");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
         public void <#= parseTestMethodName #>()
         {
             <#= parseMethodName #>(B.Program, "<#= filename #>");

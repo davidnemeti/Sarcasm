@@ -79,6 +79,11 @@ namespace Sarcasm.UnitTest
             return ParseTextAndCheckTS(root, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
         }
 
+        protected static ParseTree<MiniPL.DomainModel.Program> ParseFileAndCheck(string parseFileName)
+        {
+            return ParseTextAndCheck(ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
+        }
+
         protected static ParseTree ParseTextAndCheck(NonTerminal root, string sourceText, string parseFileName = null)
         {
             ParseTree parseTree = parseFileName != null
@@ -95,6 +100,17 @@ namespace Sarcasm.UnitTest
             ParseTree<TRoot> parseTree = parseFileName != null
                 ? parser.Parse(sourceText, parseFileName, root)
                 : parser.Parse(sourceText, root);
+
+            CheckParseTree(parseTree);
+
+            return parseTree;
+        }
+
+        protected static ParseTree<MiniPL.DomainModel.Program> ParseTextAndCheck(string sourceText, string parseFileName = null)
+        {
+            ParseTree<MiniPL.DomainModel.Program> parseTree = parseFileName != null
+                ? parser.Parse(sourceText, parseFileName)
+                : parser.Parse(sourceText);
 
             CheckParseTree(parseTree);
 

@@ -44,6 +44,12 @@ namespace Sarcasm.UnitTest
             SaveAstAndCheck(actualAstContent, parseFileName);
         }
 
+        protected void ParseFileSaveAstAndCheck(string parseFileName)
+        {
+            string actualAstContent = ParseFileAndCheck(parseFileName).RootAstValue.ToJson();
+            SaveAstAndCheck(actualAstContent, parseFileName);
+        }
+
         private void SaveAstAndCheck(string actualAstContent, string parseFileName)
         {
             string astFileName = Path.GetFileNameWithoutExtension(parseFileName) + ".json";

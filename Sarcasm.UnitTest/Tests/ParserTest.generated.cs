@@ -78,9 +78,23 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
+        public void Parse_MiniPL_TS_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
         public void Parse_MiniPL_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Program, "MiniPL.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL.mplp");
         }
 
         [TestMethod]
