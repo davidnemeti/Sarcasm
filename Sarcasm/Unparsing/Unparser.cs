@@ -111,9 +111,9 @@ namespace Sarcasm.Unparsing
                  * */
 
                 var utokens = ConcatIfAnyMiddle(
-                    formatter.YieldBefore(unparsableObject.BnfTerm, @params),
+                    formatter.YieldBefore(@params),
                     UnparseRawMiddle(unparsableObject),
-                    formatter.YieldAfter(unparsableObject.BnfTerm, @params)
+                    formatter.YieldAfter(@params)
                     );
 
                 foreach (UtokenBase utoken in utokens)

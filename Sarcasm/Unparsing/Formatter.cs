@@ -111,7 +111,7 @@ namespace Sarcasm.Unparsing
             lastState = State.End;
         }
 
-        public IEnumerable<UtokenBase> YieldBefore(BnfTerm bnfTerm, Params @params)
+        public IEnumerable<UtokenBase> YieldBefore(Params @params)
         {
             if (@params.blockIndentation == BlockIndentation.Indent)
                 yield return UtokenControl.IncreaseIndentLevel;
@@ -127,7 +127,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public IEnumerable<UtokenBase> YieldAfter(BnfTerm bnfTerm, Params @params)
+        public IEnumerable<UtokenBase> YieldAfter(Params @params)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(selfAndAncestors, out insertedUtokensAfter))
