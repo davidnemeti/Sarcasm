@@ -72,7 +72,7 @@ namespace Sarcasm.Ast
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal
+    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal, IBnfiTermCopyable
     {
         protected readonly Type type;
         protected readonly bool isReferable;

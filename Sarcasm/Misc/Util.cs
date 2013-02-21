@@ -167,6 +167,14 @@ namespace Sarcasm
                 || EqualityComparer<T>.Default.Equals(value, candidateValue3);
         }
 
+        public static bool EqualToAny<T>(this T value, T candidateValue1, T candidateValue2, T candidateValue3, T candidateValue4)
+        {
+            return EqualityComparer<T>.Default.Equals(value, candidateValue1)
+                || EqualityComparer<T>.Default.Equals(value, candidateValue2)
+                || EqualityComparer<T>.Default.Equals(value, candidateValue3)
+                || EqualityComparer<T>.Default.Equals(value, candidateValue4);
+        }
+
         public static bool EqualToAny<T>(this T value, params T[] candidateValues)
         {
             return candidateValues.Contains(value);

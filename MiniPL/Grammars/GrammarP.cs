@@ -409,7 +409,10 @@ namespace MiniPL
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
 
             UnparseControl.DefaultFormatting.InsertUtokensAfter(B.Statement, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.Statement, UtokenInsert.NewLine, UtokenInsert.IndentBlock);
+            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.Statement, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.Statement, BlockIndentation.Indent);
+            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.If, UtokenInsert.Space);
+            UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.ELSE, B.If, BlockIndentation.Unindent);
             UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
             UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
             UnparseControl.DefaultFormatting.InsertUtokensBefore(B.BEGIN, UtokenInsert.NewLine);
@@ -418,7 +421,6 @@ namespace MiniPL
             UnparseControl.DefaultFormatting.InsertUtokensAfter(B.END, UtokenInsert.NewLine);
             UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.IF, UtokenInsert.Space);
 
             #endregion
         }

@@ -233,12 +233,6 @@ namespace Sarcasm.Unparsing
         public static UtokenInsert Tab { get { return UtokenWhitespace.Tab; } }
 
         public static UtokenInsert NoWhitespace { get { return UtokenControl.NoWhitespace; } }
-
-        public static UtokenInsert IndentBlock { get { return UtokenControl.IndentBlock; } }
-        public static UtokenInsert UnindentBlock { get { return UtokenControl.UnindentBlock; } }
-        public static UtokenInsert IndentThisLine { get { return UtokenControl.IndentThisLine; } }
-        public static UtokenInsert UnindentThisLine { get { return UtokenControl.UnindentThisLine; } }
-        public static UtokenInsert NoIndentForThisLine { get { return UtokenControl.NoIndentForThisLine; } }
     }
 
     public class UtokenWhitespace : UtokenInsert, Utoken
@@ -310,35 +304,34 @@ namespace Sarcasm.Unparsing
         internal enum Kind
         {
             NoWhitespace,
-            IndentBlock,
-            UnindentBlock,
-            IndentThisLine,
-            UnindentThisLine,
-            NoIndentForThisLine,
 
             #region For internal use only (not useful for the user, moreover it breaks the ability of local unparse)
 
             IncreaseIndentLevel,
             DecreaseIndentLevel,
-            SetIndentLevelToNone
+            SetIndentLevelToNone,
+            RestoreIndentLevel
 
             #endregion
         }
 
         internal readonly Kind kind;
 
-        internal UtokenControl(Kind kind)
+        private UtokenControl(Kind kind)
         {
             this.kind = kind;
         }
 
-        internal static new readonly UtokenControl IndentBlock = new UtokenControl(Kind.IndentBlock);
-        internal static new readonly UtokenControl UnindentBlock = new UtokenControl(Kind.UnindentBlock);
-        internal static new readonly UtokenControl IndentThisLine = new UtokenControl(Kind.IndentThisLine);
-        internal static new readonly UtokenControl UnindentThisLine = new UtokenControl(Kind.UnindentThisLine);
-        internal static new readonly UtokenControl NoIndentForThisLine = new UtokenControl(Kind.NoIndentForThisLine);
-
         internal static new readonly UtokenControl NoWhitespace = new UtokenControl(Kind.NoWhitespace);
+
+        #region For internal use only (not useful for the user, moreover it breaks the ability of local unparse)
+
+        internal static readonly UtokenControl IncreaseIndentLevel = new UtokenControl(Kind.IncreaseIndentLevel);
+        internal static readonly UtokenControl DecreaseIndentLevel = new UtokenControl(Kind.DecreaseIndentLevel);
+        internal static readonly UtokenControl SetIndentLevelToNone = new UtokenControl(Kind.SetIndentLevelToNone);
+        internal static readonly UtokenControl RestoreIndentLevel = new UtokenControl(Kind.RestoreIndentLevel);
+
+        #endregion
 
         public override string ToString()
         {
@@ -358,6 +351,11 @@ namespace Sarcasm.Unparsing
                 createdYin = null;
                 return false;
             }
+        }
+
+        internal bool IsIndent()
+        {
+            return kind.EqualToAny(Kind.IncreaseIndentLevel, Kind.DecreaseIndentLevel, Kind.SetIndentLevelToNone, Kind.RestoreIndentLevel);
         }
     }
 

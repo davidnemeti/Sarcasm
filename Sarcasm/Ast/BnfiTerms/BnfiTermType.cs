@@ -16,7 +16,7 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.Ast
 {
-    public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IBnfiTermCopyable, IUnparsableNonTerminal
+    public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         private struct ParseIndexedBnfTerm
         {
