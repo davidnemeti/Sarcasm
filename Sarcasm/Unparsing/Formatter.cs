@@ -38,7 +38,6 @@ namespace Sarcasm.Unparsing
         internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsProcessedDependents = new TraceSource("PROCESSED_DEPENDENTS", SourceLevels.Verbose);
         internal readonly static TraceSource tsProcessedControls = new TraceSource("PROCESSED_CONTROLS", SourceLevels.Verbose);
 
 #if DEBUG
@@ -52,9 +51,6 @@ namespace Sarcasm.Unparsing
 
             tsFlattened.Listeners.Clear();
             tsFlattened.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "03_flattened.log"))));
-
-            tsProcessedDependents.Listeners.Clear();
-            tsProcessedDependents.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_processed_dependents.log"))));
 
             tsProcessedControls.Listeners.Clear();
             tsProcessedControls.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "05_processed_controls.log"))));
@@ -156,8 +152,6 @@ namespace Sarcasm.Unparsing
                 .DebugWriteLines(Formatter.tsFiltered)
                 .Flatten()
                 .DebugWriteLines(Formatter.tsFlattened)
-                .ProcessDependents()
-                .DebugWriteLines(Formatter.tsProcessedDependents)
                 .ProcessControls()
                 .DebugWriteLines(Formatter.tsProcessedControls)
                 .Cast<Utoken>()
@@ -250,27 +244,6 @@ namespace Sarcasm.Unparsing
         public static IEnumerable<UtokenBase> Flatten(this IEnumerable<UtokenBase> utokens)
         {
             return utokens.SelectMany(utoken => utoken.Flatten());
-        }
-
-        public static IEnumerable<UtokenBase> ProcessDependents(this IEnumerable<UtokenBase> utokens)
-        {
-            ISet<UtokenBase> seenDependers = new HashSet<UtokenBase>();
-
-            foreach (UtokenBase utoken in utokens)
-            {
-                if (utoken.IsYin())
-                {
-                    seenDependers.Add(utoken);
-                    yield return utoken;
-                }
-                else if (utoken.IsYang())
-                {
-                    if (seenDependers.Contains(utoken.GetYin()))
-                        yield return utoken;
-                }
-                else
-                    yield return utoken;
-            }
         }
 
         public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens)

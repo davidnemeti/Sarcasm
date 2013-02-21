@@ -18,18 +18,6 @@ namespace Sarcasm.Unparsing
 {
     public abstract class UtokenBase
     {
-        [ThreadStatic]
-        private static bool isInsideCreateYinIf;
-
-        private bool isYin;
-        private UtokenBase yin;
-
-        protected UtokenBase()
-        {
-            this.isYin = false;
-            this.yin = null;
-        }
-
         public virtual IEnumerable<UtokenBase> Flatten()
         {
             yield return this;
@@ -44,80 +32,12 @@ namespace Sarcasm.Unparsing
 
         protected string ToString(string str)
         {
-            return string.Format("[{0}{1}{2}]", str, IsYin() ? " yin" : string.Empty, IsYang() ? " yang for: " + GetYin() : string.Empty);
+            return string.Format("[{0}]", str);
         }
 
         protected string ToString(string format, params object[] args)
         {
             return ToString(string.Format(format, args));
-        }
-
-        #endregion
-
-        #region Yin-yang
-
-        public UtokenBase CreateYinIfOrReturnSelf(Predicate<UtokenBase> shouldBeYin)
-        {
-            if (isInsideCreateYinIf)
-                throw new InvalidOperationException("Reentry for CreateYinIfOrReturnSelf is not allowed");
-
-            isInsideCreateYinIf = true;
-
-            try
-            {
-                UtokenBase createdYin;
-                bool hasCreatedYin = CreateYinIf(shouldBeYin, out createdYin);
-                return hasCreatedYin ? createdYin : this;
-            }
-            finally
-            {
-                isInsideCreateYinIf = false;
-            }
-        }
-
-        internal abstract bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin);
-
-        public bool IsYin()
-        {
-            return this.isYin;
-        }
-
-        public bool IsYang()
-        {
-            return this.yin != null;
-        }
-
-        public bool IsYang(out UtokenBase yin)
-        {
-            yin = this.yin;
-            return IsYang();
-        }
-
-        public UtokenBase GetYin()
-        {
-            return this.yin;
-        }
-
-        internal void MakeYin()
-        {
-            if (!isInsideCreateYinIf)
-                throw new InvalidOperationException("MakeYin can be used only inside CreateYinIf");
-
-            if (this.isYin)
-                throw new InvalidOperationException("Double call of MakeYin on the same object");
-
-            this.isYin = true;
-        }
-
-        internal void MakeYang(UtokenBase yin)
-        {
-            if (yin == null)
-                throw new ArgumentNullException("yin");
-
-            if (this.yin != null)
-                throw new InvalidOperationException("Double call of MakeYang on the same object");
-
-            this.yin = yin;
         }
 
         #endregion
@@ -188,21 +108,6 @@ namespace Sarcasm.Unparsing
             string text = this.Text ?? this.Reference.ToString();
             return ToString("\"{0}\"{1}", text, Reference != null ? " (with ref)" : string.Empty);
         }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            if (shouldBeYin(this))
-            {
-                createdYin = new UtokenText(this.Text, this.Reference) { Tag = this.Tag };
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
     }
 
     public class UtokenToUnparse : UtokenValue
@@ -217,11 +122,6 @@ namespace Sarcasm.Unparsing
         public override string ToString()
         {
             return ToString("UtokenToUnparse: " + UnparsableObject.ToString());
-        }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            throw new InvalidOperationException("Should not call CreateYinIf on an UtokenToUnparse");
         }
     }
 
@@ -282,21 +182,6 @@ namespace Sarcasm.Unparsing
         {
             return ToString("." + kind);
         }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            if (shouldBeYin(this))
-            {
-                createdYin = new UtokenWhitespace(this.kind);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
     }
 
     internal class UtokenControl : UtokenInsert
@@ -338,21 +223,6 @@ namespace Sarcasm.Unparsing
             return ToString("." + kind);
         }
 
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            if (shouldBeYin(this))
-            {
-                createdYin = new UtokenControl(this.kind);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
-
         internal bool IsIndent()
         {
             return kind.EqualToAny(Kind.IncreaseIndentLevel, Kind.DecreaseIndentLevel, Kind.SetIndentLevelToNone, Kind.RestoreIndentLevel);
@@ -380,21 +250,6 @@ namespace Sarcasm.Unparsing
         {
             return ToString("indent level: {0}", IndentLevel);
         }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            if (shouldBeYin(this))
-            {
-                createdYin = new UtokenIndent(this.IndentLevel);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
     }
 
     internal class UtokenRepeat : UtokenBase
@@ -416,24 +271,6 @@ namespace Sarcasm.Unparsing
         public override string ToString()
         {
             return ToString("repeat {0} {1} times", utoken, count);
-        }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            UtokenBase createdYinChild;
-            bool isYinChild = this.utoken.CreateYinIf(shouldBeYin, out createdYinChild);
-
-            if (shouldBeYin(this) || isYinChild)
-            {
-                createdYin = new UtokenRepeat(isYinChild ? createdYinChild : this.utoken, this.count);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
         }
     }
 
@@ -512,43 +349,6 @@ namespace Sarcasm.Unparsing
 
                 return _specificScore.Value;
             }
-        }
-
-        internal override bool CreateYinIf(Predicate<UtokenBase> shouldBeYin, out UtokenBase createdYin)
-        {
-            bool existYinChild = false;
-            var createdYinChildOrSelfList = new List<UtokenInsert>();
-
-            foreach (UtokenInsert child in this.utokens)
-            {
-                UtokenBase createdYinChild;     // it's an UtokenInsert actually
-
-                if (child.CreateYinIf(shouldBeYin, out createdYinChild))
-                {
-                    createdYinChildOrSelfList.Add((UtokenInsert)createdYinChild);
-                    existYinChild = true;
-                }
-                else
-                    createdYinChildOrSelfList.Add(child);
-            }
-
-            if (shouldBeYin(this) || existYinChild)
-            {
-                createdYin = new InsertedUtokens(kind, priority, behavior, createdYinChildOrSelfList, affectedContexts);
-                createdYin.MakeYin();
-                return true;
-            }
-            else
-            {
-                createdYin = null;
-                return false;
-            }
-        }
-
-        // just to avoid cast where using CreateYinIfOrReturnSelf
-        public new InsertedUtokens CreateYinIfOrReturnSelf(Predicate<UtokenBase> shouldBeYin)
-        {
-            return (InsertedUtokens)base.CreateYinIfOrReturnSelf(utoken => shouldBeYin(utoken));
         }
     }
 }
