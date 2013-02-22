@@ -182,7 +182,7 @@ namespace Sarcasm.Unparsing
                 return topLeftCache;
             }
             else
-                return CalculateTopLeft(self);
+                return topLeftCache = CalculateTopLeft(self);
         }
 
         private UnparsableObject CalculateTopLeft(UnparsableObject self)
