@@ -12,6 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Ast;
+using System.Runtime.CompilerServices;
 
 namespace Sarcasm.Unparsing
 {
@@ -64,8 +65,28 @@ namespace Sarcasm.Unparsing
 
     public class UnparsableObject
     {
+        private static readonly UnparsableObject nonCalculated = new UnparsableObject(null, null);
+
         public BnfTerm BnfTerm { get; private set; }
         public object Obj { get; private set; }
+
+        private UnparsableObject parent = nonCalculated;
+        private UnparsableObject leftMostChild = nonCalculated;
+        private UnparsableObject rightMostChild = nonCalculated;
+        private UnparsableObject leftSibling = nonCalculated;
+        private UnparsableObject rightSibling = nonCalculated;
+
+        public UnparsableObject Parent { get { return CheckIfCalculated(parent); } set { parent = value; } }
+        public UnparsableObject LeftMostChild { get { return CheckIfCalculated(leftMostChild); } set { leftMostChild = value; } }
+        public UnparsableObject RightMostChild { get { return CheckIfCalculated(rightMostChild); } set { rightMostChild = value; } }
+        public UnparsableObject LeftSibling { get { return CheckIfCalculated(leftSibling); } set { leftSibling = value; } }
+        public UnparsableObject RightSibling { get { return CheckIfCalculated(rightSibling); } set { rightSibling = value; } }
+
+        public bool IsParentCalculated { get { return IsCalculated(parent); } }
+        public bool IsLeftMostChildCalculated { get { return IsCalculated(leftMostChild); } }
+        public bool IsRightMostChildCalculated { get { return IsCalculated(rightMostChild); } }
+        public bool IsLeftSiblingCalculated { get { return IsCalculated(leftSibling); } }
+        public bool IsRightSiblingCalculated { get { return IsCalculated(rightSibling); } }
 
         public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
@@ -104,7 +125,38 @@ namespace Sarcasm.Unparsing
 
         public override string ToString()
         {
-            return string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj);
+            return IsCalculated(this)
+                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj)
+                : "<<NonCalculated>>";
+        }
+
+        public void SetAsRoot()
+        {
+            Parent = null;
+            LeftSibling = null;
+            RightSibling = null;
+        }
+
+        public void SetAsLeave()
+        {
+            LeftMostChild = null;
+            RightMostChild = null;
+        }
+
+        private UnparsableObject CheckIfCalculated(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
+        {
+            if (!IsCalculated(relative))
+            {
+                return null;
+                throw new InvalidOperationException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
+            }
+
+            return relative;
+        }
+
+        private static bool IsCalculated(UnparsableObject relative)
+        {
+            return !object.ReferenceEquals(relative, nonCalculated);
         }
     }
 }

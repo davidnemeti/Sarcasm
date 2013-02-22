@@ -359,26 +359,26 @@ namespace Sarcasm.Unparsing
             return ongoingExpressionUnparseLevel > 0 || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
-        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren)
+        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children)
         {
             using (ongoingExpressionUnparseLevel.IncrAutoDecr())
-                return Unparse(unparsableObject, chosenChildren, initialization: false);
+                return Unparse(self, children, initialization: false);
         }
 
-        private IReadOnlyList<UtokenBase> Unparse(UnparsableObject unparsableObject, IEnumerable<UnparsableObject> chosenChildren, bool initialization)
+        private IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children, bool initialization)
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
-                var utokens = chosenChildren.SelectMany(chosenChild => UnparseRawEager(chosenChild, initialization)).ToList();
-                UpdateOperatorInfo(unparsableObject.BnfTerm);
+                var utokens = children.SelectMany(child => UnparseRawEager(child, initialization)).ToList();
+                UpdateOperatorInfo(self.BnfTerm);
                 return utokens;
             }
 
             #region Initialization
 
-            if (initialization && _examinedBnfTermsInCurrentPath.GetCount(unparsableObject.BnfTerm) == 2)
+            if (initialization && _examinedBnfTermsInCurrentPath.GetCount(self.BnfTerm) == 2)
             {
-                UpdateOperatorInfo(unparsableObject.BnfTerm);
+                UpdateOperatorInfo(self.BnfTerm);
                 return new UtokenBase[0];   // we have already expanded the current bnfTerm recursively twice during the current path, so no need to go further
             }
 
@@ -386,18 +386,18 @@ namespace Sarcasm.Unparsing
 
             using (initialization
                 ? new AutoCleanup(
-                    () => _examinedBnfTermsInCurrentPath.Add(unparsableObject.BnfTerm),
-                    () => _examinedBnfTermsInCurrentPath.Remove(unparsableObject.BnfTerm))
+                    () => _examinedBnfTermsInCurrentPath.Add(self.BnfTerm),
+                    () => _examinedBnfTermsInCurrentPath.Remove(self.BnfTerm))
                 : AutoCleanup.None)
             using (new AutoCleanup(
-                () => BeginParenthesesContext(unparsableObject.BnfTerm, initialization),
-                () => EndParenthesesContext(unparsableObject.BnfTerm, initialization)))
+                () => BeginParenthesesContext(self.BnfTerm, initialization),
+                () => EndParenthesesContext(self.BnfTerm, initialization)))
             {
                 var utokens = new List<UtokenBase>();
 
-                chosenChildren = chosenChildren.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
+                children = children.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
 
-                IReadOnlyList<Operator> operators = GetOperators(chosenChildren, initialization).ToList();
+                IReadOnlyList<Operator> operators = GetOperators(children, initialization).ToList();
 
                 bool needParentheses =
                     operators
@@ -417,16 +417,16 @@ namespace Sarcasm.Unparsing
                     }
                     catch (UnparserInitializationException e)
                     {
-                        throw new UnparserInitializationException(e.Message + string.Format("for expression '{0}'", unparsableObject.BnfTerm));
+                        throw new UnparserInitializationException(e.Message + string.Format("for expression '{0}'", self.BnfTerm));
                     }
                 }
 
                 #endregion
 
                 if (needParentheses && !initialization)
-                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Left, unparsableObject));
+                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Left, self));
 
-                using (var childEnumerator = chosenChildren.GetEnumerator())
+                using (var childEnumerator = children.GetEnumerator())
                 {
                     Operator prevOperator = null;
 
@@ -434,7 +434,7 @@ namespace Sarcasm.Unparsing
                     {
                         using (new AutoCleanup(
                             () => BeginSurroundingOperatorsContext(
-                                    unparsableObject.BnfTerm,
+                                    self.BnfTerm,
                                     GetLeftFlaggedOperatorForInside(prevOperator, initialization),
                                     GetRightFlaggedOperatorForInside(@operator, initialization)),
                             () => EndSurroundingOperatorsContext()))
@@ -458,9 +458,9 @@ namespace Sarcasm.Unparsing
                 }
 
                 if (needParentheses && !initialization)
-                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, unparsableObject));
+                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, self));
 
-                UpdateOperatorInfo(unparsableObject.BnfTerm);
+                UpdateOperatorInfo(self.BnfTerm);
 
                 return utokens;
             }
