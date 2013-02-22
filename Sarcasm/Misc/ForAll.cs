@@ -5,9 +5,8 @@ using System.Linq;
 
 namespace Sarcasm
 {
-    public class ForAll<T> : IEnumerable<T>, IDisposable
+    public class ForAll<T> : IEnumerable<T>
     {
-        private bool disposed;
         private readonly IEnumerable<T> items;
         private readonly Action<T> executeBeforeEachIteration;
         private readonly Action executeAfterFinished;
@@ -19,43 +18,79 @@ namespace Sarcasm
             this.executeAfterFinished = executeAfterFinished;
         }
 
-        #region IDisposable Members
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!this.disposed)
-            {
-                if (disposing)
-                {
-                    if (this.executeAfterFinished != null)
-                        this.executeAfterFinished();
-                }
-
-                this.disposed = true;
-            }
-        }
-
-        #endregion
-
         public IEnumerator<T> GetEnumerator()
         {
-            foreach (T item in items)
-            {
-                executeBeforeEachIteration(item);
-                yield return item;
-            }
+            return new Enumerator(items.GetEnumerator(), executeBeforeEachIteration, executeAfterFinished);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return this.GetEnumerator();
         }
+
+        #region Enumerator
+
+        private class Enumerator : IEnumerator<T>
+        {
+            private bool disposed;
+            private readonly IEnumerator<T> enumerator;
+            private readonly Action<T> executeBeforeEachIteration;
+            private readonly Action executeAfterFinished;
+
+            public Enumerator(IEnumerator<T> enumerator, Action<T> executeBeforeEachIteration, Action executeAfterFinished)
+            {
+                this.enumerator = enumerator;
+                this.executeBeforeEachIteration = executeBeforeEachIteration;
+                this.executeAfterFinished = executeAfterFinished;
+            }
+
+            public T Current
+            {
+                get { return enumerator.Current; }
+            }
+
+            object IEnumerator.Current
+            {
+                get { return this.Current; }
+            }
+
+            public bool MoveNext()
+            {
+                bool moved = enumerator.MoveNext();
+
+                if (moved && executeBeforeEachIteration != null)
+                    executeBeforeEachIteration(Current);
+
+                return moved;
+            }
+
+            public void Reset()
+            {
+                enumerator.Reset();
+            }
+
+            public void Dispose()
+            {
+                Dispose(true);
+                GC.SuppressFinalize(this);
+            }
+
+            private void Dispose(bool disposing)
+            {
+                if (!this.disposed)
+                {
+                    if (disposing)
+                    {
+                        if (this.executeAfterFinished != null)
+                            this.executeAfterFinished();
+                    }
+
+                    this.disposed = true;
+                }
+            }
+        }
+
+        #endregion
     }
 
     public static class ForAllExtensions

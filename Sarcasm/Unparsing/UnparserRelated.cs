@@ -82,6 +82,12 @@ namespace Sarcasm.Unparsing
         public UnparsableObject LeftSibling { get { return CheckIfCalculated(leftSibling); } set { leftSibling = value; } }
         public UnparsableObject RightSibling { get { return CheckIfCalculated(rightSibling); } set { rightSibling = value; } }
 
+        public bool IsParentCalculated { get { return IsCalculated(parent); } }
+        public bool IsLeftMostChildCalculated { get { return IsCalculated(leftMostChild); } }
+        public bool IsRightMostChildCalculated { get { return IsCalculated(rightMostChild); } }
+        public bool IsLeftSiblingCalculated { get { return IsCalculated(leftSibling); } }
+        public bool IsRightSiblingCalculated { get { return IsCalculated(rightSibling); } }
+
         public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
             this.BnfTerm = bnfTerm;
@@ -119,7 +125,9 @@ namespace Sarcasm.Unparsing
 
         public override string ToString()
         {
-            return string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj);
+            return IsCalculated(this)
+                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj)
+                : "<<NonCalculated>>";
         }
 
         public void SetAsRoot()
@@ -129,12 +137,26 @@ namespace Sarcasm.Unparsing
             RightSibling = null;
         }
 
+        public void SetAsLeave()
+        {
+            LeftMostChild = null;
+            RightMostChild = null;
+        }
+
         private UnparsableObject CheckIfCalculated(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
         {
-            if (object.ReferenceEquals(relative, nonCalculated))
+            if (!IsCalculated(relative))
+            {
+                return null;
                 throw new InvalidOperationException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
+            }
 
             return relative;
+        }
+
+        private static bool IsCalculated(UnparsableObject relative)
+        {
+            return !object.ReferenceEquals(relative, nonCalculated);
         }
     }
 }

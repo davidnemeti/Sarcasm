@@ -19,22 +19,6 @@ namespace Sarcasm.Unparsing
 {
     internal class Formatter
     {
-        #region Types
-
-        public class Params
-        {
-            public readonly BlockIndentation blockIndentation;
-            public readonly IEnumerable<InsertedUtokens> utokensBetweenAndBefore;
-
-            public Params(ICollection<InsertedUtokens> utokensBetweenAndBefore, BlockIndentation blockIndentation)
-            {
-                this.utokensBetweenAndBefore = utokensBetweenAndBefore;
-                this.blockIndentation = blockIndentation;
-            }
-        }
-
-        #endregion
-
         internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
@@ -71,6 +55,7 @@ namespace Sarcasm.Unparsing
 
         private State lastState = State.Begin;
         private UnparsableObject topLeftCache = null;
+        private Stack<BlockIndentation> blockIndentations = new Stack<BlockIndentation>();
 
         #endregion
 
@@ -81,10 +66,9 @@ namespace Sarcasm.Unparsing
             this.formatting = formatting;
         }
 
-        public void BeginBnfTerm(UnparsableObject self, out Params beginParams)
+        // TODO: return IReadOnlyList<UtokenBase>
+        public IEnumerable<UtokenBase> YieldBetweenAndBefore(UnparsableObject self)
         {
-            ICollection<InsertedUtokens> utokensBetweenAndBefore = new List<InsertedUtokens>();
-
             lastState = State.Begin;
 
             BlockIndentation blockIndentation = null;
@@ -96,47 +80,33 @@ namespace Sarcasm.Unparsing
 
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.HasUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
-                    utokensBetweenAndBefore.Add(insertedUtokensBetween);
+                {
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
+                    yield return insertedUtokensBetween;
+                }
             }
 
             if (blockIndentation == null && formatting.HasBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
                 Unparser.tsUnparse.Debug("blockindentation {0}", blockIndentation);
 
-            InsertedUtokens insertedUtokensBefore;
-            if (formatting.HasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
-                utokensBetweenAndBefore.Add(insertedUtokensBefore);
-
-            beginParams = new Params(utokensBetweenAndBefore, blockIndentation);
-        }
-
-        public void EndBnfTerm(UnparsableObject self)
-        {
-            if (lastState != State.End)
-                topLeftCache = null;
-
-            if (topLeftCache == null)
-                topLeftCache = self;
-
-            lastState = State.End;
-        }
-
-        public IEnumerable<UtokenBase> YieldBefore(Params @params)
-        {
-            if (@params.blockIndentation == BlockIndentation.Indent)
+            if (blockIndentation == BlockIndentation.Indent)
                 yield return UtokenControl.IncreaseIndentLevel;
-            else if (@params.blockIndentation == BlockIndentation.Unindent)
+            else if (blockIndentation == BlockIndentation.Unindent)
                 yield return UtokenControl.DecreaseIndentLevel;
-            else if (@params.blockIndentation == BlockIndentation.NoIndent)
+            else if (blockIndentation == BlockIndentation.NoIndent)
                 yield return UtokenControl.SetIndentLevelToNone;
 
-            foreach (UtokenBase utokenBetweenOrBefore in @params.utokensBetweenAndBefore)
+            InsertedUtokens insertedUtokensBefore;
+            if (formatting.HasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
             {
-                Unparser.tsUnparse.Debug("inserted utokens: {0}", utokenBetweenOrBefore);
-                yield return utokenBetweenOrBefore;
+                Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
+                yield return insertedUtokensBefore;
             }
+
+            blockIndentations.Push(blockIndentation);
         }
 
-        public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
+        public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self)
         {
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
@@ -145,12 +115,22 @@ namespace Sarcasm.Unparsing
                 yield return insertedUtokensAfter;
             }
 
-            if (@params.blockIndentation == BlockIndentation.Indent)
+            BlockIndentation blockIndentation = blockIndentations.Pop();
+
+            if (blockIndentation == BlockIndentation.Indent)
                 yield return UtokenControl.DecreaseIndentLevel;
-            else if (@params.blockIndentation == BlockIndentation.Unindent)
+            else if (blockIndentation == BlockIndentation.Unindent)
                 yield return UtokenControl.IncreaseIndentLevel;
-            else if (@params.blockIndentation == BlockIndentation.NoIndent)
+            else if (blockIndentation == BlockIndentation.NoIndent)
                 yield return UtokenControl.RestoreIndentLevel;
+
+            if (lastState != State.End)
+                topLeftCache = null;
+
+            if (topLeftCache == null)
+                topLeftCache = self;
+
+            lastState = State.End;
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens)

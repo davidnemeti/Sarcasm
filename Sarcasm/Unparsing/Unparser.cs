@@ -106,31 +106,11 @@ namespace Sarcasm.Unparsing
             if (self.BnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
 
-            Formatter.Params @params;
-
-            formatter.BeginBnfTerm(self, out @params);
-
-            try
-            {
-                /*
-                 * NOTE that we cannot return the result of ConcatIfAnyMiddle because that would result in calling
-                 * formatter.End immediately (before any utokens would be yielded) which is not the expected behavior.
-                 * So we have to iterate through the resulted utokens and yield them one-by-one.
-                 * */
-
-                var utokens = ConcatIfAnyMiddle(
-                    formatter.YieldBefore(@params),
-                    UnparseRawMiddle(self),
-                    formatter.YieldAfter(self, @params)
-                    );
-
-                foreach (UtokenBase utoken in utokens)
-                    yield return utoken;
-            }
-            finally
-            {
-                formatter.EndBnfTerm(self);
-            }
+            return ConcatIfAnyMiddle(
+                formatter.YieldBetweenAndBefore(self),
+                UnparseRawMiddle(self),
+                formatter.YieldAfter(self)
+                );
         }
 
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject self)
@@ -138,11 +118,15 @@ namespace Sarcasm.Unparsing
             if (self.BnfTerm is KeyTerm)
             {
                 tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)self.BnfTerm).Text);
+                tsUnparse.Debug("SetAsLeave: {0}", self);
+                self.SetAsLeave();
                 yield return UtokenValue.CreateText(((KeyTerm)self.BnfTerm).Text, self);
             }
             else if (self.BnfTerm is Terminal)
             {
                 tsUnparse.Debug("terminal: [\"{0}\"]", self.Obj.ToString());
+                tsUnparse.Debug("SetAsLeave: {0}", self);
+                self.SetAsLeave();
                 yield return UtokenValue.CreateText(self);
             }
             else if (self.BnfTerm is NonTerminal)
@@ -161,11 +145,17 @@ namespace Sarcasm.Unparsing
 
                     if (unparsableSelf.TryGetUtokensDirectly(this, self.Obj, out directUtokens))
                     {
+                        // TODO: or else?
+                        tsUnparse.Debug("SetAsLeave: {0}", self);
+                        self.SetAsLeave();
+
                         foreach (UtokenValue directUtoken in directUtokens)
                         {
                             if (directUtoken is UtokenToUnparse)
                             {
-                                foreach (UtokenBase utoken in UnparseRaw(((UtokenToUnparse)directUtoken).UnparsableObject))
+                                UnparsableObject child = ((UtokenToUnparse)directUtoken).UnparsableObject;
+
+                                foreach (UtokenBase utoken in UnparseRaw(child))
                                     yield return utoken;
                             }
                             else
@@ -223,10 +213,15 @@ namespace Sarcasm.Unparsing
                     executeBeforeEachIteration:
                         child =>
                         {
+                            tsUnparse.Debug("child is linked: {0}", child);
+
                             child.Parent = self;
 
-                            if (self.LeftMostChild == null)
+                            if (!self.IsLeftMostChildCalculated)
+                            {
+                                tsUnparse.Debug("LeftMostChild of {0} has been set to {1}", self, child);
                                 self.LeftMostChild = child;
+                            }
 
                             child.LeftSibling = childLeftSibling;
 
@@ -239,6 +234,13 @@ namespace Sarcasm.Unparsing
                     executeAfterFinished:
                         () =>
                         {
+                            if (!self.IsLeftMostChildCalculated)
+                            {
+                                tsUnparse.Debug("LeftMostChild of {0} has been set to null", self);
+                                self.LeftMostChild = null;  // there are no children
+                            }
+
+                            tsUnparse.Debug("RightMostChild of {0} has been set to {1}", self, childLeftSibling);
                             self.RightMostChild = childLeftSibling;
 
                             if (childLeftSibling != null)
@@ -250,6 +252,12 @@ namespace Sarcasm.Unparsing
         private static IEnumerable<UtokenBase> ConcatIfAnyMiddle(IEnumerable<UtokenBase> utokensBefore, IEnumerable<UtokenBase> utokensMiddle, IEnumerable<UtokenBase> utokensAfter)
         {
             bool isAnyUtokenMiddle = false;
+
+            /*
+             * utokensBefore needs to be fully yielded because the code that generates it modifies the state of Unparser and UnparsableObject tree,
+             * which state is used by the code which yields utokensMiddle
+             * */
+            utokensBefore = utokensBefore.ToList();
 
             foreach (UtokenBase utokenMiddle in utokensMiddle)
             {
