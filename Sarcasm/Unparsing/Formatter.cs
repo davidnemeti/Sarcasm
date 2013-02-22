@@ -80,8 +80,6 @@ namespace Sarcasm.Unparsing
 
             var utokens = new List<UtokenBase>();
 
-            lastState = State.Begin;
-
             BlockIndentation blockIndentation = null;
 
             foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self))
@@ -116,6 +114,8 @@ namespace Sarcasm.Unparsing
 
             blockIndentations.Push(blockIndentation);
 
+            lastState = State.Begin;
+
             return utokens;
         }
 
@@ -139,11 +139,10 @@ namespace Sarcasm.Unparsing
             else if (blockIndentation == BlockIndentation.NoIndent)
                 utokens.Add(UtokenControl.RestoreIndentLevel);
 
-            if (lastState != State.End)
-                topLeftCache = null;
-
-            if (topLeftCache == null)
+            if (lastState == State.End)
                 topLeftCache = self;
+            else
+                topLeftCache = null;
 
             lastState = State.End;
 
@@ -177,8 +176,17 @@ namespace Sarcasm.Unparsing
 
         private UnparsableObject GetTopLeft(UnparsableObject self)
         {
-            // TODO: read cached value from Formatter if exists
+            if (topLeftCache != null)
+            {
+                Debug.Assert(topLeftCache == CalculateTopLeft(self));
+                return topLeftCache;
+            }
+            else
+                return CalculateTopLeft(self);
+        }
 
+        private UnparsableObject CalculateTopLeft(UnparsableObject self)
+        {
             for (UnparsableObject current = self; current != null; current = current.Parent)
             {
                 if (current.LeftSibling != null)
