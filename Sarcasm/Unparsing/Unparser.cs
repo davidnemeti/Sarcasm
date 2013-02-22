@@ -106,10 +106,12 @@ namespace Sarcasm.Unparsing
             if (self.BnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
 
+            Formatter.Params @params;
+
             return ConcatIfAnyMiddle(
-                formatter.YieldBetweenAndBefore(self),
+                formatter.YieldBetweenAndBefore(self, out @params),
                 UnparseRawMiddle(self),
-                formatter.YieldAfter(self)
+                formatter.YieldAfter(self, @params)
                 );
         }
 

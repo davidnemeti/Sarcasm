@@ -19,6 +19,8 @@ namespace Sarcasm.Unparsing
 {
     internal class Formatter
     {
+        #region Tracing
+
         internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
@@ -41,7 +43,23 @@ namespace Sarcasm.Unparsing
         }
 #endif
 
+        #endregion
+
+        #region Types
+
         private enum State { Begin, End }
+
+        internal class Params
+        {
+            public readonly BlockIndentation blockIndentation;
+
+            public Params(BlockIndentation blockIndentation)
+            {
+                this.blockIndentation = blockIndentation;
+            }
+        }
+
+        #endregion
 
         #region State
 
@@ -55,7 +73,6 @@ namespace Sarcasm.Unparsing
 
         private State lastState = State.Begin;
         private UnparsableObject topLeftCache = null;
-        private Stack<BlockIndentation> blockIndentations = new Stack<BlockIndentation>();
 
         #endregion
 
@@ -70,7 +87,7 @@ namespace Sarcasm.Unparsing
         /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and UnparsableObject tree,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
-        public IReadOnlyList<UtokenBase> YieldBetweenAndBefore(UnparsableObject self)
+        public IReadOnlyList<UtokenBase> YieldBetweenAndBefore(UnparsableObject self, out Params @params)
         {
             /*
              * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
@@ -112,14 +129,14 @@ namespace Sarcasm.Unparsing
                 utokens.Add(insertedUtokensBefore);
             }
 
-            blockIndentations.Push(blockIndentation);
+            @params = new Params(blockIndentation);
 
             lastState = State.Begin;
 
             return utokens;
         }
 
-        public IReadOnlyList<UtokenBase> YieldAfter(UnparsableObject self)
+        public IReadOnlyList<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
         {
             var utokens = new List<UtokenBase>();
 
@@ -130,7 +147,7 @@ namespace Sarcasm.Unparsing
                 utokens.Add(insertedUtokensAfter);
             }
 
-            BlockIndentation blockIndentation = blockIndentations.Pop();
+            BlockIndentation blockIndentation = @params.blockIndentation;
 
             if (blockIndentation == BlockIndentation.Indent)
                 utokens.Add(UtokenControl.DecreaseIndentLevel);
