@@ -66,9 +66,20 @@ namespace Sarcasm.Unparsing
             this.formatting = formatting;
         }
 
-        // TODO: return IReadOnlyList<UtokenBase>
-        public IEnumerable<UtokenBase> YieldBetweenAndBefore(UnparsableObject self)
+        /// <summary>
+        /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and UnparsableObject tree,
+        /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
+        /// </summary>
+        public IReadOnlyList<UtokenBase> YieldBetweenAndBefore(UnparsableObject self)
         {
+            /*
+             * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
+             * Returning IReadOnlyList instead of IEnumerable is just an explicit guarantee to the caller to ensure that
+             * the returned utokens does not need to be iterated through e.g. by converting it to a list in order to achieve full execution.
+             * */
+
+            var utokens = new List<UtokenBase>();
+
             lastState = State.Begin;
 
             BlockIndentation blockIndentation = null;
@@ -82,7 +93,7 @@ namespace Sarcasm.Unparsing
                 if (formatting.HasUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
                 {
                     Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
-                    yield return insertedUtokensBetween;
+                    utokens.Add(insertedUtokensBetween);
                 }
             }
 
@@ -90,39 +101,43 @@ namespace Sarcasm.Unparsing
                 Unparser.tsUnparse.Debug("blockindentation {0}", blockIndentation);
 
             if (blockIndentation == BlockIndentation.Indent)
-                yield return UtokenControl.IncreaseIndentLevel;
+                utokens.Add(UtokenControl.IncreaseIndentLevel);
             else if (blockIndentation == BlockIndentation.Unindent)
-                yield return UtokenControl.DecreaseIndentLevel;
+                utokens.Add(UtokenControl.DecreaseIndentLevel);
             else if (blockIndentation == BlockIndentation.NoIndent)
-                yield return UtokenControl.SetIndentLevelToNone;
+                utokens.Add(UtokenControl.SetIndentLevelToNone);
 
             InsertedUtokens insertedUtokensBefore;
             if (formatting.HasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
-                yield return insertedUtokensBefore;
+                utokens.Add(insertedUtokensBefore);
             }
 
             blockIndentations.Push(blockIndentation);
+
+            return utokens;
         }
 
-        public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self)
+        public IReadOnlyList<UtokenBase> YieldAfter(UnparsableObject self)
         {
+            var utokens = new List<UtokenBase>();
+
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
-                yield return insertedUtokensAfter;
+                utokens.Add(insertedUtokensAfter);
             }
 
             BlockIndentation blockIndentation = blockIndentations.Pop();
 
             if (blockIndentation == BlockIndentation.Indent)
-                yield return UtokenControl.DecreaseIndentLevel;
+                utokens.Add(UtokenControl.DecreaseIndentLevel);
             else if (blockIndentation == BlockIndentation.Unindent)
-                yield return UtokenControl.IncreaseIndentLevel;
+                utokens.Add(UtokenControl.IncreaseIndentLevel);
             else if (blockIndentation == BlockIndentation.NoIndent)
-                yield return UtokenControl.RestoreIndentLevel;
+                utokens.Add(UtokenControl.RestoreIndentLevel);
 
             if (lastState != State.End)
                 topLeftCache = null;
@@ -131,6 +146,8 @@ namespace Sarcasm.Unparsing
                 topLeftCache = self;
 
             lastState = State.End;
+
+            return utokens;
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens)

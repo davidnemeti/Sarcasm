@@ -253,12 +253,6 @@ namespace Sarcasm.Unparsing
         {
             bool isAnyUtokenMiddle = false;
 
-            /*
-             * utokensBefore needs to be fully yielded because the code that generates it modifies the state of Unparser and UnparsableObject tree,
-             * which state is used by the code which yields utokensMiddle
-             * */
-            utokensBefore = utokensBefore.ToList();
-
             foreach (UtokenBase utokenMiddle in utokensMiddle)
             {
                 if (!isAnyUtokenMiddle)
