@@ -42,40 +42,46 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
+        #region Constants
+
+        private const bool allowPartialInvalidationDefault = false;
+
+        #endregion
+
         #region State
 
+        #region Immutable after initialization
+
         public Grammar Grammar { get; private set; }
-        public Formatting Formatting
-        {
-            get { return formatting; }
-
-            private set
-            {
-                formatting = value;
-                formatter = new Formatter(value);
-            }
-        }
-
         private Formatting formatting;
-        private Formatter formatter;
         private readonly UnparseControl unparseControl;
-        private readonly ExpressionUnparser expressionUnparser;
+        private readonly bool allowPartialInvalidation;
+
+        #endregion
+
+        #region Mutable
+
+        private Formatter formatter;
+        private ExpressionUnparser expressionUnparser;
+
+        #endregion
 
         #endregion
 
         #region Construction
 
-        public Unparser(Grammar grammar)
-            : this(grammar, grammar.UnparseControl)
+        public Unparser(Grammar grammar, bool allowPartialInvalidation = allowPartialInvalidationDefault)
+            : this(grammar, grammar.UnparseControl.DefaultFormatting, allowPartialInvalidation)
         {
         }
 
-        public Unparser(Grammar grammar, UnparseControl unparseControl)
+        public Unparser(Grammar grammar, Formatting formatting, bool allowPartialInvalidation = allowPartialInvalidationDefault)
         {
             this.Grammar = grammar;
-            this.Formatting = unparseControl.DefaultFormatting;     // also set Formatter
-            this.unparseControl = unparseControl;
-            this.expressionUnparser = new ExpressionUnparser(this, unparseControl);
+            this.Formatting = formatting;   // also sets Formatter
+            this.unparseControl = grammar.UnparseControl;
+            this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
+            this.allowPartialInvalidation = allowPartialInvalidation;
         }
 
         #endregion
@@ -89,18 +95,20 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
-            return UnparseRaw(new UnparsableObject(bnfTerm, obj))
+            var root = new UnparsableObject(bnfTerm, obj);
+            root.SetAsRoot();
+            return UnparseRaw(root)
                 .Cook();
         }
 
-        internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject unparsableObject)
+        internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject self)
         {
-            if (unparsableObject.BnfTerm == null)
+            if (self.BnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
 
             Formatter.Params @params;
 
-            formatter.BeginBnfTerm(unparsableObject.BnfTerm, out @params);
+            formatter.BeginBnfTerm(self, out @params);
 
             try
             {
@@ -112,8 +120,8 @@ namespace Sarcasm.Unparsing
 
                 var utokens = ConcatIfAnyMiddle(
                     formatter.YieldBefore(@params),
-                    UnparseRawMiddle(unparsableObject),
-                    formatter.YieldAfter(@params)
+                    UnparseRawMiddle(self),
+                    formatter.YieldAfter(self, @params)
                     );
 
                 foreach (UtokenBase utoken in utokens)
@@ -121,40 +129,37 @@ namespace Sarcasm.Unparsing
             }
             finally
             {
-                formatter.EndBnfTerm(unparsableObject.BnfTerm);
+                formatter.EndBnfTerm(self);
             }
         }
 
-        private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject unparsableObject)
+        private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject self)
         {
-            BnfTerm bnfTerm = unparsableObject.BnfTerm;
-            object obj = unparsableObject.Obj;
-
-            if (bnfTerm is KeyTerm)
+            if (self.BnfTerm is KeyTerm)
             {
-                tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)bnfTerm).Text);
-                yield return UtokenValue.CreateText(((KeyTerm)bnfTerm).Text, unparsableObject);
+                tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)self.BnfTerm).Text);
+                yield return UtokenValue.CreateText(((KeyTerm)self.BnfTerm).Text, self);
             }
-            else if (bnfTerm is Terminal)
+            else if (self.BnfTerm is Terminal)
             {
-                tsUnparse.Debug("terminal: [\"{0}\"]", obj.ToString());
-                yield return UtokenValue.CreateText(unparsableObject);
+                tsUnparse.Debug("terminal: [\"{0}\"]", self.Obj.ToString());
+                yield return UtokenValue.CreateText(self);
             }
-            else if (bnfTerm is NonTerminal)
+            else if (self.BnfTerm is NonTerminal)
             {
-                tsUnparse.Debug("nonterminal: {0}", bnfTerm.Name);
+                tsUnparse.Debug("nonterminal: {0}", self.BnfTerm.Name);
                 tsUnparse.Indent();
 
                 try
                 {
-                    IUnparsableNonTerminal unparsable = bnfTerm as IUnparsableNonTerminal;
+                    IUnparsableNonTerminal unparsableSelf = self.BnfTerm as IUnparsableNonTerminal;
 
-                    if (unparsable == null)
-                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", obj, obj.GetType().Name, bnfTerm.Name));
+                    if (unparsableSelf == null)
+                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
 
                     IEnumerable<UtokenValue> directUtokens;
 
-                    if (unparsable.TryGetUtokensDirectly(this, obj, out directUtokens))
+                    if (unparsableSelf.TryGetUtokensDirectly(this, self.Obj, out directUtokens))
                     {
                         foreach (UtokenValue directUtoken in directUtokens)
                         {
@@ -167,27 +172,29 @@ namespace Sarcasm.Unparsing
                                 yield return directUtoken;
                         }
 
-                        tsUnparse.Debug("utokenized: [{0}]", obj != null ? string.Format("\"{0}\"", obj) : "<<NULL>>");
+                        tsUnparse.Debug("utokenized: [{0}]", self.Obj != null ? string.Format("\"{0}\"", self.Obj) : "<<NULL>>");
                     }
                     else
                     {
-                        IEnumerable<UnparsableObject> chosenChildren = ChooseChildrenByPriority(unparsableObject);
+                        IEnumerable<UnparsableObject> chosenChildren = ChooseChildrenByPriority(self);
 
                         if (chosenChildren == null)
                         {
                             throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
-                                obj, obj.GetType().Name, bnfTerm.Name));
+                                self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
                         }
 
-                        if (expressionUnparser.NeedsExpressionUnparse(bnfTerm))
+                        chosenChildren = LinkChildrenToEachOthersAndToCurrent(self, chosenChildren);
+
+                        if (expressionUnparser.NeedsExpressionUnparse(self.BnfTerm))
                         {
-                            foreach (UtokenBase utoken in expressionUnparser.Unparse(unparsableObject, chosenChildren))
+                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
                                 yield return utoken;
                         }
                         else
                         {
-                            foreach (UnparsableObject childValue in chosenChildren)
-                                foreach (UtokenBase utoken in UnparseRaw(childValue))
+                            foreach (UnparsableObject chosenChild in chosenChildren)
+                                foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                     yield return utoken;
                         }
                     }
@@ -197,14 +204,47 @@ namespace Sarcasm.Unparsing
                     tsUnparse.Unindent();
                 }
             }
-            else if (bnfTerm is GrammarHint)
+            else if (self.BnfTerm is GrammarHint)
             {
                 // GrammarHint is legal, but it does not need any unparse
             }
             else
             {
-                throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + bnfTerm.Name, bnfTerm.GetType().Name));
+                throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
             }
+        }
+
+        private static IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToCurrent(UnparsableObject self, IEnumerable<UnparsableObject> children)
+        {
+            UnparsableObject childLeftSibling = null;
+
+            return children
+                .ForAll(
+                    executeBeforeEachIteration:
+                        child =>
+                        {
+                            child.Parent = self;
+
+                            if (self.LeftMostChild == null)
+                                self.LeftMostChild = child;
+
+                            child.LeftSibling = childLeftSibling;
+
+                            if (childLeftSibling != null)
+                                childLeftSibling.RightSibling = child;
+
+                            childLeftSibling = child;
+                        },
+
+                    executeAfterFinished:
+                        () =>
+                        {
+                            self.RightMostChild = childLeftSibling;
+
+                            if (childLeftSibling != null)
+                                childLeftSibling.RightSibling = null;
+                        }
+                );
         }
 
         private static IEnumerable<UtokenBase> ConcatIfAnyMiddle(IEnumerable<UtokenBase> utokensBefore, IEnumerable<UtokenBase> utokensMiddle, IEnumerable<UtokenBase> utokensAfter)
@@ -273,6 +313,8 @@ namespace Sarcasm.Unparsing
             return nonTerminal.Productions.Select(production => production.RValues);
         }
 
+        private bool buildFullUnparseTree { get { return allowPartialInvalidation; } }
+
         #endregion
 
         #region IUnparser implementation
@@ -304,6 +346,21 @@ namespace Sarcasm.Unparsing
         }
 
         IFormatProvider IUnparser.FormatProvider { get { return this.Formatting.FormatProvider; } }
+
+        #endregion
+
+        #region Misc
+
+        public Formatting Formatting
+        {
+            get { return formatting; }
+
+            private set
+            {
+                formatting = value;
+                formatter = new Formatter(value);
+            }
+        }
 
         #endregion
     }
