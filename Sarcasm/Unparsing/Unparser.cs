@@ -84,6 +84,23 @@ namespace Sarcasm.Unparsing
             this.allowPartialInvalidation = allowPartialInvalidation;
         }
 
+        private Unparser(Unparser unparser)
+        {
+            this.Grammar = unparser.Grammar;
+            this.formatting = unparser.formatting;
+            this.unparseControl = unparser.unparseControl;
+            this.allowPartialInvalidation = unparser.allowPartialInvalidation;
+            this.expressionUnparser = unparser.expressionUnparser;
+        }
+
+        private Unparser Spawn(bool isFirstChild = false)
+        {
+            if (expressionUnparser.OngoingExpressionUnparse)
+                throw new InvalidOperationException("Cannot spawn unparser during an ongoing expression unparse");
+
+            return new Unparser(this) { formatter = this.formatter.Spawn(isFirstChild) };
+        }
+
         #endregion
 
         #region Unparse logic
@@ -95,10 +112,17 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
         {
+            ResetMutableState();
             var root = new UnparsableObject(bnfTerm, obj);
             root.SetAsRoot();
             return UnparseRaw(root)
                 .Cook();
+        }
+
+        private void ResetMutableState()
+        {
+            formatter.ResetMutableState();
+            // NOTE: expressionUnparser does ResetMutableState automatically
         }
 
         internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject self)
@@ -133,7 +157,7 @@ namespace Sarcasm.Unparsing
             }
             else if (self.BnfTerm is NonTerminal)
             {
-                tsUnparse.Debug("nonterminal: {0}", self.BnfTerm.Name);
+                tsUnparse.Debug("nonterminal: {0}", self);
                 tsUnparse.Indent();
 
                 try
@@ -180,8 +204,13 @@ namespace Sarcasm.Unparsing
 
                         if (expressionUnparser.NeedsExpressionUnparse(self.BnfTerm))
                         {
-                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
-                                yield return utoken;
+                            /*
+                             * NOTE: expression unparse does not process unparsableobjects in order, so we have to disable topleftcache
+                             * which heavily depends on ordered processing
+                             * */
+                            using (formatter.CanUseTopLeftCache.SetAutoUnset(false))
+                                foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
+                                    yield return utoken;
                         }
                         else
                         {

@@ -234,6 +234,27 @@ namespace Sarcasm
             ts.TraceEvent(TraceEventType.Verbose, 0, format, args);
         }
 
+        [Conditional("DEBUG")]
+        public static void Debug(this TraceSource ts, bool condition, object obj)
+        {
+            if (condition)
+                Debug(ts, obj);
+        }
+
+        [Conditional("DEBUG")]
+        public static void Debug(this TraceSource ts, bool condition, string message)
+        {
+            if (condition)
+                Debug(ts, message);
+        }
+
+        [Conditional("DEBUG")]
+        public static void Debug(this TraceSource ts, bool condition, string format, params object[] args)
+        {
+            if (condition)
+                Debug(ts, format, args);
+        }
+
         public static IEnumerable<T> TraceWriteLines<T>(this IEnumerable<T> items, TraceSource ts, TraceEventType traceEventType)
         {
             return items.TraceWriteLines(ts, traceEventType, item => item.ToString());

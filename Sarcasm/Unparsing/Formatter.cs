@@ -71,20 +71,38 @@ namespace Sarcasm.Unparsing
 
         #region Mutable
 
-        private State lastState = State.Begin;
-        private UnparsableObject topLeftCache = null;
+        private UnparsableObject _topLeftCache = UnparsableObject.NonCalculated;
+        public AutoCleanupValue<bool> CanUseTopLeftCache { get; set; }
 
         #endregion
 
         #endregion
+
+        #region Construction
 
         public Formatter(Formatting formatting)
         {
             this.formatting = formatting;
+            this.CanUseTopLeftCache = new AutoCleanupValue<bool>(true);
         }
 
+        private Formatter(Formatter formatter)
+        {
+            this.formatting = formatter.formatting;
+            this.CanUseTopLeftCache = new AutoCleanupValue<bool>(formatter.CanUseTopLeftCache);
+        }
+
+        public Formatter Spawn(bool isFirstChild = false)
+        {
+            return new Formatter(this) { TopLeftCacheIfCanBeUsed = isFirstChild ? TopLeftCacheIfCanBeUsed : UnparsableObject.NonCalculated };
+        }
+
+        #endregion
+
+        #region Public interface
+
         /// <summary>
-        /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and UnparsableObject tree,
+        /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
         public IReadOnlyList<UtokenBase> YieldBetweenAndBefore(UnparsableObject self, out Params @params)
@@ -95,7 +113,12 @@ namespace Sarcasm.Unparsing
              * the returned utokens does not need to be iterated through e.g. by converting it to a list in order to achieve full execution.
              * */
 
+            Unparser.tsUnparse.Debug("YieldBetweenAndBefore");
+
             var utokens = new List<UtokenBase>();
+
+            if (!self.IsLeftSiblingCalculated || self.LeftSibling != null)
+                TopLeftCacheIfCanBeUsed = self.LeftSibling;
 
             BlockIndentation blockIndentation = null;
 
@@ -131,39 +154,28 @@ namespace Sarcasm.Unparsing
 
             @params = new Params(blockIndentation);
 
-            lastState = State.Begin;
-
             return utokens;
         }
 
-        public IReadOnlyList<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
+        public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
         {
-            var utokens = new List<UtokenBase>();
+            Unparser.tsUnparse.Debug("YieldAfter");
 
             InsertedUtokens insertedUtokensAfter;
             if (formatting.HasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
-                utokens.Add(insertedUtokensAfter);
+                yield return insertedUtokensAfter;
             }
 
             BlockIndentation blockIndentation = @params.blockIndentation;
 
             if (blockIndentation == BlockIndentation.Indent)
-                utokens.Add(UtokenControl.DecreaseIndentLevel);
+                yield return UtokenControl.DecreaseIndentLevel;
             else if (blockIndentation == BlockIndentation.Unindent)
-                utokens.Add(UtokenControl.IncreaseIndentLevel);
+                yield return UtokenControl.IncreaseIndentLevel;
             else if (blockIndentation == BlockIndentation.NoIndent)
-                utokens.Add(UtokenControl.RestoreIndentLevel);
-
-            if (lastState == State.End)
-                topLeftCache = self;
-            else
-                topLeftCache = null;
-
-            lastState = State.End;
-
-            return utokens;
+                yield return UtokenControl.RestoreIndentLevel;
         }
 
         public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens)
@@ -180,6 +192,17 @@ namespace Sarcasm.Unparsing
                 ;
         }
 
+        public void ResetMutableState()
+        {
+            _topLeftCache = UnparsableObject.NonCalculated;
+
+            // CanUseTopLeftCache does not need reset, since it is automatically in good state
+        }
+
+        #endregion
+
+        #region Helpers
+
         private static IEnumerable<UnparsableObject> GetSelfAndAncestors(UnparsableObject self)
         {
             for (UnparsableObject current = self; current != null; current = current.Parent)
@@ -193,13 +216,23 @@ namespace Sarcasm.Unparsing
 
         private UnparsableObject GetTopLeft(UnparsableObject self)
         {
-            if (topLeftCache != null)
-            {
-                Debug.Assert(topLeftCache == CalculateTopLeft(self));
-                return topLeftCache;
-            }
+            /*
+             * NOTE that TopLeftCacheIfCanBeUsed will be unchanged after the assignment if TopLeftCacheIfCanBeUsed is false,
+             * that's why we use the topLeft temporary variable here
+             * */
+
+            UnparsableObject topLeft = TopLeftCacheIfCanBeUsed;
+
+            if (!UnparsableObject.IsCalculated(topLeft))
+                TopLeftCacheIfCanBeUsed = topLeft = CalculateTopLeft(self);
             else
-                return topLeftCache = CalculateTopLeft(self);
+            {
+                //Unparser.tsUnparse.Debug(TopLeftCacheIfCanBeUsed != CalculateTopLeft(self),
+                //    "!!!!!!!! should be equal for {0}, but topLeftCache is '{1}' and calculated value is '{2}'", self, TopLeftCacheIfCanBeUsed, CalculateTopLeft(self));
+                Debug.Assert(TopLeftCacheIfCanBeUsed == CalculateTopLeft(self));
+            }
+
+            return topLeft;
         }
 
         private UnparsableObject CalculateTopLeft(UnparsableObject self)
@@ -231,6 +264,22 @@ namespace Sarcasm.Unparsing
         {
             return GetLeftsFromTopToBottomB(self).Where(bnfTerm => formatting.IsLeftBnfTermUsed(bnfTerm));
         }
+
+        private UnparsableObject TopLeftCacheIfCanBeUsed
+        {
+            get
+            {
+                return CanUseTopLeftCache ? _topLeftCache : UnparsableObject.NonCalculated;
+            }
+
+            set
+            {
+                if (CanUseTopLeftCache)
+                    _topLeftCache = value;
+            }
+        }
+
+        #endregion
     }
 
     internal static class FormatterExtensions

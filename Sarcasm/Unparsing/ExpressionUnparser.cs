@@ -354,15 +354,29 @@ namespace Sarcasm.Unparsing
 
         #region Unparse
 
+        public bool OngoingExpressionUnparse { get { return ongoingExpressionUnparseLevel > 0; } }
+
         public bool NeedsExpressionUnparse(BnfTerm bnfTerm)
         {
-            return ongoingExpressionUnparseLevel > 0 || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
+            return OngoingExpressionUnparse || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
         public IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children)
         {
+            if (ongoingExpressionUnparseLevel == 0)
+                ResetMutableState();
+
             using (ongoingExpressionUnparseLevel.IncrAutoDecr())
                 return Unparse(self, children, initialization: false);
+        }
+
+        private void ResetMutableState()
+        {
+            surroundingOperators.Clear();
+            surroundingParentheses.Clear();
+            _operatorInfo = null;
+
+            // ongoingExpressionUnparseLevel and ongoingOperatorUnparseLevel do not need reset, since they are automatically in good state
         }
 
         private IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children, bool initialization)

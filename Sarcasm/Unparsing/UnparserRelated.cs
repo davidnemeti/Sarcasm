@@ -65,16 +65,16 @@ namespace Sarcasm.Unparsing
 
     public class UnparsableObject
     {
-        private static readonly UnparsableObject nonCalculated = new UnparsableObject(null, null);
+        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, null);
 
         public BnfTerm BnfTerm { get; private set; }
         public object Obj { get; private set; }
 
-        private UnparsableObject parent = nonCalculated;
-        private UnparsableObject leftMostChild = nonCalculated;
-        private UnparsableObject rightMostChild = nonCalculated;
-        private UnparsableObject leftSibling = nonCalculated;
-        private UnparsableObject rightSibling = nonCalculated;
+        private UnparsableObject parent = NonCalculated;
+        private UnparsableObject leftMostChild = NonCalculated;
+        private UnparsableObject rightMostChild = NonCalculated;
+        private UnparsableObject leftSibling = NonCalculated;
+        private UnparsableObject rightSibling = NonCalculated;
 
         public UnparsableObject Parent { get { return CheckIfCalculated(parent); } set { parent = value; } }
         public UnparsableObject LeftMostChild { get { return CheckIfCalculated(leftMostChild); } set { leftMostChild = value; } }
@@ -154,9 +154,9 @@ namespace Sarcasm.Unparsing
             return relative;
         }
 
-        private static bool IsCalculated(UnparsableObject relative)
+        internal static bool IsCalculated(UnparsableObject unparsableObject)
         {
-            return !object.ReferenceEquals(relative, nonCalculated);
+            return !object.ReferenceEquals(unparsableObject, NonCalculated);
         }
     }
 }
