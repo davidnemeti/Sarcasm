@@ -72,7 +72,7 @@ namespace Sarcasm.Unparsing
         #region Mutable
 
         private UnparsableObject _topLeftCache = UnparsableObject.NonCalculated;
-        public AutoCleanupValue<bool> CanUseTopLeftCache { get; set; }
+        private bool canUseTopLeftCache { get; set; }
 
         #endregion
 
@@ -83,13 +83,13 @@ namespace Sarcasm.Unparsing
         public Formatter(Formatting formatting)
         {
             this.formatting = formatting;
-            this.CanUseTopLeftCache = new AutoCleanupValue<bool>(true);
+            this.canUseTopLeftCache = true;
         }
 
         private Formatter(Formatter formatter)
         {
             this.formatting = formatter.formatting;
-            this.CanUseTopLeftCache = new AutoCleanupValue<bool>(formatter.CanUseTopLeftCache);
+            this.canUseTopLeftCache = formatter.canUseTopLeftCache;
         }
 
         public Formatter Spawn(bool isFirstChild = false)
@@ -269,12 +269,12 @@ namespace Sarcasm.Unparsing
         {
             get
             {
-                return CanUseTopLeftCache ? _topLeftCache : UnparsableObject.NonCalculated;
+                return canUseTopLeftCache ? _topLeftCache : UnparsableObject.NonCalculated;
             }
 
             set
             {
-                if (CanUseTopLeftCache)
+                if (canUseTopLeftCache)
                     _topLeftCache = value;
             }
         }

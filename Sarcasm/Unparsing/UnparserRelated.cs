@@ -65,7 +65,11 @@ namespace Sarcasm.Unparsing
 
     public class UnparsableObject
     {
-        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, null);
+        private static readonly object nonCalculatedObj = new object();
+        private static readonly object thrownOutObj = new object();
+
+        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, nonCalculatedObj);
+        internal static readonly UnparsableObject ThrownOut = new UnparsableObject(null, thrownOutObj);
 
         public BnfTerm BnfTerm { get; private set; }
         public object Obj { get; private set; }
@@ -76,11 +80,35 @@ namespace Sarcasm.Unparsing
         private UnparsableObject leftSibling = NonCalculated;
         private UnparsableObject rightSibling = NonCalculated;
 
-        public UnparsableObject Parent { get { return CheckIfCalculated(parent); } set { parent = value; } }
-        public UnparsableObject LeftMostChild { get { return CheckIfCalculated(leftMostChild); } set { leftMostChild = value; } }
-        public UnparsableObject RightMostChild { get { return CheckIfCalculated(rightMostChild); } set { rightMostChild = value; } }
-        public UnparsableObject LeftSibling { get { return CheckIfCalculated(leftSibling); } set { leftSibling = value; } }
-        public UnparsableObject RightSibling { get { return CheckIfCalculated(rightSibling); } set { rightSibling = value; } }
+        public UnparsableObject Parent
+        {
+            get { CheckIfValid(parent); return parent; }
+            set { CheckIfNotThrownOut(parent); parent = value; }
+        }
+
+        public UnparsableObject LeftMostChild
+        {
+            get { CheckIfValid(leftMostChild); return leftMostChild; }
+            set { CheckIfNotThrownOut(leftMostChild); leftMostChild = value; }
+        }
+
+        public UnparsableObject RightMostChild
+        {
+            get { CheckIfValid(rightMostChild); return rightMostChild; }
+            set { CheckIfNotThrownOut(rightMostChild); rightMostChild = value; }
+        }
+
+        public UnparsableObject LeftSibling
+        {
+            get { CheckIfValid(leftSibling); return leftSibling; }
+            set { CheckIfNotThrownOut(leftSibling); leftSibling = value; }
+        }
+
+        public UnparsableObject RightSibling
+        {
+            get { CheckIfValid(rightSibling); return rightSibling; }
+            set { CheckIfNotThrownOut(rightSibling); rightSibling = value; }
+        }
 
         public bool IsParentCalculated { get { return IsCalculated(parent); } }
         public bool IsLeftMostChildCalculated { get { return IsCalculated(leftMostChild); } }
@@ -143,20 +171,28 @@ namespace Sarcasm.Unparsing
             RightMostChild = null;
         }
 
-        private UnparsableObject CheckIfCalculated(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
+        private void CheckIfValid(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
         {
             if (!IsCalculated(relative))
-            {
-                return null;
                 throw new InvalidOperationException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
-            }
+            else if (IsThrownOut(relative))
+                throw new InvalidOperationException(string.Format("Tried to use a thrown out relative '{0}' for {1}", nameOfRelative, this));
+        }
 
-            return relative;
+        private void CheckIfNotThrownOut(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
+        {
+            if (IsThrownOut(relative))
+                throw new InvalidOperationException(string.Format("Tried to set a thrown out relative '{0}' for {1}", nameOfRelative, this));
         }
 
         internal static bool IsCalculated(UnparsableObject unparsableObject)
         {
             return !object.ReferenceEquals(unparsableObject, NonCalculated);
+        }
+
+        private static bool IsThrownOut(UnparsableObject unparsableObject)
+        {
+            return object.ReferenceEquals(unparsableObject, ThrownOut);
         }
     }
 }

@@ -61,6 +61,7 @@ namespace Sarcasm.Unparsing
         private OperatorInfo _operatorInfo = null;
         private AutoCleanupCounter ongoingExpressionUnparseLevel = new AutoCleanupCounter(0);
         private AutoCleanupCounter ongoingOperatorUnparseLevel = new AutoCleanupCounter(0);
+        private AutoCleanupCounter ongoingOperatorGetLevel = new AutoCleanupCounter(0);
 
         #endregion
 
@@ -356,6 +357,8 @@ namespace Sarcasm.Unparsing
 
         public bool OngoingExpressionUnparse { get { return ongoingExpressionUnparseLevel > 0; } }
 
+        public bool OngoingOperatorGet { get { return ongoingOperatorGetLevel > 0; } }
+
         public bool NeedsExpressionUnparse(BnfTerm bnfTerm)
         {
             return OngoingExpressionUnparse || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
@@ -383,6 +386,9 @@ namespace Sarcasm.Unparsing
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
+                if (!initialization)
+                    children = unparser.LinkChildrenToEachOthersAndToSelfLazy(self, children);
+
                 var utokens = children.SelectMany(child => UnparseRawEager(child, initialization)).ToList();
                 UpdateOperatorInfo(self.BnfTerm);
                 return utokens;
@@ -409,7 +415,8 @@ namespace Sarcasm.Unparsing
             {
                 var utokens = new List<UtokenBase>();
 
-                children = children.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
+                var childList = children.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
+                children = childList;
 
                 IReadOnlyList<Operator> operators = GetOperators(children, initialization).ToList();
 
@@ -438,7 +445,13 @@ namespace Sarcasm.Unparsing
                 #endregion
 
                 if (needParentheses && !initialization)
-                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Left, self));
+                {
+                    childList.Insert(0, GetParenthesis(ParenthesisKind.Left, self));
+                    childList.Add(GetParenthesis(ParenthesisKind.Right, self));
+                }
+
+                if (!initialization)
+                    children = unparser.LinkChildrenToEachOthersAndToSelfLazy(self, children);
 
                 using (var childEnumerator = children.GetEnumerator())
                 {
@@ -470,9 +483,6 @@ namespace Sarcasm.Unparsing
                         prevOperator = @operator;
                     }
                 }
-
-                if (needParentheses && !initialization)
-                    utokens.AddRange(UnparseParenthesis(ParenthesisKind.Right, self));
 
                 UpdateOperatorInfo(self.BnfTerm);
 
@@ -563,20 +573,13 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UtokenBase> UnparseParenthesis(ParenthesisKind parenthesisKind, UnparsableObject unparsableExpression)
+        private UnparsableObject GetParenthesis(ParenthesisKind parenthesisKind, UnparsableObject unparsableExpression)
         {
-            try
-            {
-                BnfTerm parenthesis = parenthesisKind == ParenthesisKind.Left
-                    ? GetSurroundingParentheses().Left
-                    : GetSurroundingParentheses().Right;
+            BnfTerm parenthesis = parenthesisKind == ParenthesisKind.Left
+                ? GetSurroundingParentheses().Left
+                : GetSurroundingParentheses().Right;
 
-                return UnparseRawEager(new UnparsableObject(parenthesis, unparsableExpression.Obj), initialization: false);
-            }
-            catch (UnparseException e)
-            {
-                throw new UnparseException(e.Message + " for " + unparsableExpression.BnfTerm.ToString());
-            }
+            return new UnparsableObject(parenthesis, unparsableExpression.Obj);
         }
 
         private bool NeedParentheses(BnfTerm flaggedOperator)
@@ -609,6 +612,7 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<Operator> GetOperators(IEnumerable<UnparsableObject> children, bool initialization)
         {
+            using (ongoingOperatorGetLevel.IncrAutoDecr())
             using (ongoingOperatorUnparseLevel.IncrAutoDecr())
             {
                 int parenthesesLevel = 0;

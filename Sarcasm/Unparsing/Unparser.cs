@@ -132,11 +132,13 @@ namespace Sarcasm.Unparsing
 
             Formatter.Params @params;
 
-            return ConcatIfAnyMiddle(
-                formatter.YieldBetweenAndBefore(self, out @params),
-                UnparseRawMiddle(self),
-                formatter.YieldAfter(self, @params)
-                );
+            return expressionUnparser.OngoingOperatorGet
+                ? UnparseRawMiddle(self)
+                : ConcatIfAnyMiddle(
+                    formatter.YieldBetweenAndBefore(self, out @params),
+                    UnparseRawMiddle(self),
+                    formatter.YieldAfter(self, @params)
+                    );
         }
 
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject self)
@@ -200,21 +202,18 @@ namespace Sarcasm.Unparsing
                                 self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
                         }
 
-                        chosenChildren = LinkChildrenToEachOthersAndToCurrent(self, chosenChildren);
-
                         if (expressionUnparser.NeedsExpressionUnparse(self.BnfTerm))
                         {
                             /*
-                             * NOTE: expression unparse does not process unparsableobjects in order, so we have to disable topleftcache
-                             * which heavily depends on ordered processing
+                             * NOTE: LinkChildrenToEachOthersAndToSelfLazy is being called inside expressionUnparser.Unparse,
+                             * because it may extend the list with automatic parentheses.
                              * */
-                            using (formatter.CanUseTopLeftCache.SetAutoUnset(false))
-                                foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
-                                    yield return utoken;
+                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
+                                yield return utoken;
                         }
                         else
                         {
-                            foreach (UnparsableObject chosenChild in chosenChildren)
+                            foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren))
                                 foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                     yield return utoken;
                         }
@@ -235,7 +234,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private static IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToCurrent(UnparsableObject self, IEnumerable<UnparsableObject> children)
+        internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children)
         {
             UnparsableObject childLeftSibling = null;
 
@@ -257,7 +256,12 @@ namespace Sarcasm.Unparsing
                             child.LeftSibling = childLeftSibling;
 
                             if (childLeftSibling != null)
-                                childLeftSibling.RightSibling = child;
+                            {
+                                if (buildFullUnparseTree)
+                                    childLeftSibling.RightSibling = child;  // we have the left sibling set already, and now we set the right sibling too
+                                else
+                                    childLeftSibling.LeftSibling = UnparsableObject.ThrownOut;  // we do not set the right sibling, and we throw out the unneeded left sibling
+                            }
 
                             childLeftSibling = child;
                         },
