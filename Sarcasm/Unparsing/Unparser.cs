@@ -44,8 +44,6 @@ namespace Sarcasm.Unparsing
 
         #region Constants
 
-        private const bool allowPartialInvalidationDefault = false;
-
         #endregion
 
         #region State
@@ -70,15 +68,10 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public Unparser(Grammar grammar, bool allowPartialInvalidation = allowPartialInvalidationDefault)
-            : this(grammar, grammar.UnparseControl.DefaultFormatting, allowPartialInvalidation)
-        {
-        }
-
-        public Unparser(Grammar grammar, Formatting formatting, bool allowPartialInvalidation = allowPartialInvalidationDefault)
+        public Unparser(Grammar grammar, bool allowPartialInvalidation = false)
         {
             this.Grammar = grammar;
-            this.Formatting = formatting;   // also sets Formatter
+            this.Formatting = grammar.UnparseControl.DefaultFormatting;   // also sets Formatter
             this.unparseControl = grammar.UnparseControl;
             this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
             this.allowPartialInvalidation = allowPartialInvalidation;
