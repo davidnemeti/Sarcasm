@@ -24,6 +24,11 @@ namespace Sarcasm.UnitTest
     [TestClass]
     public abstract class CommonTest
     {
+        static CommonTest()
+        {
+            ExceptionThrowerTraceListener.Register();
+        }
+
         internal const string testFilesDir = @"Test files";
         protected const string expectedResultsDir = @"Expected results";
         protected const string actualResultsDir = @"Actual results";

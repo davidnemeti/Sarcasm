@@ -21,7 +21,9 @@ namespace Sarcasm.Unparsing
     {
         #region Tracing
 
-        internal readonly static TraceSource tsUnfiltered = new TraceSource("UNFILTERED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsRaw = new TraceSource("RAW", SourceLevels.Verbose);
+        internal readonly static TraceSource tsCalculatedDeferred = new TraceSource("CALCULATED_DEFERRED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsCalculatedDeferredDetailed = new TraceSource("CALCULATED_DEFERRED_DETAILED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
         internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
         internal readonly static TraceSource tsProcessedControls = new TraceSource("PROCESSED_CONTROLS", SourceLevels.Verbose);
@@ -29,17 +31,23 @@ namespace Sarcasm.Unparsing
 #if DEBUG
         static Formatter()
         {
-            tsUnfiltered.Listeners.Clear();
-            tsUnfiltered.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_unfiltered.log"))));
+            tsRaw.Listeners.Clear();
+            tsRaw.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_raw.log"))));
+
+            tsCalculatedDeferred.Listeners.Clear();
+            tsCalculatedDeferred.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "02_calculated_deferred.log"))));
+
+            tsCalculatedDeferredDetailed.Listeners.Clear();
+            tsCalculatedDeferredDetailed.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "02_calculated_deferred_detailed.log"))));
 
             tsFiltered.Listeners.Clear();
-            tsFiltered.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "02_filtered.log"))));
+            tsFiltered.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "03_filtered.log"))));
 
             tsFlattened.Listeners.Clear();
-            tsFlattened.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "03_flattened.log"))));
+            tsFlattened.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_flattened.log"))));
 
             tsProcessedControls.Listeners.Clear();
-            tsProcessedControls.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "04_processed_controls.log"))));
+            tsProcessedControls.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "05_processed_controls.log"))));
         }
 #endif
 
@@ -48,6 +56,8 @@ namespace Sarcasm.Unparsing
         #region Types
 
         private enum State { Begin, End }
+
+        public enum NodeLocation { FirstChild, MiddleChildOrUnknown, LastChild }
 
         internal class Params
         {
@@ -58,6 +68,8 @@ namespace Sarcasm.Unparsing
                 this.blockIndentation = blockIndentation;
             }
         }
+
+        private delegate bool HasUtokensBeforeAfter(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensBeforeAfter);
 
         #endregion
 
@@ -71,8 +83,8 @@ namespace Sarcasm.Unparsing
 
         #region Mutable
 
-        private UnparsableObject _topLeftCache = UnparsableObject.NonCalculated;
-        private bool canUseTopLeftCache { get; set; }
+        private UnparsableObject topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+        private Unparser.Direction direction;
 
         #endregion
 
@@ -83,29 +95,48 @@ namespace Sarcasm.Unparsing
         public Formatter(Formatting formatting)
         {
             this.formatting = formatting;
-            this.canUseTopLeftCache = true;
         }
 
         private Formatter(Formatter formatter)
         {
             this.formatting = formatter.formatting;
-            this.canUseTopLeftCache = formatter.canUseTopLeftCache;
         }
 
-        public Formatter Spawn(bool isFirstChild = false)
+        public Formatter Spawn(NodeLocation nodeLocation = NodeLocation.MiddleChildOrUnknown)
         {
-            return new Formatter(this) { TopLeftCacheIfCanBeUsed = isFirstChild ? TopLeftCacheIfCanBeUsed : UnparsableObject.NonCalculated };
+            bool isLeftMostChild =
+                direction == Unparser.Direction.LeftToRight && nodeLocation == NodeLocation.FirstChild
+                ||
+                direction == Unparser.Direction.RightToLeft && nodeLocation == NodeLocation.LastChild;
+
+            return new Formatter(this)
+            {
+                topAncestorCacheForLeft = isLeftMostChild
+                    ? this.topAncestorCacheForLeft
+                    : UnparsableObject.NonCalculated
+            };
         }
 
         #endregion
 
         #region Public interface
 
+        internal Unparser.Direction Direction
+        {
+            set
+            {
+                if (direction != value)
+                    topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+
+                this.direction = value;
+            }
+        }
+
         /// <summary>
         /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
-        public IReadOnlyList<UtokenBase> YieldBetweenAndBefore(UnparsableObject self, out Params @params)
+        public IReadOnlyList<UtokenBase> YieldBefore(UnparsableObject self, out Params @params)
         {
             /*
              * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
@@ -117,52 +148,200 @@ namespace Sarcasm.Unparsing
 
             var utokens = new List<UtokenBase>();
 
-            if (!self.IsLeftSiblingCalculated || self.LeftSibling != null)
-                TopLeftCacheIfCanBeUsed = self.LeftSibling;
+            BlockIndentation blockIndentation;
 
-            BlockIndentation blockIndentation = null;
-
-            foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self))
+            if (direction == Unparser.Direction.LeftToRight)
             {
-                if (blockIndentation == null && formatting.HasBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
-                    Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}'", blockIndentation, leftBnfTerm);
+                utokens.AddRange(YieldBetween(self));
 
-                InsertedUtokens insertedUtokensBetween;
-                if (formatting.HasUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
-                {
-                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
-                    utokens.Add(insertedUtokensBetween);
-                }
+                blockIndentation = BlockIndentation.Null;
+                utokens.AddRange(YieldIndentationLeft(self, ref blockIndentation));
+            }
+            else
+            {
+                // TODO
+//                blockIndentation = IsRight(self) ? BlockIndentation.Defer() : null;
+                blockIndentation = BlockIndentation.Defer();
+                utokens.AddRange(YieldIndentationRight(self, blockIndentation));
             }
 
-            if (blockIndentation == null && formatting.HasBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
-                Unparser.tsUnparse.Debug("blockindentation {0}", blockIndentation);
+            @params = new Params(blockIndentation);
 
-            if (blockIndentation == BlockIndentation.Indent)
-                utokens.Add(UtokenControl.IncreaseIndentLevel);
-            else if (blockIndentation == BlockIndentation.Unindent)
-                utokens.Add(UtokenControl.DecreaseIndentLevel);
-            else if (blockIndentation == BlockIndentation.NoIndent)
-                utokens.Add(UtokenControl.SetIndentLevelToNone);
+            HasUtokensBeforeAfter hasUtokensBefore = direction == Unparser.Direction.LeftToRight
+                ? (HasUtokensBeforeAfter)formatting.TryGetUtokensLeft
+                : (HasUtokensBeforeAfter)formatting.TryGetUtokensRight;
 
             InsertedUtokens insertedUtokensBefore;
-            if (formatting.HasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
+            if (hasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
                 utokens.Add(insertedUtokensBefore);
             }
 
-            @params = new Params(blockIndentation);
-
             return utokens;
+        }
+
+        private void UpdateTopAncestorCacheForLeftOnTheFly(UnparsableObject self)
+        {
+            if (self.Parent == null)
+                topAncestorCacheForLeft = null;     // self is root node
+            else if (!self.IsLeftSiblingCalculated || self.LeftSibling != null)
+                topAncestorCacheForLeft = self;
+        }
+
+        private IReadOnlyList<UtokenBase> YieldBetween(UnparsableObject self)
+        {
+            UpdateTopAncestorCacheForLeftOnTheFly(self);
+
+            try
+            {
+                // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
+                // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
+                return _YieldBetween(self, formatter: this, formatting: this.formatting).ToList();
+            }
+            catch (NonCalculatedException)
+            {
+                // top left node or someone in the chain is non-calculated -> defer execution
+                return new[]
+                {
+                    new DeferredUtokens(
+                        () => _YieldBetween(self, formatter: null, formatting: this.formatting),
+                        helpSelf: self,
+                        helpMessage: "YieldBetween"
+                        )
+                };
+            }
+        }
+
+        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// If topLeft is non-calculated or thrown out.
+        /// </exception>
+        private static IEnumerable<UtokenBase> _YieldBetween(UnparsableObject self, Formatter formatter, Formatting formatting)
+        {
+            // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
+
+            foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self, formatter, formatting))
+            {
+                InsertedUtokens insertedUtokensBetween;
+                if (formatting.TryGetUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
+                {
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
+                    yield return insertedUtokensBetween;
+                }
+            }
+        }
+
+        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentation)
+        {
+            UpdateTopAncestorCacheForLeftOnTheFly(self);
+
+            try
+            {
+                // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
+                // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
+                return _YieldIndentationLeft(self, ref blockIndentation, direction, this.formatting, formatter: this).ToList();
+            }
+            catch (NonCalculatedException)
+            {
+                // top left node or someone in the chain is non-calculated -> defer execution
+                Debug.Assert(blockIndentation.IsNull() || blockIndentation.IsDeferred());
+
+                if (blockIndentation.IsNull())
+                    blockIndentation = BlockIndentation.Defer();
+
+                Debug.Assert(blockIndentation.IsDeferred());
+
+                BlockIndentation _blockIndentation = blockIndentation;
+
+                return new[]
+                {
+                    blockIndentation.LeftDeferred = new DeferredUtokens(
+                        () => _YieldIndentationLeft(self, _blockIndentation, direction, this.formatting, formatter: null),
+                        helpSelf: self,
+                        helpMessage: "YieldIndentationLeft",
+                        helpCalculatedObject: _blockIndentation
+                        )
+                };
+            }
+        }
+
+        private static IEnumerable<UtokenBase> _YieldIndentationLeft(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+            Formatting formatting, Formatter formatter)
+        {
+#if DEBUG
+            BlockIndentation originalBlockIndentationParameter = blockIndentationParameter;
+#endif
+            var utokens = _YieldIndentationLeft(self, ref blockIndentationParameter, direction, formatting, formatter);
+#if DEBUG
+            Debug.Assert(object.ReferenceEquals(blockIndentationParameter, originalBlockIndentationParameter), "unwanted change of blockIndentationParameter reference in _YieldIndentationLeft");
+#endif
+            return utokens;
+        }
+
+        private static IEnumerable<UtokenBase> _YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+            Formatting formatting, Formatter formatter)
+        {
+            BlockIndentation blockIndentation = BlockIndentation.Null;
+
+            // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
+
+            foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self, formatter, formatting))
+            {
+                if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
+                {
+                    Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
+                    break;
+                }
+            }
+
+            if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
+                Unparser.tsUnparse.Debug("blockindentation {0} for unparsable object '{1}'", blockIndentation, self);
+
+            Debug.Assert(!blockIndentation.IsDeferred());
+
+            if (blockIndentationParameter.IsNull())
+                blockIndentationParameter = blockIndentation;
+            else
+            {
+                Debug.Assert(blockIndentationParameter.IsDeferred());
+                blockIndentationParameter.CopyKindFrom(blockIndentation);
+            }
+
+            return direction == Unparser.Direction.LeftToRight
+                ? BlockIndentationToUtokenControlBefore(blockIndentation)
+                : BlockIndentationToUtokenControlAfter(blockIndentation);
+        }
+
+        private static IEnumerable<UtokenControl> BlockIndentationToUtokenControlBefore(BlockIndentation blockIndentation)
+        {
+            if (blockIndentation == BlockIndentation.Indent)
+                yield return UtokenControl.IncreaseIndentLevel;
+            else if (blockIndentation == BlockIndentation.Unindent)
+                yield return UtokenControl.DecreaseIndentLevel;
+            else if (blockIndentation == BlockIndentation.ZeroIndent)
+                yield return UtokenControl.SetIndentLevelToNone;
+        }
+
+        private static IEnumerable<UtokenControl> BlockIndentationToUtokenControlAfter(BlockIndentation blockIndentation)
+        {
+            if (blockIndentation == BlockIndentation.Indent)
+                yield return UtokenControl.DecreaseIndentLevel;
+            else if (blockIndentation == BlockIndentation.Unindent)
+                yield return UtokenControl.IncreaseIndentLevel;
+            else if (blockIndentation == BlockIndentation.ZeroIndent)
+                yield return UtokenControl.RestoreIndentLevel;
         }
 
         public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
         {
             Unparser.tsUnparse.Debug("YieldAfter");
 
+            HasUtokensBeforeAfter hasUtokensAfter = direction == Unparser.Direction.LeftToRight
+                ? (HasUtokensBeforeAfter)formatting.TryGetUtokensRight
+                : (HasUtokensBeforeAfter)formatting.TryGetUtokensLeft;
+
             InsertedUtokens insertedUtokensAfter;
-            if (formatting.HasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
+            if (hasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
                 yield return insertedUtokensAfter;
@@ -170,23 +349,85 @@ namespace Sarcasm.Unparsing
 
             BlockIndentation blockIndentation = @params.blockIndentation;
 
-            if (blockIndentation == BlockIndentation.Indent)
-                yield return UtokenControl.DecreaseIndentLevel;
-            else if (blockIndentation == BlockIndentation.Unindent)
-                yield return UtokenControl.IncreaseIndentLevel;
-            else if (blockIndentation == BlockIndentation.NoIndent)
-                yield return UtokenControl.RestoreIndentLevel;
+            if (direction == Unparser.Direction.LeftToRight)
+            {
+                foreach (UtokenBase utoken in YieldIndentationRight(self, blockIndentation))
+                    yield return utoken;
+            }
+            else
+            {
+                foreach (UtokenBase utoken in YieldIndentationLeft(self, ref blockIndentation))
+                    yield return utoken;
+
+                foreach (UtokenBase utoken in YieldBetween(self))
+                    yield return utoken;
+            }
         }
 
-        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens)
+        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, BlockIndentation blockIndentation)
+        {
+            if (blockIndentation.IsNull())
+                return new UtokenBase[0];
+            else if (!blockIndentation.IsDeferred())
+                return _YieldIndentationRight(self, blockIndentation, direction, this.formatting, formatter: this);
+            else
+            {
+                return new[]
+                {
+                    blockIndentation.RightDeferred = new DeferredUtokens(
+                        () => _YieldIndentationRight(self, blockIndentation, direction, this.formatting, formatter: null),
+                        helpSelf: self,
+                        helpMessage: "YieldIndentationRight",
+                        helpCalculatedObject: blockIndentation
+                        )
+                };
+            }
+        }
+
+        private static IEnumerable<UtokenBase> _YieldIndentationRight(UnparsableObject self, BlockIndentation blockIndentation, Unparser.Direction direction,
+            Formatting formatting, Formatter formatter)
+        {
+            if (blockIndentation.IsDeferred())
+            {
+                // this can happen during parallel unparse or during right-to-left unparse
+
+                if (direction == Unparser.Direction.RightToLeft && blockIndentation.LeftDeferred != null)
+                {
+                    // 
+                    /*
+                     * We are in a right-to-left unparse and this deferred right indentation depends on a deferred left indentation,
+                     * so let's try to calculate the deferred left indentation, which - if succeed - will change the shared blockIndentation
+                     * object state from deferred to a valid indentation.
+                     * 
+                     * (If the left indentation wasn't deferred then it would be calculated which means that the shared blockIndentation
+                     * object won't be deferred.)
+                     * */
+                    blockIndentation.LeftDeferred.CalculateUtokens();
+
+                    // either CalculateUtokens succeeded, and blockIndentation is not deferred, or CalculateUtokens threw a NonCalculatedException exception
+
+                    Debug.Assert(!blockIndentation.IsDeferred(), "CalculateUtokens succeeded, but blockIndentation remained deferred");
+                }
+                else
+                    throw new NonCalculatedException("YieldIndentationRight");
+            }
+
+            return direction == Unparser.Direction.LeftToRight
+                ? BlockIndentationToUtokenControlAfter(blockIndentation)
+                : BlockIndentationToUtokenControlBefore(blockIndentation);
+        }
+
+        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
         {
             return utokens
-                .DebugWriteLines(Formatter.tsUnfiltered)
-                .FilterInsertedUtokens()
+                .DebugWriteLines(Formatter.tsRaw)
+                .CalculateDeferredUtokens()
+                .DebugWriteLines(Formatter.tsCalculatedDeferred)
+                .FilterInsertedUtokens(direction)
                 .DebugWriteLines(Formatter.tsFiltered)
                 .Flatten()
                 .DebugWriteLines(Formatter.tsFlattened)
-                .ProcessControls()
+                .ProcessControls(direction, indentEmptyLines)
                 .DebugWriteLines(Formatter.tsProcessedControls)
                 .Cast<Utoken>()
                 ;
@@ -194,9 +435,7 @@ namespace Sarcasm.Unparsing
 
         public void ResetMutableState()
         {
-            _topLeftCache = UnparsableObject.NonCalculated;
-
-            // CanUseTopLeftCache does not need reset, since it is automatically in good state
+            topAncestorCacheForLeft = UnparsableObject.NonCalculated;
         }
 
         #endregion
@@ -205,8 +444,7 @@ namespace Sarcasm.Unparsing
 
         private static IEnumerable<UnparsableObject> GetSelfAndAncestors(UnparsableObject self)
         {
-            for (UnparsableObject current = self; current != null; current = current.Parent)
-                yield return current;
+            return Util.RecurseStopBeforeNull(self, current => current.Parent);
         }
 
         private static IEnumerable<BnfTerm> GetSelfAndAncestorsB(UnparsableObject self)
@@ -214,69 +452,63 @@ namespace Sarcasm.Unparsing
             return GetSelfAndAncestors(self).Select(current => current.BnfTerm);
         }
 
-        private UnparsableObject GetTopLeft(UnparsableObject self)
+        private static UnparsableObject GetTopAncestorForLeft(UnparsableObject self, Formatter formatter = null)
         {
-            /*
-             * NOTE that TopLeftCacheIfCanBeUsed will be unchanged after the assignment if TopLeftCacheIfCanBeUsed is false,
-             * that's why we use the topLeft temporary variable here
-             * */
+            // NOTE: topAncestorCacheForLeft will not be changed if canUseTopAncestorCacheForLeft is false, that's why we use topAncestorForLeft + the static vs. instance behavior
+            UnparsableObject topAncestorForLeft;
 
-            UnparsableObject topLeft = TopLeftCacheIfCanBeUsed;
+            if (formatter == null || !UnparsableObject.IsCalculated(formatter.topAncestorCacheForLeft))
+            {
+                topAncestorForLeft = CalculateTopAncestorForLeft(self);
 
-            if (!UnparsableObject.IsCalculated(topLeft))
-                TopLeftCacheIfCanBeUsed = topLeft = CalculateTopLeft(self);
+                if (formatter != null)
+                    formatter.topAncestorCacheForLeft = topAncestorForLeft;
+            }
             else
             {
-                //Unparser.tsUnparse.Debug(TopLeftCacheIfCanBeUsed != CalculateTopLeft(self),
-                //    "!!!!!!!! should be equal for {0}, but topLeftCache is '{1}' and calculated value is '{2}'", self, TopLeftCacheIfCanBeUsed, CalculateTopLeft(self));
-                Debug.Assert(TopLeftCacheIfCanBeUsed == CalculateTopLeft(self));
+                topAncestorForLeft = formatter.topAncestorCacheForLeft;
+                //Unparser.tsUnparse.Debug(formatter.topAncestorCacheForLeft != CalculateTopAncestorForLeft(self)),
+                //    "!!!!!!!! should be equal for {0}, but topAncestorCacheForLeft is '{1}' and calculated value is '{2}'", self, formatter.topAncestorCacheForLeft, CalculateTopAncestorForLeft(self));
+                Debug.Assert(formatter.topAncestorCacheForLeft == CalculateTopAncestorForLeft(self));
             }
 
-            return topLeft;
+            return topAncestorForLeft;
         }
 
-        private UnparsableObject CalculateTopLeft(UnparsableObject self)
+        private static UnparsableObject CalculateTopAncestorForLeft(UnparsableObject self)
         {
-            for (UnparsableObject current = self; current != null; current = current.Parent)
-            {
-                if (current.LeftSibling != null)
-                    return current.LeftSibling;
-            }
-
-            return null;
+            return GetSelfAndAncestors(self).FirstOrDefault(current => current.LeftSibling != null);
         }
 
-        private IEnumerable<UnparsableObject> GetLeftsFromTopToBottom(UnparsableObject self)
+        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// If topLeft is non-calculated.
+        /// </exception>
+        private static IEnumerable<UnparsableObject> GetLeftsFromTopToBottom(UnparsableObject self, Formatter formatter = null)
         {
-            UnparsableObject topLeft = GetTopLeft(self);
+            UnparsableObject topAncestorForLeft = GetTopAncestorForLeft(self, formatter);
 
-            for (UnparsableObject current = topLeft; current != null; current = current.RightMostChild)
-                yield return current;
+            return topAncestorForLeft != null
+                ? Util.RecurseStopBeforeNull(topAncestorForLeft.LeftSibling, current => current.RightMostChild)
+                : new UnparsableObject[0];
         }
 
-        private IEnumerable<BnfTerm> GetLeftsFromTopToBottomB(UnparsableObject self)
+        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// If topLeft is non-calculated or thrown out.
+        /// </exception>
+        private static IEnumerable<BnfTerm> GetLeftsFromTopToBottomB(UnparsableObject self, Formatter formatter = null)
         {
-            return GetLeftsFromTopToBottom(self).Select(current => current.BnfTerm);
+            return GetLeftsFromTopToBottom(self, formatter).Select(current => current.BnfTerm);
         }
 
-        // for efficiency reasons we examine leftBnfTerms if they are really used as leftBnfTerms
-        private IEnumerable<BnfTerm> GetUsedLeftsFromTopToBottomB(UnparsableObject self)
+        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// If topLeft is non-calculated or thrown out.
+        /// </exception>
+        /// <remarks>
+        /// for efficiency reasons we examine leftBnfTerms if they are really used as leftBnfTerms
+        /// </remarks>
+        private static IEnumerable<BnfTerm> GetUsedLeftsFromTopToBottomB(UnparsableObject self, Formatter formatter, Formatting formatting)
         {
-            return GetLeftsFromTopToBottomB(self).Where(bnfTerm => formatting.IsLeftBnfTermUsed(bnfTerm));
-        }
-
-        private UnparsableObject TopLeftCacheIfCanBeUsed
-        {
-            get
-            {
-                return canUseTopLeftCache ? _topLeftCache : UnparsableObject.NonCalculated;
-            }
-
-            set
-            {
-                if (canUseTopLeftCache)
-                    _topLeftCache = value;
-            }
+            return GetLeftsFromTopToBottomB(self, formatter).Where(bnfTerm => formatting.IsLeftBnfTermUsed(bnfTerm));
         }
 
         #endregion
@@ -284,102 +516,236 @@ namespace Sarcasm.Unparsing
 
     internal static class FormatterExtensions
     {
-        #region FilterInsertedUtokens
+        public static IEnumerable<UtokenBase> CalculateDeferredUtokens(this IEnumerable<UtokenBase> utokens)
+        {
+#if DEBUG
+            int maxBufferSizeForDebug = 0;
+#endif
+
+            var utokensBuffer = new Queue<UtokenBase>();
+
+            /*
+             * NOTE: During unparsing from right-to-left the leftmost child's left sibling will be set _after_ the last child was consumed,
+             * therefore we might have unprocessed elements (deferred and normal utokens) in the buffer which could not be calculated
+             * when we were consuming the last utoken, but became calculable after the last utoken has been consumed
+             * (despite the fact that we did not consume another utoken in this step).
+             * 
+             * Basically, we should execute the body of the loop one more time after the loop. This can be done the most easily by consuming
+             * an extra null element after the real utokens.
+             * */
+
+            foreach (UtokenBase _utoken in utokens.Concat(null))
+            {
+                utokensBuffer.Enqueue(_utoken);
+
+#if DEBUG
+                maxBufferSizeForDebug = Math.Max(maxBufferSizeForDebug, utokensBuffer.Count);
+#endif
+
+                Formatter.tsCalculatedDeferredDetailed.Debug("Consumed and enqueued utoken: {0} (queue size is now {1})",
+                    _utoken != null ? _utoken.ToString() : "extra <<NULL>> utoken after last real utoken", utokensBuffer.Count);
+
+            LProcessBufferWithoutConsumingNewUtoken:
+
+                if (utokensBuffer.Peek() is DeferredUtokens)
+                {
+                    DeferredUtokens deferredUtokens = (DeferredUtokens)utokensBuffer.Peek();
+
+                    IEnumerable<UtokenBase> calculatedUtokens;
+
+                    try
+                    {
+                        calculatedUtokens = deferredUtokens.GetUtokens();
+                        utokensBuffer.Dequeue();
+                        Formatter.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
+                    }
+                    catch (NonCalculatedException)
+                    {
+                        Formatter.tsCalculatedDeferredDetailed.Debug("Tried to calculate but failed: {0}", deferredUtokens);
+
+                        if (_utoken == null)
+                        {
+                            // after the last real utoken every deferred utokens should be calculable
+                            Formatter.tsCalculatedDeferredDetailed.Debug("ERROR: Calculate should not fail after last real token");
+#if DEBUG
+                            DebugUnprocessedBuffer(utokensBuffer, maxBufferSizeForDebug);
+#endif
+                            throw;
+                        }
+
+                        continue;
+                    }
+
+                    Formatter.tsCalculatedDeferredDetailed.Debug("Successfully calculated: {0}", deferredUtokens);
+                    Formatter.tsCalculatedDeferredDetailed.Indent();
+
+                    foreach (UtokenBase calculatedUtoken in calculatedUtokens)
+                    {
+                        Formatter.tsCalculatedDeferredDetailed.Debug("Yielded calculated: {0}", calculatedUtoken);
+                        yield return calculatedUtoken;
+                    }
+
+                    Formatter.tsCalculatedDeferredDetailed.Unindent();
+                }
+                else if (utokensBuffer.Peek() == null)
+                {
+                    // the extra null element after the real elements -> just remove it from the queue
+                    utokensBuffer.Dequeue();
+                }
+                else
+                {
+                    Formatter.tsCalculatedDeferredDetailed.Debug("Yielded normal: {0}", utokensBuffer.Peek());
+                    yield return utokensBuffer.Dequeue();
+                }
+
+                if (utokensBuffer.Count > 0)
+                {
+                    Formatter.tsCalculatedDeferredDetailed.Debug("Queue has elements -> process without consuming new utoken (queue size is {0})", utokensBuffer.Count);
+                    goto LProcessBufferWithoutConsumingNewUtoken;
+                }
+            }
+
+#if DEBUG
+            DebugUnprocessedBuffer(utokensBuffer, maxBufferSizeForDebug);
+#endif
+
+            Debug.Assert(utokensBuffer.Count == 0, "unprocessed items in buffer (non-calculated unparsable objects remained)");
+        }
+
+        [Conditional("DEBUG")]
+        private static void DebugUnprocessedBuffer(IEnumerable<UtokenBase> utokensBuffer, int maxBufferSizeForDebug)
+        {
+            Formatter.tsCalculatedDeferredDetailed.Debug("");
+            Formatter.tsCalculatedDeferredDetailed.Debug("");
+            Formatter.tsCalculatedDeferredDetailed.Debug("Max buffer size was: {0}", maxBufferSizeForDebug);
+
+            if (utokensBuffer.Any())
+            {
+                Formatter.tsCalculatedDeferredDetailed.Debug("");
+                Formatter.tsCalculatedDeferredDetailed.Debug("Buffer has unprocessed elements: ", utokensBuffer.Count());
+
+                Formatter.tsCalculatedDeferredDetailed.Indent();
+
+                foreach (UtokenBase utokenUnprocessed in utokensBuffer)
+                {
+                    Formatter.tsCalculatedDeferredDetailed.Debug(utokenUnprocessed);
+                }
+
+                Formatter.tsCalculatedDeferredDetailed.Unindent();
+            }
+        }
 
         /*
-         * utokens contains several InsertedUtokens "sessions" which consist of "After", "Before" and "Between" InsertedUtokens.
-         * A session looks like this: (After)*((Between)?(Before)?)*
+         * utokens contains several InsertedUtokens "sessions" which consist of "Right", "Left" and "Between" InsertedUtokens.
+         * A session looks like this: (Right)*((Between)?(Left)?)*
          * 
-         * Note that "Between" and "Before" InsertedUtokens are mixed with each other.
+         * Note that "Between" and "Left" InsertedUtokens are mixed with each other.
          * 
-         * "After" InsertedUtokens are handled so that in case of equal priorities we will choose the right one.
+         * "Right" InsertedUtokens are handled so that in case of equal priorities we will choose the right one.
          * "Between" InsertedUtokens are handled so that in case of equal priorities we will choose the left one.
-         * "Before" InsertedUtokens are handled so that in case of equal priorities we will choose the left one.
+         * "Left" InsertedUtokens are handled so that in case of equal priorities we will choose the left one.
          * 
-         * Since "Between" and "Before" InsertedUtokens are handled in the same way, we can handle them mixed.
+         * Since "Between" and "Left" InsertedUtokens are handled in the same way, we can handle them mixed.
          * 
          * We handle the InsertedUtokens like this in order to ensure that the InsertedUtokens belonging to the
          * outer (in sense of structure) bnfterms always being preferred against inner bnfterms in case of equal priorities.
          * 
          * InsertedUtokens belonging to the same bnfterm with equal priorities are handled so that the several kind
-         * of InsertedUtokens have strength in descending order: Between, Before, After
+         * of InsertedUtokens have strength in descending order: Between, Left, Right
          * */
-
-        public static IEnumerable<UtokenBase> FilterInsertedUtokens(this IEnumerable<UtokenBase> utokens)
+        public static IEnumerable<UtokenBase> FilterInsertedUtokens(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction)
         {
-            InsertedUtokens leftInsertedUtokensToBeYield = null;
+            InsertedUtokens prevInsertedUtokensToBeYield = null;
+            var nonOverridableSkipThroughBuffer = new Queue<UtokenBase>();
 
-            foreach (UtokenBase utoken in utokens)
+            foreach (UtokenBase utoken in utokens.Concat(null))
             {
                 if (utoken is InsertedUtokens)
                 {
-                    InsertedUtokens rightInsertedUtokens = (InsertedUtokens)utoken;
+                    InsertedUtokens nextInsertedUtokens = (InsertedUtokens)utoken;
 
-                    var switchToNewInsertedUtokens = new Lazy<bool>(() => IsRightStronger(leftInsertedUtokensToBeYield, rightInsertedUtokens));
+                    var switchToNextInsertedUtokens = new Lazy<bool>(() => IsNextStronger(prevInsertedUtokensToBeYield, nextInsertedUtokens, direction));
 
-                    if (rightInsertedUtokens.behavior == Behavior.Overridable)
+                    if (nextInsertedUtokens.behavior == Behavior.Overridable)
                     {
-                        leftInsertedUtokensToBeYield = switchToNewInsertedUtokens.Value ? rightInsertedUtokens : leftInsertedUtokensToBeYield;
+                        prevInsertedUtokensToBeYield = switchToNextInsertedUtokens.Value ? nextInsertedUtokens : prevInsertedUtokensToBeYield;
                     }
-                    else if (rightInsertedUtokens.behavior == Behavior.NonOverridableSkipThrough)
+                    else if (nextInsertedUtokens.behavior == Behavior.NonOverridableSkipThrough)
                     {
-                        yield return rightInsertedUtokens;
+                        if (direction == Unparser.Direction.LeftToRight)
+                            yield return nextInsertedUtokens;
+                        else
+                            nonOverridableSkipThroughBuffer.Enqueue(nextInsertedUtokens);
                     }
-                    else if (rightInsertedUtokens.behavior == Behavior.NonOverridableSeparator)
+                    else if (nextInsertedUtokens.behavior == Behavior.NonOverridableSeparator)
                     {
-                        if (!switchToNewInsertedUtokens.Value)
-                            yield return leftInsertedUtokensToBeYield;
+                        if (!switchToNextInsertedUtokens.Value)
+                            yield return prevInsertedUtokensToBeYield;
 
-                        yield return rightInsertedUtokens;
-                        leftInsertedUtokensToBeYield = null;
+                        while (nonOverridableSkipThroughBuffer.Count > 0)
+                            yield return nonOverridableSkipThroughBuffer.Dequeue();
+
+                        yield return nextInsertedUtokens;
+                        prevInsertedUtokensToBeYield = null;
                     }
                 }
                 else if (utoken is UtokenControl && ((UtokenControl)utoken).IsIndent())
-                    yield return utoken;    // handle it as it were a NonOverridableSkipThrough
+                {
+                    // handle it as it were a NonOverridableSkipThrough
+                    if (direction == Unparser.Direction.LeftToRight)
+                        yield return utoken;
+                    else
+                        nonOverridableSkipThroughBuffer.Enqueue(utoken);
+                }
                 else
                 {
-                    if (leftInsertedUtokensToBeYield != null)
+                    if (prevInsertedUtokensToBeYield != null)
                     {
-                        yield return leftInsertedUtokensToBeYield;
-                        leftInsertedUtokensToBeYield = null;
+                        yield return prevInsertedUtokensToBeYield;
+                        prevInsertedUtokensToBeYield = null;
                     }
 
-                    yield return utoken;
+                    while (nonOverridableSkipThroughBuffer.Count > 0)
+                        yield return nonOverridableSkipThroughBuffer.Dequeue();
+
+                    if (utoken != null)
+                        yield return utoken;
                 }
             }
-
-            if (leftInsertedUtokensToBeYield != null)
-                yield return leftInsertedUtokensToBeYield;
         }
 
-        private static bool IsRightStronger(InsertedUtokens leftInsertedUtokens, InsertedUtokens rightInsertedUtokens)
+        private static bool IsNextStronger(InsertedUtokens prevInsertedUtokens, InsertedUtokens nextInsertedUtokens, Unparser.Direction direction)
         {
-            int compareResult = InsertedUtokens.Compare(leftInsertedUtokens, rightInsertedUtokens);
+            int compareResult = InsertedUtokens.Compare(prevInsertedUtokens, nextInsertedUtokens);
 
             if (compareResult == 0)
-                return leftInsertedUtokens.kind == InsertedUtokens.Kind.After;
+            {
+                if (direction == Unparser.Direction.LeftToRight)
+                    return prevInsertedUtokens.kind == InsertedUtokens.Kind.Right;
+                else
+                    return nextInsertedUtokens.kind != InsertedUtokens.Kind.Right;
+            }
             else
                 return compareResult < 0;
         }
-
-        #endregion
 
         public static IEnumerable<UtokenBase> Flatten(this IEnumerable<UtokenBase> utokens)
         {
             return utokens.SelectMany(utoken => utoken.Flatten());
         }
 
-        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens)
+        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
         {
             int indentLevel = 0;
+            int indentLevelForCurrentLine = 0;
             Stack<int> storedIndentLevel = new Stack<int>();
-            bool firstUtokenInLine = true;
             bool allowWhitespaceBetweenUtokens = true;
             UtokenBase prevUtoken = null;
+            UtokenBase prevNotControlUtoken = null;
 
             foreach (UtokenBase utoken in utokens)
             {
-                if (utoken is UtokenControl)
+                if (IsControl(utoken))
                 {
                     UtokenControl utokenControl = (UtokenControl)utoken;
 
@@ -412,24 +778,52 @@ namespace Sarcasm.Unparsing
                 }
                 else
                 {
-                    if (utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine)
-                        firstUtokenInLine = true;
-                    else
-                    {
-                        if (firstUtokenInLine)
-                            yield return new UtokenIndent(indentLevel);
-                        else if (allowWhitespaceBetweenUtokens && !(prevUtoken is UtokenWhitespace) && !(utoken is UtokenWhitespace))
-                            yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
+                    if (direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (indentEmptyLines || !IsLineSeparator(prevUtoken)))
+                        yield return new UtokenIndent(indentLevelForCurrentLine);
 
-                        firstUtokenInLine = false;
-                    }
+                    indentLevelForCurrentLine = indentLevel;
+
+                    if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken) && (indentEmptyLines || !IsLineSeparator(utoken)))
+                        yield return new UtokenIndent(indentLevelForCurrentLine);
+
+                    if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
+                        yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
 
                     yield return utoken;
+
                     allowWhitespaceBetweenUtokens = true;
+                    prevNotControlUtoken = utoken;
                 }
 
                 prevUtoken = utoken;
             }
+
+            // TODO: REVIEW the following
+
+            /*
+             * In case of right-to-left unparse if utokens enumerable is not empty and the last processed utoken (which is the leftmost utoken)
+             * is not a line separator (which is the common case) then we didn't yielded the utokenindent for the last processed line
+             * (which is the topmost line), so we yield it now.
+             * */
+            if (direction == Unparser.Direction.RightToLeft && prevUtoken != null && !IsLineSeparator(prevUtoken))
+                yield return new UtokenIndent(indentLevel);
+            else if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken))
+                yield return new UtokenIndent(indentLevelForCurrentLine);
+        }
+
+        private static bool IsLineSeparator(UtokenBase utoken)
+        {
+            return utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine;
+        }
+
+        private static bool IsWhitespace(UtokenBase utoken)
+        {
+            return utoken is UtokenWhitespace;
+        }
+
+        private static bool IsControl(UtokenBase utoken)
+        {
+            return utoken is UtokenControl;
         }
     }
 }

@@ -39,4 +39,28 @@ namespace Sarcasm.Unparsing
         {
         }
     }
+
+    internal class NonCalculatedException : Exception
+    {
+        public NonCalculatedException()
+        {
+        }
+
+        public NonCalculatedException(string message)
+            : base(message)
+        {
+        }
+    }
+
+    internal class ThrownOutException : Exception
+    {
+        public ThrownOutException()
+        {
+        }
+
+        public ThrownOutException(string message)
+            : base(message)
+        {
+        }
+    }
 }

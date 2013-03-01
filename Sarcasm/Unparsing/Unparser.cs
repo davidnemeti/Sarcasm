@@ -44,6 +44,9 @@ namespace Sarcasm.Unparsing
 
         #region Constants
 
+        private const Direction directionDefault = Direction.LeftToRight;
+        private const bool allowPartialInvalidationDefault = false;
+
         #endregion
 
         #region State
@@ -61,20 +64,37 @@ namespace Sarcasm.Unparsing
 
         private Formatter formatter;
         private ExpressionUnparser expressionUnparser;
+        private Direction _direction;
 
         #endregion
 
         #endregion
+
+        public Formatting Formatting
+        {
+            get { return formatting; }
+
+            set
+            {
+                formatting = value;
+                formatter = new Formatter(value);
+            }
+        }
 
         #region Construction
 
-        public Unparser(Grammar grammar, bool allowPartialInvalidation = false)
+        public Unparser(Grammar grammar, Formatting formatting, bool allowPartialInvalidation = allowPartialInvalidationDefault)
         {
             this.Grammar = grammar;
-            this.Formatting = grammar.UnparseControl.DefaultFormatting;   // also sets Formatter
+            this.Formatting = formatting;   // also sets Formatter
             this.unparseControl = grammar.UnparseControl;
             this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
             this.allowPartialInvalidation = allowPartialInvalidation;
+        }
+
+        public Unparser(Grammar grammar, bool allowPartialInvalidation = allowPartialInvalidationDefault)
+            : this(grammar, grammar.UnparseControl.DefaultFormatting, allowPartialInvalidation)
+        {
         }
 
         private Unparser(Unparser unparser)
@@ -86,30 +106,41 @@ namespace Sarcasm.Unparsing
             this.expressionUnparser = unparser.expressionUnparser;
         }
 
-        private Unparser Spawn(bool isFirstChild = false)
+        private Unparser Spawn(Formatter.NodeLocation nodeLocation = Formatter.NodeLocation.MiddleChildOrUnknown)
         {
             if (expressionUnparser.OngoingExpressionUnparse)
                 throw new InvalidOperationException("Cannot spawn unparser during an ongoing expression unparse");
 
-            return new Unparser(this) { formatter = this.formatter.Spawn(isFirstChild) };
+            return new Unparser(this) { formatter = this.formatter.Spawn(nodeLocation) };
         }
 
         #endregion
 
         #region Unparse logic
 
-        public IEnumerable<Utoken> Unparse(object obj)
+        public IEnumerable<Utoken> Unparse(object obj, Direction direction = directionDefault)
         {
-            return Unparse(obj, Grammar.Root);
+            return Unparse(obj, Grammar.Root, direction);
         }
 
-        public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm)
+        public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm, Direction direction = directionDefault)
         {
             ResetMutableState();
+            this.direction = direction;
             var root = new UnparsableObject(bnfTerm, obj);
             root.SetAsRoot();
             return UnparseRaw(root)
-                .Cook();
+                .Cook(direction, formatting.IndentEmptyLines);
+        }
+
+        private Unparser.Direction direction
+        {
+            get { return this._direction; }
+            set
+            {
+                this._direction = value;
+                formatter.Direction = value;
+            }
         }
 
         private void ResetMutableState()
@@ -128,7 +159,7 @@ namespace Sarcasm.Unparsing
             return expressionUnparser.OngoingOperatorGet
                 ? UnparseRawMiddle(self)
                 : ConcatIfAnyMiddle(
-                    formatter.YieldBetweenAndBefore(self, out @params),
+                    formatter.YieldBefore(self, out @params),
                     UnparseRawMiddle(self),
                     formatter.YieldAfter(self, @params)
                     );
@@ -201,7 +232,7 @@ namespace Sarcasm.Unparsing
                              * NOTE: LinkChildrenToEachOthersAndToSelfLazy is being called inside expressionUnparser.Unparse,
                              * because it may extend the list with automatic parentheses.
                              * */
-                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren))
+                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren, direction))
                                 yield return utoken;
                         }
                         else
@@ -229,7 +260,7 @@ namespace Sarcasm.Unparsing
 
         internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children)
         {
-            UnparsableObject childLeftSibling = null;
+            UnparsableObject childPrevSibling = null;
 
             return children
                 .ForAll(
@@ -240,41 +271,92 @@ namespace Sarcasm.Unparsing
 
                             child.Parent = self;
 
-                            if (!self.IsLeftMostChildCalculated)
+                            if (!IsPrevMostChildCalculated(self))
                             {
-                                tsUnparse.Debug("LeftMostChild of {0} has been set to {1}", self, child);
-                                self.LeftMostChild = child;
+                                tsUnparse.Debug("{2} of {0} has been set to {1}", self, child, direction == Direction.LeftToRight ? "LeftMostChild" : "RightMostChild");
+                                SetPrevMostChild(self, child);
                             }
 
-                            child.LeftSibling = childLeftSibling;
+                            SetPrevSibling(child, childPrevSibling);
 
-                            if (childLeftSibling != null)
+                            if (childPrevSibling != null)
                             {
-                                if (buildFullUnparseTree)
-                                    childLeftSibling.RightSibling = child;  // we have the left sibling set already, and now we set the right sibling too
-                                else
-                                    childLeftSibling.LeftSibling = UnparsableObject.ThrownOut;  // we do not set the right sibling, and we throw out the unneeded left sibling
+                                SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
+
+                                if (!buildFullUnparseTree)
+                                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
                             }
 
-                            childLeftSibling = child;
+                            childPrevSibling = child;
                         },
 
                     executeAfterFinished:
                         () =>
                         {
-                            if (!self.IsLeftMostChildCalculated)
+                            if (!IsPrevMostChildCalculated(self))
                             {
-                                tsUnparse.Debug("LeftMostChild of {0} has been set to null", self);
-                                self.LeftMostChild = null;  // there are no children
+                                tsUnparse.Debug("{2} of {0} has been set to null", self, direction == Direction.LeftToRight ? "LeftMostChild" : "RightMostChild");
+                                SetPrevMostChild(self, null);  // there are no children
                             }
 
-                            tsUnparse.Debug("RightMostChild of {0} has been set to {1}", self, childLeftSibling);
-                            self.RightMostChild = childLeftSibling;
+                            tsUnparse.Debug("{2} of {0} has been set to {1}", self, childPrevSibling, direction == Direction.LeftToRight ? "RightMostChild" : "LeftMostChild");
+                            SetNextMostChild(self, childPrevSibling);
 
-                            if (childLeftSibling != null)
-                                childLeftSibling.RightSibling = null;
+                            if (childPrevSibling != null)
+                            {
+                                SetNextSibling(childPrevSibling, null);
+
+                                if (!buildFullUnparseTree)
+                                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
+                            }
                         }
                 );
+        }
+
+        private void SetPrevSibling(UnparsableObject current, UnparsableObject prev)
+        {
+            if (direction == Direction.LeftToRight)
+                current.LeftSibling = prev;
+            else
+                current.RightSibling = prev;
+        }
+
+        private void SetNextSibling(UnparsableObject current, UnparsableObject next)
+        {
+            if (direction == Direction.LeftToRight)
+                current.RightSibling = next;
+            else
+                current.LeftSibling = next;
+        }
+
+        private void SetPrevMostChild(UnparsableObject self, UnparsableObject prevMostChild)
+        {
+            if (direction == Direction.LeftToRight)
+                self.LeftMostChild = prevMostChild;
+            else
+                self.RightMostChild = prevMostChild;
+        }
+
+        private void SetNextMostChild(UnparsableObject self, UnparsableObject nextMostChild)
+        {
+            if (direction == Direction.LeftToRight)
+                self.RightMostChild = nextMostChild;
+            else
+                self.LeftMostChild = nextMostChild;
+        }
+
+        private bool IsPrevMostChildCalculated(UnparsableObject self)
+        {
+            return direction == Direction.LeftToRight
+                ? self.IsLeftMostChildCalculated
+                : self.IsRightMostChildCalculated;
+        }
+
+        private bool IsNextMostChildCalculated(UnparsableObject self)
+        {
+            return direction == Direction.LeftToRight
+                ? self.IsRightMostChildCalculated
+                : self.IsLeftMostChildCalculated;
         }
 
         private static IEnumerable<UtokenBase> ConcatIfAnyMiddle(IEnumerable<UtokenBase> utokensBefore, IEnumerable<UtokenBase> utokensMiddle, IEnumerable<UtokenBase> utokensAfter)
@@ -316,7 +398,7 @@ namespace Sarcasm.Unparsing
                 return GetChildBnfTermLists(unparsable.AsNonTerminal())
                     .Select(childBnfTerms =>
                         {
-                            var children = unparsable.GetChildren(childBnfTerms, obj);
+                            var children = unparsable.GetChildren(childBnfTerms, obj, direction);
                             return new
                             {
                                 UnparsableObjects = children,
@@ -338,9 +420,15 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal static IEnumerable<BnfTermList> GetChildBnfTermLists(NonTerminal nonTerminal)
+        internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
         {
             return nonTerminal.Productions.Select(production => production.RValues);
+        }
+
+        internal IEnumerable<IList<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
+        {
+            return GetChildBnfTermListsLeftToRight(nonTerminal)
+                .Select(bnfTerms => direction == Direction.LeftToRight ? bnfTerms : bnfTerms.ReverseOptimized());
         }
 
         private bool buildFullUnparseTree { get { return allowPartialInvalidation; } }
@@ -359,7 +447,7 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.Obj, unparsable.GetChildren(childBnfTerms, unparsableObject.Obj))
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.Obj, unparsable.GetChildren(childBnfTerms, unparsableObject.Obj, direction))
                         .DebugWriteLinePriority(tsPriorities, unparsableObject));
 
                 tsPriorities.Unindent();
@@ -379,18 +467,9 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Misc
+        #region Types
 
-        public Formatting Formatting
-        {
-            get { return formatting; }
-
-            private set
-            {
-                formatting = value;
-                formatter = new Formatter(value);
-            }
-        }
+        public enum Direction { LeftToRight, RightToLeft }
 
         #endregion
     }

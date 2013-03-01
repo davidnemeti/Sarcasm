@@ -46,7 +46,7 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, obj));
         }

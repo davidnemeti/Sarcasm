@@ -398,28 +398,28 @@ namespace MiniPL
             #region Unparse
 
             UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.SEMICOLON, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.COMMA, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.UnaryOperator, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.SEMICOLON, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.COMMA, UtokenInsert.NoWhitespace);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.UnaryOperator, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
 
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.Statement, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.Statement, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.Statement, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.Statement, UtokenInsert.NewLine);
             UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.Statement, BlockIndentation.Indent);
             UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.If, UtokenInsert.Space);
             UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.ELSE, B.If, BlockIndentation.Unindent);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.BEGIN, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.BEGIN, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensBefore(B.END, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(B.END, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensAfter(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.BEGIN, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.BEGIN, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.END, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
+            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
 
             #endregion

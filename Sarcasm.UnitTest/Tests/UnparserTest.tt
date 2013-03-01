@@ -31,20 +31,26 @@ namespace Sarcasm.UnitTest
 	string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
-        GenerateTestMethod(filePath, typesafe: true);
-        GenerateTestMethod(filePath, typesafe: false);
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: true);
+        GenerateTestMethod(filePath, typesafe: false, leftToRight: true);
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: false);
     }
 #>
 	}
 }
 
 <#+
-void GenerateTestMethod(string filePath, bool typesafe)
+void GenerateTestMethod(string filePath, bool typesafe, bool leftToRight)
 {
     string extension = Path.GetExtension(filePath);
     string filename = Path.GetFileName(filePath);
-    string reunparseTestMethodName = "Unparse_" + Path.GetFileNameWithoutExtension(filePath) + (typesafe ? "_TS" : string.Empty);
-    string reunparseMethodName = typesafe ? "ReunparseCheckTS" : "ReunparseCheck";
+
+    string reunparseTestMethodName = "Unparse_" + Path.GetFileNameWithoutExtension(filePath);
+    if (typesafe) reunparseTestMethodName += "_Typesafe";
+    if (!leftToRight) reunparseTestMethodName += "_Reversed";
+
+    string reunparseMethodName = "ReunparseCheck";
+    if (typesafe) reunparseMethodName += "TS";
 
     if (extension == ".mplp")
     {
@@ -53,7 +59,10 @@ void GenerateTestMethod(string filePath, bool typesafe)
         [TestCategory(category)]
         public void <#= reunparseTestMethodName #>()
         {
-            <#= reunparseMethodName #>(B.Program, "<#= filename #>");
+<#+
+        GenerateInitializerForUnparser(filePath);
+#>
+            <#= reunparseMethodName #>(B.Program, "<#= filename #>", leftToRight: <#= leftToRight ? "true" : "false" #>);
         }
 
 <#+
@@ -65,12 +74,30 @@ void GenerateTestMethod(string filePath, bool typesafe)
         [TestCategory(category)]
         public void <#= reunparseTestMethodName #>()
         {
-            <#= reunparseMethodName #>(B.Expression, "<#= filename #>");
+<#+
+        GenerateInitializerForUnparser(filePath);
+#>
+            <#= reunparseMethodName #>(B.Expression, "<#= filename #>", leftToRight: <#= leftToRight ? "true" : "false" #>);
         }
 
 <#+
     }
     else
         throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
+}
+
+void GenerateInitializerForUnparser(string filePath)
+{
+        string formatting;
+
+        if (Path.GetFileNameWithoutExtension(filePath) == "MiniPL2")
+            formatting = "formatting2";
+        else if (Path.GetFileNameWithoutExtension(filePath) == "MiniPL3")
+            formatting = "formatting3";
+        else
+            formatting = "formattingDefault";
+#>
+            unparser.Formatting = <#= formatting #>;
+<#+
 }
 #>

@@ -62,6 +62,7 @@ namespace Sarcasm.Unparsing
         private AutoCleanupCounter ongoingExpressionUnparseLevel = new AutoCleanupCounter(0);
         private AutoCleanupCounter ongoingOperatorUnparseLevel = new AutoCleanupCounter(0);
         private AutoCleanupCounter ongoingOperatorGetLevel = new AutoCleanupCounter(0);
+        private Unparser.Direction direction;
 
         #endregion
 
@@ -173,7 +174,7 @@ namespace Sarcasm.Unparsing
 
             var childOperators = new List<BnfTerm>();
 
-            foreach (BnfTermList children in Unparser.GetChildBnfTermLists(current))
+            foreach (BnfTermList children in Unparser.GetChildBnfTermListsLeftToRight(current))
             {
                 int operatorCount = 0;
                 int leftParenthesisCount = 0;
@@ -341,7 +342,7 @@ namespace Sarcasm.Unparsing
 
         private void RegisteringExpressionsThatNeedParentheses(NonTerminal nonTerminal)
         {
-            foreach (var childBnfTerms in Unparser.GetChildBnfTermLists(nonTerminal))
+            foreach (var childBnfTerms in Unparser.GetChildBnfTermListsLeftToRight(nonTerminal))
             {
                 Unparse(
                     new UnparsableObject(nonTerminal, obj: null),
@@ -364,10 +365,13 @@ namespace Sarcasm.Unparsing
             return OngoingExpressionUnparse || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
-        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children)
+        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children, Unparser.Direction direction)
         {
             if (ongoingExpressionUnparseLevel == 0)
+            {
                 ResetMutableState();
+                this.direction = direction;
+            }
 
             using (ongoingExpressionUnparseLevel.IncrAutoDecr())
                 return Unparse(self, children, initialization: false);
@@ -446,8 +450,8 @@ namespace Sarcasm.Unparsing
 
                 if (needParentheses && !initialization)
                 {
-                    childList.Insert(0, GetParenthesis(ParenthesisKind.Left, self));
-                    childList.Add(GetParenthesis(ParenthesisKind.Right, self));
+                    childList.Insert(0, GetParenthesis(direction == Unparser.Direction.LeftToRight ? ParenthesisKind.Left : ParenthesisKind.Right, self));
+                    childList.Add(GetParenthesis(direction == Unparser.Direction.LeftToRight ? ParenthesisKind.Right : ParenthesisKind.Left, self));
                 }
 
                 if (!initialization)
@@ -457,13 +461,13 @@ namespace Sarcasm.Unparsing
                 {
                     Operator prevOperator = null;
 
-                    foreach (Operator @operator in operators.Concat(new Operator[] { null }))    // extra 'null' element for the inner 'while' cycle to finish
+                    foreach (Operator @operator in operators.Concat(null))    // extra 'null' element for the inner 'while' cycle to finish
                     {
                         using (new AutoCleanup(
                             () => BeginSurroundingOperatorsContext(
                                     self.BnfTerm,
-                                    GetLeftFlaggedOperatorForInside(prevOperator, initialization),
-                                    GetRightFlaggedOperatorForInside(@operator, initialization)),
+                                    GetLeftFlaggedOperatorForInside(direction == Unparser.Direction.LeftToRight ? prevOperator : @operator, initialization),
+                                    GetRightFlaggedOperatorForInside(direction == Unparser.Direction.LeftToRight ? @operator : prevOperator, initialization)),
                             () => EndSurroundingOperatorsContext()))
                         {
                             while (childEnumerator.MoveNext() && (@operator == null || childEnumerator.Current.BnfTerm != @operator.BnfTerm))
@@ -543,7 +547,7 @@ namespace Sarcasm.Unparsing
             else if (@operator is Operator.Actual)
                 return GetFlaggedOperatorForInside((Operator.Actual)@operator, initialization);
             else
-                throw new ArgumentException("invalid @operator", "@operator");
+                throw new ArgumentException("invalid operator", "@operator");
         }
 
         private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableObject unparsableObject, bool initialization)
@@ -815,7 +819,7 @@ namespace Sarcasm.Unparsing
             {
                 return object.ReferenceEquals(this, that)
                     ||
-                    that != null &&
+                    !object.ReferenceEquals(that, null) &&
                     this.Expression == that.Expression &&
                     this.Left == that.Left &&
                     this.Right == that.Right;

@@ -278,7 +278,7 @@ namespace Sarcasm.Unparsing
 
     internal class InsertedUtokens : UtokenBase, IComparable<InsertedUtokens>
     {
-        public enum Kind { Before, After, Between }
+        public enum Kind { Left, Right, Between }
 
         public readonly Kind kind;
         public readonly double priority;
@@ -349,6 +349,54 @@ namespace Sarcasm.Unparsing
 
                 return _specificScore.Value;
             }
+        }
+    }
+
+    internal class DeferredUtokens : UtokenBase
+    {
+        private readonly Func<IEnumerable<UtokenBase>> utokenYielder;
+        private IReadOnlyList<UtokenBase> calculatedUtokens;
+
+        private readonly UnparsableObject helpSelf;
+        private readonly string helpMessage;
+        private readonly object helpCalculatedObject;
+
+        public DeferredUtokens(Func<IEnumerable<UtokenBase>> utokenYielder, UnparsableObject helpSelf = null, string helpMessage = null, object helpCalculatedObject = null)
+        {
+            this.utokenYielder = utokenYielder;
+            this.helpSelf = helpSelf;
+            this.helpMessage = helpMessage;
+            this.helpCalculatedObject = helpCalculatedObject;
+            this.calculatedUtokens = null;
+        }
+
+        public IReadOnlyList<UtokenBase> GetUtokens()
+        {
+            CalculateUtokens();
+            return calculatedUtokens;
+        }
+
+        public void CalculateUtokens()
+        {
+            if (calculatedUtokens == null)
+                calculatedUtokens = utokenYielder().ToList();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("deferred utokens for '{0}'{1}{2}",
+                helpSelf != null ? helpSelf.ToString() : "<<UNKNOWN>>",
+                helpMessage != null ? " [" + helpMessage + "]" : string.Empty,
+                HelpCalculatedObjectToString()
+                );
+        }
+
+        private string HelpCalculatedObjectToString()
+        {
+            if (helpCalculatedObject != null)
+                return (calculatedUtokens != null ? " calculated" : " non-calculated") + " object: {" + helpCalculatedObject + "}";
+            else
+                return string.Empty;
         }
     }
 }

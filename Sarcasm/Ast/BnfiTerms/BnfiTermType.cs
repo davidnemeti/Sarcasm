@@ -194,9 +194,15 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
         {
-            foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, ruleIndex) => new { BnfTerm = childBnfTerm, RuleIndex = ruleIndex }))
+            foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
+                new
+                {
+                    BnfTerm = childBnfTerm,
+                    RuleIndex = direction == Unparser.Direction.LeftToRight ? index : childBnfTerms.Count - 1 - index
+                }
+                ))
             {
                 object childObj;
 

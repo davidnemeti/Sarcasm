@@ -469,7 +469,7 @@ namespace Sarcasm.Ast
                 throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
         }

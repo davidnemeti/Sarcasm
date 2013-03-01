@@ -9,6 +9,41 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static IEnumerable<T> ReverseOptimized<T>(this IEnumerable<T> items)
+        {
+            if (items is IList<T>)
+                return ReverseOptimized((IList<T>)items);
+            else
+                return items.Reverse();
+        }
+
+        public static IList<T> ReverseOptimized<T>(this IList<T> items)
+        {
+            return new ReverseList<T>(items);
+        }
+
+        public static System.Collections.IEnumerable ReverseNonGenericOptimized(this System.Collections.IEnumerable items)
+        {
+            if (items is System.Collections.IList)
+                return ReverseNonGenericOptimized((System.Collections.IList)items);
+            else
+                return items.ReverseNonGeneric();
+        }
+
+        public static System.Collections.IEnumerable ReverseNonGeneric(this System.Collections.IEnumerable items)
+        {
+            var itemsFullyRead = new System.Collections.ArrayList();
+            foreach (var item in items)
+                itemsFullyRead.Add(item);
+            return ReverseNonGenericOptimized(itemsFullyRead);
+        }
+
+        public static System.Collections.IEnumerable ReverseNonGenericOptimized(this System.Collections.IList items)
+        {
+            for (int i = items.Count - 1; i >= 0; i--)
+                yield return items[i];
+        }
+
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> items, T last)
         {
             foreach (T item in items)
@@ -201,7 +236,7 @@ namespace Sarcasm
         [Conditional("TRACE")]
         public static void Trace(this TraceSource ts, TraceEventType traceEventType, object obj)
         {
-            ts.TraceEvent(traceEventType, 0, obj.ToString());
+            ts.TraceEvent(traceEventType, 0, obj != null ? obj.ToString() : "<<NULL>>");
         }
 
         [Conditional("TRACE")]
@@ -219,7 +254,7 @@ namespace Sarcasm
         [Conditional("DEBUG")]
         public static void Debug(this TraceSource ts, object obj)
         {
-            ts.TraceEvent(TraceEventType.Verbose, 0, obj.ToString());
+            ts.TraceEvent(TraceEventType.Verbose, 0, obj != null ? obj.ToString() : "<<NULL>>");
         }
 
         [Conditional("DEBUG")]

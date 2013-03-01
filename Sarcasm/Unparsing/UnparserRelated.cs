@@ -42,9 +42,9 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens)
+        internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
         {
-            return Formatter.PostProcess(utokens);
+            return Formatter.PostProcess(utokens, direction, indentEmptyLines);
         }
     }
 
@@ -53,7 +53,7 @@ namespace Sarcasm.Unparsing
     public interface IUnparsableNonTerminal : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableObject> GetChildren(BnfTermList childBnfTerms, object obj);
+        IEnumerable<UnparsableObject> GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction);
         int? GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children);
     }
 
@@ -126,7 +126,7 @@ namespace Sarcasm.Unparsing
         {
             return object.ReferenceEquals(this, that)
                 ||
-                that != null &&
+                !object.ReferenceEquals(that, null) &&
                 this.BnfTerm == that.BnfTerm &&
                 this.Obj == that.Obj;
         }
@@ -174,15 +174,15 @@ namespace Sarcasm.Unparsing
         private void CheckIfValid(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
         {
             if (!IsCalculated(relative))
-                throw new InvalidOperationException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
+                throw new NonCalculatedException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
             else if (IsThrownOut(relative))
-                throw new InvalidOperationException(string.Format("Tried to use a thrown out relative '{0}' for {1}", nameOfRelative, this));
+                throw new ThrownOutException(string.Format("Tried to use a thrown out relative '{0}' for {1}", nameOfRelative, this));
         }
 
         private void CheckIfNotThrownOut(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
         {
             if (IsThrownOut(relative))
-                throw new InvalidOperationException(string.Format("Tried to set a thrown out relative '{0}' for {1}", nameOfRelative, this));
+                throw new ThrownOutException(string.Format("Tried to set a thrown out relative '{0}' for {1}", nameOfRelative, this));
         }
 
         internal static bool IsCalculated(UnparsableObject unparsableObject)

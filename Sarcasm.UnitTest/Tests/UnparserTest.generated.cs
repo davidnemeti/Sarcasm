@@ -22,128 +22,266 @@ namespace Sarcasm.UnitTest
     {
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary1_TS()
+        public void Unparse_Binary1_Typesafe()
         {
-            ReunparseCheckTS(B.Expression, "Binary1.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary1.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Binary1()
         {
-            ReunparseCheck(B.Expression, "Binary1.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Binary1.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary2_TS()
+        public void Unparse_Binary1_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Binary2.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary1.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Binary2_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary2.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Binary2()
         {
-            ReunparseCheck(B.Expression, "Binary2.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Binary2.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary3_TS()
+        public void Unparse_Binary2_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Binary3.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary2.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Binary3_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary3.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Binary3()
         {
-            ReunparseCheck(B.Expression, "Binary3.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Binary3.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary4_TS()
+        public void Unparse_Binary3_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Binary4.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary3.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Binary4_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary4.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Binary4()
         {
-            ReunparseCheck(B.Expression, "Binary4.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Binary4.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_MiniPL_TS()
+        public void Unparse_Binary4_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Program, "MiniPL.mplp");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Binary4.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Program, "MiniPL.mplp", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_MiniPL()
         {
-            ReunparseCheck(B.Program, "MiniPL.mplp");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Program, "MiniPL.mplp", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary1_TS()
+        public void Unparse_MiniPL_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Unary1.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Program, "MiniPL.mplp", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL2_Typesafe()
+        {
+            unparser.Formatting = formatting2;
+            ReunparseCheckTS(B.Program, "MiniPL2.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL2()
+        {
+            unparser.Formatting = formatting2;
+            ReunparseCheck(B.Program, "MiniPL2.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL2_Typesafe_Reversed()
+        {
+            unparser.Formatting = formatting2;
+            ReunparseCheckTS(B.Program, "MiniPL2.mplp", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL3_Typesafe()
+        {
+            unparser.Formatting = formatting3;
+            ReunparseCheckTS(B.Program, "MiniPL3.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL3()
+        {
+            unparser.Formatting = formatting3;
+            ReunparseCheck(B.Program, "MiniPL3.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPL3_Typesafe_Reversed()
+        {
+            unparser.Formatting = formatting3;
+            ReunparseCheckTS(B.Program, "MiniPL3.mplp", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Unary1_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary1.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Unary1()
         {
-            ReunparseCheck(B.Expression, "Unary1.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Unary1.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary2_TS()
+        public void Unparse_Unary1_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Unary2.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary1.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Unary2_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary2.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Unary2()
         {
-            ReunparseCheck(B.Expression, "Unary2.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Unary2.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary3_TS()
+        public void Unparse_Unary2_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Unary3.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary2.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Unary3_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary3.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Unary3()
         {
-            ReunparseCheck(B.Expression, "Unary3.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Unary3.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary4_TS()
+        public void Unparse_Unary3_Typesafe_Reversed()
         {
-            ReunparseCheckTS(B.Expression, "Unary4.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary3.expr", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Unary4_Typesafe()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: true);
         }
 
         [TestMethod]
         [TestCategory(category)]
         public void Unparse_Unary4()
         {
-            ReunparseCheck(B.Expression, "Unary4.expr");
+            unparser.Formatting = formattingDefault;
+            ReunparseCheck(B.Expression, "Unary4.expr", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_Unary4_Typesafe_Reversed()
+        {
+            unparser.Formatting = formattingDefault;
+            ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: false);
         }
 
 	}

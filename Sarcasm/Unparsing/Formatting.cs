@@ -46,6 +46,7 @@ namespace Sarcasm.Unparsing
         private const string tabDefault = "\t";
         private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));
         private const string whiteSpaceBetweenUtokensDefault = spaceDefault;
+        private const bool indentEmptyLinesDefault = false;
         private static readonly IFormatProvider formatProviderDefault = CultureInfo.InvariantCulture;
 
         internal static BnfTerm AnyBnfTerm { get { return _AnyBnfTerm.Instance; } }
@@ -56,14 +57,24 @@ namespace Sarcasm.Unparsing
 
         private IDictionary<BnfTermPartialContext, BlockIndentation> contextToBlockIndentation = new Dictionary<BnfTermPartialContext, BlockIndentation>();
         private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation> contextToBlockIndentation2 = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation>();
-        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensBefore = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
-        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensAfter = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
+        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensLeft = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
+        private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensRight = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
         private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens> contextToUtokensBetween = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, InsertedUtokens>();
         private ISet<BnfTerm> leftBnfTerms = new HashSet<BnfTerm>();
         private ISet<BnfTermPartialContext> rightContexts = new HashSet<BnfTermPartialContext>();
         private int maxContextLength = 0;
 
+        public string NewLine { get; set; }
+        public string Space { get; set; }
+        public string Tab { get; set; }
+        public string IndentUnit { get; set; }
+        public string WhiteSpaceBetweenUtokens { get; set; }
+        public bool IndentEmptyLines { get; set; }
+        public IFormatProvider FormatProvider { get; private set; }
+
         #endregion
+
+        public CultureInfo CultureInfo { get { return FormatProvider as CultureInfo; } }
 
         #region Construction
 
@@ -84,12 +95,14 @@ namespace Sarcasm.Unparsing
 
         protected Formatting(IFormatProvider formatProvider)
         {
+            this.FormatProvider = formatProvider;
+
             this.NewLine = newLineDefault;
             this.Space = spaceDefault;
             this.Tab = tabDefault;
             this.IndentUnit = indentUnitDefault;
             this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
-            this.FormatProvider = formatProvider;
+            this.IndentEmptyLines = indentEmptyLinesDefault;
         }
 
         #endregion
@@ -97,14 +110,6 @@ namespace Sarcasm.Unparsing
         #region Interface to grammar
 
         #region Settings
-
-        public string NewLine { get; set; }
-        public string Space { get; set; }
-        public string Tab { get; set; }
-        public string IndentUnit { get; set; }
-        public string WhiteSpaceBetweenUtokens { get; set; }
-        public IFormatProvider FormatProvider { get; private set; }
-        public CultureInfo CultureInfo { get { return FormatProvider as CultureInfo; } }
 
         public void SetFormatProviderIndependentlyFromParser(IFormatProvider formatProvider)
         {
@@ -143,41 +148,41 @@ namespace Sarcasm.Unparsing
 
         #region Insert
 
-        #region Before
+        #region Left
 
-        public void InsertUtokensBeforeAny(params UtokenInsert[] utokensBefore)
+        public void InsertUtokensLeftOfAny(params UtokenInsert[] utokensLeft)
         {
-            InsertUtokensBefore(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensBefore: utokensBefore);
+            InsertUtokensLeftOf(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensLeft: utokensLeft);
         }
 
-        public void InsertUtokensBefore(BnfTermPartialContext context, params UtokenInsert[] utokensBefore)
+        public void InsertUtokensLeftOf(BnfTermPartialContext context, params UtokenInsert[] utokensLeft)
         {
-            InsertUtokensBefore(context, priority: priorityDefault, behavior: behaviorDefault, utokensBefore: utokensBefore);
+            InsertUtokensLeftOf(context, priority: priorityDefault, behavior: behaviorDefault, utokensLeft: utokensLeft);
         }
 
-        public void InsertUtokensBefore(BnfTermPartialContext context, double priority, Behavior behavior, params UtokenInsert[] utokensBefore)
+        public void InsertUtokensLeftOf(BnfTermPartialContext context, double priority, Behavior behavior, params UtokenInsert[] utokensLeft)
         {
-            contextToUtokensBefore.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Before, priority, behavior, utokensBefore, context));
+            contextToUtokensLeft.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Left, priority, behavior, utokensLeft, context));
             RegisterContext(context);
         }
 
         #endregion
 
-        #region After
+        #region Right
 
-        public void InsertUtokensAfterAny(params UtokenInsert[] utokensAfter)
+        public void InsertUtokensRightOfAny(params UtokenInsert[] utokensRight)
         {
-            InsertUtokensAfter(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensAfter: utokensAfter);
+            InsertUtokensRightOf(BnfTermPartialContext.Any, priority: anyPriorityDefault, behavior: anyBehaviorDefault, utokensRight: utokensRight);
         }
 
-        public void InsertUtokensAfter(BnfTermPartialContext context, params UtokenInsert[] utokensAfter)
+        public void InsertUtokensRightOf(BnfTermPartialContext context, params UtokenInsert[] utokensRight)
         {
-            InsertUtokensAfter(context, priority: priorityDefault, behavior: behaviorDefault, utokensAfter: utokensAfter);
+            InsertUtokensRightOf(context, priority: priorityDefault, behavior: behaviorDefault, utokensRight: utokensRight);
         }
 
-        public void InsertUtokensAfter(BnfTermPartialContext context, double priority, Behavior behavior, params UtokenInsert[] utokensAfter)
+        public void InsertUtokensRightOf(BnfTermPartialContext context, double priority, Behavior behavior, params UtokenInsert[] utokensRight)
         {
-            contextToUtokensAfter.Add(context, new InsertedUtokens(InsertedUtokens.Kind.After, priority, behavior, utokensAfter, context));
+            contextToUtokensRight.Add(context, new InsertedUtokens(InsertedUtokens.Kind.Right, priority, behavior, utokensRight, context));
             RegisterContext(context);
         }
 
@@ -197,8 +202,8 @@ namespace Sarcasm.Unparsing
 
         public void InsertUtokensAround(BnfTermPartialContext context, double priority, Behavior behavior, params UtokenInsert[] utokensAround)
         {
-            InsertUtokensBefore(context, priority, behavior, utokensAround);
-            InsertUtokensAfter(context, priority, behavior, utokensAround);
+            InsertUtokensLeftOf(context, priority, behavior, utokensAround);
+            InsertUtokensRightOf(context, priority, behavior, utokensAround);
         }
 
         #endregion
@@ -259,31 +264,35 @@ namespace Sarcasm.Unparsing
 
         #region Interface to unparser
 
-        internal bool HasBlockIndentation(IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
+        internal bool TryGetBlockIndentation(IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
         {
-            return HasValue(contextToBlockIndentation, targetAndAncestors, context => context, out blockIndentation);
+            bool success = TryGetValue(contextToBlockIndentation, targetAndAncestors, context => context, out blockIndentation);
+            if (blockIndentation == null) blockIndentation = BlockIndentation.Null;
+            return success;
         }
 
-        internal bool HasBlockIndentation(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
+        internal bool TryGetBlockIndentation(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
         {
             var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
-            return HasValue(contextToBlockIndentation2, leftCandidates, targetAndAncestors, out blockIndentation);
+            bool success = TryGetValue(contextToBlockIndentation2, leftCandidates, targetAndAncestors, out blockIndentation);
+            if (blockIndentation == null) blockIndentation = BlockIndentation.Null;
+            return success;
         }
 
-        internal bool HasUtokensBefore(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensBefore)
+        internal bool TryGetUtokensLeft(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensLeft)
         {
-            return HasValue(contextToUtokensBefore, targetAndAncestors, context => context, out insertedUtokensBefore);
+            return TryGetValue(contextToUtokensLeft, targetAndAncestors, context => context, out insertedUtokensLeft);
         }
 
-        internal bool HasUtokensAfter(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensAfter)
+        internal bool TryGetUtokensRight(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensRight)
         {
-            return HasValue(contextToUtokensAfter, targetAndAncestors, context => context, out insertedUtokensAfter);
+            return TryGetValue(contextToUtokensRight, targetAndAncestors, context => context, out insertedUtokensRight);
         }
 
-        internal bool HasUtokensBetween(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> rightTargetAndAncestors, out InsertedUtokens insertedUtokensBetween)
+        internal bool TryGetUtokensBetween(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> rightTargetAndAncestors, out InsertedUtokens insertedUtokensBetween)
         {
             var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
-            return HasValue(contextToUtokensBetween, leftCandidates, rightTargetAndAncestors, out insertedUtokensBetween);
+            return TryGetValue(contextToUtokensBetween, leftCandidates, rightTargetAndAncestors, out insertedUtokensBetween);
         }
 
         internal bool IsLeftBnfTermUsed(BnfTerm leftBnfTerm)
@@ -320,12 +329,12 @@ namespace Sarcasm.Unparsing
             RegisterContext(rightContext);
         }
 
-        private bool HasValue<TValue>(IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, TValue> keyToValue, IEnumerable<BnfTerm> leftBnfTerms,
+        private bool TryGetValue<TValue>(IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, TValue> keyToValue, IEnumerable<BnfTerm> leftBnfTerms,
             IEnumerable<BnfTerm> targetAndAncestors, out TValue value)
         {
             foreach (BnfTerm leftBnfTerm in leftBnfTerms)
             {
-                if (HasValue(keyToValue, targetAndAncestors, context => Tuple.Create(leftBnfTerm, context), out value))
+                if (TryGetValue(keyToValue, targetAndAncestors, context => Tuple.Create(leftBnfTerm, context), out value))
                     return true;
             }
 
@@ -335,7 +344,7 @@ namespace Sarcasm.Unparsing
             return false;
         }
 
-        private bool HasValue<TKey, TValue>(IDictionary<TKey, TValue> keyToValue, IEnumerable<BnfTerm> targetAndAncestors,
+        private bool TryGetValue<TKey, TValue>(IDictionary<TKey, TValue> keyToValue, IEnumerable<BnfTerm> targetAndAncestors,
             Func<BnfTermPartialContext, TKey> contextToKey, out TValue value)
         {
             for (var context = new BnfTermPartialContext(targetAndAncestors.Where(IsImportant).Take(this.maxContextLength).Reverse());
@@ -389,7 +398,7 @@ namespace Sarcasm.Unparsing
         {
             return object.ReferenceEquals(this, that)
                 ||
-                that != null &&
+                !object.ReferenceEquals(that, null) &&
                 this.ancestorsAndTarget.Length == that.ancestorsAndTarget.Length &&
                 this.ancestorsAndTarget.SequenceEqual(that.ancestorsAndTarget);
         }
@@ -431,29 +440,111 @@ namespace Sarcasm.Unparsing
 
     #region BlockIndentation
 
-    public class BlockIndentation
+    public class BlockIndentation : IEquatable<BlockIndentation>
     {
         internal enum Kind
         {
+            Null,
+            Deferred,
             Indent,
             Unindent,
-            NoIndent,
+            ZeroIndent,
         }
 
-        internal readonly Kind kind;
+        private Kind kind;
+        private readonly bool isReadonly;
+        private DeferredUtokens leftDeferred;
+        private DeferredUtokens rightDeferred;
 
-        internal BlockIndentation(Kind kind)
+        private BlockIndentation(Kind kind, bool isReadonly)
         {
             this.kind = kind;
+            this.isReadonly = isReadonly;
         }
 
-        public static readonly BlockIndentation Indent = new BlockIndentation(Kind.Indent);
-        public static readonly BlockIndentation Unindent = new BlockIndentation(Kind.Unindent);
-        public static readonly BlockIndentation NoIndent = new BlockIndentation(Kind.NoIndent);
+        internal static readonly BlockIndentation Null = new BlockIndentation(Kind.Null, isReadonly: true);
+        public static readonly BlockIndentation Indent = new BlockIndentation(Kind.Indent, isReadonly: true);
+        public static readonly BlockIndentation Unindent = new BlockIndentation(Kind.Unindent, isReadonly: true);
+        public static readonly BlockIndentation ZeroIndent = new BlockIndentation(Kind.ZeroIndent, isReadonly: true);
+
+        internal static BlockIndentation Defer()
+        {
+            return new BlockIndentation(Kind.Deferred, isReadonly: false);
+        }
+
+        internal void CopyKindFrom(BlockIndentation source)
+        {
+            if (this.isReadonly)
+                throw new InvalidOperationException("Internal error: cannot change a readonly BlockIndentation");
+
+            this.kind = source.kind;
+        }
 
         public override string ToString()
         {
             return ":" + kind + ":";
+        }
+
+        internal bool IsDeferred()
+        {
+            return kind == Kind.Deferred;
+        }
+
+        internal DeferredUtokens LeftDeferred
+        {
+            set
+            {
+                if (leftDeferred != null)
+                    throw new InvalidOperationException("Double set is not allowed for LeftDeferred");
+
+                leftDeferred = value;
+            }
+            get { return leftDeferred; }
+        }
+
+        internal DeferredUtokens RightDeferred
+        {
+            set
+            {
+                if (rightDeferred != null)
+                    throw new InvalidOperationException("Double set is not allowed for RightDeferred");
+
+                rightDeferred = value;
+            }
+            get { return rightDeferred; }
+        }
+
+        internal bool IsNull()
+        {
+            return kind == Kind.Null;
+        }
+
+        public bool Equals(BlockIndentation that)
+        {
+            return object.ReferenceEquals(this, that)
+                ||
+                !object.ReferenceEquals(that, null) &&
+                this.kind == that.kind;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is BlockIndentation && Equals((BlockIndentation)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.kind.GetHashCode();
+        }
+
+        public static bool operator ==(BlockIndentation context1, BlockIndentation context2)
+        {
+            return object.ReferenceEquals(context1, context2) || !object.ReferenceEquals(context1, null) && context1.Equals(context2);
+        }
+
+        public static bool operator !=(BlockIndentation context1, BlockIndentation context2)
+        {
+            return !(context1 == context2);
         }
     }
 

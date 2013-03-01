@@ -450,14 +450,18 @@ namespace Sarcasm.Ast
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(BnfTermList childBnfTerms, object obj)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
 
             if (collection == null && this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
                 yield break;    // this null value should be handled as an empty collection
 
+            if (direction == Unparser.Direction.RightToLeft)
+                collection = collection.ReverseNonGenericOptimized();
+
             bool firstElement = true;
+
             foreach (object element in collection)
             {
                 if (!firstElement && this.delimiter != null)
