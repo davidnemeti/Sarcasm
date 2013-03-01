@@ -743,7 +743,15 @@ namespace Sarcasm.Unparsing
             UtokenBase prevUtoken = null;
             UtokenBase prevNotControlUtoken = null;
 
-            foreach (UtokenBase utoken in utokens)
+            /*
+             * We have to yield the indentation after consuming the last utoken (regardless of left-to-right or right-to-left unparse),
+             * so we use an extra null utoken.
+             * 
+             * e.g.: In case of right-to-left unparse if utokens enumerable is not empty and the last processed utoken (which is the leftmost utoken)
+             * is not a line separator (which is the common case) then we didn't yielded the utokenindent for the last processed line
+             * (which is the topmost line), so we yield it now when processing the extra null utoken.
+             * */
+            foreach (UtokenBase utoken in utokens.Concat(null))
             {
                 if (IsControl(utoken))
                 {
@@ -789,7 +797,8 @@ namespace Sarcasm.Unparsing
                     if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
                         yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
 
-                    yield return utoken;
+                    if (utoken != null)
+                        yield return utoken;
 
                     allowWhitespaceBetweenUtokens = true;
                     prevNotControlUtoken = utoken;
@@ -800,25 +809,20 @@ namespace Sarcasm.Unparsing
 
             // TODO: REVIEW the following
 
-            /*
-             * In case of right-to-left unparse if utokens enumerable is not empty and the last processed utoken (which is the leftmost utoken)
-             * is not a line separator (which is the common case) then we didn't yielded the utokenindent for the last processed line
-             * (which is the topmost line), so we yield it now.
-             * */
-            if (direction == Unparser.Direction.RightToLeft && prevUtoken != null && !IsLineSeparator(prevUtoken))
-                yield return new UtokenIndent(indentLevel);
-            else if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken))
-                yield return new UtokenIndent(indentLevelForCurrentLine);
+            //if (direction == Unparser.Direction.RightToLeft && prevUtoken != null && !IsLineSeparator(prevUtoken))
+            //    yield return new UtokenIndent(indentLevel);
+            //else if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken))
+            //    yield return new UtokenIndent(indentLevelForCurrentLine);
         }
 
         private static bool IsLineSeparator(UtokenBase utoken)
         {
-            return utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine;
+            return utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine || utoken == null;
         }
 
         private static bool IsWhitespace(UtokenBase utoken)
         {
-            return utoken is UtokenWhitespace;
+            return utoken is UtokenWhitespace || utoken == null;
         }
 
         private static bool IsControl(UtokenBase utoken)
