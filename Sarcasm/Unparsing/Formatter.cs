@@ -740,7 +740,6 @@ namespace Sarcasm.Unparsing
             int indentLevelForCurrentLine = 0;
             Stack<int> storedIndentLevel = new Stack<int>();
             bool allowWhitespaceBetweenUtokens = true;
-            UtokenBase prevUtoken = null;
             UtokenBase prevNotControlUtoken = null;
 
             /*
@@ -786,15 +785,15 @@ namespace Sarcasm.Unparsing
                 }
                 else
                 {
-                    if (direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (indentEmptyLines || !IsLineSeparator(prevUtoken)))
+                    if (direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (indentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     indentLevelForCurrentLine = indentLevel;
 
-                    if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken) && (indentEmptyLines || !IsLineSeparator(utoken)))
+                    if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevNotControlUtoken) && (indentEmptyLines || !IsLineSeparator(utoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
-                    if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
+                    if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && utoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
                         yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
 
                     if (utoken != null)
@@ -803,8 +802,6 @@ namespace Sarcasm.Unparsing
                     allowWhitespaceBetweenUtokens = true;
                     prevNotControlUtoken = utoken;
                 }
-
-                prevUtoken = utoken;
             }
 
             // TODO: REVIEW the following
@@ -822,7 +819,7 @@ namespace Sarcasm.Unparsing
 
         private static bool IsWhitespace(UtokenBase utoken)
         {
-            return utoken is UtokenWhitespace || utoken == null;
+            return utoken is UtokenWhitespace;
         }
 
         private static bool IsControl(UtokenBase utoken)
