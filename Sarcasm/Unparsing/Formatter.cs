@@ -202,6 +202,7 @@ namespace Sarcasm.Unparsing
             catch (NonCalculatedException)
             {
                 // top left node or someone in the chain is non-calculated -> defer execution
+
                 return new[]
                 {
                     new DeferredUtokens(
@@ -220,13 +221,16 @@ namespace Sarcasm.Unparsing
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
-            foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
+            if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
             {
-                InsertedUtokens insertedUtokensBetween;
-                if (formatting.TryGetUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
+                foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
                 {
-                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
-                    yield return insertedUtokensBetween;
+                    InsertedUtokens insertedUtokensBetween;
+                    if (formatting.TryGetUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
+                    {
+                        Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
+                        yield return insertedUtokensBetween;
+                    }
                 }
             }
         }
@@ -285,12 +289,15 @@ namespace Sarcasm.Unparsing
 
             // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
 
-            foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
+            if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
             {
-                if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
+                foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
                 {
-                    Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
-                    break;
+                    if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
+                    {
+                        Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
+                        break;
+                    }
                 }
             }
 
