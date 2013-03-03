@@ -49,6 +49,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="MiniPL_long.mplp">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MiniPL_long.tt</DependentUpon>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="MiniPL_long.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>MiniPL_long.mplp</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MiniPL\MiniPL.csproj">
@@ -59,6 +69,9 @@
       <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
       <Name>Sarcasm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,0 +1,3009 @@
+﻿
+program HelloWorld
+
+namespace Sea.Shell
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+function Fibonacci(var n : integer) : integer
+begin
+    if (n = 0) then
+        return 0;
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+begin
+    var number : integer := 5;
+    WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
+end.

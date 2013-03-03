@@ -21,30 +21,53 @@ namespace ConsoleApplication1
 {
     class Program
     {
-        static string path = @"..\..\..\Sarcasm.UnitTest\Test files\MiniPL.mplp";
-        static string path2 = @"..\..\..\Sarcasm.UnitTest\Test files\Binary1.expr";
+        static string path = @"MiniPL_long.mplp";
+//        static string path2 = @"..\..\..\Sarcasm.UnitTest\Test files\Binary1.expr";
 
         static void Main(string[] args)
         {
-            var grammar = new MiniPL.GrammarP();
-            ////Console.WriteLine(grammar.GetNonTerminalsAsText());
-            //////Console.WriteLine();
-            //////Console.WriteLine(grammar.GetNonTerminalsAsText(omitBoundMembers: true));
+            var stopwatch = Stopwatch.StartNew();
 
-            //var stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
+            var grammar = new MiniPL.GrammarP();
+            ShowTimeAndRestart(stopwatch, "Creation of grammar");
+
             var parser = MultiParser.Create(grammar);
+            ShowTimeAndRestart(stopwatch, "Creation of parser");
+
+            var parseTree = parser.Parse(File.ReadAllText(path), path);
+            ShowTimeAndRestart(stopwatch, "Parsing");
+
+            var astRootValue = parseTree.RootAstValue;
+
+            Unparser unparser = new Unparser(grammar);
+            ShowTimeAndRestart(stopwatch, "Creation of unparser");
+
+            var utokens = unparser.Unparse(astRootValue).ToList();
+            ShowTimeAndRestart(stopwatch, "Unparsing to utokens");
+
+            string unparsedText = utokens.AsString(unparser);
+            ShowTimeAndRestart(stopwatch, "Converting utokens to string");
+
+            string unparsedText2 = unparser.Unparse(astRootValue).AsString(unparser);
+            ShowTimeAndRestart(stopwatch, "Unparsing to string");
+
+            var utokensReverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ToList();
+            ShowTimeAndRestart(stopwatch, "Reverse unparsing to utokens");
+
+            string unparsedText2Reverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).AsString(unparser);
+            ShowTimeAndRestart(stopwatch, "Reverse unparsing to string");
+
             //stopwatch.Stop();
             //Console.WriteLine(stopwatch.ElapsedMilliseconds);
             //stopwatch.Start();
             //var parser2 = MultiParser.Create(grammar);
             //stopwatch.Stop();
             //Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            var parseTree = parser.Parse(File.ReadAllText(path), path);
-            MiniPL.DomainModel.Program astValue = parseTree.RootAstValue;
 
-            var parseTree2 = parser.Parse(File.ReadAllText(path2), path2, grammar.B.Expression);
-            var parseTree3 = parser.Parse(File.ReadAllText(path2), path2, (NonTerminal)grammar.B.Expression);
-            MiniPL.DomainModel.Expression astValue2 = parseTree2.RootAstValue;
+            //var parseTree2 = parser.Parse(File.ReadAllText(path2), path2, grammar.B.Expression);
+            //var parseTree3 = parser.Parse(File.ReadAllText(path2), path2, (NonTerminal)grammar.B.Expression);
+            //MiniPL.DomainModel.Expression astValue2 = parseTree2.RootAstValue;
 
             //Unparser unparser = new Unparser(grammar);
 
@@ -54,6 +77,15 @@ namespace ConsoleApplication1
 
             ////string str = unparser.Unparse(parseTree.Root.AstNode).AsString(unparser);
             ////Console.WriteLine(str);
+        }
+
+        private static TimeSpan ShowTimeAndRestart(Stopwatch stopwatch, string message)
+        {
+            stopwatch.Stop();
+            var timeSpan = stopwatch.Elapsed;
+            Console.WriteLine("{0}: time elapsed = {1}", message, stopwatch.Elapsed);
+            stopwatch.Restart();
+            return timeSpan;
         }
     }
 }
