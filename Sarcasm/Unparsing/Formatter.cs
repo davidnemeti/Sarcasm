@@ -803,13 +803,6 @@ namespace Sarcasm.Unparsing
                     prevNotControlUtoken = utoken;
                 }
             }
-
-            // TODO: REVIEW the following
-
-            //if (direction == Unparser.Direction.RightToLeft && prevUtoken != null && !IsLineSeparator(prevUtoken))
-            //    yield return new UtokenIndent(indentLevel);
-            //else if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevUtoken))
-            //    yield return new UtokenIndent(indentLevelForCurrentLine);
         }
 
         private static bool IsLineSeparator(UtokenBase utoken)
