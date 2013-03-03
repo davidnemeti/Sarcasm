@@ -273,8 +273,7 @@ namespace Sarcasm.Unparsing
 
         internal bool TryGetBlockIndentation(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
         {
-            var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
-            bool success = TryGetValue(contextToBlockIndentation2, leftCandidates, targetAndAncestors, out blockIndentation);
+            bool success = TryGetValue(contextToBlockIndentation2, leftBnfTerm, targetAndAncestors, out blockIndentation);
             if (blockIndentation == null) blockIndentation = BlockIndentation.Null;
             return success;
         }
@@ -291,13 +290,7 @@ namespace Sarcasm.Unparsing
 
         internal bool TryGetUtokensBetween(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> rightTargetAndAncestors, out InsertedUtokens insertedUtokensBetween)
         {
-            var leftCandidates = new[] { leftBnfTerm, AnyBnfTerm };
-            return TryGetValue(contextToUtokensBetween, leftCandidates, rightTargetAndAncestors, out insertedUtokensBetween);
-        }
-
-        internal bool IsLeftBnfTermUsed(BnfTerm leftBnfTerm)
-        {
-            return leftBnfTerms.Contains(leftBnfTerm);
+            return TryGetValue(contextToUtokensBetween, leftBnfTerm, rightTargetAndAncestors, out insertedUtokensBetween);
         }
 
         internal bool DoesTargetNeedsLeftBnfTerm(IEnumerable<BnfTerm> targetAndAncestors)
@@ -329,19 +322,10 @@ namespace Sarcasm.Unparsing
             RegisterContext(rightContext);
         }
 
-        private bool TryGetValue<TValue>(IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, TValue> keyToValue, IEnumerable<BnfTerm> leftBnfTerms,
+        private bool TryGetValue<TValue>(IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, TValue> keyToValue, BnfTerm leftBnfTerm,
             IEnumerable<BnfTerm> targetAndAncestors, out TValue value)
         {
-            foreach (BnfTerm leftBnfTerm in leftBnfTerms)
-            {
-                if (TryGetValue(keyToValue, targetAndAncestors, context => Tuple.Create(leftBnfTerm, context), out value))
-                    return true;
-            }
-
-            // NOTE that (Any,*), (*,Any) and (Any,Any) has been already processed
-
-            value = default(TValue);
-            return false;
+            return TryGetValue(keyToValue, targetAndAncestors, context => Tuple.Create(leftBnfTerm, context), out value);
         }
 
         private bool TryGetValue<TKey, TValue>(IDictionary<TKey, TValue> keyToValue, IEnumerable<BnfTerm> targetAndAncestors,

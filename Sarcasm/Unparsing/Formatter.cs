@@ -220,7 +220,7 @@ namespace Sarcasm.Unparsing
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
-            foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self, formatter, formatting))
+            foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
             {
                 InsertedUtokens insertedUtokensBetween;
                 if (formatting.TryGetUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
@@ -285,7 +285,7 @@ namespace Sarcasm.Unparsing
 
             // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
 
-            foreach (BnfTerm leftBnfTerm in GetUsedLeftsFromTopToBottomB(self, formatter, formatting))
+            foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
             {
                 if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
                 {
@@ -495,20 +495,9 @@ namespace Sarcasm.Unparsing
         /// <exception cref="UnparsableObject.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
-        private static IEnumerable<BnfTerm> GetLeftsFromTopToBottomB(UnparsableObject self, Formatter formatter = null)
+        private static IEnumerable<BnfTerm> GetLeftsAndAnyFromTopToBottomB(UnparsableObject self, Formatter formatter = null)
         {
-            return GetLeftsFromTopToBottom(self, formatter).Select(current => current.BnfTerm);
-        }
-
-        /// <exception cref="UnparsableObject.NonCalculatedException">
-        /// If topLeft is non-calculated or thrown out.
-        /// </exception>
-        /// <remarks>
-        /// for efficiency reasons we examine leftBnfTerms if they are really used as leftBnfTerms
-        /// </remarks>
-        private static IEnumerable<BnfTerm> GetUsedLeftsFromTopToBottomB(UnparsableObject self, Formatter formatter, Formatting formatting)
-        {
-            return GetLeftsFromTopToBottomB(self, formatter).Where(bnfTerm => formatting.IsLeftBnfTermUsed(bnfTerm));
+            return GetLeftsFromTopToBottom(self, formatter).Select(current => current.BnfTerm).Concat(Formatting.AnyBnfTerm);
         }
 
         #endregion
