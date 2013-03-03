@@ -70,6 +70,8 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
+        #region Settings
+
         public Formatting Formatting
         {
             get { return formatting; }
@@ -80,6 +82,8 @@ namespace Sarcasm.Unparsing
                 formatter = new Formatter(value);
             }
         }
+
+        #endregion
 
         #region Construction
 
