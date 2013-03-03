@@ -229,6 +229,18 @@ namespace Sarcasm.Unparsing
             }
         }
 
+        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, BlockIndentation blockIndentation)
+        {
+#if DEBUG
+            BlockIndentation originalBlockIndentation = blockIndentation;
+#endif
+            var utokens = YieldIndentationLeft(self, ref blockIndentation);
+#if DEBUG
+            Debug.Assert(object.ReferenceEquals(blockIndentation, originalBlockIndentation), "unwanted change of blockIndentationParameter reference in YieldIndentationLeft");
+#endif
+            return utokens;
+        }
+
         private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentation)
         {
             UpdateTopAncestorCacheForLeftOnTheFly(self);
@@ -254,7 +266,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     blockIndentation.LeftDeferred = new DeferredUtokens(
-                        () => YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: true),
+                        () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: true),
                         helpSelf: self,
                         helpMessage: "YieldIndentationLeft",
                         helpCalculatedObject: _blockIndentation
@@ -263,7 +275,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private static IEnumerable<UtokenBase> YieldIndentation(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+        private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
             Formatting formatting, Formatter formatter, bool left)
         {
 #if DEBUG
@@ -271,7 +283,8 @@ namespace Sarcasm.Unparsing
 #endif
             var utokens = YieldIndentation(self, ref blockIndentationParameter, direction, formatting, formatter, left);
 #if DEBUG
-            Debug.Assert(object.ReferenceEquals(blockIndentationParameter, originalBlockIndentationParameter), "unwanted change of blockIndentationParameter reference in _YieldIndentationLeft");
+            Debug.Assert(object.ReferenceEquals(blockIndentationParameter, originalBlockIndentationParameter),
+                string.Format("unwanted change of blockIndentationParameter reference in _YieldIndentation ({0})", left ? "left" : "right"));
 #endif
             return utokens;
         }
@@ -361,17 +374,29 @@ namespace Sarcasm.Unparsing
 
             if (direction == Unparser.Direction.LeftToRight)
             {
-                foreach (UtokenBase utoken in YieldIndentationRight(self, ref blockIndentation))
+                foreach (UtokenBase utoken in YieldIndentationRight(self, blockIndentation))
                     yield return utoken;
             }
             else
             {
-                foreach (UtokenBase utoken in YieldIndentationLeft(self, ref blockIndentation))
+                foreach (UtokenBase utoken in YieldIndentationLeft(self, blockIndentation))
                     yield return utoken;
 
                 foreach (UtokenBase utoken in YieldBetween(self))
                     yield return utoken;
             }
+        }
+
+        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, BlockIndentation blockIndentation)
+        {
+#if DEBUG
+            BlockIndentation originalBlockIndentation = blockIndentation;
+#endif
+            var utokens = YieldIndentationRight(self, ref blockIndentation);
+#if DEBUG
+            Debug.Assert(object.ReferenceEquals(blockIndentation, originalBlockIndentation), "unwanted change of blockIndentationParameter reference in YieldIndentationRight");
+#endif
+            return utokens;
         }
 
         private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, ref BlockIndentation blockIndentation)
@@ -397,7 +422,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     blockIndentation.RightDeferred = new DeferredUtokens(
-                        () => YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: false),
+                        () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: false),
                         helpSelf: self,
                         helpMessage: "YieldIndentationRight",
                         helpCalculatedObject: _blockIndentation
