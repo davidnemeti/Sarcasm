@@ -64,7 +64,9 @@ namespace Sarcasm.UnitTest
 
             InitializeGrammar();
 
-            Directory.Delete(actualResultsDir, recursive: true);
+            if (Directory.Exists(actualResultsDir))
+                Directory.Delete(actualResultsDir, recursive: true);
+
             Directory.CreateDirectory(actualResultsDir);
 
             parser = MultiParser.Create(grammar);

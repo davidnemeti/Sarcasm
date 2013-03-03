@@ -124,14 +124,30 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Expected results\ASTs\Binary3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Expected results\ASTs\Binary4.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Expected results\ASTs\Unary3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Expected results\ASTs\Unary4.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test files\Binary3.expr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Test files\Binary4.expr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Test files\MiniPL2.mplp" />
-    <None Include="Test files\MiniPL3.mplp" />
+    <None Include="Test files\MiniPL2.mplp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Test files\MiniPL3.mplp">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Test files\Unary3.expr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
