@@ -106,12 +106,17 @@ namespace Sarcasm.Unparsing
             this.expressionUnparser = unparser.expressionUnparser;
         }
 
-        private Unparser Spawn(Formatter.NodeLocation nodeLocation = Formatter.NodeLocation.MiddleChildOrUnknown)
+        private Unparser Spawn(Formatter.ChildLocation childLocation = Formatter.ChildLocation.MiddleChildOrUnknown)
+        {
+            return Spawn(child: null, childLocation: childLocation);
+        }
+
+        private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.MiddleChildOrUnknown)
         {
             if (expressionUnparser.OngoingExpressionUnparse)
                 throw new InvalidOperationException("Cannot spawn unparser during an ongoing expression unparse");
 
-            return new Unparser(this) { formatter = this.formatter.Spawn(nodeLocation) };
+            return new Unparser(this) { formatter = this.formatter.Spawn(child, childLocation) };
         }
 
         #endregion

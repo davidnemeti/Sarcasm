@@ -57,7 +57,7 @@ namespace Sarcasm.Unparsing
 
         private enum State { Begin, End }
 
-        public enum NodeLocation { FirstChild, MiddleChildOrUnknown, LastChild }
+        public enum ChildLocation { FirstChild, MiddleChildOrUnknown, LastChild }
 
         internal class Params
         {
@@ -102,18 +102,23 @@ namespace Sarcasm.Unparsing
             this.formatting = formatter.formatting;
         }
 
-        public Formatter Spawn(NodeLocation nodeLocation = NodeLocation.MiddleChildOrUnknown)
+        public Formatter Spawn(ChildLocation childLocation = ChildLocation.MiddleChildOrUnknown)
+        {
+            return Spawn(child: null, childLocation: childLocation);
+        }
+
+        public Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.MiddleChildOrUnknown)
         {
             bool isLeftMostChild =
-                direction == Unparser.Direction.LeftToRight && nodeLocation == NodeLocation.FirstChild
+                direction == Unparser.Direction.LeftToRight && childLocation == ChildLocation.FirstChild
                 ||
-                direction == Unparser.Direction.RightToLeft && nodeLocation == NodeLocation.LastChild;
+                direction == Unparser.Direction.RightToLeft && childLocation == ChildLocation.LastChild;
 
             return new Formatter(this)
             {
                 topAncestorCacheForLeft = isLeftMostChild
                     ? this.topAncestorCacheForLeft
-                    : UnparsableObject.NonCalculated
+                    : (child ?? UnparsableObject.NonCalculated)
             };
         }
 
