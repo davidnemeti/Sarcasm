@@ -147,22 +147,16 @@ namespace Sarcasm.Unparsing
             Unparser.tsUnparse.Debug("YieldBetweenAndBefore");
 
             var utokens = new List<UtokenBase>();
-
-            BlockIndentation blockIndentation;
+            BlockIndentation blockIndentation = BlockIndentation.ToBeSet;
 
             if (direction == Unparser.Direction.LeftToRight)
             {
                 utokens.AddRange(YieldBetween(self));
-
-                blockIndentation = BlockIndentation.Null;
                 utokens.AddRange(YieldIndentationLeft(self, ref blockIndentation));
             }
             else
             {
-                // TODO
-//                blockIndentation = IsRight(self) ? BlockIndentation.Defer() : null;
-                blockIndentation = BlockIndentation.Defer();
-                utokens.AddRange(YieldIndentationRight(self, blockIndentation));
+                utokens.AddRange(YieldIndentationRight(self, ref blockIndentation));
             }
 
             @params = new Params(blockIndentation);
@@ -241,16 +235,16 @@ namespace Sarcasm.Unparsing
 
             try
             {
-                // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
+                // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation
                 // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
-                return _YieldIndentationLeft(self, ref blockIndentation, direction, this.formatting, formatter: this).ToList();
+                return YieldIndentation(self, ref blockIndentation, direction, this.formatting, formatter: this, left: true).ToList();
             }
             catch (NonCalculatedException)
             {
                 // top left node or someone in the chain is non-calculated -> defer execution
-                Debug.Assert(blockIndentation.IsNull() || blockIndentation.IsDeferred());
+                Debug.Assert(blockIndentation == BlockIndentation.ToBeSet || blockIndentation.IsDeferred());
 
-                if (blockIndentation.IsNull())
+                if (blockIndentation == BlockIndentation.ToBeSet)
                     blockIndentation = BlockIndentation.Defer();
 
                 Debug.Assert(blockIndentation.IsDeferred());
@@ -260,7 +254,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     blockIndentation.LeftDeferred = new DeferredUtokens(
-                        () => _YieldIndentationLeft(self, _blockIndentation, direction, this.formatting, formatter: null),
+                        () => YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: true),
                         helpSelf: self,
                         helpMessage: "YieldIndentationLeft",
                         helpCalculatedObject: _blockIndentation
@@ -269,54 +263,63 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private static IEnumerable<UtokenBase> _YieldIndentationLeft(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
-            Formatting formatting, Formatter formatter)
+        private static IEnumerable<UtokenBase> YieldIndentation(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+            Formatting formatting, Formatter formatter, bool left)
         {
 #if DEBUG
             BlockIndentation originalBlockIndentationParameter = blockIndentationParameter;
 #endif
-            var utokens = _YieldIndentationLeft(self, ref blockIndentationParameter, direction, formatting, formatter);
+            var utokens = YieldIndentation(self, ref blockIndentationParameter, direction, formatting, formatter, left);
 #if DEBUG
             Debug.Assert(object.ReferenceEquals(blockIndentationParameter, originalBlockIndentationParameter), "unwanted change of blockIndentationParameter reference in _YieldIndentationLeft");
 #endif
             return utokens;
         }
 
-        private static IEnumerable<UtokenBase> _YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
-            Formatting formatting, Formatter formatter)
+        private static IEnumerable<UtokenBase> YieldIndentation(UnparsableObject self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+            Formatting formatting, Formatter formatter, bool left)
         {
-            BlockIndentation blockIndentation = BlockIndentation.Null;
-
-            // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
-
-            if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
+            if (blockIndentationParameter == BlockIndentation.ToBeSet || blockIndentationParameter.IsDeferred())
             {
-                foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
+                BlockIndentation blockIndentation = BlockIndentation.IndentNotNeeded;
+
+                // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
+
+                if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
                 {
-                    if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
+                    foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
                     {
-                        Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
-                        break;
+                        if (blockIndentation == BlockIndentation.IndentNotNeeded && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
+                        {
+                            Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
+                            break;
+                        }
                     }
                 }
+
+                if (blockIndentation == BlockIndentation.IndentNotNeeded && formatting.TryGetBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
+                    Unparser.tsUnparse.Debug("blockindentation {0} for unparsable object '{1}'", blockIndentation, self);
+
+                Debug.Assert(!blockIndentation.IsDeferred());
+
+                if (blockIndentationParameter == BlockIndentation.ToBeSet)
+                    blockIndentationParameter = blockIndentation;
+                else
+                    blockIndentationParameter.CopyKindFrom(blockIndentation);
             }
 
-            if (blockIndentation.IsNull() && formatting.TryGetBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
-                Unparser.tsUnparse.Debug("blockindentation {0} for unparsable object '{1}'", blockIndentation, self);
-
-            Debug.Assert(!blockIndentation.IsDeferred());
-
-            if (blockIndentationParameter.IsNull())
-                blockIndentationParameter = blockIndentation;
+            if (direction == Unparser.Direction.LeftToRight)
+            {
+                return left
+                    ? BlockIndentationToUtokenControlBefore(blockIndentationParameter)
+                    : BlockIndentationToUtokenControlAfter(blockIndentationParameter);
+            }
             else
             {
-                Debug.Assert(blockIndentationParameter.IsDeferred());
-                blockIndentationParameter.CopyKindFrom(blockIndentation);
+                return left
+                    ? BlockIndentationToUtokenControlAfter(blockIndentationParameter)
+                    : BlockIndentationToUtokenControlBefore(blockIndentationParameter);
             }
-
-            return direction == Unparser.Direction.LeftToRight
-                ? BlockIndentationToUtokenControlBefore(blockIndentation)
-                : BlockIndentationToUtokenControlAfter(blockIndentation);
         }
 
         private static IEnumerable<UtokenControl> BlockIndentationToUtokenControlBefore(BlockIndentation blockIndentation)
@@ -358,7 +361,7 @@ namespace Sarcasm.Unparsing
 
             if (direction == Unparser.Direction.LeftToRight)
             {
-                foreach (UtokenBase utoken in YieldIndentationRight(self, blockIndentation))
+                foreach (UtokenBase utoken in YieldIndentationRight(self, ref blockIndentation))
                     yield return utoken;
             }
             else
@@ -371,21 +374,33 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, BlockIndentation blockIndentation)
+        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, ref BlockIndentation blockIndentation)
         {
-            if (blockIndentation.IsNull())
-                return new UtokenBase[0];
-            else if (!blockIndentation.IsDeferred())
-                return _YieldIndentationRight(self, blockIndentation, direction, this.formatting, formatter: this);
-            else
+            try
             {
+                // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation
+                // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
+                return YieldIndentation(self, ref blockIndentation, direction, this.formatting, formatter: this, left: false).ToList();
+            }
+            catch (NonCalculatedException)
+            {
+                // top left node or someone in the chain is non-calculated -> defer execution
+                Debug.Assert(blockIndentation == BlockIndentation.ToBeSet || blockIndentation.IsDeferred());
+
+                if (blockIndentation == BlockIndentation.ToBeSet)
+                    blockIndentation = BlockIndentation.Defer();
+
+                Debug.Assert(blockIndentation.IsDeferred());
+
+                BlockIndentation _blockIndentation = blockIndentation;
+
                 return new[]
                 {
                     blockIndentation.RightDeferred = new DeferredUtokens(
-                        () => _YieldIndentationRight(self, blockIndentation, direction, this.formatting, formatter: null),
+                        () => YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: false),
                         helpSelf: self,
                         helpMessage: "YieldIndentationRight",
-                        helpCalculatedObject: blockIndentation
+                        helpCalculatedObject: _blockIndentation
                         )
                 };
             }

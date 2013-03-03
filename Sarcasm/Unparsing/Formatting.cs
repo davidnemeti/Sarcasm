@@ -267,14 +267,14 @@ namespace Sarcasm.Unparsing
         internal bool TryGetBlockIndentation(IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
         {
             bool success = TryGetValue(contextToBlockIndentation, targetAndAncestors, context => context, out blockIndentation);
-            if (blockIndentation == null) blockIndentation = BlockIndentation.Null;
+            if (blockIndentation == null) blockIndentation = BlockIndentation.IndentNotNeeded;
             return success;
         }
 
         internal bool TryGetBlockIndentation(BnfTerm leftBnfTerm, IEnumerable<BnfTerm> targetAndAncestors, out BlockIndentation blockIndentation)
         {
             bool success = TryGetValue(contextToBlockIndentation2, leftBnfTerm, targetAndAncestors, out blockIndentation);
-            if (blockIndentation == null) blockIndentation = BlockIndentation.Null;
+            if (blockIndentation == null) blockIndentation = BlockIndentation.IndentNotNeeded;
             return success;
         }
 
@@ -428,7 +428,8 @@ namespace Sarcasm.Unparsing
     {
         internal enum Kind
         {
-            Null,
+            ToBeSet,
+            IndentNotNeeded,
             Deferred,
             Indent,
             Unindent,
@@ -446,7 +447,8 @@ namespace Sarcasm.Unparsing
             this.isReadonly = isReadonly;
         }
 
-        internal static readonly BlockIndentation Null = new BlockIndentation(Kind.Null, isReadonly: true);
+        internal static readonly BlockIndentation ToBeSet = new BlockIndentation(Kind.ToBeSet, isReadonly: true);
+        internal static readonly BlockIndentation IndentNotNeeded = new BlockIndentation(Kind.IndentNotNeeded, isReadonly: true);
         public static readonly BlockIndentation Indent = new BlockIndentation(Kind.Indent, isReadonly: true);
         public static readonly BlockIndentation Unindent = new BlockIndentation(Kind.Unindent, isReadonly: true);
         public static readonly BlockIndentation ZeroIndent = new BlockIndentation(Kind.ZeroIndent, isReadonly: true);
@@ -496,11 +498,6 @@ namespace Sarcasm.Unparsing
                 rightDeferred = value;
             }
             get { return rightDeferred; }
-        }
-
-        internal bool IsNull()
-        {
-            return kind == Kind.Null;
         }
 
         public bool Equals(BlockIndentation that)
