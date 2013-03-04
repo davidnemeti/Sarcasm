@@ -315,9 +315,15 @@ namespace Sarcasm.Unparsing
                 if (buildFullUnparseTree || direction == Direction.RightToLeft)
                     SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
 
-                if (!buildFullUnparseTree && enableUnlinkOfChild)
-                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we throw out the unneeded prev sibling
+                if (enableUnlinkOfChild)
+                    UnlinkChildFromChildPrevSiblingIfNotFullUnparse(childPrevSibling);      // we unlink child prev sibling if unneeded
             }
+        }
+
+        private void UnlinkChildFromChildPrevSiblingIfNotFullUnparse(UnparsableObject child)
+        {
+            if (!buildFullUnparseTree)
+                SetPrevSibling(child, UnparsableObject.ThrownOut);  // we throw out the unneeded prev sibling
         }
 
         private void SetPrevSibling(UnparsableObject current, UnparsableObject prev)
