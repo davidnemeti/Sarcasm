@@ -248,7 +248,7 @@ namespace Sarcasm.Unparsing
                         {
                             foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren))
                                 foreach (UtokenBase utoken in UnparseRaw(chosenChild))
-                                yield return utoken;
+                                    yield return utoken;
                         }
                     }
                 }
