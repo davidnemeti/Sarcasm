@@ -248,7 +248,7 @@ namespace Sarcasm.Unparsing
                         {
                             foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren))
                                 foreach (UtokenBase utoken in UnparseRaw(chosenChild))
-                                    yield return utoken;
+                                yield return utoken;
                         }
                     }
                 }
@@ -278,48 +278,43 @@ namespace Sarcasm.Unparsing
                         {
                             tsUnparse.Debug("child is linked: {0}", child);
 
-                            child.Parent = self;
-
-                            if (!IsPrevMostChildCalculated(self))
-                            {
-                                tsUnparse.Debug("{2} of {0} has been set to {1}", self, child, direction == Direction.LeftToRight ? "LeftMostChild" : "RightMostChild");
-                                SetPrevMostChild(self, child);
-                            }
-
-                            SetPrevSibling(child, childPrevSibling);
-
-                            if (childPrevSibling != null)
-                            {
-                                SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
-
-                                if (!buildFullUnparseTree)
-                                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
-                            }
-
+                            LinkChild(self, child, childPrevSibling);
                             childPrevSibling = child;
                         },
 
                     executeAfterFinished:
                         () =>
-                        {
-                            if (!IsPrevMostChildCalculated(self))
-                            {
-                                tsUnparse.Debug("{2} of {0} has been set to null", self, direction == Direction.LeftToRight ? "LeftMostChild" : "RightMostChild");
-                                SetPrevMostChild(self, null);  // there are no children
-                            }
-
-                            tsUnparse.Debug("{2} of {0} has been set to {1}", self, childPrevSibling, direction == Direction.LeftToRight ? "RightMostChild" : "LeftMostChild");
-                            SetNextMostChild(self, childPrevSibling);
-
-                            if (childPrevSibling != null)
-                            {
-                                SetNextSibling(childPrevSibling, null);
-
-                                if (!buildFullUnparseTree)
-                                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
-                            }
-                        }
+                            LinkChild(self, child: null, childPrevSibling: childPrevSibling)
                 );
+        }
+
+        private void LinkChild(UnparsableObject self, UnparsableObject child, UnparsableObject childPrevSibling)
+        {
+            if (child != null)
+                child.Parent = self;
+
+            if (!IsPrevMostChildCalculated(self))
+            {
+                tsUnparse.Debug("{2} of {0} has been set to {1}", self, child, direction == Direction.LeftToRight ? "LeftMostChild" : "RightMostChild");
+                SetPrevMostChild(self, child);
+            }
+
+            if (child == null)
+            {
+                tsUnparse.Debug("{2} of {0} has been set to {1}", self, childPrevSibling, direction == Direction.LeftToRight ? "RightMostChild" : "LeftMostChild");
+                SetNextMostChild(self, childPrevSibling);
+            }
+
+            if (child != null)
+                SetPrevSibling(child, childPrevSibling);
+
+            if (childPrevSibling != null)
+            {
+                SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
+
+                if (!buildFullUnparseTree)
+                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
+            }
         }
 
         private void SetPrevSibling(UnparsableObject current, UnparsableObject prev)
