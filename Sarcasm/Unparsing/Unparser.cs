@@ -267,7 +267,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children)
+        internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children, bool enableUnlinkOfChild = true)
         {
             UnparsableObject childPrevSibling = null;
 
@@ -276,22 +276,23 @@ namespace Sarcasm.Unparsing
                     executeBeforeEachIteration:
                         child =>
                         {
-                            tsUnparse.Debug("child is linked: {0}", child);
-
-                            LinkChild(self, child, childPrevSibling);
+                            LinkChild(self, child, childPrevSibling, enableUnlinkOfChild);
                             childPrevSibling = child;
                         },
 
                     executeAfterFinished:
                         () =>
-                            LinkChild(self, child: null, childPrevSibling: childPrevSibling)
+                            LinkChild(self, child: null, childPrevSibling: childPrevSibling, enableUnlinkOfChild: enableUnlinkOfChild)
                 );
         }
 
-        private void LinkChild(UnparsableObject self, UnparsableObject child, UnparsableObject childPrevSibling)
+        private void LinkChild(UnparsableObject self, UnparsableObject child, UnparsableObject childPrevSibling, bool enableUnlinkOfChild)
         {
             if (child != null)
+            {
+                tsUnparse.Debug("child is linked: {0}", child);
                 child.Parent = self;
+            }
 
             if (!IsPrevMostChildCalculated(self))
             {
@@ -310,10 +311,12 @@ namespace Sarcasm.Unparsing
 
             if (childPrevSibling != null)
             {
-                SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
+                // NOTE: if right-to-left then the next sibling is the left sibling, which is needed for deferred utokens even if we are not building full unparse tree
+                if (buildFullUnparseTree || direction == Direction.RightToLeft)
+                    SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
 
-                if (!buildFullUnparseTree)
-                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we do not set the next sibling, and we throw out the unneeded prev sibling
+                if (!buildFullUnparseTree && enableUnlinkOfChild)
+                    SetPrevSibling(childPrevSibling, UnparsableObject.ThrownOut);  // we throw out the unneeded prev sibling
             }
         }
 
