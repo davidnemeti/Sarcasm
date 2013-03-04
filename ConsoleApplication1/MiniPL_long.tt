@@ -10,7 +10,7 @@ program HelloWorld
 namespace Sea.Shell
 
 <#
-    for (int i = 0; i < 300; i++)
+    for (int i = 0; i < 3000; i++)
     {
 #>
 function Fibonacci(var n : integer) : integer

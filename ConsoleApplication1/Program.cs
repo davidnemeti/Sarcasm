@@ -17,7 +17,7 @@ using Sarcasm.Unparsing;
 
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
-namespace ConsoleApplication1
+namespace Playground
 {
     class Program
     {
@@ -43,17 +43,17 @@ namespace ConsoleApplication1
             Unparser unparser = new Unparser(grammar);
             ShowTimeAndRestart(stopwatch, "Creation of unparser");
 
-            var utokens = unparser.Unparse(astRootValue).ToList();
-            ShowTimeAndRestart(stopwatch, "Unparsing to utokens");
+            //var utokens = unparser.Unparse(astRootValue).ToList();
+            //ShowTimeAndRestart(stopwatch, "Unparsing to utokens");
 
-            string unparsedText = utokens.AsString(unparser);
-            ShowTimeAndRestart(stopwatch, "Converting utokens to string");
+            //string unparsedText = utokens.AsString(unparser);
+            //ShowTimeAndRestart(stopwatch, "Converting utokens to string");
 
             string unparsedText2 = unparser.Unparse(astRootValue).AsString(unparser);
             ShowTimeAndRestart(stopwatch, "Unparsing to string");
 
-            var utokensReverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ToList();
-            ShowTimeAndRestart(stopwatch, "Reverse unparsing to utokens");
+            //var utokensReverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ToList();
+            //ShowTimeAndRestart(stopwatch, "Reverse unparsing to utokens");
 
             string unparsedText2Reverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).AsString(unparser);
             ShowTimeAndRestart(stopwatch, "Reverse unparsing to string");
