@@ -9,6 +9,149 @@ namespace Sarcasm
 {
     public static class Util
     {
+        #region Extreme item methods (min/max)
+
+        public static TSource MaxItem<TSource>(this IEnumerable<TSource> items)
+        {
+            TSource maxValueUnused;
+            return items.ExtremeItem(item => item, Comparer<TSource>.Default, max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource>(this IEnumerable<TSource> items)
+        {
+            TSource minValueUnused;
+            return items.ExtremeItem(item => item, Comparer<TSource>.Default, max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource>(this IEnumerable<TSource> items, Comparison<TSource> comparison)
+        {
+            TSource maxValueUnused;
+            return items.ExtremeItem(item => item, Comparer<TSource>.Create(comparison), max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource>(this IEnumerable<TSource> items, Comparison<TSource> comparison)
+        {
+            TSource minValueUnused;
+            return items.ExtremeItem(item => item, Comparer<TSource>.Create(comparison), max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource>(this IEnumerable<TSource> items, IComparer<TSource> comparer)
+        {
+            TSource maxValueUnused;
+            return items.ExtremeItem(item => item, comparer, max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource>(this IEnumerable<TSource> items, IComparer<TSource> comparer)
+        {
+            TSource minValueUnused;
+            return items.ExtremeItem(item => item, comparer, max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector)
+        {
+            TValue maxValueUnused;
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Default, max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector)
+        {
+            TValue minValueUnused;
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Default, max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, Comparison<TValue> comparison)
+        {
+            TValue maxValueUnused;
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Create(comparison), max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, Comparison<TValue> comparison)
+        {
+            TValue minValueUnused;
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Create(comparison), max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer)
+        {
+            TValue maxValueUnused;
+            return items.ExtremeItem(valueSelector, comparer, max: true, extremeValue: out maxValueUnused);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer)
+        {
+            TValue minValueUnused;
+            return items.ExtremeItem(valueSelector, comparer, max: false, extremeValue: out minValueUnused);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, out TValue maxValue)
+        {
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Default, max: true, extremeValue: out maxValue);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, out TValue minValue)
+        {
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Default, max: false, extremeValue: out minValue);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, Comparison<TValue> comparison, out TValue maxValue)
+        {
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Create(comparison), max: true, extremeValue: out maxValue);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, Comparison<TValue> comparison, out TValue minValue)
+        {
+            return items.ExtremeItem(valueSelector, Comparer<TValue>.Create(comparison), max: false, extremeValue: out minValue);
+        }
+
+        public static TSource MaxItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer, out TValue maxValue)
+        {
+            return items.ExtremeItem(valueSelector, comparer, max: true, extremeValue: out maxValue);
+        }
+
+        public static TSource MinItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer, out TValue minValue)
+        {
+            return items.ExtremeItem(valueSelector, comparer, max: false, extremeValue: out minValue);
+        }
+
+        private static TSource ExtremeItem<TSource, TValue>(this IEnumerable<TSource> items, Func<TSource, TValue> valueSelector, IComparer<TValue> comparer, bool max, out TValue extremeValue)
+        {
+            bool beyondFirst = false;
+            TSource extremeItem = default(TSource);
+            extremeValue = default(TValue);
+
+            foreach (TSource item in items)
+            {
+                if (!beyondFirst)
+                {
+                    extremeItem = item;
+                    extremeValue = valueSelector(item);
+                    beyondFirst = true;
+                }
+                else
+                {
+                    TValue value = valueSelector(item);
+
+                    int compareResult = comparer.Compare(value, extremeValue);
+
+                    if (!max)
+                        compareResult = -compareResult;
+
+                    if (compareResult > 0)
+                    {
+                        extremeItem = item;
+                        extremeValue = valueSelector(item);
+                    }
+                }
+            }
+
+            if (beyondFirst)
+                return extremeItem;
+            else
+                throw new InvalidOperationException("Empty list");
+        }
+
+        #endregion
+
         public static IEnumerable<T> ReverseOptimized<T>(this IEnumerable<T> items)
         {
             if (items is IList<T>)

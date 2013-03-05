@@ -249,12 +249,6 @@ namespace Sarcasm.Unparsing
                     {
                         IEnumerable<UnparsableObject> chosenChildren = ChooseChildrenByPriority(self);
 
-                        if (chosenChildren == null)
-                        {
-                            throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
-                                self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
-                        }
-
                         if (expressionUnparser.NeedsExpressionUnparse(self.BnfTerm))
                         {
                             /*
@@ -459,12 +453,11 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UnparsableObject> ChooseChildrenByPriority(UnparsableObject unparsableObject)
+        private IEnumerable<UnparsableObject> ChooseChildrenByPriority(UnparsableObject self)
         {
             // TODO: we should check whether any bnfTermList has an UnparseHint
 
-            object obj = unparsableObject.Obj;
-            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)unparsableObject.BnfTerm;
+            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
             tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
             tsPriorities.Indent();
@@ -474,19 +467,24 @@ namespace Sarcasm.Unparsing
                 return GetChildBnfTermLists(unparsable.AsNonTerminal())
                     .Select(childBnfTerms =>
                         {
-                            var children = unparsable.GetChildren(childBnfTerms, obj, direction);
+                            var children = unparsable.GetChildren(childBnfTerms, self.Obj, direction);
                             return new
                             {
-                                UnparsableObjects = children,
-                                Priority = unparsable.GetChildrenPriority(this, obj, children)
-                                    .DebugWriteLinePriority(tsPriorities, unparsableObject)
+                                Children = children,
+                                Priority = unparsable.GetChildrenPriority(this, self.Obj, children)
+                                    .DebugWriteLinePriority(tsPriorities, self)
                             };
                         }
                     )
-                    .Where(childrenWithPriority => childrenWithPriority.Priority.HasValue)
-                    .OrderByDescending(childrenWithPriority => childrenWithPriority.Priority.Value)
-                    .Select(childrenWithPriority => childrenWithPriority.UnparsableObjects)
-                    .FirstOrDefault(children => !children.Contains(unparsableObject));    // NOTE: filter here (after ordering) to minimize the number of comparisons
+                    .Where(childrenWithPriority => childrenWithPriority.Priority.HasValue && !childrenWithPriority.Children.Contains(self))
+                    .MaxItem(childrenWithPriority => childrenWithPriority.Priority.Value)
+                    .Children;
+            }
+            catch (InvalidOperationException)
+            {
+                // MaxItem got an empty children list because no children remained after filtering the children list -> unparse error
+                throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
+                    self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
             }
             finally
             {
