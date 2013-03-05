@@ -160,7 +160,7 @@ namespace Sarcasm.Unparsing
              * the returned utokens does not need to be iterated through e.g. by converting it to a list in order to achieve full execution.
              * */
 
-            Unparser.tsUnparse.Debug("YieldBetweenAndBefore");
+            Unparser.tsUnparse.Debug("YieldBefore");
 
             UpdateTopAncestorCacheForLeftOnTheFly(self);
 
@@ -196,6 +196,8 @@ namespace Sarcasm.Unparsing
         public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
         {
             Unparser.tsUnparse.Debug("YieldAfter");
+
+            UpdateTopAncestorCacheForLeftOnTheFly(self);
 
             HasUtokensBeforeAfter hasUtokensAfter = direction == Unparser.Direction.LeftToRight
                 ? (HasUtokensBeforeAfter)formatting.TryGetUtokensRight
@@ -262,6 +264,8 @@ namespace Sarcasm.Unparsing
 
         private IReadOnlyList<UtokenBase> YieldBetween(UnparsableObject self)
         {
+            Unparser.tsUnparse.Debug("YieldBetween");
+
             try
             {
                 // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
@@ -318,6 +322,8 @@ namespace Sarcasm.Unparsing
 
         private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentation)
         {
+            Unparser.tsUnparse.Debug("YieldIndentationLeft");
+
             try
             {
                 // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation
@@ -362,6 +368,8 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, ref BlockIndentation blockIndentation)
         {
+            Unparser.tsUnparse.Debug("YieldIndentationRight");
+
             try
             {
                 // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation

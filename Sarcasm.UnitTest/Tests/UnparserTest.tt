@@ -31,62 +31,55 @@ namespace Sarcasm.UnitTest
 	string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
-        GenerateTestMethod(filePath, typesafe: true, leftToRight: true);
-        GenerateTestMethod(filePath, typesafe: false, leftToRight: true);
-        GenerateTestMethod(filePath, typesafe: true, leftToRight: false);
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: true, enableParallelProcessing: false);
+        GenerateTestMethod(filePath, typesafe: false, leftToRight: true, enableParallelProcessing: false);
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: false);
+
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: true, enableParallelProcessing: true);
+        GenerateTestMethod(filePath, typesafe: false, leftToRight: true, enableParallelProcessing: true);
+        GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: true);
     }
 #>
 	}
 }
 
 <#+
-void GenerateTestMethod(string filePath, bool typesafe, bool leftToRight)
+void GenerateTestMethod(string filePath, bool typesafe, bool leftToRight, bool enableParallelProcessing)
 {
     string extension = Path.GetExtension(filePath);
     string filename = Path.GetFileName(filePath);
 
     string reunparseTestMethodName = "Unparse_" + Path.GetFileNameWithoutExtension(filePath);
+    reunparseTestMethodName += enableParallelProcessing ? "_Parallel" : "_Sequential";
     if (typesafe) reunparseTestMethodName += "_Typesafe";
     if (!leftToRight) reunparseTestMethodName += "_Reversed";
 
     string reunparseMethodName = "ReunparseCheck";
     if (typesafe) reunparseMethodName += "TS";
 
+    string root;
+
     if (extension == ".mplp")
-    {
-#>
-        [TestMethod]
-        [TestCategory(category)]
-        public void <#= reunparseTestMethodName #>()
-        {
-<#+
-        GenerateInitializerForUnparser(filePath);
-#>
-            <#= reunparseMethodName #>(B.Program, "<#= filename #>", leftToRight: <#= leftToRight ? "true" : "false" #>);
-        }
-
-<#+
-    }
+        root = "B.Program";
     else if (extension == ".expr")
-    {
-#>
-        [TestMethod]
-        [TestCategory(category)]
-        public void <#= reunparseTestMethodName #>()
-        {
-<#+
-        GenerateInitializerForUnparser(filePath);
-#>
-            <#= reunparseMethodName #>(B.Expression, "<#= filename #>", leftToRight: <#= leftToRight ? "true" : "false" #>);
-        }
-
-<#+
-    }
+        root = "B.Expression";
     else
         throw new ApplicationException(string.Format("Unknown file extension: \"{0}\"", extension));
+#>
+        [TestMethod]
+        [TestCategory(category)]
+        public void <#= reunparseTestMethodName #>()
+        {
+<#+
+        GenerateInitializerForUnparser(filePath, enableParallelProcessing);
+#>
+            <#= reunparseMethodName #>(<#= root #>, "<#= filename #>", leftToRight: <#= leftToRight ? "true" : "false" #>);
+        }
+
+<#+
 }
 
-void GenerateInitializerForUnparser(string filePath)
+void GenerateInitializerForUnparser(string filePath, bool enableParallelProcessing)
 {
         string formatting;
 
@@ -98,6 +91,7 @@ void GenerateInitializerForUnparser(string filePath)
             formatting = "formattingDefault";
 #>
             unparser.Formatting = <#= formatting #>;
+            unparser.EnableParallelProcessing = <#= enableParallelProcessing.ToString().ToLower() #>;
 <#+
 }
 #>
