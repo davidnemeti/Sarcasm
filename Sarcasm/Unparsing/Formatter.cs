@@ -57,7 +57,7 @@ namespace Sarcasm.Unparsing
 
         private enum State { Begin, End }
 
-        public enum ChildLocation { FirstChild, MiddleChildOrUnknown, LastChild }
+        public enum ChildLocation { Unknown, First, Middle, Last }
 
         internal class Params
         {
@@ -97,29 +97,40 @@ namespace Sarcasm.Unparsing
             this.formatting = formatting;
         }
 
-        private Formatter(Formatter formatter)
+        private Formatter(Formatter that)
         {
-            this.formatting = formatter.formatting;
+            this.formatting = that.formatting;
+            this.direction = that.direction;
         }
 
-        public Formatter Spawn(ChildLocation childLocation = ChildLocation.MiddleChildOrUnknown)
+        public Formatter Spawn(ChildLocation childLocation = ChildLocation.Unknown)
         {
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        public Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.MiddleChildOrUnknown)
+        public Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.Unknown)
         {
-            bool isLeftMostChild =
-                direction == Unparser.Direction.LeftToRight && childLocation == ChildLocation.FirstChild
-                ||
-                direction == Unparser.Direction.RightToLeft && childLocation == ChildLocation.LastChild;
-
-            return new Formatter(this)
+            if (childLocation == ChildLocation.Unknown)
             {
-                topAncestorCacheForLeft = isLeftMostChild
-                    ? this.topAncestorCacheForLeft
-                    : (child ?? UnparsableObject.NonCalculated)
-            };
+                return new Formatter(this)
+                {
+                    topAncestorCacheForLeft = UnparsableObject.NonCalculated
+                };
+            }
+            else
+            {
+                bool isLeftMostChild =
+                    direction == Unparser.Direction.LeftToRight && childLocation == ChildLocation.First
+                    ||
+                    direction == Unparser.Direction.RightToLeft && childLocation == ChildLocation.Last;
+
+                return new Formatter(this)
+                {
+                    topAncestorCacheForLeft = isLeftMostChild
+                        ? this.topAncestorCacheForLeft
+                        : (child ?? UnparsableObject.NonCalculated)
+                };
+            }
         }
 
         #endregion
@@ -150,6 +161,8 @@ namespace Sarcasm.Unparsing
              * */
 
             Unparser.tsUnparse.Debug("YieldBetweenAndBefore");
+
+            UpdateTopAncestorCacheForLeftOnTheFly(self);
 
             var utokens = new List<UtokenBase>();
             BlockIndentation blockIndentation = BlockIndentation.ToBeSet;
@@ -241,14 +254,14 @@ namespace Sarcasm.Unparsing
         {
             if (self.Parent == null)
                 topAncestorCacheForLeft = null;     // self is root node
-            else if (!self.IsLeftSiblingCalculated || self.LeftSibling != null)
+            else if (self.IsLeftSiblingCalculated && self.LeftSibling != null)
                 topAncestorCacheForLeft = self;
+            else
+                topAncestorCacheForLeft = UnparsableObject.NonCalculated;
         }
 
         private IReadOnlyList<UtokenBase> YieldBetween(UnparsableObject self)
         {
-            UpdateTopAncestorCacheForLeftOnTheFly(self);
-
             try
             {
                 // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
@@ -305,8 +318,6 @@ namespace Sarcasm.Unparsing
 
         private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentation)
         {
-            UpdateTopAncestorCacheForLeftOnTheFly(self);
-
             try
             {
                 // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation

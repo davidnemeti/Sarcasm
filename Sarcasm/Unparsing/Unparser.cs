@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
+using System.Collections.Concurrent;
 
 using Irony;
 using Irony.Ast;
@@ -44,19 +46,22 @@ namespace Sarcasm.Unparsing
 
         #region Constants
 
+        private static readonly int parallelTasksLimit = Environment.ProcessorCount * 2;
         private const Direction directionDefault = Direction.LeftToRight;
-        private const bool allowPartialInvalidationDefault = false;
+        private const bool enablePartialInvalidationDefault = false;
+        private const bool enableParallelProcessingDefault = true;
 
         #endregion
 
         #region State
 
-        #region Immutable after initialization
+        #region Immutable after initialization or public settings
 
         public Grammar Grammar { get; private set; }
         private Formatting formatting;
         private readonly UnparseControl unparseControl;
-        private readonly bool allowPartialInvalidation;
+        public bool EnablePartialInvalidation { get; set; }
+        public bool EnableParallelProcessing { get; set; }
 
         #endregion
 
@@ -65,6 +70,7 @@ namespace Sarcasm.Unparsing
         private Formatter formatter;
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
+        private static volatile int activeParallelTasksCount = 0;
 
         #endregion
 
@@ -87,40 +93,47 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public Unparser(Grammar grammar, Formatting formatting, bool allowPartialInvalidation = allowPartialInvalidationDefault)
+        public Unparser(Grammar grammar, Formatting formatting)
         {
             this.Grammar = grammar;
             this.Formatting = formatting;   // also sets Formatter
             this.unparseControl = grammar.UnparseControl;
             this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
-            this.allowPartialInvalidation = allowPartialInvalidation;
+            this.EnablePartialInvalidation = enablePartialInvalidationDefault;
+            this.EnableParallelProcessing = enableParallelProcessingDefault;
         }
 
-        public Unparser(Grammar grammar, bool allowPartialInvalidation = allowPartialInvalidationDefault)
-            : this(grammar, grammar.UnparseControl.DefaultFormatting, allowPartialInvalidation)
+        public Unparser(Grammar grammar)
+            : this(grammar, grammar.UnparseControl.DefaultFormatting)
         {
         }
 
-        private Unparser(Unparser unparser)
+        private Unparser(Unparser that)
         {
-            this.Grammar = unparser.Grammar;
-            this.formatting = unparser.formatting;
-            this.unparseControl = unparser.unparseControl;
-            this.allowPartialInvalidation = unparser.allowPartialInvalidation;
-            this.expressionUnparser = unparser.expressionUnparser;
+            this.Grammar = that.Grammar;
+            this.formatting = that.formatting;
+            this.unparseControl = that.unparseControl;
+            this.EnablePartialInvalidation = that.EnablePartialInvalidation;
+            this.EnableParallelProcessing = that.EnableParallelProcessing;
+            this.expressionUnparser = that.expressionUnparser;
+            this._direction = that._direction;
         }
 
-        private Unparser Spawn(Formatter.ChildLocation childLocation = Formatter.ChildLocation.MiddleChildOrUnknown)
+        private Unparser Spawn(Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
         {
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.MiddleChildOrUnknown)
+        private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
         {
-            if (expressionUnparser.OngoingExpressionUnparse)
-                throw new InvalidOperationException("Cannot spawn unparser during an ongoing expression unparse");
+            Unparser spawn = new Unparser(this)
+                {
+                    formatter = this.formatter.Spawn(child, childLocation)
+                };
 
-            return new Unparser(this) { formatter = this.formatter.Spawn(child, childLocation) };
+            spawn.expressionUnparser = this.expressionUnparser.Spawn(spawn);
+
+            return spawn;
         }
 
         #endregion
@@ -241,14 +254,57 @@ namespace Sarcasm.Unparsing
                              * NOTE: LinkChildrenToEachOthersAndToSelfLazy is being called inside expressionUnparser.Unparse,
                              * because it may extend the list with automatic parentheses.
                              * */
-                            foreach (UtokenBase utoken in expressionUnparser.Unparse(self, chosenChildren, direction))
+                            foreach (var utoken in expressionUnparser.Unparse(self, chosenChildren, direction))
                                 yield return utoken;
                         }
                         else
                         {
-                            foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren))
-                                foreach (UtokenBase utoken in UnparseRaw(chosenChild))
-                                    yield return utoken;
+                            int freeParallelTasksCount;
+
+                            if (EnableParallelProcessing && (freeParallelTasksCount = parallelTasksLimit - activeParallelTasksCount) > 0)
+                            {
+// disable warning: "a reference to a volatile field will not be treated as volatile"
+#pragma warning disable 420
+//                                Interlocked.Increment(ref activeParallelTasksCount);
+//                                Interlocked.Add(ref activeParallelTasksCount, freeParallelTasksCount);
+#pragma warning restore 420
+                                int activeParallelTasksCountLocal = 0;
+
+                                using (var unparserForPartition = new ThreadLocal<Unparser>(
+                                    () =>
+                                    {
+#pragma warning disable 420
+                                        Interlocked.Increment(ref activeParallelTasksCount);
+#pragma warning restore 420
+                                        Interlocked.Increment(ref activeParallelTasksCountLocal);
+//                                        return this;
+                                        return this.Spawn();
+                                    }))
+                                {
+                                    chosenChildren = LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: false);
+                                    //var partitioner = Partitioner.Create(chosenChildren);
+                                    //partitioner.GetOrderableDynamicPartitions();
+
+                                    foreach (var utoken in chosenChildren.AsParallel().AsOrdered().WithDegreeOfParallelism(freeParallelTasksCount).SelectMany(chosenChild => unparserForPartition.Value.UnparseRaw(chosenChild)))
+                                        yield return utoken;
+
+//                                    this.formatter.topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+#pragma warning disable 420
+                                    Interlocked.Add(ref activeParallelTasksCount, -activeParallelTasksCountLocal);
+#pragma warning restore 420
+                                }
+// disable warning: "a reference to a volatile field will not be treated as volatile"
+#pragma warning disable 420
+//                                Interlocked.Decrement(ref activeParallelTasksCount);
+//                                Interlocked.Add(ref activeParallelTasksCount, -freeParallelTasksCount);
+#pragma warning restore 420
+                            }
+                            else
+                            {
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !EnableParallelProcessing))
+                                    foreach (UtokenBase utoken in UnparseRaw(chosenChild))
+                                        yield return utoken;
+                            }
                         }
                     }
                 }
@@ -444,7 +500,7 @@ namespace Sarcasm.Unparsing
                 .Select(bnfTerms => direction == Direction.LeftToRight ? bnfTerms : bnfTerms.ReverseOptimized());
         }
 
-        private bool buildFullUnparseTree { get { return allowPartialInvalidation; } }
+        private bool buildFullUnparseTree { get { return EnablePartialInvalidation; } }
 
         #endregion
 

@@ -76,6 +76,23 @@ namespace Sarcasm.Unparsing
             InitParentheses(unparseControl);
         }
 
+        private ExpressionUnparser(ExpressionUnparser that, Unparser spawn)
+        {
+            this.unparser = spawn;
+            this.expressionsThatCanCauseOthersBeingParenthesized = that.expressionsThatCanCauseOthersBeingParenthesized;
+            this.expressionThatMayNeedParenthesesToParentheses = that.expressionThatMayNeedParenthesesToParentheses;
+            this.bnfTermToBnfTermKind = that.bnfTermToBnfTermKind;
+            this.direction = that.direction;
+        }
+
+        public ExpressionUnparser Spawn(Unparser spawn)
+        {
+            if (this.OngoingExpressionUnparse)
+                throw new InvalidOperationException("Cannot spawn unparser during an ongoing expression unparse");
+
+            return new ExpressionUnparser(this, spawn);
+        }
+
         #endregion
 
         #region Initialization
