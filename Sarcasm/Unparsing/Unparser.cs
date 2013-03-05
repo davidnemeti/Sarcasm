@@ -119,12 +119,15 @@ namespace Sarcasm.Unparsing
         private Unparser(Unparser that)
         {
             this.Grammar = that.Grammar;
-            this.formatting = that.formatting;
+            this.formatting = that.formatting;  // we are not using the property because it would set the formatter which we don't want
             this.unparseControl = that.unparseControl;
             this.EnablePartialInvalidation = that.EnablePartialInvalidation;
             this.EnableParallelProcessing = that.EnableParallelProcessing;
-            this.expressionUnparser = that.expressionUnparser;
             this._direction = that._direction;
+
+            // the following should be set after the constructor
+            this.formatter = null;
+            this.expressionUnparser = null;
         }
 
         private Unparser Spawn(Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
@@ -134,13 +137,9 @@ namespace Sarcasm.Unparsing
 
         private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
         {
-            Unparser spawn = new Unparser(this)
-                {
-                    formatter = this.formatter.Spawn(child, childLocation)
-                };
-
+            Unparser spawn = new Unparser(this);
+            spawn.formatter = this.formatter.Spawn(child, childLocation);
             spawn.expressionUnparser = this.expressionUnparser.Spawn(spawn);
-
             return spawn;
         }
 
