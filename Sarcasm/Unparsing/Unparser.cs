@@ -46,7 +46,7 @@ namespace Sarcasm.Unparsing
 
         #region Constants
 
-        private static readonly int parallelTasksLimit = Environment.ProcessorCount * 2;
+        private static readonly int parallelTasksLimit = Environment.ProcessorCount;
         private const Direction directionDefault = Direction.LeftToRight;
         private const bool enablePartialInvalidationDefault = false;
         private const bool enableParallelProcessingDefault = true;
