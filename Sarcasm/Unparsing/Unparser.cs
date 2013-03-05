@@ -44,9 +44,18 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
+        #region Parallel processing related
+
+        private static readonly bool multiCoreSystem = Environment.ProcessorCount > 1;
+        private static readonly int parallelTasksLimit = Environment.ProcessorCount;
+        private static volatile int activeParallelTasksCount = 0;
+
+        private bool UseParallelProcessing { get { return multiCoreSystem && EnableParallelProcessing; } }
+
+        #endregion
+
         #region Constants
 
-        private static readonly int parallelTasksLimit = Environment.ProcessorCount;
         private const Direction directionDefault = Direction.LeftToRight;
         private const bool enablePartialInvalidationDefault = false;
         private const bool enableParallelProcessingDefault = true;
@@ -70,7 +79,6 @@ namespace Sarcasm.Unparsing
         private Formatter formatter;
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
-        private static volatile int activeParallelTasksCount = 0;
 
         #endregion
 
@@ -261,7 +269,7 @@ namespace Sarcasm.Unparsing
                         {
                             int freeParallelTasksCount;
 
-                            if (EnableParallelProcessing && (freeParallelTasksCount = parallelTasksLimit - activeParallelTasksCount) > 0)
+                            if (UseParallelProcessing && (freeParallelTasksCount = parallelTasksLimit - activeParallelTasksCount) > 0)
                             {
 // disable warning: "a reference to a volatile field will not be treated as volatile"
 #pragma warning disable 420
@@ -301,7 +309,7 @@ namespace Sarcasm.Unparsing
                             }
                             else
                             {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !EnableParallelProcessing))
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
                                     foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                         yield return utoken;
                             }
