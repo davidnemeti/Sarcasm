@@ -231,7 +231,7 @@ namespace Sarcasm.Unparsing
         {
             return utokens
                 .DebugWriteLines(Formatter.tsRaw)
-                .CalculateDeferredUtokens()
+                .CalculateDeferredUtokens(direction)
                 .DebugWriteLines(Formatter.tsCalculatedDeferred)
                 .FilterInsertedUtokens(direction)
                 .DebugWriteLines(Formatter.tsFiltered)
@@ -570,13 +570,17 @@ namespace Sarcasm.Unparsing
 
     internal static class FormatterExtensions
     {
-        public static IEnumerable<UtokenBase> CalculateDeferredUtokens(this IEnumerable<UtokenBase> utokens)
+        public static IEnumerable<UtokenBase> CalculateDeferredUtokens(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction)
         {
 #if DEBUG
             int maxBufferSizeForDebug = 0;
 #endif
 
             var utokensBuffer = new Queue<UtokenBase>();
+
+            const int initialPrefetchCountForDeferred = 100;
+            int prefetchCount = 0;
+            int prefetchedCount = 0;
 
             /*
              * NOTE: During unparsing from right-to-left the leftmost child's left sibling will be set _after_ the last child was consumed,
@@ -591,6 +595,18 @@ namespace Sarcasm.Unparsing
             foreach (UtokenBase _utoken in utokens.Concat(null))
             {
                 utokensBuffer.Enqueue(_utoken);
+
+                #region Prefetch when right-to-left
+
+                if (direction == Unparser.Direction.RightToLeft && prefetchedCount < prefetchCount && _utoken != null)
+                {
+                    prefetchedCount++;
+                    continue;
+                }
+                else
+                    prefetchedCount = 0;
+
+                #endregion
 
 #if DEBUG
                 maxBufferSizeForDebug = Math.Max(maxBufferSizeForDebug, utokensBuffer.Count);
@@ -611,6 +627,7 @@ namespace Sarcasm.Unparsing
                     {
                         calculatedUtokens = deferredUtokens.GetUtokens();
                         utokensBuffer.Dequeue();
+                        prefetchCount = 0;
                         Formatter.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
                     }
                     catch (NonCalculatedException)
@@ -626,6 +643,11 @@ namespace Sarcasm.Unparsing
 #endif
                             throw;
                         }
+
+                        if (prefetchCount == 0)
+                            prefetchCount = initialPrefetchCountForDeferred;
+                        else
+                            prefetchCount *= 2;
 
                         continue;
                     }
