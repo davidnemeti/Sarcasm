@@ -305,7 +305,7 @@ namespace Sarcasm.Unparsing
                             }
                             else
                             {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: true))
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
                                     foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                         yield return utoken;
                             }

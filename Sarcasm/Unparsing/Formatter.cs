@@ -627,7 +627,7 @@ namespace Sarcasm.Unparsing
                     {
                         calculatedUtokens = deferredUtokens.GetUtokens();
                         utokensBuffer.Dequeue();
-                        postProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse(deferredUtokens.Self);
+//                        postProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse(deferredUtokens.Self);
                         prefetchCount = 0;
 
                         Formatter.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
