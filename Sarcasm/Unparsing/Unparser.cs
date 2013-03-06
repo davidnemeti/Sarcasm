@@ -18,7 +18,7 @@ using Grammar = Sarcasm.Ast.Grammar;
 
 namespace Sarcasm.Unparsing
 {
-    public class Unparser : IUnparser
+    public class Unparser : IUnparser, IPostProcessHelper
     {
         #region Tracing
 
@@ -159,7 +159,7 @@ namespace Sarcasm.Unparsing
             var root = new UnparsableObject(bnfTerm, obj);
             root.SetAsRoot();
             return UnparseRaw(root)
-                .Cook(direction, formatting.IndentEmptyLines);
+                .Cook(this);
         }
 
         private Unparser.Direction direction
@@ -289,6 +289,9 @@ namespace Sarcasm.Unparsing
                                     foreach (var utoken in chosenChildren.AsParallel().AsOrdered().WithDegreeOfParallelism(freeParallelTasksCount).SelectMany(chosenChild => unparserForPartition.Value.UnparseRaw(chosenChild)))
                                         yield return utoken;
 
+                                    //foreach (var chosenChild in chosenChildren)
+                                    //    UnlinkChildFromChildPrevSiblingIfNotFullUnparse(chosenChild);
+
 //                                    this.formatter.topAncestorCacheForLeft = UnparsableObject.NonCalculated;
 #pragma warning disable 420
                                     Interlocked.Add(ref activeParallelTasksCount, -activeParallelTasksCountLocal);
@@ -302,7 +305,7 @@ namespace Sarcasm.Unparsing
                             }
                             else
                             {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: true))
                                     foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                         yield return utoken;
                             }
@@ -370,17 +373,20 @@ namespace Sarcasm.Unparsing
             {
                 // NOTE: if right-to-left then the next sibling is the left sibling, which is needed for deferred utokens even if we are not building full unparse tree
                 if (buildFullUnparseTree || direction == Direction.RightToLeft)
-                    SetNextSibling(childPrevSibling, child);  // we have the prev sibling set already, and now we set the next sibling too
+                    SetNextSibling(childPrevSibling, child);  // we have the prev sibling of childPrevSibling set already, and now we set the next sibling too
 
                 if (enableUnlinkOfChild)
                     UnlinkChildFromChildPrevSiblingIfNotFullUnparse(childPrevSibling);      // we unlink child prev sibling if unneeded
             }
         }
 
-        private void UnlinkChildFromChildPrevSiblingIfNotFullUnparse(UnparsableObject child)
+        private void UnlinkChildFromChildPrevSiblingIfNotFullUnparse(UnparsableObject child, bool enforce = false)
         {
+            if (!enforce && direction == Direction.LeftToRight && child.IsLeftSiblingNeededForDeferredCalculation)
+                return;
+
             if (!buildFullUnparseTree)
-                SetPrevSibling(child, UnparsableObject.ThrownOut);  // we throw out the unneeded prev sibling
+                SetPrevSibling(child, UnparsableObject.ThrownOut);  // prev sibling is not needed anymore
         }
 
         private void SetPrevSibling(UnparsableObject current, UnparsableObject prev)
@@ -538,6 +544,32 @@ namespace Sarcasm.Unparsing
         }
 
         IFormatProvider IUnparser.FormatProvider { get { return this.Formatting.FormatProvider; } }
+
+        #endregion
+
+        #region IPostProcessHelper implementation
+
+        Unparser.Direction IPostProcessHelper.Direction
+        {
+            get { return this.direction; }
+        }
+
+        bool IPostProcessHelper.IndentEmptyLines
+        {
+            get { return formatting.IndentEmptyLines; }
+        }
+
+        Action<UnparsableObject> IPostProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse
+        {
+            get
+            {
+                return child =>
+                    {
+                        if (direction == Direction.LeftToRight && child.IsLeftSiblingNeededForDeferredCalculation)
+                            this.UnlinkChildFromChildPrevSiblingIfNotFullUnparse(child, enforce: true);
+                    };
+            }
+        }
 
         #endregion
 

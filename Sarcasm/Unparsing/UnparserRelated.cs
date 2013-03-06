@@ -42,9 +42,9 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
+        internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
-            return Formatter.PostProcess(utokens, direction, indentEmptyLines);
+            return Formatter.PostProcess(utokens, postProcessHelper);
         }
     }
 
@@ -63,13 +63,26 @@ namespace Sarcasm.Unparsing
         IFormatProvider FormatProvider { get; }
     }
 
+    internal interface IPostProcessHelper
+    {
+        Unparser.Direction Direction { get; }
+        bool IndentEmptyLines { get; }
+        Action<UnparsableObject> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
+    }
+
     public class UnparsableObject
     {
+        #region Constants
+
         private static readonly object nonCalculatedObj = new object();
         private static readonly object thrownOutObj = new object();
 
         internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, nonCalculatedObj);
         internal static readonly UnparsableObject ThrownOut = new UnparsableObject(null, thrownOutObj);
+
+        #endregion
+
+        #region State
 
         public BnfTerm BnfTerm { get; private set; }
         public object Obj { get; private set; }
@@ -79,6 +92,21 @@ namespace Sarcasm.Unparsing
         private UnparsableObject rightMostChild = NonCalculated;
         private UnparsableObject leftSibling = NonCalculated;
         private UnparsableObject rightSibling = NonCalculated;
+
+        #endregion
+
+        #region Construction
+
+        public UnparsableObject(BnfTerm bnfTerm, object obj)
+        {
+            this.BnfTerm = bnfTerm;
+            this.Obj = obj;
+            this.IsLeftSiblingNeededForDeferredCalculation = false;
+        }
+
+        #endregion
+
+        #region Publics
 
         public UnparsableObject Parent
         {
@@ -116,11 +144,31 @@ namespace Sarcasm.Unparsing
         public bool IsLeftSiblingCalculated { get { return IsCalculated(leftSibling); } }
         public bool IsRightSiblingCalculated { get { return IsCalculated(rightSibling); } }
 
-        public UnparsableObject(BnfTerm bnfTerm, object obj)
+        public bool IsLeftSiblingNeededForDeferredCalculation { get; set; }
+
+        public void SetAsRoot()
         {
-            this.BnfTerm = bnfTerm;
-            this.Obj = obj;
+            Parent = null;
+            LeftSibling = null;
+            RightSibling = null;
         }
+
+        public void SetAsLeave()
+        {
+            LeftMostChild = null;
+            RightMostChild = null;
+        }
+
+        public override string ToString()
+        {
+            return IsCalculated(this)
+                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj)
+                : "<<NonCalculated>>";
+        }
+
+        #endregion
+
+        #region Equality
 
         public bool Equals(UnparsableObject that)
         {
@@ -151,25 +199,9 @@ namespace Sarcasm.Unparsing
             return !(unparsableObject1 == unparsableObject2);
         }
 
-        public override string ToString()
-        {
-            return IsCalculated(this)
-                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj)
-                : "<<NonCalculated>>";
-        }
+        #endregion
 
-        public void SetAsRoot()
-        {
-            Parent = null;
-            LeftSibling = null;
-            RightSibling = null;
-        }
-
-        public void SetAsLeave()
-        {
-            LeftMostChild = null;
-            RightMostChild = null;
-        }
+        #region Helpers
 
         private void CheckIfValid(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
         {
@@ -194,5 +226,7 @@ namespace Sarcasm.Unparsing
         {
             return object.ReferenceEquals(unparsableObject, ThrownOut);
         }
+
+        #endregion
     }
 }

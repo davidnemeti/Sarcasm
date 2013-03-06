@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.IO;
+using System.Diagnostics;
 
 using Irony;
 using Irony.Ast;
@@ -357,17 +358,19 @@ namespace Sarcasm.Unparsing
         private readonly Func<IEnumerable<UtokenBase>> utokenYielder;
         private IReadOnlyList<UtokenBase> calculatedUtokens;
 
-        private readonly UnparsableObject helpSelf;
+        public UnparsableObject Self { get; private set; }
         private readonly string helpMessage;
         private readonly object helpCalculatedObject;
 
-        public DeferredUtokens(Func<IEnumerable<UtokenBase>> utokenYielder, UnparsableObject helpSelf = null, string helpMessage = null, object helpCalculatedObject = null)
+        public DeferredUtokens(Func<IEnumerable<UtokenBase>> utokenYielder, UnparsableObject self, string helpMessage = null, object helpCalculatedObject = null)
         {
             this.utokenYielder = utokenYielder;
-            this.helpSelf = helpSelf;
+            this.Self = self;
             this.helpMessage = helpMessage;
             this.helpCalculatedObject = helpCalculatedObject;
             this.calculatedUtokens = null;
+
+            self.IsLeftSiblingNeededForDeferredCalculation = true;
         }
 
         public IReadOnlyList<UtokenBase> GetUtokens()
@@ -385,7 +388,7 @@ namespace Sarcasm.Unparsing
         public override string ToString()
         {
             return string.Format("deferred utokens for '{0}'{1}{2}",
-                helpSelf != null ? helpSelf.ToString() : "<<UNKNOWN>>",
+                Self != null ? Self.ToString() : "<<UNKNOWN>>",
                 helpMessage != null ? " [" + helpMessage + "]" : string.Empty,
                 HelpCalculatedObjectToString()
                 );

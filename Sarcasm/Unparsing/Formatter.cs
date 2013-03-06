@@ -227,18 +227,13 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
+        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
-            return utokens
-                .DebugWriteLines(Formatter.tsRaw)
-                .CalculateDeferredUtokens(direction)
-                .DebugWriteLines(Formatter.tsCalculatedDeferred)
-                .FilterInsertedUtokens(direction)
-                .DebugWriteLines(Formatter.tsFiltered)
-                .Flatten()
-                .DebugWriteLines(Formatter.tsFlattened)
-                .ProcessControls(direction, indentEmptyLines)
-                .DebugWriteLines(Formatter.tsProcessedControls)
+            return utokens                                      .DebugWriteLines(tsRaw)
+                .CalculateDeferredUtokens(postProcessHelper)    .DebugWriteLines(tsCalculatedDeferred)
+                .FilterInsertedUtokens(postProcessHelper)       .DebugWriteLines(tsFiltered)
+                .Flatten()                                      .DebugWriteLines(tsFlattened)
+                .ProcessControls(postProcessHelper)             .DebugWriteLines(tsProcessedControls)
                 .Cast<Utoken>()
                 ;
         }
@@ -280,7 +275,7 @@ namespace Sarcasm.Unparsing
                 {
                     new DeferredUtokens(
                         () => _YieldBetween(self, formatter: null, formatting: this.formatting),
-                        helpSelf: self,
+                        self: self,
                         helpMessage: "YieldBetween"
                         )
                 };
@@ -346,7 +341,7 @@ namespace Sarcasm.Unparsing
                 {
                     blockIndentation.LeftDeferred = new DeferredUtokens(
                         () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: true),
-                        helpSelf: self,
+                        self: self,
                         helpMessage: "YieldIndentationLeft",
                         helpCalculatedObject: _blockIndentation
                         )
@@ -392,7 +387,7 @@ namespace Sarcasm.Unparsing
                 {
                     blockIndentation.RightDeferred = new DeferredUtokens(
                         () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: false),
-                        helpSelf: self,
+                        self: self,
                         helpMessage: "YieldIndentationRight",
                         helpCalculatedObject: _blockIndentation
                         )
@@ -570,7 +565,7 @@ namespace Sarcasm.Unparsing
 
     internal static class FormatterExtensions
     {
-        public static IEnumerable<UtokenBase> CalculateDeferredUtokens(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction)
+        public static IEnumerable<UtokenBase> CalculateDeferredUtokens(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
 #if DEBUG
             int maxBufferSizeForDebug = 0;
@@ -603,7 +598,7 @@ namespace Sarcasm.Unparsing
 
                 #region Prefetch when right-to-left
 
-                if (direction == Unparser.Direction.RightToLeft && prefetchedCount < prefetchCount && _utoken != null)
+                if (postProcessHelper.Direction == Unparser.Direction.RightToLeft && prefetchedCount < prefetchCount && _utoken != null)
                 {
                     prefetchedCount++;
                     continue;
@@ -632,7 +627,9 @@ namespace Sarcasm.Unparsing
                     {
                         calculatedUtokens = deferredUtokens.GetUtokens();
                         utokensBuffer.Dequeue();
+                        postProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse(deferredUtokens.Self);
                         prefetchCount = 0;
+
                         Formatter.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
                     }
                     catch (NonCalculatedException)
@@ -734,7 +731,7 @@ namespace Sarcasm.Unparsing
          * InsertedUtokens belonging to the same bnfterm with equal priorities are handled so that the several kind
          * of InsertedUtokens have strength in descending order: Between, Left, Right
          * */
-        public static IEnumerable<UtokenBase> FilterInsertedUtokens(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction)
+        public static IEnumerable<UtokenBase> FilterInsertedUtokens(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
             InsertedUtokens prevInsertedUtokensToBeYield = null;
             var nonOverridableSkipThroughBuffer = new Queue<UtokenBase>();
@@ -745,7 +742,7 @@ namespace Sarcasm.Unparsing
                 {
                     InsertedUtokens nextInsertedUtokens = (InsertedUtokens)utoken;
 
-                    var switchToNextInsertedUtokens = new Lazy<bool>(() => IsNextStronger(prevInsertedUtokensToBeYield, nextInsertedUtokens, direction));
+                    var switchToNextInsertedUtokens = new Lazy<bool>(() => IsNextStronger(prevInsertedUtokensToBeYield, nextInsertedUtokens, postProcessHelper.Direction));
 
                     if (nextInsertedUtokens.behavior == Behavior.Overridable)
                     {
@@ -753,7 +750,7 @@ namespace Sarcasm.Unparsing
                     }
                     else if (nextInsertedUtokens.behavior == Behavior.NonOverridableSkipThrough)
                     {
-                        if (direction == Unparser.Direction.LeftToRight)
+                        if (postProcessHelper.Direction == Unparser.Direction.LeftToRight)
                             yield return nextInsertedUtokens;
                         else
                             nonOverridableSkipThroughBuffer.Enqueue(nextInsertedUtokens);
@@ -773,7 +770,7 @@ namespace Sarcasm.Unparsing
                 else if (utoken is UtokenControl && ((UtokenControl)utoken).IsIndent())
                 {
                     // handle it as it were a NonOverridableSkipThrough
-                    if (direction == Unparser.Direction.LeftToRight)
+                    if (postProcessHelper.Direction == Unparser.Direction.LeftToRight)
                         yield return utoken;
                     else
                         nonOverridableSkipThroughBuffer.Enqueue(utoken);
@@ -815,7 +812,7 @@ namespace Sarcasm.Unparsing
             return utokens.SelectMany(utoken => utoken.Flatten());
         }
 
-        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens, Unparser.Direction direction, bool indentEmptyLines)
+        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
             int indentLevel = 0;
             int indentLevelForCurrentLine = 0;
@@ -866,12 +863,12 @@ namespace Sarcasm.Unparsing
                 }
                 else
                 {
-                    if (direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (indentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))
+                    if (postProcessHelper.Direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (postProcessHelper.IndentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     indentLevelForCurrentLine = indentLevel;
 
-                    if (direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevNotControlUtoken) && (indentEmptyLines || !IsLineSeparator(utoken)))
+                    if (postProcessHelper.Direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevNotControlUtoken) && (postProcessHelper.IndentEmptyLines || !IsLineSeparator(utoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && utoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
