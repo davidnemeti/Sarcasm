@@ -578,6 +578,11 @@ namespace Sarcasm.Unparsing
 
             var utokensBuffer = new Queue<UtokenBase>();
 
+            /*
+             * When dealing with right-to-left unparsing, in case of left-context-specific indentation (which is deferred in this case)
+             * we have to consume more than one utokens in order to be able to calculate the indentation. Thus, we prefetch some more utokens
+             * instead of consuming them one-by-one. This prefetch behavior causes a significant speed-up.
+             * */
             const int initialPrefetchCountForDeferred = 100;
             int prefetchCount = 0;
             int prefetchedCount = 0;
