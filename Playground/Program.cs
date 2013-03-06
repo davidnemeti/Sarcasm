@@ -50,22 +50,22 @@ namespace Playground
             //ShowTimeAndRestart(stopwatch, "Converting utokens to string");
 
             unparser.EnableParallelProcessing = false;
-            string unparsedText2 = unparser.Unparse(astRootValue).AsString(unparser);
+            unparser.Unparse(astRootValue).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Sequential unparsing to string");
 
             unparser.EnableParallelProcessing = true;
-            string unparsedText3 = unparser.Unparse(astRootValue).AsString(unparser);
+            unparser.Unparse(astRootValue).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Parallel unparsing to string");
 
             //var utokensReverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ToList();
             //ShowTimeAndRestart(stopwatch, "Reverse unparsing to utokens");
 
             unparser.EnableParallelProcessing = false;
-            string unparsedText2Reverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).AsString(unparser);
+            unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Reverse sequential unparsing to string");
 
             unparser.EnableParallelProcessing = true;
-            string unparsedText3Reverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).AsString(unparser);
+            unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Reverse parallel unparsing to string");
 
             //stopwatch.Stop();

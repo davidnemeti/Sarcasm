@@ -9,6 +9,14 @@ namespace Sarcasm
 {
     public static class Util
     {
+        public static void ConsumeAll<T>(this IEnumerable<T> items)
+        {
+            foreach (T item in items)
+            {
+                // do nothing just iterate through
+            }
+        }
+
         #region Extreme item methods (min/max)
 
         public static TSource MaxItem<TSource>(this IEnumerable<TSource> items)
