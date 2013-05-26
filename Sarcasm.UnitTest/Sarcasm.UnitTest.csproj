@@ -130,6 +130,12 @@
     <None Include="Expected results\ASTs\Binary4.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Expected results\ASTs\MiniPL2.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Expected results\ASTs\MiniPL3.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Expected results\ASTs\Unary3.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

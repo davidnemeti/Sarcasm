@@ -106,6 +106,62 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
+        public void Parse_MiniPL2_TS_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL2.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL2_TS()
+        {
+            ParseFileSaveAstAndCheckTS(B.Program, "MiniPL2.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL2_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL2.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL2()
+        {
+            ParseFileSaveAstAndCheck(B.Program, "MiniPL2.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL3_TS_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL3.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL3_TS()
+        {
+            ParseFileSaveAstAndCheckTS(B.Program, "MiniPL3.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL3_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPL3.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPL3()
+        {
+            ParseFileSaveAstAndCheck(B.Program, "MiniPL3.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
         public void Parse_Unary1_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary1.expr");

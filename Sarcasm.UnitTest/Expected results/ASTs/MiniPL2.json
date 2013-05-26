@@ -1,0 +1,244 @@
+{
+  "$type": "MiniPL.DomainModel.Program, MiniPL",
+  "Name": {
+    "$type": "DomainCore.Name, DomainCore",
+    "Value": "HelloWorld"
+  },
+  "Namespace": {
+    "$type": "DomainCore.NameRef, DomainCore",
+    "Value": "Sea.Shell"
+  },
+  "Body": {
+    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Statement, MiniPL]], mscorlib",
+    "$values": [
+      {
+        "$type": "MiniPL.DomainModel.LocalVariable, MiniPL",
+        "Name": {
+          "$type": "DomainCore.Name, DomainCore",
+          "Value": "number"
+        },
+        "Type": "Integer",
+        "InitValue": {
+          "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+          "Value": 5
+        }
+      },
+      {
+        "$type": "MiniPL.DomainModel.WriteLn, MiniPL",
+        "Arguments": {
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Expression, MiniPL]], mscorlib",
+          "$values": [
+            {
+              "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+              "Target": {
+                "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                "NameRef": {
+                  "$type": "DomainCore.NameRef, DomainCore",
+                  "Value": "number"
+                }
+              }
+            },
+            {
+              "$type": "MiniPL.DomainModel.StringLiteral, MiniPL",
+              "Value": "\"th Fibonacci number: \""
+            },
+            {
+              "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+              "FunctionReference": {
+                "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                "NameRef": {
+                  "$type": "DomainCore.NameRef, DomainCore",
+                  "Value": "Fibonacci"
+                }
+              },
+              "Arguments": {
+                "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                "$values": [
+                  {
+                    "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                    "Expression": {
+                      "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                      "Target": {
+                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                        "NameRef": {
+                          "$type": "DomainCore.NameRef, DomainCore",
+                          "Value": "number"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "Functions": {
+    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Function, MiniPL]], mscorlib",
+    "$values": [
+      {
+        "$type": "MiniPL.DomainModel.Function, MiniPL",
+        "Name": {
+          "$type": "DomainCore.Name, DomainCore",
+          "Value": "Fibonacci"
+        },
+        "ReturnType": "Integer",
+        "Parameters": {
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Parameter, MiniPL]], mscorlib",
+          "$values": [
+            {
+              "$type": "MiniPL.DomainModel.Parameter, MiniPL",
+              "Name": {
+                "$type": "DomainCore.Name, DomainCore",
+                "Value": "n"
+              },
+              "Type": "Integer"
+            }
+          ]
+        },
+        "Body": {
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Statement, MiniPL]], mscorlib",
+          "$values": [
+            {
+              "$type": "MiniPL.DomainModel.If, MiniPL",
+              "Condition": {
+                "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                "Term1": {
+                  "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                  "Target": {
+                    "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                    "NameRef": {
+                      "$type": "DomainCore.NameRef, DomainCore",
+                      "Value": "n"
+                    }
+                  }
+                },
+                "Op": "Eq",
+                "Term2": {
+                  "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                  "Value": 0
+                }
+              },
+              "Body": {
+                "$type": "MiniPL.DomainModel.Return, MiniPL",
+                "Value": {
+                  "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                  "Value": 0
+                }
+              },
+              "ElseBody": {
+                "$type": "MiniPL.DomainModel.If, MiniPL",
+                "Condition": {
+                  "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                  "Term1": {
+                    "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                    "Target": {
+                      "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                      "NameRef": {
+                        "$type": "DomainCore.NameRef, DomainCore",
+                        "Value": "n"
+                      }
+                    }
+                  },
+                  "Op": "Eq",
+                  "Term2": {
+                    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                    "Value": 1
+                  }
+                },
+                "Body": {
+                  "$type": "MiniPL.DomainModel.Return, MiniPL",
+                  "Value": {
+                    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                    "Value": 1
+                  }
+                },
+                "ElseBody": {
+                  "$type": "MiniPL.DomainModel.Return, MiniPL",
+                  "Value": {
+                    "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                    "Term1": {
+                      "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+                      "FunctionReference": {
+                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                        "NameRef": {
+                          "$type": "DomainCore.NameRef, DomainCore",
+                          "Value": "Fibonacci"
+                        }
+                      },
+                      "Arguments": {
+                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                        "$values": [
+                          {
+                            "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                            "Expression": {
+                              "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                              "Term1": {
+                                "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                                "Target": {
+                                  "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                                  "NameRef": {
+                                    "$type": "DomainCore.NameRef, DomainCore",
+                                    "Value": "n"
+                                  }
+                                }
+                              },
+                              "Op": "Sub",
+                              "Term2": {
+                                "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                                "Value": 1
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    "Op": "Add",
+                    "Term2": {
+                      "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+                      "FunctionReference": {
+                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                        "NameRef": {
+                          "$type": "DomainCore.NameRef, DomainCore",
+                          "Value": "Fibonacci"
+                        }
+                      },
+                      "Arguments": {
+                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                        "$values": [
+                          {
+                            "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                            "Expression": {
+                              "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                              "Term1": {
+                                "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                                "Target": {
+                                  "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                                  "NameRef": {
+                                    "$type": "DomainCore.NameRef, DomainCore",
+                                    "Value": "n"
+                                  }
+                                }
+                              },
+                              "Op": "Sub",
+                              "Term2": {
+                                "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                                "Value": 2
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

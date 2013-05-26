@@ -8,9 +8,7 @@ using DomainCore;
 
 namespace MiniPL.DomainModel
 {
-    [Domain("MiniPL", typeof(MiniPL.DomainModel.Program))]
-    public static class MiniPLDomain { }
-
+    [DomainRoot("MiniPL")]
     public class Program
     {
         public Name Name { get; set; }
