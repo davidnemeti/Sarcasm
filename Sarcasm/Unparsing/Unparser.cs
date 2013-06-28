@@ -259,85 +259,65 @@ namespace Sarcasm.Unparsing
                         }
                         else
                         {
-                            if (!UseParallelProcessing)
-                                goto LSerialProcessing;
+                            bool shouldUnparseParallel;
+                            int numberOfParallelTaskToStartActually;
+                            int subRangeCount;
+                            List<UnparsableObject> chosenChildrenList;
 
-                            var chosenChildrenList = chosenChildren.ToList();
+                            shouldUnparseParallel = ShouldUnparseParallelAndAcquireTasksIfNeeded(
+                                                        chosenChildren,
+                                                        out numberOfParallelTaskToStartActually,
+                                                        out subRangeCount,
+                                                        out chosenChildrenList);
 
-                            if (chosenChildrenList.Count <= 1)
-                                goto LSerialProcessing;
-
-                            // heuristics
-                            if (chosenChildrenList.Count / 2 < parallelTaskCounter.FreeNumberOfResources)
-                                goto LSerialProcessing;
-
-                            int numberOfParallelTaskToStartIdeally = chosenChildrenList.Count;
-                            int numberOfNewParallelTaskToStartIdeally = numberOfParallelTaskToStartIdeally - 1;
-                            int numberOfNewParallelTaskCanBeStartedActually;
-
-                            if (parallelTaskCounter.TryAcquireOrLess(numberOfNewParallelTaskToStartIdeally, out numberOfNewParallelTaskCanBeStartedActually))
-                                goto LParallelProcessing;
-                            else
-                                goto LSerialProcessing;
-
-                        LParallelProcessing:
-                            int numberOfParallelTaskCanBeStartedActually = numberOfNewParallelTaskCanBeStartedActually + 1;
-                            int subRangeCount = (int)Math.Ceiling((double)(chosenChildrenList.Count) / numberOfParallelTaskCanBeStartedActually);
-                            int numberOfParallelTaskToStartActually = (int)Math.Ceiling((double)(chosenChildrenList.Count) / subRangeCount);
-
-                            if (numberOfParallelTaskToStartActually < numberOfParallelTaskCanBeStartedActually)
-                                parallelTaskCounter.Release(numberOfParallelTaskCanBeStartedActually - numberOfParallelTaskToStartActually);    // we don't need all the tasks
-
-                            LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildrenList, enableUnlinkOfChild: false).ConsumeAll();
-                            var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
-                            var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
-
-                            for (int i = 0; i < subUnparseTasks.Length; i++)
+                            if (shouldUnparseParallel)
                             {
-                                int taskIndex = i;      // NOTE: needed for closure working correctly
+                                LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildrenList, enableUnlinkOfChild: false).ConsumeAll();
 
-                                subUnparseTasks[taskIndex] =
-                                    Task.Run(
-                                    () =>
-                                    {
-                                        subUtokensList[taskIndex] = new List<UtokenBase>();
+                                var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
+                                var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
 
-                                        int subRangeBeginIndex = taskIndex * subRangeCount;
-                                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+                                for (int i = 0; i < subUnparseTasks.Length; i++)
+                                {
+                                    int taskIndex = i;      // NOTE: needed for closure working correctly
 
-                                        Formatter.ChildLocation childLocation =
-                                            chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only    :
-                                            subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First   :
-                                            subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last    :
-                                                                                                    Formatter.ChildLocation.Middle;
+                                    subUnparseTasks[taskIndex] =
+                                        Task.Run(
+                                        () =>
+                                        {
+                                            subUtokensList[taskIndex] = new List<UtokenBase>();
 
-                                        Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+                                            int subRangeBeginIndex = taskIndex * subRangeCount;
+                                            int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
 
-                                        for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
-                                            subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+                                            Formatter.ChildLocation childLocation =
+                                                chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
+                                                subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
+                                                subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
+                                                                                                        Formatter.ChildLocation.Middle;
 
-                                        if (taskIndex > 0)
-                                            parallelTaskCounter.Release(1);     // release all tasks except the first one
-                                    }
-                                    )
-                                ;
+                                            Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+
+                                            for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                                                subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+
+                                            ReleaseTaskIfNeeded(taskIndex);
+                                        }
+                                        )
+                                    ;
+                                }
+                                Task.WaitAll(subUnparseTasks);
+
+                                foreach (var subUtokens in subUtokensList)
+                                    foreach (UtokenBase utoken in subUtokens)
+                                        yield return utoken;
                             }
-                            Task.WaitAll(subUnparseTasks);
-
-                            foreach (var subUtokens in subUtokensList)
-                                foreach (UtokenBase utoken in subUtokens)
-                                    yield return utoken;
-
-                            goto LEndProcessing;
-
-                        LSerialProcessing:
-                            foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
-                                foreach (UtokenBase utoken in UnparseRaw(chosenChild))
-                                    yield return utoken;
-
-                            goto LEndProcessing;
-
-                        LEndProcessing:;
+                            else
+                            {
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
+                                    foreach (UtokenBase utoken in UnparseRaw(chosenChild))
+                                        yield return utoken;
+                            }
                         }
                     }
                 }
@@ -354,6 +334,53 @@ namespace Sarcasm.Unparsing
             {
                 throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
             }
+        }
+
+        private bool ShouldUnparseParallelAndAcquireTasksIfNeeded(IEnumerable<UnparsableObject> chosenChildren,
+            out int numberOfParallelTaskToStartActually, out int subRangeCount, out List<UnparsableObject> chosenChildrenList)
+        {
+            numberOfParallelTaskToStartActually = -1;
+            subRangeCount = -1;
+            chosenChildrenList = null;
+
+            if (!UseParallelProcessing)
+                return false;
+
+            chosenChildrenList = chosenChildren.ToList();
+
+            if (chosenChildrenList.Count <= 1)
+                return false;
+
+            // heuristics
+            if (chosenChildrenList.Count / 2 < parallelTaskCounter.FreeNumberOfResources)
+                return false;
+
+            int numberOfParallelTaskToStartIdeally = chosenChildrenList.Count;
+            int numberOfNewParallelTaskToStartIdeally = numberOfParallelTaskToStartIdeally - 1;
+            int numberOfNewParallelTaskCanBeStartedActually;
+
+            if (!parallelTaskCounter.TryAcquireOrLess(numberOfNewParallelTaskToStartIdeally, out numberOfNewParallelTaskCanBeStartedActually))
+                return false;
+
+            int numberOfParallelTaskCanBeStartedActually = numberOfNewParallelTaskCanBeStartedActually + 1;
+            subRangeCount = (int)Math.Ceiling((double)(chosenChildrenList.Count) / numberOfParallelTaskCanBeStartedActually);
+            numberOfParallelTaskToStartActually = (int)Math.Ceiling((double)(chosenChildrenList.Count) / subRangeCount);
+
+            if (numberOfParallelTaskToStartActually < numberOfParallelTaskCanBeStartedActually)
+                parallelTaskCounter.Release(numberOfParallelTaskCanBeStartedActually - numberOfParallelTaskToStartActually);    // we don't need all the tasks
+
+            return true;
+        }
+
+        private bool ReleaseTaskIfNeeded(int taskIndex)
+        {
+            if (taskIndex > 0)
+            {
+                parallelTaskCounter.Release(1);     // release all tasks except the first one
+                return true;
+            }
+            else
+                return false;
         }
 
         internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children, bool enableUnlinkOfChild = true)
