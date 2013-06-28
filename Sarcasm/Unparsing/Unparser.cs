@@ -47,8 +47,7 @@ namespace Sarcasm.Unparsing
         #region Parallel processing related
 
         private static readonly bool multiCoreSystem = Environment.ProcessorCount > 1;
-        private static readonly int parallelTasksLimit = Environment.ProcessorCount;
-        private static volatile int activeParallelTasksCount = 0;
+        private readonly ResourceCounter parallelTaskCounter = new ResourceCounter(totalNumberOfResources: Environment.ProcessorCount, initialAcquiredNumberOfResources: 1);
 
         private bool UseParallelProcessing { get { return multiCoreSystem && EnableParallelProcessing; } }
 
@@ -260,55 +259,85 @@ namespace Sarcasm.Unparsing
                         }
                         else
                         {
-                            int freeParallelTasksCount;
+                            if (!UseParallelProcessing)
+                                goto LSerialProcessing;
 
-                            if (UseParallelProcessing && (freeParallelTasksCount = parallelTasksLimit - activeParallelTasksCount) > 0)
+                            var chosenChildrenList = chosenChildren.ToList();
+
+                            if (chosenChildrenList.Count <= 1)
+                                goto LSerialProcessing;
+
+                            // heuristics
+                            if (chosenChildrenList.Count / 2 < parallelTaskCounter.FreeNumberOfResources)
+                                goto LSerialProcessing;
+
+                            int numberOfParallelTaskToStartIdeally = chosenChildrenList.Count;
+                            int numberOfNewParallelTaskToStartIdeally = numberOfParallelTaskToStartIdeally - 1;
+                            int numberOfNewParallelTaskCanBeStartedActually;
+
+                            if (parallelTaskCounter.TryAcquireOrLess(numberOfNewParallelTaskToStartIdeally, out numberOfNewParallelTaskCanBeStartedActually))
+                                goto LParallelProcessing;
+                            else
+                                goto LSerialProcessing;
+
+                        LParallelProcessing:
+                            int numberOfParallelTaskCanBeStartedActually = numberOfNewParallelTaskCanBeStartedActually + 1;
+                            int subRangeCount = (int)Math.Ceiling((double)(chosenChildrenList.Count) / numberOfParallelTaskCanBeStartedActually);
+                            int numberOfParallelTaskToStartActually = (int)Math.Ceiling((double)(chosenChildrenList.Count) / subRangeCount);
+
+                            if (numberOfParallelTaskToStartActually < numberOfParallelTaskCanBeStartedActually)
+                                parallelTaskCounter.Release(numberOfParallelTaskCanBeStartedActually - numberOfParallelTaskToStartActually);    // we don't need all the tasks
+
+                            LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildrenList, enableUnlinkOfChild: false).ConsumeAll();
+                            var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
+                            var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
+
+                            for (int i = 0; i < subUnparseTasks.Length; i++)
                             {
-// disable warning: "a reference to a volatile field will not be treated as volatile"
-#pragma warning disable 420
-//                                Interlocked.Increment(ref activeParallelTasksCount);
-//                                Interlocked.Add(ref activeParallelTasksCount, freeParallelTasksCount);
-#pragma warning restore 420
-                                int activeParallelTasksCountLocal = 0;
+                                int taskIndex = i;      // NOTE: needed for closure working correctly
 
-                                using (var unparserForPartition = new ThreadLocal<Unparser>(
+                                subUnparseTasks[taskIndex] =
+                                    Task.Run(
                                     () =>
                                     {
-#pragma warning disable 420
-                                        Interlocked.Increment(ref activeParallelTasksCount);
-#pragma warning restore 420
-                                        Interlocked.Increment(ref activeParallelTasksCountLocal);
-//                                        return this;
-                                        return this.Spawn();
-                                    }))
-                                {
-                                    chosenChildren = LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: false);
-                                    //var partitioner = Partitioner.Create(chosenChildren);
-                                    //partitioner.GetOrderableDynamicPartitions();
+                                        subUtokensList[taskIndex] = new List<UtokenBase>();
 
-                                    foreach (var utoken in chosenChildren.AsParallel().AsOrdered().WithDegreeOfParallelism(freeParallelTasksCount).SelectMany(chosenChild => unparserForPartition.Value.UnparseRaw(chosenChild)))
-                                        yield return utoken;
+                                        int subRangeBeginIndex = taskIndex * subRangeCount;
+                                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
 
-                                    //foreach (var chosenChild in chosenChildren)
-                                    //    UnlinkChildFromChildPrevSiblingIfNotFullUnparse(chosenChild);
+                                        Formatter.ChildLocation childLocation =
+                                            chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only    :
+                                            subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First   :
+                                            subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last    :
+                                                                                                    Formatter.ChildLocation.Middle;
 
-//                                    this.formatter.topAncestorCacheForLeft = UnparsableObject.NonCalculated;
-#pragma warning disable 420
-                                    Interlocked.Add(ref activeParallelTasksCount, -activeParallelTasksCountLocal);
-#pragma warning restore 420
-                                }
-// disable warning: "a reference to a volatile field will not be treated as volatile"
-#pragma warning disable 420
-//                                Interlocked.Decrement(ref activeParallelTasksCount);
-//                                Interlocked.Add(ref activeParallelTasksCount, -freeParallelTasksCount);
-#pragma warning restore 420
+                                        Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+
+                                        for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                                            subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+
+                                        if (taskIndex > 0)
+                                            parallelTaskCounter.Release(1);     // release all tasks except the first one
+                                    }
+                                    )
+                                ;
                             }
-                            else
-                            {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
-                                    foreach (UtokenBase utoken in UnparseRaw(chosenChild))
-                                        yield return utoken;
-                            }
+                            Task.WaitAll(subUnparseTasks);
+
+                            foreach (var subUtokens in subUtokensList)
+                                foreach (UtokenBase utoken in subUtokens)
+                                    yield return utoken;
+
+                            goto LEndProcessing;
+
+                        LSerialProcessing:
+                            foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
+                                foreach (UtokenBase utoken in UnparseRaw(chosenChild))
+                                    yield return utoken;
+
+                            goto LEndProcessing;
+
+                        LEndProcessing:;
                         }
                     }
                 }

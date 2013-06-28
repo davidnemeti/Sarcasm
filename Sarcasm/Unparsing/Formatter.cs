@@ -57,7 +57,7 @@ namespace Sarcasm.Unparsing
 
         private enum State { Begin, End }
 
-        public enum ChildLocation { Unknown, First, Middle, Last }
+        public enum ChildLocation { Unknown, First, Middle, Last, Only }
 
         internal class Params
         {
@@ -120,6 +120,8 @@ namespace Sarcasm.Unparsing
             else
             {
                 bool isLeftMostChild =
+                    childLocation == ChildLocation.Only
+                    ||
                     direction == Unparser.Direction.LeftToRight && childLocation == ChildLocation.First
                     ||
                     direction == Unparser.Direction.RightToLeft && childLocation == ChildLocation.Last;
