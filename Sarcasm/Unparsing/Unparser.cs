@@ -288,47 +288,12 @@ namespace Sarcasm.Unparsing
                             {
                                 LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildrenList, enableUnlinkOfChild: false).ConsumeAll();
 
-                                var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
-                                var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
-
-                                for (int i = 0; i < subUnparseTasks.Length; i++)
-                                {
-                                    int taskIndex = i;      // NOTE: needed for closure working correctly
-
-                                    subUnparseTasks[taskIndex] =
-                                        Task.Run(
-                                        () =>
-                                        {
-                                            subUtokensList[taskIndex] = new List<UtokenBase>();
-
-                                            int subRangeBeginIndex = taskIndex * subRangeCount;
-                                            int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
-
-                                            Formatter.ChildLocation childLocation =
-                                                chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
-                                                subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
-                                                subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
-                                                                                                        Formatter.ChildLocation.Middle;
-
-                                            Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
-
-                                            for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
-                                                subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
-
-                                            ReleaseTaskIfNeeded(taskIndex);
-                                        }
-                                        )
-                                    ;
-                                }
-                                Task.WaitAll(subUnparseTasks);
-
-                                foreach (var subUtokens in subUtokensList)
-                                    foreach (UtokenBase utoken in subUtokens)
-                                        yield return utoken;
+                                foreach (var utoken in UnparseRawParallel(chosenChildrenList, numberOfParallelTaskToStartActually, subRangeCount))
+                                    yield return utoken;
                             }
                             else
                             {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: !UseParallelProcessing))
+                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: true))
                                     foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                         yield return utoken;
                             }
@@ -348,6 +313,46 @@ namespace Sarcasm.Unparsing
             {
                 throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
             }
+        }
+
+        private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableObject> chosenChildrenList, int numberOfParallelTaskToStartActually, int subRangeCount)
+        {
+            var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
+            var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
+
+            for (int i = 0; i < subUnparseTasks.Length; i++)
+            {
+                int taskIndex = i;      // NOTE: needed for closure working correctly
+
+                subUnparseTasks[taskIndex] =
+                    Task.Run(
+                    () =>
+                    {
+                        subUtokensList[taskIndex] = new List<UtokenBase>();
+
+                        int subRangeBeginIndex = taskIndex * subRangeCount;
+                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+
+                        Formatter.ChildLocation childLocation =
+                            chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
+                            subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
+                            subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
+                                                                                    Formatter.ChildLocation.Middle;
+
+                        Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+
+                        for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                            subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+
+                        ReleaseTaskIfNeeded(taskIndex);
+                    });
+            }
+
+            Task.WaitAll(subUnparseTasks);
+
+            foreach (var subUtokens in subUtokensList)
+                foreach (UtokenBase utoken in subUtokens)
+                    yield return utoken;
         }
 
         private bool ShouldUnparseParallelAndAcquireTasksIfNeeded(IEnumerable<UnparsableObject> chosenChildren,
