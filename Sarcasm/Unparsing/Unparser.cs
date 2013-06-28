@@ -44,20 +44,12 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Parallel processing related
-
-        private static readonly bool multiCoreSystem = Environment.ProcessorCount > 1;
-        private readonly ResourceCounter parallelTaskCounter = new ResourceCounter(totalNumberOfResources: Environment.ProcessorCount, initialAcquiredNumberOfResources: 1);
-
-        private bool UseParallelProcessing { get { return multiCoreSystem && EnableParallelProcessing; } }
-
-        #endregion
-
         #region Constants
 
         private const Direction directionDefault = Direction.LeftToRight;
         private const bool enablePartialInvalidationDefault = false;
-        private const bool enableParallelProcessingDefault = true;
+        private const bool enableParallelProcessingDefault = false;
+        private static readonly bool multiCoreSystem = Environment.ProcessorCount > 1;
 
         #endregion
 
@@ -78,6 +70,7 @@ namespace Sarcasm.Unparsing
         private Formatter formatter;
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
+        private ResourceCounter parallelTaskCounter;
 
         #endregion
 
@@ -96,6 +89,25 @@ namespace Sarcasm.Unparsing
             }
         }
 
+        public int DegreeOfParallelism
+        {
+            get { return parallelTaskCounter.TotalNumberOfResources; }
+
+            set
+            {
+                if (value < 1 || value > Environment.ProcessorCount)
+                {
+                    throw new ArgumentOutOfRangeException(
+                        string.Format("DegreeOfParallelism should be more than zero and no more than {0} (Environment.ProcessorCount)", Environment.ProcessorCount)
+                        );
+                }
+
+                parallelTaskCounter = new ResourceCounter(totalNumberOfResources: value, initialAcquiredNumberOfResources: 1);
+            }
+        }
+
+        private bool UseParallelProcessing { get { return multiCoreSystem && EnableParallelProcessing; } }
+
         #endregion
 
         #region Construction
@@ -108,6 +120,7 @@ namespace Sarcasm.Unparsing
             this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
             this.EnablePartialInvalidation = enablePartialInvalidationDefault;
             this.EnableParallelProcessing = enableParallelProcessingDefault;
+            this.DegreeOfParallelism = Environment.ProcessorCount;
         }
 
         public Unparser(Grammar grammar)
@@ -122,6 +135,7 @@ namespace Sarcasm.Unparsing
             this.unparseControl = that.unparseControl;
             this.EnablePartialInvalidation = that.EnablePartialInvalidation;
             this.EnableParallelProcessing = that.EnableParallelProcessing;
+            this.parallelTaskCounter = that.parallelTaskCounter;
             this._direction = that._direction;
 
             // the following should be set after the constructor
