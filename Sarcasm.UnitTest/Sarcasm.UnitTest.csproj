@@ -73,8 +73,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\Irony.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.4.5.11\lib\net40\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.5.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>
@@ -138,6 +139,7 @@
     <None Include="Expected results\ASTs\Unary4.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="packages.config" />
     <None Include="Test files\Binary3.expr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -175,7 +177,6 @@
     <None Include="Expected results\ASTs\Unary2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
     <None Include="Tests\ParserTest.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ParserTest.generated.cs</LastGenOutput>
