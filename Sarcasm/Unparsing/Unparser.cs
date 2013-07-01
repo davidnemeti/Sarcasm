@@ -239,7 +239,6 @@ namespace Sarcasm.Unparsing
 
                     if (unparsableSelf.TryGetUtokensDirectly(this, self.Obj, out directUtokens))
                     {
-                        // TODO: or else?
                         tsUnparse.Debug("SetAsLeave: {0}", self);
                         self.SetAsLeave();
 
