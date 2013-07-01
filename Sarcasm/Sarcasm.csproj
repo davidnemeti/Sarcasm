@@ -107,6 +107,7 @@
       <DependentUpon>BnfiTermValueForDataAndNumber.tt</DependentUpon>
     </Compile>
     <Compile Include="Ast\Common.cs" />
+    <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="Misc\ResourceCounter.cs" />
     <Compile Include="Misc\ReverseList.cs" />
     <Compile Include="Misc\ForAll.cs" />

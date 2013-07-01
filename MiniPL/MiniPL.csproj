@@ -30,9 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DomainCore">
-      <HintPath>..\libraries\DomainCore.dll</HintPath>
-    </Reference>
     <Reference Include="Irony">
       <HintPath>..\Libraries\Irony.dll</HintPath>
     </Reference>

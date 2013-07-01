@@ -10,8 +10,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Ast;
 using Sarcasm.Unparsing;
-
-using DomainCore;
+using Sarcasm.DomainCore;
 
 using MiniPL.DomainModel;
 

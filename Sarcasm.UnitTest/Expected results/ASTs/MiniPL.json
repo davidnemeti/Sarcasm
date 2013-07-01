@@ -1,11 +1,11 @@
 {
   "$type": "MiniPL.DomainModel.Program, MiniPL",
   "Name": {
-    "$type": "DomainCore.Name, DomainCore",
+    "$type": "Sarcasm.DomainCore.Name, Sarcasm",
     "Value": "HelloWorld"
   },
   "Namespace": {
-    "$type": "DomainCore.NameRef, DomainCore",
+    "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
     "Value": "Sea.Shell"
   },
   "Body": {
@@ -14,7 +14,7 @@
       {
         "$type": "MiniPL.DomainModel.LocalVariable, MiniPL",
         "Name": {
-          "$type": "DomainCore.Name, DomainCore",
+          "$type": "Sarcasm.DomainCore.Name, Sarcasm",
           "Value": "number"
         },
         "Type": "Integer",
@@ -31,9 +31,9 @@
             {
               "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
               "Target": {
-                "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                 "NameRef": {
-                  "$type": "DomainCore.NameRef, DomainCore",
+                  "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "number"
                 }
               }
@@ -45,9 +45,9 @@
             {
               "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
               "FunctionReference": {
-                "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
                 "NameRef": {
-                  "$type": "DomainCore.NameRef, DomainCore",
+                  "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "Fibonacci"
                 }
               },
@@ -59,9 +59,9 @@
                     "Expression": {
                       "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
                       "Target": {
-                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                         "NameRef": {
-                          "$type": "DomainCore.NameRef, DomainCore",
+                          "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "number"
                         }
                       }
@@ -81,7 +81,7 @@
       {
         "$type": "MiniPL.DomainModel.Function, MiniPL",
         "Name": {
-          "$type": "DomainCore.Name, DomainCore",
+          "$type": "Sarcasm.DomainCore.Name, Sarcasm",
           "Value": "Fibonacci"
         },
         "ReturnType": "Integer",
@@ -91,7 +91,7 @@
             {
               "$type": "MiniPL.DomainModel.Parameter, MiniPL",
               "Name": {
-                "$type": "DomainCore.Name, DomainCore",
+                "$type": "Sarcasm.DomainCore.Name, Sarcasm",
                 "Value": "n"
               },
               "Type": "Integer"
@@ -108,9 +108,9 @@
                 "Term1": {
                   "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
                   "Target": {
-                    "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                    "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                     "NameRef": {
-                      "$type": "DomainCore.NameRef, DomainCore",
+                      "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                       "Value": "n"
                     }
                   }
@@ -135,9 +135,9 @@
                   "Term1": {
                     "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
                     "Target": {
-                      "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                      "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                       "NameRef": {
-                        "$type": "DomainCore.NameRef, DomainCore",
+                        "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                         "Value": "n"
                       }
                     }
@@ -162,9 +162,9 @@
                     "Term1": {
                       "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
                       "FunctionReference": {
-                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
                         "NameRef": {
-                          "$type": "DomainCore.NameRef, DomainCore",
+                          "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
                         }
                       },
@@ -178,9 +178,9 @@
                               "Term1": {
                                 "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
                                 "Target": {
-                                  "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                                   "NameRef": {
-                                    "$type": "DomainCore.NameRef, DomainCore",
+                                    "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
                                   }
                                 }
@@ -199,9 +199,9 @@
                     "Term2": {
                       "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
                       "FunctionReference": {
-                        "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], DomainCore",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
                         "NameRef": {
-                          "$type": "DomainCore.NameRef, DomainCore",
+                          "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
                         }
                       },
@@ -215,9 +215,9 @@
                               "Term1": {
                                 "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
                                 "Target": {
-                                  "$type": "DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], DomainCore",
+                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
                                   "NameRef": {
-                                    "$type": "DomainCore.NameRef, DomainCore",
+                                    "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
                                   }
                                 }
