@@ -9,7 +9,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
 	#region Parse Object (Data and Number)
 

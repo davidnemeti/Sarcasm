@@ -142,17 +142,4 @@ namespace Sarcasm.DomainCore
             this.Name = name;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class GrammarAttribute : Attribute
-    {
-        public Type DomainRoot { get; private set; }
-        public string Info { get; private set; }
-
-        public GrammarAttribute(Type domainRoot, string info = null)
-        {
-            this.DomainRoot = domainRoot;
-            this.Info = info;
-        }
-    }
 }

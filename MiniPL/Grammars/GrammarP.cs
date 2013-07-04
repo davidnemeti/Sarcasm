@@ -8,7 +8,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
-using Sarcasm.Ast;
+using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
 
@@ -21,11 +21,11 @@ using StringLiteral = MiniPL.DomainModel.StringLiteral;
 namespace MiniPL
 {
     [Grammar(typeof(Program), "Pascal-like grammar")]
-    public class GrammarP : Sarcasm.Ast.Grammar<MiniPL.DomainModel.Program>
+    public class GrammarP : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
     {
         public class BnfTerms
         {
-            internal BnfTerms(Sarcasm.Ast.Grammar grammar)
+            internal BnfTerms(Sarcasm.GrammarAst.Grammar grammar)
             {
                 this.PROGRAM = grammar.ToTerm("program");
                 this.NAMESPACE = grammar.ToTerm("namespace");

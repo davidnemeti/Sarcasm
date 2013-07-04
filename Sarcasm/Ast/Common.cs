@@ -12,7 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Parsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public delegate T ValueParser<T>(AstContext context, ParseTreeNodeWithoutAst parseTreeNode);
     public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);

@@ -12,7 +12,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public static partial class GrammarHelper
     {

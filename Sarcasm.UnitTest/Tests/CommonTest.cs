@@ -10,13 +10,13 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
-using Sarcasm.Ast;
+using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 using MiniPL.DomainModel;
 
-using Grammar = Sarcasm.Ast.Grammar;
+using Grammar = Sarcasm.GrammarAst.Grammar;
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Sarcasm.UnitTest

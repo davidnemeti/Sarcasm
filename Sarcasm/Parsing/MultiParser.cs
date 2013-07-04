@@ -8,9 +8,9 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
-using Sarcasm.Ast;
+using Sarcasm.GrammarAst;
 
-using Grammar = Sarcasm.Ast.Grammar;
+using Grammar = Sarcasm.GrammarAst.Grammar;
 
 namespace Sarcasm.Parsing
 {

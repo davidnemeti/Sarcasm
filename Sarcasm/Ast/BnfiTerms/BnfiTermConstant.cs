@@ -8,7 +8,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>, IBnfiTermOrAbleForChoice<T>
     {

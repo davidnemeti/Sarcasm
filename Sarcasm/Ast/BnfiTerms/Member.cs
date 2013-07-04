@@ -12,7 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Unparsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public abstract partial class Member : BnfTerm, IBnfiTerm
     {

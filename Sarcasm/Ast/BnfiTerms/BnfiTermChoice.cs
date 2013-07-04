@@ -13,7 +13,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Unparsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {

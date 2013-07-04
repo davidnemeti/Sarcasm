@@ -12,7 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Unparsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public enum ListKind { Star, Plus }
 
@@ -93,7 +93,7 @@ namespace Sarcasm.Ast
 
             SetNodeCreator();
 
-            this.EmptyCollectionHandling = Sarcasm.Ast.Grammar.CurrentGrammar.EmptyCollectionHandling;
+            this.EmptyCollectionHandling = Sarcasm.GrammarAst.Grammar.CurrentGrammar.EmptyCollectionHandling;
         }
 
         private static CollectionInfo GetCollectionInfo(Type collectionTypeOrTypeDefinition, Type elementTypeHint, bool runtimeCheck)

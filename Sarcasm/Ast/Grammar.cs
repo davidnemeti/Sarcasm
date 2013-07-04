@@ -11,11 +11,24 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Unparsing;
 
-namespace Sarcasm.Ast
+namespace Sarcasm.GrammarAst
 {
     public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
     public enum ErrorHandling { ThrowException, ErrorMessage }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class GrammarAttribute : Attribute
+    {
+        public Type DomainRoot { get; private set; }
+        public string Info { get; private set; }
+
+        public GrammarAttribute(Type domainRoot, string info = null)
+        {
+            this.DomainRoot = domainRoot;
+            this.Info = info;
+        }
+    }
 
     public partial class Grammar : Irony.Parsing.Grammar
     {
