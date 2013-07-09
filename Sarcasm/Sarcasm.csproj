@@ -89,38 +89,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Ast\AstBuilder.cs" />
-    <Compile Include="Ast\AstNodeWrapper.cs" />
-    <Compile Include="Ast\BnfiExpressions\BnfiExpression.cs" />
-    <Compile Include="Ast\BnfiExpressions\BnfiExpression.generated.cs">
+    <Compile Include="GrammarAst\AstBuilder.cs" />
+    <Compile Include="GrammarAst\AstNodeWrapper.cs" />
+    <Compile Include="GrammarAst\BnfiExpressions\BnfiExpression.cs" />
+    <Compile Include="GrammarAst\BnfiExpressions\BnfiExpression.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiExpression.tt</DependentUpon>
     </Compile>
-    <Compile Include="Ast\BnfiTerms\BnfiTermCopy.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermKeyTerm.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermNoAst.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermValueForDataAndNumber.generated.cs">
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermCopy.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTerm.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermNoAst.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermValueForDataAndNumber.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiTermValueForDataAndNumber.tt</DependentUpon>
     </Compile>
-    <Compile Include="Ast\Common.cs" />
+    <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="Misc\ResourceCounter.cs" />
     <Compile Include="Misc\ReverseList.cs" />
     <Compile Include="Misc\ForAll.cs" />
     <Compile Include="Parsing\ParseTree.cs" />
-    <Compile Include="Ast\GrammarHelper.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermConstant.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermValue.cs" />
+    <Compile Include="GrammarAst\GrammarHelper.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConstant.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermValue.cs" />
     <Compile Include="Parsing\ParseTreeNodeWithoutAst.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermChoice.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermCollection.cs" />
-    <Compile Include="Ast\BnfiTerms\BnfiTermType.cs" />
-    <Compile Include="Ast\BnfiTerms\Member.cs" />
-    <Compile Include="Ast\Grammar.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermChoice.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermCollection.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermType.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\Member.cs" />
+    <Compile Include="GrammarAst\Grammar.cs" />
     <Compile Include="Misc\Bag.cs" />
     <Compile Include="Misc\AutoCleanup.cs" />
     <Compile Include="Misc\Misc.cs" />
@@ -137,12 +137,12 @@
     <Compile Include="Misc\Util.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Ast\BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
-    <None Include="Ast\BnfiExpressions\BnfiExpression.tt">
+    <None Include="GrammarAst\BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
+    <None Include="GrammarAst\BnfiExpressions\BnfiExpression.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
     </None>
-    <None Include="Ast\BnfiTerms\BnfiTermValueForDataAndNumber.tt">
+    <None Include="GrammarAst\BnfiTerms\BnfiTermValueForDataAndNumber.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiTermValueForDataAndNumber.generated.cs</LastGenOutput>
     </None>
