@@ -174,6 +174,8 @@ namespace Sarcasm.Reflection
         public Type DomainRoot { get; private set; }
         public DomainRootAttribute DomainRootAttribute { get; private set; }
 
+        public string Name { get { return DomainRootAttribute.Name; } }
+
         public Domain(Type domainRoot)
         {
             var domainRootAttribute = domainRoot.GetCustomAttribute<DomainRootAttribute>();
@@ -195,8 +197,10 @@ namespace Sarcasm.Reflection
     {
         public Type GrammarType { get; private set; }
         public GrammarAttribute GrammarAttribute { get; private set; }
-        public Grammar GrammarSingleton { get; private set; }
+        public Grammar Grammar { get; private set; }
         public Type DomainRoot { get; private set; }
+
+        public string Name { get { return GrammarAttribute.Name; } }
 
         public MetaGrammar(Type grammarType)
         {
@@ -207,7 +211,7 @@ namespace Sarcasm.Reflection
 
             this.GrammarType = grammarType;
             this.GrammarAttribute = grammarAttribute;
-            this.GrammarSingleton = (Grammar)Activator.CreateInstance(grammarType);
+            this.Grammar = (Grammar)Activator.CreateInstance(grammarType);
             this.DomainRoot = grammarAttribute.DomainRoot;
         }
 

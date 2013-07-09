@@ -21,12 +21,12 @@ namespace Sarcasm.GrammarAst
     public class GrammarAttribute : Attribute
     {
         public Type DomainRoot { get; private set; }
-        public string Info { get; private set; }
+        public string Name { get; private set; }
 
-        public GrammarAttribute(Type domainRoot, string info = null)
+        public GrammarAttribute(Type domainRoot, string name)
         {
             this.DomainRoot = domainRoot;
-            this.Info = info;
+            this.Name = name;
         }
     }
 
