@@ -14,6 +14,7 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
+using Sarcasm.Utility;
 
 using ParseTree = Sarcasm.Parsing.ParseTree;
 

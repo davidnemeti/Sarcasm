@@ -10,6 +10,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
+using Sarcasm.Utility;
 using Sarcasm.GrammarAst;
 
 namespace Sarcasm.Unparsing
@@ -479,7 +480,7 @@ namespace Sarcasm.Unparsing
                 {
                     Operator prevOperator = null;
 
-                    foreach (Operator @operator in operators.Concat(null))    // extra 'null' element for the inner 'while' cycle to finish
+                    foreach (Operator @operator in operators.Concat((Operator)null))    // extra 'null' element for the inner 'while' cycle to finish
                     {
                         using (new AutoCleanup(
                             () => BeginSurroundingOperatorsContext(

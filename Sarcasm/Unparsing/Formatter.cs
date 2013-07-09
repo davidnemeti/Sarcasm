@@ -12,6 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.GrammarAst;
+using Sarcasm.Utility;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 
@@ -594,7 +595,7 @@ namespace Sarcasm.Unparsing
              * an extra null element after the real utokens.
              * */
 
-            foreach (UtokenBase _utoken in utokens.Concat(null))
+            foreach (UtokenBase _utoken in utokens.Concat((UtokenBase)null))
             {
                 utokensBuffer.Enqueue(_utoken);
 
@@ -738,7 +739,7 @@ namespace Sarcasm.Unparsing
             InsertedUtokens prevInsertedUtokensToBeYield = null;
             var nonOverridableSkipThroughBuffer = new Queue<UtokenBase>();
 
-            foreach (UtokenBase utoken in utokens.Concat(null))
+            foreach (UtokenBase utoken in utokens.Concat((UtokenBase)null))
             {
                 if (utoken is InsertedUtokens)
                 {
@@ -830,7 +831,7 @@ namespace Sarcasm.Unparsing
              * is not a line separator (which is the common case) then we didn't yielded the utokenindent for the last processed line
              * (which is the topmost line), so we yield it now when processing the extra null utoken.
              * */
-            foreach (UtokenBase utoken in utokens.Concat(null))
+            foreach (UtokenBase utoken in utokens.Concat((UtokenBase)null))
             {
                 if (IsControl(utoken))
                 {

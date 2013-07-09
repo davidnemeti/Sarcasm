@@ -13,9 +13,9 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 
-namespace Sarcasm
+namespace Sarcasm.Utility
 {
-    public static class Misc
+    internal static class Misc
     {
         internal static int? DebugWriteLinePriority(this int? priority, TraceSource ts, UnparsableObject unparsableObject, string messageBefore = "", string messageAfter = "", string messageInside = "")
         {

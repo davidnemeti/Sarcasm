@@ -108,9 +108,9 @@
     </Compile>
     <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
-    <Compile Include="Misc\ResourceCounter.cs" />
-    <Compile Include="Misc\ReverseList.cs" />
-    <Compile Include="Misc\ForAll.cs" />
+    <Compile Include="Utility\ResourceCounter.cs" />
+    <Compile Include="Utility\ReverseList.cs" />
+    <Compile Include="Utility\ForAll.cs" />
     <Compile Include="Parsing\ParseTree.cs" />
     <Compile Include="GrammarAst\GrammarHelper.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermConstant.cs" />
@@ -121,9 +121,9 @@
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermType.cs" />
     <Compile Include="GrammarAst\BnfiTerms\Member.cs" />
     <Compile Include="GrammarAst\Grammar.cs" />
-    <Compile Include="Misc\Bag.cs" />
-    <Compile Include="Misc\AutoCleanup.cs" />
-    <Compile Include="Misc\Misc.cs" />
+    <Compile Include="Utility\Bag.cs" />
+    <Compile Include="Utility\AutoCleanup.cs" />
+    <Compile Include="Utility\Misc.cs" />
     <Compile Include="Parsing\MultiParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unparsing\ExpressionUnparser.cs" />
@@ -134,7 +134,7 @@
     <Compile Include="Unparsing\UnparserRelated.cs" />
     <Compile Include="Unparsing\Utokens.cs" />
     <Compile Include="Unparsing\Unparser.cs" />
-    <Compile Include="Misc\Util.cs" />
+    <Compile Include="Utility\Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GrammarAst\BnfiExpressions\BnfiExpressionGeneration.ttinclude" />

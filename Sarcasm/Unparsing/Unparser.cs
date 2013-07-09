@@ -12,6 +12,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
+using Sarcasm.Utility;
 using Sarcasm.GrammarAst;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;

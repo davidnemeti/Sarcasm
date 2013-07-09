@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Sarcasm
+namespace Sarcasm.Utility
 {
     public class Bag<T>
     {
