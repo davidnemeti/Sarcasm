@@ -47,7 +47,7 @@ namespace Sarcasm.Unparsing
 
     public interface Utoken
     {
-        string ToString(Formatting formatting);
+        string ToText(Formatting formatting);
     }
 
     public abstract class UtokenValue : UtokenBase
@@ -100,7 +100,7 @@ namespace Sarcasm.Unparsing
             return new UtokenText(text);
         }
 
-        public string ToString(Formatting formatting)
+        public string ToText(Formatting formatting)
         {
             return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.Obj);
         }
@@ -156,7 +156,7 @@ namespace Sarcasm.Unparsing
         // for internal use only
         internal static readonly UtokenWhitespace WhiteSpaceBetweenUtokens = new UtokenWhitespace(Kind.WhiteSpaceBetweenUtokens);
 
-        public string ToString(Formatting formatting)
+        public string ToText(Formatting formatting)
         {
             switch (kind)
             {
@@ -243,7 +243,7 @@ namespace Sarcasm.Unparsing
             this.IndentLevel = indentLevel;
         }
 
-        public string ToString(Formatting formatting)
+        public string ToText(Formatting formatting)
         {
             return string.Concat(Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
         }

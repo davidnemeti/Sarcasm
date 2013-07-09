@@ -91,7 +91,7 @@ namespace Sarcasm.UnitTest
             if (!leftToRight)
                 utokens = utokens.Reverse();
 
-            string unparsedSourceText = utokens.AsString(unparser);
+            string unparsedSourceText = utokens.AsText(unparser);
 
             string actualUnparsedFilePath = Path.Combine(actualUnparsedFilesDir, parseFileName);
             File.WriteAllText(actualUnparsedFilePath, unparsedSourceText);

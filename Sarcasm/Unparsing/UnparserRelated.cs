@@ -19,9 +19,9 @@ namespace Sarcasm.Unparsing
 {
     public static class UnparserExtensions
     {
-        public static string AsString(this IEnumerable<Utoken> utokens, Unparser unparser)
+        public static string AsText(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return string.Concat(utokens.Select(utoken => utoken.ToString(unparser.Formatting)));
+            return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatting)));
         }
 
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
@@ -29,17 +29,16 @@ namespace Sarcasm.Unparsing
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    await sw.WriteAsync(utoken.ToString(unparser.Formatting));
+                    await sw.WriteAsync(utoken.ToText(unparser.Formatting));
             }
         }
 
         public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
-            //            utokens.WriteToStreamAsync(stream, unparser).Wait();
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    sw.Write(utoken.ToString(unparser.Formatting));
+                    sw.Write(utoken.ToText(unparser.Formatting));
             }
         }
 
