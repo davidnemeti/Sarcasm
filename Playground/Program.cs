@@ -16,6 +16,7 @@ using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
 
+using MiniPLG = MiniPL.Grammars;
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Playground
@@ -30,7 +31,7 @@ namespace Playground
             var stopwatch = Stopwatch.StartNew();
 
             stopwatch.Start();
-            var grammar = new MiniPL.GrammarP();
+            var grammar = new MiniPLG.GrammarP();
             ShowTimeAndRestart(stopwatch, "Creation of grammar");
 
             var parser = MultiParser.Create(grammar);

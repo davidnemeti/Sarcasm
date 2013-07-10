@@ -386,7 +386,7 @@ namespace Sarcasm.UnitTest
                 {
                     public static void TestMethod()
                     {
-                        var grammar = new MiniPL.GrammarP();
+                        var grammar = new MiniPL.Grammars.GrammarP();
                         var B = grammar.B;
 
                         " + methodBodySourceCode + @"

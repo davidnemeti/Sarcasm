@@ -16,6 +16,7 @@ using Sarcasm.Unparsing;
 
 using MiniPL.DomainModel;
 
+using MiniPLG = MiniPL.Grammars;
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
@@ -33,10 +34,10 @@ namespace Sarcasm.UnitTest
         protected const string expectedResultsDir = @"Expected results";
         protected const string actualResultsDir = @"Actual results";
 
-        protected static MiniPL.GrammarP grammar;
+        protected static MiniPLG.GrammarP grammar;
         protected static MultiParser<MiniPL.DomainModel.Program> parser;
 
-        protected static MiniPL.GrammarP.BnfTerms B { get { return grammar.B; } }
+        protected static MiniPLG.GrammarP.BnfTerms B { get { return grammar.B; } }
 
         private static bool initializedGrammar = false;
         private static bool initializedParser = false;
@@ -46,7 +47,7 @@ namespace Sarcasm.UnitTest
             if (initializedGrammar)
                 return;
 
-            grammar = new MiniPL.GrammarP();
+            grammar = new MiniPLG.GrammarP();
 
             //Console.WriteLine(grammar.GetNonTerminalsAsText());
             ////Console.WriteLine();

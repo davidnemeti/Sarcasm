@@ -18,7 +18,7 @@ using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
 
-namespace MiniPL
+namespace MiniPL.Grammars
 {
     [Grammar(typeof(Program), "Pascal-like")]
     public class GrammarP : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
@@ -114,36 +114,10 @@ namespace MiniPL
             public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
             public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
 
-            public readonly BnfiTermValue<BinaryOperator> ADD_OP = new BnfiTermValue<BinaryOperator>("ADD_OP");
-            public readonly BnfiTermValue<BinaryOperator> SUB_OP = new BnfiTermValue<BinaryOperator>("SUB_OP");
-            public readonly BnfiTermValue<BinaryOperator> MUL_OP = new BnfiTermValue<BinaryOperator>("MUL_OP");
-            public readonly BnfiTermValue<BinaryOperator> DIV_OP = new BnfiTermValue<BinaryOperator>("DIV_OP");
-            public readonly BnfiTermValue<BinaryOperator> POW_OP = new BnfiTermValue<BinaryOperator>("POW_OP");
-            public readonly BnfiTermValue<BinaryOperator> MOD_OP = new BnfiTermValue<BinaryOperator>("MOD_OP");
-            public readonly BnfiTermValue<BinaryOperator> EQ_OP = new BnfiTermValue<BinaryOperator>("EQ_OP");
-            public readonly BnfiTermValue<BinaryOperator> NEQ_OP = new BnfiTermValue<BinaryOperator>("NEQ_OP");
-            public readonly BnfiTermValue<BinaryOperator> LT_OP = new BnfiTermValue<BinaryOperator>("LT_OP");
-            public readonly BnfiTermValue<BinaryOperator> LTE_OP = new BnfiTermValue<BinaryOperator>("LTE_OP");
-            public readonly BnfiTermValue<BinaryOperator> GT_OP = new BnfiTermValue<BinaryOperator>("GT_OP");
-            public readonly BnfiTermValue<BinaryOperator> GTE_OP = new BnfiTermValue<BinaryOperator>("GTE_OP");
-            public readonly BnfiTermValue<BinaryOperator> AND_OP = new BnfiTermValue<BinaryOperator>("AND_OP");
-            public readonly BnfiTermValue<BinaryOperator> OR_OP = new BnfiTermValue<BinaryOperator>("OR_OP");
-
-            public readonly BnfiTermValue<UnaryOperator> POS_OP = new BnfiTermValue<UnaryOperator>("POS_OP");
-            public readonly BnfiTermValue<UnaryOperator> NEG_OP = new BnfiTermValue<UnaryOperator>("NEG_OP");
-            public readonly BnfiTermValue<UnaryOperator> NOT_OP = new BnfiTermValue<UnaryOperator>("NOT_OP");
-
-            public readonly BnfiTermValue<Type> INTEGER_TYPE = new BnfiTermValue<Type>("INTEGER_TYPE");
-            public readonly BnfiTermValue<Type> REAL_TYPE = new BnfiTermValue<Type>("REAL_TYPE");
-            public readonly BnfiTermValue<Type> STRING_TYPE = new BnfiTermValue<Type>("STRING_TYPE");
-            public readonly BnfiTermValue<Type> CHAR_TYPE = new BnfiTermValue<Type>("CHAR_TYPE");
-            public readonly BnfiTermValue<Type> BOOL_TYPE = new BnfiTermValue<Type>("BOOL_TYPE");
-
             public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
             public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
             public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
             public readonly BnfiTermValue<string> IDENTIFIER = new BnfiTermValue<string>();
-            public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
             public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
             public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
@@ -172,6 +146,36 @@ namespace MiniPL
             public readonly BnfiTermKeyTermPunctuation LEFT_PAREN;
             public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
             public readonly BnfiTermKeyTermPunctuation QUESTION_MARK;
+
+            public readonly BnfiTermValue<BinaryOperator> ADD_OP;
+            public readonly BnfiTermValue<BinaryOperator> SUB_OP;
+            public readonly BnfiTermValue<BinaryOperator> MUL_OP;
+            public readonly BnfiTermValue<BinaryOperator> DIV_OP;
+            public readonly BnfiTermValue<BinaryOperator> POW_OP;
+            public readonly BnfiTermValue<BinaryOperator> MOD_OP;
+
+            public readonly BnfiTermValue<UnaryOperator> POS_OP;
+            public readonly BnfiTermValue<UnaryOperator> NEG_OP;
+
+            public readonly BnfiTermValue<BinaryOperator> EQ_OP;
+            public readonly BnfiTermValue<BinaryOperator> NEQ_OP;
+            public readonly BnfiTermValue<BinaryOperator> LT_OP;
+            public readonly BnfiTermValue<BinaryOperator> LTE_OP;
+            public readonly BnfiTermValue<BinaryOperator> GT_OP;
+            public readonly BnfiTermValue<BinaryOperator> GTE_OP;
+
+            public readonly BnfiTermValue<BinaryOperator> AND_OP;
+            public readonly BnfiTermValue<BinaryOperator> OR_OP;
+
+            public readonly BnfiTermValue<UnaryOperator> NOT_OP;
+
+            public readonly BnfiTermValue<Type> INTEGER_TYPE;
+            public readonly BnfiTermValue<Type> REAL_TYPE;
+            public readonly BnfiTermValue<Type> STRING_TYPE;
+            public readonly BnfiTermValue<Type> CHAR_TYPE;
+            public readonly BnfiTermValue<Type> BOOL_TYPE;
+
+            public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
         }
 
         public readonly BnfTerms B;
