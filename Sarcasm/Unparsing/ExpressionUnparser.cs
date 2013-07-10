@@ -109,7 +109,7 @@ namespace Sarcasm.Unparsing
             tsParentheses.Debug("");
             tsParentheses.Debug("----------------------------------------");
             tsParentheses.Debug("");
-            tsParentheses.Debug("expressionThatMayNeedParenthesesToParentheses:");
+            tsParentheses.Debug("expressionsThatCanCauseOthersBeingParenthesized:");
             tsParentheses.Debug("");
 
             foreach (BnfTerm expression in expressionsThatCanCauseOthersBeingParenthesized)
