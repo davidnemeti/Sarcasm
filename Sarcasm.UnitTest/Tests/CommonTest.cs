@@ -128,11 +128,12 @@ namespace Sarcasm.UnitTest
         {
             Assert.IsNotNull(parseTree, "Parser error: parse tree is null");
 
-            Assert.AreEqual(ParseTreeStatus.Parsed, parseTree.Status, "Parser error:\n{0}",
-                string.Join("\n",
-                    parseTree.ParserMessages.Select(parserMessage => string.Format("{0} {1}: {2}", parseTree.FileName, parserMessage.Location.ToString(), parserMessage.Message))
-                    )
+            string errorMessages = string.Join("\n",
+                parseTree.ParserMessages.Select(parserMessage => string.Format("{0} {1}: {2}", parseTree.FileName, parserMessage.Location.ToString(), parserMessage.Message))
                 );
+
+            Assert.IsFalse(parseTree.HasErrors(), "Parser errors:\n{0}", errorMessages);
+            Assert.AreEqual(ParseTreeStatus.Parsed, parseTree.Status, "Parser errors:\n{0}", errorMessages);
         }
 
         protected static string GetParseFilePath(string parseFileName)
