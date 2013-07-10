@@ -24,6 +24,18 @@
         }
       },
       {
+        "$type": "MiniPL.DomainModel.LocalVariable, MiniPL",
+        "Name": {
+          "$type": "Sarcasm.DomainCore.Name, Sarcasm",
+          "Value": "just_for_test"
+        },
+        "Type": "Bool",
+        "InitValue": {
+          "$type": "MiniPL.DomainModel.BoolLiteral, MiniPL",
+          "Value": true
+        }
+      },
+      {
         "$type": "MiniPL.DomainModel.WriteLn, MiniPL",
         "Arguments": {
           "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Expression, MiniPL]], mscorlib",

@@ -72,6 +72,7 @@ namespace Sarcasm.Unparsing
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
         private ResourceCounter parallelTaskCounter;
+        private Dictionary<ConstantTerminal, Dictionary<object, string>> constantTerminalToInverseConstantTable;
 
         #endregion
 
@@ -122,6 +123,7 @@ namespace Sarcasm.Unparsing
             this.EnablePartialInvalidation = enablePartialInvalidationDefault;
             this.EnableParallelProcessing = enableParallelProcessingDefault;
             this.DegreeOfParallelism = Environment.ProcessorCount;
+            this.constantTerminalToInverseConstantTable = new Dictionary<ConstantTerminal,Dictionary<object,string>>();
         }
 
         public Unparser(Grammar grammar)
@@ -138,6 +140,7 @@ namespace Sarcasm.Unparsing
             this.EnableParallelProcessing = that.EnableParallelProcessing;
             this.parallelTaskCounter = that.parallelTaskCounter;
             this._direction = that._direction;
+            this.constantTerminalToInverseConstantTable = that.constantTerminalToInverseConstantTable;
 
             // the following should be set after the constructor
             this.formatter = null;
@@ -216,6 +219,16 @@ namespace Sarcasm.Unparsing
                 tsUnparse.Debug("SetAsLeave: {0}", self);
                 self.SetAsLeave();
                 yield return UtokenValue.CreateText(((KeyTerm)self.BnfTerm).Text, self);
+            }
+            else if (self.BnfTerm is ConstantTerminal)
+            {
+                string lexeme = GetLexemeByValue((ConstantTerminal)self.BnfTerm, self.Obj);
+
+                tsUnparse.Debug("constant_terminal: [\"{0}\" ({1})]", lexeme, self.Obj.ToString());
+                tsUnparse.Debug("SetAsLeave: {0}", self);
+
+                self.SetAsLeave();
+                yield return UtokenValue.CreateText(lexeme, self);
             }
             else if (self.BnfTerm is Terminal)
             {
@@ -587,6 +600,59 @@ namespace Sarcasm.Unparsing
         }
 
         private bool buildFullUnparseTree { get { return EnablePartialInvalidation; } }
+
+        private string GetLexemeByValue(ConstantTerminal constantTerminal, object value)
+        {
+            Dictionary<object, string> constantTable;
+
+            if (constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out constantTable))
+                return constantTable[value];
+            else
+            {
+                lock (constantTerminalToInverseConstantTable)
+                {
+                    /*
+                     * We don't want to lock on constantTerminalToInverseConstantTable at the beginning of this method,
+                     * because it would slow down parallel processing (note: parallel unparsers share this data member),
+                     * and it's not necessary since most of the time we only read this data member, not write.
+                     * 
+                     * However, after we found that we hadn't stored constantTerminal yet, and locked on constantTerminalToInverseConstantTable,
+                     * we have to check again for constantTerminal, to avoid the following scenario:
+                     * 
+                     * Task1: check
+                     * Task1: no constantTerminal found
+                     * Task2: check
+                     * Task2: no constantTerminal found
+                     * Task1: lock
+                     * Task1: store constantTerminal
+                     * Task2: lock
+                     * Task2: store constantTerminal (!!! STORED TWICE !!!)
+                     * 
+                     * */
+
+                    if (constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out constantTable))
+                        return constantTable[value];
+                    else
+                    {
+                        /*
+                         * NOTE: constantTerminal.Constants might not be bijective
+                         * */
+
+                        constantTable = new Dictionary<object, string>();
+
+                        foreach (var pair in constantTerminal.Constants)
+                        {
+                            if (!constantTable.ContainsKey(pair.Value))
+                                constantTable.Add(pair.Value, pair.Key);
+                        }
+
+                        constantTerminalToInverseConstantTable.Add(constantTerminal, constantTable);
+
+                        return constantTable[value];
+                    }
+                }
+            }
+        }
 
         #endregion
 

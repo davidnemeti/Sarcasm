@@ -15,6 +15,7 @@ namespace Sarcasm.GrammarAst
         public BnfiTermConstant()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
         {
+            this.AstConfig.NodeCreator = (context, parseTreeNode) => parseTreeNode.AstNode = parseTreeNode.Token.Value;
         }
 
         public void Add(string lexeme, T value)
