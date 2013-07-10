@@ -243,6 +243,17 @@ namespace Sarcasm.GrammarAst
             return BnfiTermValue.ParseStringLiteral(stringLiteral);
         }
 
+        public static BnfiTermValue<TOut> ParseConstantTerminal<TOut>(this ConstantTerminal constantTerminal)
+        {
+            return BnfiTermValue.ParseConstantTerminal<TOut>(constantTerminal);
+        }
+
+        [Obsolete(BnfiTermValue.messageForParseForBnfiTermConstant, error: true)]
+        public static BnfiTermValue<TOut> ParseConstantTerminal<TOut>(this BnfiTermConstant<TOut> bnfiTermConstant)
+        {
+            return BnfiTermValue.ParseConstantTerminal<TOut>(bnfiTermConstant);
+        }
+
         public static BnfiTermValue<TOut> ParseValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
         {
             return BnfiTermValue.Parse(terminal, value, astForChild);

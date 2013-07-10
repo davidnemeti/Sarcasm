@@ -137,6 +137,18 @@ namespace Sarcasm.GrammarAst
             return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
+        public static BnfiTermValue<T> ParseConstantTerminal<T>(ConstantTerminal constantTerminal)
+        {
+            // NOTE: unparse for constant terminal is handled specifically in the unparser
+            return Parse<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false);
+        }
+
+        [Obsolete(BnfiTermValue.messageForParseForBnfiTermConstant, error: true)]
+        public static BnfiTermValue<T> ParseConstantTerminal<T>(BnfiTermConstant<T> bnfiTermConstant)
+        {
+            return ParseConstantTerminal<T>(bnfiTermConstant);
+        }
+
         #endregion
 
         #region Convert
@@ -529,6 +541,8 @@ namespace Sarcasm.GrammarAst
             + "1. Specify a value converter for unparse in order to get a functional unparse behavior | "
             + "2. Specify explicitly that you do not want unparse for this BnfiTermValue by passing NoUnparse | "
             + "3. Disable the warning with \"#pragma warning disable 618\" ]";
+
+        internal const string messageForParseForBnfiTermConstant = "You do not have to use ParseConstantTerminal for a BnfiTermConstant, since it has a built-in ast creation handling";
 
         internal const bool errorForMissingUnparseValueConverter = false;    // if not error, then warning
 
