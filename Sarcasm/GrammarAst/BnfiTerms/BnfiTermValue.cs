@@ -85,7 +85,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermValueTL Parse(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermValueTL(type, terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild);
+            return new BnfiTermValueTL(type, terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -108,12 +108,12 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermValueTL Parse(Type type, Terminal terminal, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
             return new BnfiTermValueTL(type, terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
-                name: terminal.Name + "_parse", astForChild: astForChild);
+                name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         public static BnfiTermValue<T> Parse<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild);
+            return new BnfiTermValue<T>(terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -125,23 +125,23 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermValue<T> Parse<T>(Terminal terminal, ValueParser<T> valueParser, ValueConverter<T, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
             return new BnfiTermValue<T>(terminal, (context, parseNode) => valueParser(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
-                name: terminal.Name + "_parse", astForChild: astForChild);
+                name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         public static BnfiTermValue<string> ParseIdentifier(IdentifierTerminal identifierTerminal)
         {
-            return Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false).MakeUncontractible();
+            return Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
         public static BnfiTermValue<string> ParseStringLiteral(StringLiteral stringLiteral)
         {
-            return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false).MakeUncontractible();
+            return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
         public static BnfiTermValue<T> ParseConstantTerminal<T>(ConstantTerminal constantTerminal)
         {
             // NOTE: unparse for constant terminal is handled specifically in the unparser
-            return Parse<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false).MakeUncontractible();
+            return Parse<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false);
         }
 
         [Obsolete(BnfiTermValue.messageForParseForBnfiTermConstant, error: true)]
