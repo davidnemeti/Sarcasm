@@ -19,7 +19,7 @@ namespace Sarcasm.GrammarAst
     public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         protected BnfiTermChoice(Type type, string name)
-            : base(type, name, isReferable: true)
+            : base(type, name)
         {
             GrammarHelper.MarkTransientForced(this);      // the child node already contains the created ast node
         }

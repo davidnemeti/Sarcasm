@@ -448,16 +448,6 @@ namespace Sarcasm.GrammarAst
 
         #region Misc
 
-        public static bool IsReferable(this BnfTerm bnfTerm)
-        {
-            if (bnfTerm is BnfiTermNonTerminal)
-                return ((BnfiTermNonTerminal)bnfTerm).IsReferable;
-            else if (bnfTerm is Member)
-                return false;
-            else
-                return true;
-        }
-
         public static bool IsOperator(this BnfTerm bnfTerm)
         {
             return bnfTerm.Flags.IsSet(TermFlags.IsOperator);

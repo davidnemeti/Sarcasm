@@ -36,7 +36,7 @@ namespace Sarcasm.GrammarAst
         }
 
         protected BnfiTermValue(Type type, string name)
-            : base(type, name, isReferable: true)
+            : base(type, name)
         {
             this.inverseValueConverterForUnparse = IdentityFunction;
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
@@ -56,8 +56,9 @@ namespace Sarcasm.GrammarAst
 
         protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueParser<object> valueParser, ValueConverter<object, object> inverseValueConverterForUnparse,
             bool isOptionalValue, string name, bool astForChild)
-            : base(type, name, isReferable: false)
+            : base(type, name)
         {
+            this.IsContractible = true;
             this.bnfTerm = bnfTerm;
 
             if (!astForChild)
@@ -413,9 +414,9 @@ namespace Sarcasm.GrammarAst
             this.UtokenizerForUnparse = null;
         }
 
-        protected void MoveTo(BnfiTermValue target)
+        protected void ContractTo(BnfiTermValue target)
         {
-            if (!this.IsMovable)
+            if (!this.IsContractible)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This value should not be a right-value: {0}", this.Name);
 
             target.RuleRaw = this.RuleRaw;
@@ -446,8 +447,8 @@ namespace Sarcasm.GrammarAst
 
                 BnfiTermValue onlyBnfTermInValue = bnfTerms.SingleOrDefaultNoException() as BnfiTermValue;
 
-                if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsMovable)
-                    onlyBnfTermInValue.MoveTo(this);
+                if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsContractible)
+                    onlyBnfTermInValue.ContractTo(this);
                 else
                     goto LDefaultRuleSetting;
 
@@ -598,6 +599,18 @@ namespace Sarcasm.GrammarAst
         #endregion
 
         public new BnfiExpressionValueTL Rule { set { base.Rule = value; } }
+
+        public BnfiTermValueTL MakeContractible()
+        {
+            this.IsContractible = true;
+            return this;
+        }
+
+        public BnfiTermValueTL MakeUncontractible()
+        {
+            this.IsContractible = false;
+            return this;
+        }
     }
 
     public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, INonTerminal<T>
@@ -639,6 +652,18 @@ namespace Sarcasm.GrammarAst
         public new BnfExpression Q()
         {
             return base.Q();
+        }
+
+        public BnfiTermValue<T> MakeContractible()
+        {
+            this.IsContractible = true;
+            return this;
+        }
+
+        public BnfiTermValue<T> MakeUncontractible()
+        {
+            this.IsContractible = false;
+            return this;
         }
     }
 }

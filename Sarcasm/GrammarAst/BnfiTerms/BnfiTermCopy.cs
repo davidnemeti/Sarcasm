@@ -17,8 +17,9 @@ namespace Sarcasm.GrammarAst
         private readonly BnfTerm childBnfTerm;
 
         protected BnfiTermCopy(Type type, BnfTerm bnfTerm)
-            : base(type, name: null, isReferable: false)
+            : base(type, name: null)
         {
+            this.IsContractible = true;
             this.childBnfTerm = bnfTerm;
             this.Rule = bnfTerm.ToBnfExpression();
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)

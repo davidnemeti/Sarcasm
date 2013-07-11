@@ -35,7 +35,7 @@ namespace Sarcasm.GrammarAst
         private IDictionary<int, int> ruleIndexToParseIndex = new Dictionary<int, int>();
 
         protected BnfiTermType(Type type, string name)
-            : base(type, name, isReferable: true)
+            : base(type, name)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");

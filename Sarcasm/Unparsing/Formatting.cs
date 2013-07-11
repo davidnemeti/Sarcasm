@@ -345,7 +345,14 @@ namespace Sarcasm.Unparsing
 
         private static bool IsImportant(BnfTerm bnfTerm)
         {
-            return bnfTerm.IsReferable() || bnfTerm is BnfiTermCollection;
+            if (bnfTerm is BnfiTermNonTerminal)
+                return !((BnfiTermNonTerminal)bnfTerm).IsContractible;
+            else if (bnfTerm is BnfiTermCollection)
+                return true;
+            else if (bnfTerm is Member)
+                return false;
+            else
+                return true;
         }
 
         #endregion

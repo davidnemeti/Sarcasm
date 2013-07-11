@@ -49,6 +49,11 @@ namespace Sarcasm.GrammarAst
             }
         }
 
+        protected class Dummy
+        {
+            public static readonly Dummy Instance = new Dummy();
+        }
+
         #endregion
 
         #region State
@@ -74,8 +79,8 @@ namespace Sarcasm.GrammarAst
 
         #region Construction
 
-        protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck, bool isReferable)
-            : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name, isReferable)
+        protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck)
+            : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name)
         {
             CollectionInfo collectionInfo = GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck);
             Type collectionType = collectionInfo.collectionType;
@@ -239,7 +244,7 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateContractible();
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -252,7 +257,7 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(IBnfiTerm<TElementType> bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateContractible();
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -269,7 +274,7 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermCollection<TCollectionType, TElementType> StarList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateContractible();
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -282,7 +287,7 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermCollection<TCollectionType, TElementType> PlusList<TCollectionType, TElementType>(BnfTerm bnfTermElement, BnfTerm delimiter = null)
             where TCollectionType : ICollection<TElementType>, new()
         {
-            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateMovable();
+            var bnfiTermCollection = BnfiTermCollection<TCollectionType, TElementType>.CreateContractible();
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -298,28 +303,28 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermCollectionTL StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL StarListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<>), elementType);
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<>), elementType);
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL PlusListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateMovable(typeof(ICollection<>), elementType);
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<>), elementType);
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
@@ -394,9 +399,9 @@ namespace Sarcasm.GrammarAst
             this.Name = "<<null list>>";
         }
 
-        protected void MoveTo(BnfiTermCollection target)
+        protected void ContractTo(BnfiTermCollection target)
         {
-            if (!this.IsMovable)
+            if (!this.IsContractible)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This collection should not be a right-value: {0}", this.Name);
 
             if (!this.listKind.HasValue)
@@ -427,7 +432,7 @@ namespace Sarcasm.GrammarAst
         {
             set
             {
-                value.MoveTo(this);
+                value.ContractTo(this);
             }
         }
 
@@ -490,28 +495,40 @@ namespace Sarcasm.GrammarAst
     public partial class BnfiTermCollectionTL : BnfiTermCollection, IBnfiTermCollectionTL
     {
         public BnfiTermCollectionTL(Type collectionType, string name = null)
-            : this(collectionType, elementType: null, name: name, isReferable: true)
+            : this(collectionType, elementType: null, name: name, dummy: Dummy.Instance)
         {
         }
 
         public BnfiTermCollectionTL(Type collectionTypeDefinition, Type elementType, string name = null)
-            : this(collectionTypeDefinition, elementType, name, isReferable: true)
+            : this(collectionTypeDefinition, elementType, name, Dummy.Instance)
         {
         }
 
-        private BnfiTermCollectionTL(Type collectionTypeOrTypeDefinition, Type elementType, string name, bool isReferable)
-            : base(collectionTypeOrTypeDefinition, elementType, name: name, runtimeCheck: true, isReferable: isReferable)
+        private BnfiTermCollectionTL(Type collectionTypeOrTypeDefinition, Type elementType, string name, Dummy dummy)
+            : base(collectionTypeOrTypeDefinition, elementType, name: name, runtimeCheck: true)
         {
         }
 
-        internal static BnfiTermCollectionTL CreateMovable(Type collectionTypeDefinition, Type elementType)
+        internal static BnfiTermCollectionTL CreateContractible(Type collectionTypeDefinition, Type elementType)
         {
-            return new BnfiTermCollectionTL(collectionTypeDefinition, elementType, name: null, isReferable: false);
+            return new BnfiTermCollectionTL(collectionTypeDefinition, elementType, name: null, dummy: Dummy.Instance).MakeContractible();
         }
 
-        internal static BnfiTermCollectionTL CreateMovable(Type collectionType)
+        internal static BnfiTermCollectionTL CreateContractible(Type collectionType)
         {
-            return new BnfiTermCollectionTL(collectionType, elementType: null, name: null, isReferable: false);
+            return new BnfiTermCollectionTL(collectionType, elementType: null, name: null, dummy: Dummy.Instance).MakeContractible();
+        }
+
+        public BnfiTermCollectionTL MakeContractible()
+        {
+            this.IsContractible = true;
+            return this;
+        }
+
+        public BnfiTermCollectionTL MakeUncontractible()
+        {
+            this.IsContractible = false;
+            return this;
         }
 
         public new BnfiTermCollectionTL Rule { set { base.Rule = value; } }
@@ -520,12 +537,7 @@ namespace Sarcasm.GrammarAst
     public abstract partial class BnfiTermCollectionWithCollectionType<TCollectionType> : BnfiTermCollection
     {
         protected BnfiTermCollectionWithCollectionType(Type elementType, string name = null)
-            : this(elementType, name: name, isReferable: true)
-        {
-        }
-
-        protected BnfiTermCollectionWithCollectionType(Type elementType, string name, bool isReferable)
-            : base(typeof(TCollectionType), elementType, name: name, runtimeCheck: false, isReferable: isReferable)
+            : base(typeof(TCollectionType), elementType, name: name, runtimeCheck: false)
         {
         }
     }
@@ -535,18 +547,25 @@ namespace Sarcasm.GrammarAst
         where TCollectionType : ICollection<TElementType>, new()
     {
         public BnfiTermCollection(string name = null)
-            : this(name: name, isReferable: true)
+            : base(typeof(TElementType), name: name)
         {
         }
 
-        private BnfiTermCollection(string name, bool isReferable)
-            : base(typeof(TElementType), name: name, isReferable: isReferable)
+        internal static BnfiTermCollection<TCollectionType, TElementType> CreateContractible()
         {
+            return new BnfiTermCollection<TCollectionType, TElementType>(name: null).MakeContractible();
         }
 
-        internal static BnfiTermCollection<TCollectionType, TElementType> CreateMovable()
+        public BnfiTermCollection<TCollectionType, TElementType> MakeContractible()
         {
-            return new BnfiTermCollection<TCollectionType, TElementType>(name: null, isReferable: false);
+            this.IsContractible = true;
+            return this;
+        }
+
+        public BnfiTermCollection<TCollectionType, TElementType> MakeUncontractible()
+        {
+            this.IsContractible = false;
+            return this;
         }
 
         protected override void SetNodeCreator()
