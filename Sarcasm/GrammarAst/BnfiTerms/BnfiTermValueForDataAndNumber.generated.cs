@@ -11,20 +11,20 @@ using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
-	#region Parse Object (Data and Number)
+	#region Intro Object (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValueTL ParseDataLiteral(DataLiteralBase dataLiteral)
+        public static BnfiTermValueTL IntroDataLiteral(DataLiteralBase dataLiteral)
         {
-            return Parse(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
+            return Intro(dataLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
 
-		public static BnfiTermValueTL ParseNumberLiteral(NumberLiteral numberLiteral)
+		public static BnfiTermValueTL IntroNumberLiteral(NumberLiteral numberLiteral)
         {
-            return Parse(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
+            return Intro(numberLiteral, (context, parseNode) => { return (Object)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Object, object>, astForChild: false);
         }
 	}
 
@@ -34,14 +34,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValueTL ParseDataLiteral(this DataLiteralBase dataLiteral)
+        public static BnfiTermValueTL IntroDataLiteral(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteral(dataLiteral);
+			return BnfiTermValue.IntroDataLiteral(dataLiteral);
         }
 
-		public static BnfiTermValueTL ParseNumberLiteral(this NumberLiteral numberLiteral)
+		public static BnfiTermValueTL IntroNumberLiteral(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteral(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteral(numberLiteral);
         }
 	}
 
@@ -53,34 +53,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValueTL ParseDataLiteral(string name = "dataliteral")
+        public static BnfiTermValueTL IntroDataLiteral(string name = "dataliteral")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Object).ParseDataLiteral();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Object).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL ParseDataLiteralDsv(string name)
+        public static BnfiTermValueTL IntroDataLiteralDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Object).ParseDataLiteral();
+			return new DsvLiteral(name: name, dataType: TypeCode.Object).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL ParseDataLiteralDsv(string name, string terminator)
+        public static BnfiTermValueTL IntroDataLiteralDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Object, terminator: terminator).ParseDataLiteral();
+			return new DsvLiteral(name: name, dataType: TypeCode.Object, terminator: terminator).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL ParseDataLiteralQuoted(string name, string startEndSymbol)
+        public static BnfiTermValueTL IntroDataLiteralQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startEndSymbol: startEndSymbol).ParseDataLiteral();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startEndSymbol: startEndSymbol).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL ParseDataLiteralQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValueTL IntroDataLiteralQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteral();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL ParseDataLiteralFixedLength(string name, int length)
+        public static BnfiTermValueTL IntroDataLiteralFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Object, length: length).ParseDataLiteral();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Object, length: length).IntroDataLiteral();
 		}
 
 		#endregion
@@ -89,17 +89,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValueTL CreateNumberLiteral(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteral();
+			return new NumberLiteral(name: name).IntroNumberLiteral();
         }
 
 		public static BnfiTermValueTL CreateNumberLiteral(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteral();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteral();
         }
 
 		public static BnfiTermValueTL CreateNumberLiteral(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteral();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteral();
         }
 
 		#endregion
@@ -109,18 +109,18 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse DBNull (Data)
+	#region Intro DBNull (Data)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNull(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNull(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.DBNull)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DBNull", dataLiteral.Name);
 
-            return Parse<DBNull>(dataLiteral, (context, parseNode) => { return (DBNull)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DBNull, object>, astForChild: false);
+            return Intro<DBNull>(dataLiteral, (context, parseNode) => { return (DBNull)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DBNull, object>, astForChild: false);
         }
 	}
 
@@ -130,9 +130,9 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNull(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNull(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralDBNull(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralDBNull(dataLiteral);
         }
 	}
 
@@ -144,34 +144,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNull(string name = "dataliteralDBNull")
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNull(string name = "dataliteralDBNull")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.DBNull).ParseDataLiteralDBNull();
+			return new DataLiteralBase(name: name, dataType: TypeCode.DBNull).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNullDsv(string name)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.DBNull).ParseDataLiteralDBNull();
+			return new DsvLiteral(name: name, dataType: TypeCode.DBNull).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNullDsv(string name, string terminator)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.DBNull, terminator: terminator).ParseDataLiteralDBNull();
+			return new DsvLiteral(name: name, dataType: TypeCode.DBNull, terminator: terminator).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNullQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startEndSymbol: startEndSymbol).ParseDataLiteralDBNull();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startEndSymbol: startEndSymbol).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNullQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralDBNull();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> ParseDataLiteralDBNullFixedLength(string name, int length)
+        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.DBNull, length: length).ParseDataLiteralDBNull();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.DBNull, length: length).IntroDataLiteralDBNull();
 		}
 
 		#endregion
@@ -181,18 +181,18 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Boolean (Data)
+	#region Intro Boolean (Data)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Boolean> ParseDataLiteralBoolean(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBoolean(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Boolean)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Boolean", dataLiteral.Name);
 
-            return Parse<Boolean>(dataLiteral, (context, parseNode) => { return (Boolean)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Boolean, object>, astForChild: false);
+            return Intro<Boolean>(dataLiteral, (context, parseNode) => { return (Boolean)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Boolean, object>, astForChild: false);
         }
 	}
 
@@ -202,9 +202,9 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Boolean> ParseDataLiteralBoolean(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBoolean(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralBoolean(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralBoolean(dataLiteral);
         }
 	}
 
@@ -216,34 +216,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBoolean(string name = "dataliteralBoolean")
+        public static BnfiTermValue<Boolean> IntroDataLiteralBoolean(string name = "dataliteralBoolean")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Boolean).ParseDataLiteralBoolean();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Boolean).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBooleanDsv(string name)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Boolean).ParseDataLiteralBoolean();
+			return new DsvLiteral(name: name, dataType: TypeCode.Boolean).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBooleanDsv(string name, string terminator)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Boolean, terminator: terminator).ParseDataLiteralBoolean();
+			return new DsvLiteral(name: name, dataType: TypeCode.Boolean, terminator: terminator).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBooleanQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startEndSymbol: startEndSymbol).ParseDataLiteralBoolean();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startEndSymbol: startEndSymbol).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBooleanQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralBoolean();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> ParseDataLiteralBooleanFixedLength(string name, int length)
+        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Boolean, length: length).ParseDataLiteralBoolean();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Boolean, length: length).IntroDataLiteralBoolean();
 		}
 
 		#endregion
@@ -253,18 +253,18 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Char (Data)
+	#region Intro Char (Data)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Char> ParseDataLiteralChar(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Char> IntroDataLiteralChar(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Char)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Char", dataLiteral.Name);
 
-            return Parse<Char>(dataLiteral, (context, parseNode) => { return (Char)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Char, object>, astForChild: false);
+            return Intro<Char>(dataLiteral, (context, parseNode) => { return (Char)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Char, object>, astForChild: false);
         }
 	}
 
@@ -274,9 +274,9 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Char> ParseDataLiteralChar(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Char> IntroDataLiteralChar(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralChar(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralChar(dataLiteral);
         }
 	}
 
@@ -288,34 +288,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Char> ParseDataLiteralChar(string name = "dataliteralChar")
+        public static BnfiTermValue<Char> IntroDataLiteralChar(string name = "dataliteralChar")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Char).ParseDataLiteralChar();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Char).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> ParseDataLiteralCharDsv(string name)
+        public static BnfiTermValue<Char> IntroDataLiteralCharDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Char).ParseDataLiteralChar();
+			return new DsvLiteral(name: name, dataType: TypeCode.Char).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> ParseDataLiteralCharDsv(string name, string terminator)
+        public static BnfiTermValue<Char> IntroDataLiteralCharDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Char, terminator: terminator).ParseDataLiteralChar();
+			return new DsvLiteral(name: name, dataType: TypeCode.Char, terminator: terminator).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> ParseDataLiteralCharQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Char> IntroDataLiteralCharQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startEndSymbol: startEndSymbol).ParseDataLiteralChar();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startEndSymbol: startEndSymbol).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> ParseDataLiteralCharQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Char> IntroDataLiteralCharQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralChar();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> ParseDataLiteralCharFixedLength(string name, int length)
+        public static BnfiTermValue<Char> IntroDataLiteralCharFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Char, length: length).ParseDataLiteralChar();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Char, length: length).IntroDataLiteralChar();
 		}
 
 		#endregion
@@ -325,23 +325,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse SByte (Data and Number)
+	#region Intro SByte (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<SByte> ParseDataLiteralSByte(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByte(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.SByte)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a SByte", dataLiteral.Name);
 
-            return Parse<SByte>(dataLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
+            return Intro<SByte>(dataLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<SByte> ParseNumberLiteralSByte(NumberLiteral numberLiteral)
+		public static BnfiTermValue<SByte> IntroNumberLiteralSByte(NumberLiteral numberLiteral)
         {
-            return Parse<SByte>(numberLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
+            return Intro<SByte>(numberLiteral, (context, parseNode) => { return (SByte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<SByte, object>, astForChild: false);
         }
 	}
 
@@ -351,14 +351,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<SByte> ParseDataLiteralSByte(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByte(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralSByte(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralSByte(dataLiteral);
         }
 
-		public static BnfiTermValue<SByte> ParseNumberLiteralSByte(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<SByte> IntroNumberLiteralSByte(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralSByte(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralSByte(numberLiteral);
         }
 	}
 
@@ -370,34 +370,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByte(string name = "dataliteralSByte")
+        public static BnfiTermValue<SByte> IntroDataLiteralSByte(string name = "dataliteralSByte")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.SByte).ParseDataLiteralSByte();
+			return new DataLiteralBase(name: name, dataType: TypeCode.SByte).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByteDsv(string name)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByteDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.SByte).ParseDataLiteralSByte();
+			return new DsvLiteral(name: name, dataType: TypeCode.SByte).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByteDsv(string name, string terminator)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByteDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.SByte, terminator: terminator).ParseDataLiteralSByte();
+			return new DsvLiteral(name: name, dataType: TypeCode.SByte, terminator: terminator).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByteQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByteQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startEndSymbol: startEndSymbol).ParseDataLiteralSByte();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startEndSymbol: startEndSymbol).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByteQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByteQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralSByte();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> ParseDataLiteralSByteFixedLength(string name, int length)
+        public static BnfiTermValue<SByte> IntroDataLiteralSByteFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.SByte, length: length).ParseDataLiteralSByte();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.SByte, length: length).IntroDataLiteralSByte();
 		}
 
 		#endregion
@@ -406,17 +406,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<SByte> CreateNumberLiteralSByte(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralSByte();
+			return new NumberLiteral(name: name).IntroNumberLiteralSByte();
         }
 
 		public static BnfiTermValue<SByte> CreateNumberLiteralSByte(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralSByte();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralSByte();
         }
 
 		public static BnfiTermValue<SByte> CreateNumberLiteralSByte(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralSByte();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralSByte();
         }
 
 		#endregion
@@ -426,23 +426,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Byte (Data and Number)
+	#region Intro Byte (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Byte> ParseDataLiteralByte(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Byte> IntroDataLiteralByte(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Byte)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Byte", dataLiteral.Name);
 
-            return Parse<Byte>(dataLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
+            return Intro<Byte>(dataLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Byte> ParseNumberLiteralByte(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Byte> IntroNumberLiteralByte(NumberLiteral numberLiteral)
         {
-            return Parse<Byte>(numberLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
+            return Intro<Byte>(numberLiteral, (context, parseNode) => { return (Byte)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Byte, object>, astForChild: false);
         }
 	}
 
@@ -452,14 +452,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Byte> ParseDataLiteralByte(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Byte> IntroDataLiteralByte(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralByte(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralByte(dataLiteral);
         }
 
-		public static BnfiTermValue<Byte> ParseNumberLiteralByte(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Byte> IntroNumberLiteralByte(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralByte(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralByte(numberLiteral);
         }
 	}
 
@@ -471,34 +471,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByte(string name = "dataliteralByte")
+        public static BnfiTermValue<Byte> IntroDataLiteralByte(string name = "dataliteralByte")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Byte).ParseDataLiteralByte();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Byte).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByteDsv(string name)
+        public static BnfiTermValue<Byte> IntroDataLiteralByteDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Byte).ParseDataLiteralByte();
+			return new DsvLiteral(name: name, dataType: TypeCode.Byte).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByteDsv(string name, string terminator)
+        public static BnfiTermValue<Byte> IntroDataLiteralByteDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Byte, terminator: terminator).ParseDataLiteralByte();
+			return new DsvLiteral(name: name, dataType: TypeCode.Byte, terminator: terminator).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByteQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Byte> IntroDataLiteralByteQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startEndSymbol: startEndSymbol).ParseDataLiteralByte();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startEndSymbol: startEndSymbol).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByteQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Byte> IntroDataLiteralByteQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralByte();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> ParseDataLiteralByteFixedLength(string name, int length)
+        public static BnfiTermValue<Byte> IntroDataLiteralByteFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Byte, length: length).ParseDataLiteralByte();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Byte, length: length).IntroDataLiteralByte();
 		}
 
 		#endregion
@@ -507,17 +507,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Byte> CreateNumberLiteralByte(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralByte();
+			return new NumberLiteral(name: name).IntroNumberLiteralByte();
         }
 
 		public static BnfiTermValue<Byte> CreateNumberLiteralByte(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralByte();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralByte();
         }
 
 		public static BnfiTermValue<Byte> CreateNumberLiteralByte(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralByte();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralByte();
         }
 
 		#endregion
@@ -527,23 +527,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Int16 (Data and Number)
+	#region Intro Int16 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Int16)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int16", dataLiteral.Name);
 
-            return Parse<Int16>(dataLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
+            return Intro<Int16>(dataLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Int16> ParseNumberLiteralInt16(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int16> IntroNumberLiteralInt16(NumberLiteral numberLiteral)
         {
-            return Parse<Int16>(numberLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
+            return Intro<Int16>(numberLiteral, (context, parseNode) => { return (Int16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int16, object>, astForChild: false);
         }
 	}
 
@@ -553,14 +553,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralInt16(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralInt16(dataLiteral);
         }
 
-		public static BnfiTermValue<Int16> ParseNumberLiteralInt16(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int16> IntroNumberLiteralInt16(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralInt16(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralInt16(numberLiteral);
         }
 	}
 
@@ -572,34 +572,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16(string name = "dataliteralInt16")
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16(string name = "dataliteralInt16")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Int16).ParseDataLiteralInt16();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Int16).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16Dsv(string name)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int16).ParseDataLiteralInt16();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int16).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16Dsv(string name, string terminator)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int16, terminator: terminator).ParseDataLiteralInt16();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int16, terminator: terminator).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startEndSymbol: startEndSymbol).ParseDataLiteralInt16();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startEndSymbol: startEndSymbol).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralInt16();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> ParseDataLiteralInt16FixedLength(string name, int length)
+        public static BnfiTermValue<Int16> IntroDataLiteralInt16FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int16, length: length).ParseDataLiteralInt16();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int16, length: length).IntroDataLiteralInt16();
 		}
 
 		#endregion
@@ -608,17 +608,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Int16> CreateNumberLiteralInt16(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralInt16();
+			return new NumberLiteral(name: name).IntroNumberLiteralInt16();
         }
 
 		public static BnfiTermValue<Int16> CreateNumberLiteralInt16(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralInt16();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralInt16();
         }
 
 		public static BnfiTermValue<Int16> CreateNumberLiteralInt16(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralInt16();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralInt16();
         }
 
 		#endregion
@@ -628,23 +628,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse UInt16 (Data and Number)
+	#region Intro UInt16 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.UInt16)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt16", dataLiteral.Name);
 
-            return Parse<UInt16>(dataLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
+            return Intro<UInt16>(dataLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<UInt16> ParseNumberLiteralUInt16(NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt16> IntroNumberLiteralUInt16(NumberLiteral numberLiteral)
         {
-            return Parse<UInt16>(numberLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
+            return Intro<UInt16>(numberLiteral, (context, parseNode) => { return (UInt16)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt16, object>, astForChild: false);
         }
 	}
 
@@ -654,14 +654,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralUInt16(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralUInt16(dataLiteral);
         }
 
-		public static BnfiTermValue<UInt16> ParseNumberLiteralUInt16(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt16> IntroNumberLiteralUInt16(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralUInt16(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralUInt16(numberLiteral);
         }
 	}
 
@@ -673,34 +673,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16(string name = "dataliteralUInt16")
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16(string name = "dataliteralUInt16")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.UInt16).ParseDataLiteralUInt16();
+			return new DataLiteralBase(name: name, dataType: TypeCode.UInt16).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16Dsv(string name)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt16).ParseDataLiteralUInt16();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt16).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt16, terminator: terminator).ParseDataLiteralUInt16();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt16, terminator: terminator).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startEndSymbol: startEndSymbol).ParseDataLiteralUInt16();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startEndSymbol: startEndSymbol).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralUInt16();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> ParseDataLiteralUInt16FixedLength(string name, int length)
+        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt16, length: length).ParseDataLiteralUInt16();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt16, length: length).IntroDataLiteralUInt16();
 		}
 
 		#endregion
@@ -709,17 +709,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<UInt16> CreateNumberLiteralUInt16(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralUInt16();
+			return new NumberLiteral(name: name).IntroNumberLiteralUInt16();
         }
 
 		public static BnfiTermValue<UInt16> CreateNumberLiteralUInt16(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralUInt16();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralUInt16();
         }
 
 		public static BnfiTermValue<UInt16> CreateNumberLiteralUInt16(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralUInt16();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralUInt16();
         }
 
 		#endregion
@@ -729,23 +729,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Int32 (Data and Number)
+	#region Intro Int32 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Int32)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int32", dataLiteral.Name);
 
-            return Parse<Int32>(dataLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
+            return Intro<Int32>(dataLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Int32> ParseNumberLiteralInt32(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int32> IntroNumberLiteralInt32(NumberLiteral numberLiteral)
         {
-            return Parse<Int32>(numberLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
+            return Intro<Int32>(numberLiteral, (context, parseNode) => { return (Int32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int32, object>, astForChild: false);
         }
 	}
 
@@ -755,14 +755,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralInt32(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralInt32(dataLiteral);
         }
 
-		public static BnfiTermValue<Int32> ParseNumberLiteralInt32(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int32> IntroNumberLiteralInt32(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralInt32(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralInt32(numberLiteral);
         }
 	}
 
@@ -774,34 +774,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32(string name = "dataliteralInt32")
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32(string name = "dataliteralInt32")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Int32).ParseDataLiteralInt32();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Int32).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32Dsv(string name)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int32).ParseDataLiteralInt32();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int32).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32Dsv(string name, string terminator)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int32, terminator: terminator).ParseDataLiteralInt32();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int32, terminator: terminator).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startEndSymbol: startEndSymbol).ParseDataLiteralInt32();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startEndSymbol: startEndSymbol).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralInt32();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> ParseDataLiteralInt32FixedLength(string name, int length)
+        public static BnfiTermValue<Int32> IntroDataLiteralInt32FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int32, length: length).ParseDataLiteralInt32();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int32, length: length).IntroDataLiteralInt32();
 		}
 
 		#endregion
@@ -810,17 +810,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Int32> CreateNumberLiteralInt32(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralInt32();
+			return new NumberLiteral(name: name).IntroNumberLiteralInt32();
         }
 
 		public static BnfiTermValue<Int32> CreateNumberLiteralInt32(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralInt32();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralInt32();
         }
 
 		public static BnfiTermValue<Int32> CreateNumberLiteralInt32(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralInt32();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralInt32();
         }
 
 		#endregion
@@ -830,23 +830,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse UInt32 (Data and Number)
+	#region Intro UInt32 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.UInt32)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt32", dataLiteral.Name);
 
-            return Parse<UInt32>(dataLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
+            return Intro<UInt32>(dataLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<UInt32> ParseNumberLiteralUInt32(NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt32> IntroNumberLiteralUInt32(NumberLiteral numberLiteral)
         {
-            return Parse<UInt32>(numberLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
+            return Intro<UInt32>(numberLiteral, (context, parseNode) => { return (UInt32)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt32, object>, astForChild: false);
         }
 	}
 
@@ -856,14 +856,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralUInt32(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralUInt32(dataLiteral);
         }
 
-		public static BnfiTermValue<UInt32> ParseNumberLiteralUInt32(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt32> IntroNumberLiteralUInt32(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralUInt32(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralUInt32(numberLiteral);
         }
 	}
 
@@ -875,34 +875,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32(string name = "dataliteralUInt32")
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32(string name = "dataliteralUInt32")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.UInt32).ParseDataLiteralUInt32();
+			return new DataLiteralBase(name: name, dataType: TypeCode.UInt32).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32Dsv(string name)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt32).ParseDataLiteralUInt32();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt32).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt32, terminator: terminator).ParseDataLiteralUInt32();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt32, terminator: terminator).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startEndSymbol: startEndSymbol).ParseDataLiteralUInt32();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startEndSymbol: startEndSymbol).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralUInt32();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> ParseDataLiteralUInt32FixedLength(string name, int length)
+        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt32, length: length).ParseDataLiteralUInt32();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt32, length: length).IntroDataLiteralUInt32();
 		}
 
 		#endregion
@@ -911,17 +911,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<UInt32> CreateNumberLiteralUInt32(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralUInt32();
+			return new NumberLiteral(name: name).IntroNumberLiteralUInt32();
         }
 
 		public static BnfiTermValue<UInt32> CreateNumberLiteralUInt32(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralUInt32();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralUInt32();
         }
 
 		public static BnfiTermValue<UInt32> CreateNumberLiteralUInt32(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralUInt32();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralUInt32();
         }
 
 		#endregion
@@ -931,23 +931,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Int64 (Data and Number)
+	#region Intro Int64 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Int64)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Int64", dataLiteral.Name);
 
-            return Parse<Int64>(dataLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
+            return Intro<Int64>(dataLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Int64> ParseNumberLiteralInt64(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int64> IntroNumberLiteralInt64(NumberLiteral numberLiteral)
         {
-            return Parse<Int64>(numberLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
+            return Intro<Int64>(numberLiteral, (context, parseNode) => { return (Int64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Int64, object>, astForChild: false);
         }
 	}
 
@@ -957,14 +957,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralInt64(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralInt64(dataLiteral);
         }
 
-		public static BnfiTermValue<Int64> ParseNumberLiteralInt64(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Int64> IntroNumberLiteralInt64(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralInt64(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralInt64(numberLiteral);
         }
 	}
 
@@ -976,34 +976,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64(string name = "dataliteralInt64")
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64(string name = "dataliteralInt64")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Int64).ParseDataLiteralInt64();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Int64).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64Dsv(string name)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int64).ParseDataLiteralInt64();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int64).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64Dsv(string name, string terminator)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Int64, terminator: terminator).ParseDataLiteralInt64();
+			return new DsvLiteral(name: name, dataType: TypeCode.Int64, terminator: terminator).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startEndSymbol: startEndSymbol).ParseDataLiteralInt64();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startEndSymbol: startEndSymbol).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralInt64();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> ParseDataLiteralInt64FixedLength(string name, int length)
+        public static BnfiTermValue<Int64> IntroDataLiteralInt64FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int64, length: length).ParseDataLiteralInt64();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int64, length: length).IntroDataLiteralInt64();
 		}
 
 		#endregion
@@ -1012,17 +1012,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Int64> CreateNumberLiteralInt64(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralInt64();
+			return new NumberLiteral(name: name).IntroNumberLiteralInt64();
         }
 
 		public static BnfiTermValue<Int64> CreateNumberLiteralInt64(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralInt64();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralInt64();
         }
 
 		public static BnfiTermValue<Int64> CreateNumberLiteralInt64(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralInt64();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralInt64();
         }
 
 		#endregion
@@ -1032,23 +1032,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse UInt64 (Data and Number)
+	#region Intro UInt64 (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.UInt64)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a UInt64", dataLiteral.Name);
 
-            return Parse<UInt64>(dataLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
+            return Intro<UInt64>(dataLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<UInt64> ParseNumberLiteralUInt64(NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt64> IntroNumberLiteralUInt64(NumberLiteral numberLiteral)
         {
-            return Parse<UInt64>(numberLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
+            return Intro<UInt64>(numberLiteral, (context, parseNode) => { return (UInt64)parseNode.FindToken().Value; }, IdentityFunctionForceCast<UInt64, object>, astForChild: false);
         }
 	}
 
@@ -1058,14 +1058,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralUInt64(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralUInt64(dataLiteral);
         }
 
-		public static BnfiTermValue<UInt64> ParseNumberLiteralUInt64(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<UInt64> IntroNumberLiteralUInt64(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralUInt64(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralUInt64(numberLiteral);
         }
 	}
 
@@ -1077,34 +1077,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64(string name = "dataliteralUInt64")
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64(string name = "dataliteralUInt64")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.UInt64).ParseDataLiteralUInt64();
+			return new DataLiteralBase(name: name, dataType: TypeCode.UInt64).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64Dsv(string name)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Dsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt64).ParseDataLiteralUInt64();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt64).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Dsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.UInt64, terminator: terminator).ParseDataLiteralUInt64();
+			return new DsvLiteral(name: name, dataType: TypeCode.UInt64, terminator: terminator).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Quoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startEndSymbol: startEndSymbol).ParseDataLiteralUInt64();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startEndSymbol: startEndSymbol).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Quoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralUInt64();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> ParseDataLiteralUInt64FixedLength(string name, int length)
+        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64FixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt64, length: length).ParseDataLiteralUInt64();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt64, length: length).IntroDataLiteralUInt64();
 		}
 
 		#endregion
@@ -1113,17 +1113,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<UInt64> CreateNumberLiteralUInt64(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralUInt64();
+			return new NumberLiteral(name: name).IntroNumberLiteralUInt64();
         }
 
 		public static BnfiTermValue<UInt64> CreateNumberLiteralUInt64(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralUInt64();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralUInt64();
         }
 
 		public static BnfiTermValue<UInt64> CreateNumberLiteralUInt64(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralUInt64();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralUInt64();
         }
 
 		#endregion
@@ -1133,23 +1133,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Single (Data and Number)
+	#region Intro Single (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Single> ParseDataLiteralSingle(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Single> IntroDataLiteralSingle(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Single)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Single", dataLiteral.Name);
 
-            return Parse<Single>(dataLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
+            return Intro<Single>(dataLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Single> ParseNumberLiteralSingle(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Single> IntroNumberLiteralSingle(NumberLiteral numberLiteral)
         {
-            return Parse<Single>(numberLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
+            return Intro<Single>(numberLiteral, (context, parseNode) => { return (Single)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Single, object>, astForChild: false);
         }
 	}
 
@@ -1159,14 +1159,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Single> ParseDataLiteralSingle(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Single> IntroDataLiteralSingle(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralSingle(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralSingle(dataLiteral);
         }
 
-		public static BnfiTermValue<Single> ParseNumberLiteralSingle(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Single> IntroNumberLiteralSingle(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralSingle(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralSingle(numberLiteral);
         }
 	}
 
@@ -1178,34 +1178,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingle(string name = "dataliteralSingle")
+        public static BnfiTermValue<Single> IntroDataLiteralSingle(string name = "dataliteralSingle")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Single).ParseDataLiteralSingle();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Single).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingleDsv(string name)
+        public static BnfiTermValue<Single> IntroDataLiteralSingleDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Single).ParseDataLiteralSingle();
+			return new DsvLiteral(name: name, dataType: TypeCode.Single).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingleDsv(string name, string terminator)
+        public static BnfiTermValue<Single> IntroDataLiteralSingleDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Single, terminator: terminator).ParseDataLiteralSingle();
+			return new DsvLiteral(name: name, dataType: TypeCode.Single, terminator: terminator).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingleQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Single> IntroDataLiteralSingleQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startEndSymbol: startEndSymbol).ParseDataLiteralSingle();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startEndSymbol: startEndSymbol).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingleQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Single> IntroDataLiteralSingleQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralSingle();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> ParseDataLiteralSingleFixedLength(string name, int length)
+        public static BnfiTermValue<Single> IntroDataLiteralSingleFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Single, length: length).ParseDataLiteralSingle();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Single, length: length).IntroDataLiteralSingle();
 		}
 
 		#endregion
@@ -1214,17 +1214,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Single> CreateNumberLiteralSingle(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralSingle();
+			return new NumberLiteral(name: name).IntroNumberLiteralSingle();
         }
 
 		public static BnfiTermValue<Single> CreateNumberLiteralSingle(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralSingle();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralSingle();
         }
 
 		public static BnfiTermValue<Single> CreateNumberLiteralSingle(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralSingle();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralSingle();
         }
 
 		#endregion
@@ -1234,23 +1234,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Double (Data and Number)
+	#region Intro Double (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Double> ParseDataLiteralDouble(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Double> IntroDataLiteralDouble(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Double)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Double", dataLiteral.Name);
 
-            return Parse<Double>(dataLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
+            return Intro<Double>(dataLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Double> ParseNumberLiteralDouble(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Double> IntroNumberLiteralDouble(NumberLiteral numberLiteral)
         {
-            return Parse<Double>(numberLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
+            return Intro<Double>(numberLiteral, (context, parseNode) => { return (Double)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Double, object>, astForChild: false);
         }
 	}
 
@@ -1260,14 +1260,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Double> ParseDataLiteralDouble(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Double> IntroDataLiteralDouble(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralDouble(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralDouble(dataLiteral);
         }
 
-		public static BnfiTermValue<Double> ParseNumberLiteralDouble(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Double> IntroNumberLiteralDouble(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralDouble(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralDouble(numberLiteral);
         }
 	}
 
@@ -1279,34 +1279,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Double> ParseDataLiteralDouble(string name = "dataliteralDouble")
+        public static BnfiTermValue<Double> IntroDataLiteralDouble(string name = "dataliteralDouble")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Double).ParseDataLiteralDouble();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Double).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> ParseDataLiteralDoubleDsv(string name)
+        public static BnfiTermValue<Double> IntroDataLiteralDoubleDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Double).ParseDataLiteralDouble();
+			return new DsvLiteral(name: name, dataType: TypeCode.Double).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> ParseDataLiteralDoubleDsv(string name, string terminator)
+        public static BnfiTermValue<Double> IntroDataLiteralDoubleDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Double, terminator: terminator).ParseDataLiteralDouble();
+			return new DsvLiteral(name: name, dataType: TypeCode.Double, terminator: terminator).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> ParseDataLiteralDoubleQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Double> IntroDataLiteralDoubleQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startEndSymbol: startEndSymbol).ParseDataLiteralDouble();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startEndSymbol: startEndSymbol).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> ParseDataLiteralDoubleQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Double> IntroDataLiteralDoubleQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralDouble();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> ParseDataLiteralDoubleFixedLength(string name, int length)
+        public static BnfiTermValue<Double> IntroDataLiteralDoubleFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Double, length: length).ParseDataLiteralDouble();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Double, length: length).IntroDataLiteralDouble();
 		}
 
 		#endregion
@@ -1315,17 +1315,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Double> CreateNumberLiteralDouble(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralDouble();
+			return new NumberLiteral(name: name).IntroNumberLiteralDouble();
         }
 
 		public static BnfiTermValue<Double> CreateNumberLiteralDouble(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralDouble();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralDouble();
         }
 
 		public static BnfiTermValue<Double> CreateNumberLiteralDouble(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralDouble();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralDouble();
         }
 
 		#endregion
@@ -1335,23 +1335,23 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse Decimal (Data and Number)
+	#region Intro Decimal (Data and Number)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimal(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimal(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.Decimal)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a Decimal", dataLiteral.Name);
 
-            return Parse<Decimal>(dataLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
+            return Intro<Decimal>(dataLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
         }
 
-		public static BnfiTermValue<Decimal> ParseNumberLiteralDecimal(NumberLiteral numberLiteral)
+		public static BnfiTermValue<Decimal> IntroNumberLiteralDecimal(NumberLiteral numberLiteral)
         {
-            return Parse<Decimal>(numberLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
+            return Intro<Decimal>(numberLiteral, (context, parseNode) => { return (Decimal)parseNode.FindToken().Value; }, IdentityFunctionForceCast<Decimal, object>, astForChild: false);
         }
 	}
 
@@ -1361,14 +1361,14 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimal(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimal(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralDecimal(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralDecimal(dataLiteral);
         }
 
-		public static BnfiTermValue<Decimal> ParseNumberLiteralDecimal(this NumberLiteral numberLiteral)
+		public static BnfiTermValue<Decimal> IntroNumberLiteralDecimal(this NumberLiteral numberLiteral)
         {
-			return BnfiTermValue.ParseNumberLiteralDecimal(numberLiteral);
+			return BnfiTermValue.IntroNumberLiteralDecimal(numberLiteral);
         }
 	}
 
@@ -1380,34 +1380,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimal(string name = "dataliteralDecimal")
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimal(string name = "dataliteralDecimal")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.Decimal).ParseDataLiteralDecimal();
+			return new DataLiteralBase(name: name, dataType: TypeCode.Decimal).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimalDsv(string name)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Decimal).ParseDataLiteralDecimal();
+			return new DsvLiteral(name: name, dataType: TypeCode.Decimal).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimalDsv(string name, string terminator)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.Decimal, terminator: terminator).ParseDataLiteralDecimal();
+			return new DsvLiteral(name: name, dataType: TypeCode.Decimal, terminator: terminator).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimalQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startEndSymbol: startEndSymbol).ParseDataLiteralDecimal();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startEndSymbol: startEndSymbol).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimalQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralDecimal();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> ParseDataLiteralDecimalFixedLength(string name, int length)
+        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.Decimal, length: length).ParseDataLiteralDecimal();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.Decimal, length: length).IntroDataLiteralDecimal();
 		}
 
 		#endregion
@@ -1416,17 +1416,17 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<Decimal> CreateNumberLiteralDecimal(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).ParseNumberLiteralDecimal();
+			return new NumberLiteral(name: name).IntroNumberLiteralDecimal();
         }
 
 		public static BnfiTermValue<Decimal> CreateNumberLiteralDecimal(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).ParseNumberLiteralDecimal();
+			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteralDecimal();
         }
 
 		public static BnfiTermValue<Decimal> CreateNumberLiteralDecimal(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).ParseNumberLiteralDecimal();
+			return new NumberLiteral(name: name, options: options).IntroNumberLiteralDecimal();
         }
 
 		#endregion
@@ -1436,18 +1436,18 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse DateTime (Data)
+	#region Intro DateTime (Data)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTime(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTime(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.DateTime)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a DateTime", dataLiteral.Name);
 
-            return Parse<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DateTime, object>, astForChild: false);
+            return Intro<DateTime>(dataLiteral, (context, parseNode) => { return (DateTime)parseNode.FindToken().Value; }, IdentityFunctionForceCast<DateTime, object>, astForChild: false);
         }
 	}
 
@@ -1457,9 +1457,9 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTime(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTime(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralDateTime(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralDateTime(dataLiteral);
         }
 	}
 
@@ -1471,34 +1471,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTime(string name = "dataliteralDateTime")
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTime(string name = "dataliteralDateTime")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.DateTime).ParseDataLiteralDateTime();
+			return new DataLiteralBase(name: name, dataType: TypeCode.DateTime).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTimeDsv(string name)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.DateTime).ParseDataLiteralDateTime();
+			return new DsvLiteral(name: name, dataType: TypeCode.DateTime).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTimeDsv(string name, string terminator)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.DateTime, terminator: terminator).ParseDataLiteralDateTime();
+			return new DsvLiteral(name: name, dataType: TypeCode.DateTime, terminator: terminator).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTimeQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startEndSymbol: startEndSymbol).ParseDataLiteralDateTime();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startEndSymbol: startEndSymbol).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTimeQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralDateTime();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> ParseDataLiteralDateTimeFixedLength(string name, int length)
+        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.DateTime, length: length).ParseDataLiteralDateTime();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.DateTime, length: length).IntroDataLiteralDateTime();
 		}
 
 		#endregion
@@ -1508,18 +1508,18 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Parse String (Data)
+	#region Intro String (Data)
 
 	#region BnfiTermValue
 
     public partial class BnfiTermValue
 	{
-        public static BnfiTermValue<String> ParseDataLiteralString(DataLiteralBase dataLiteral)
+        public static BnfiTermValue<String> IntroDataLiteralString(DataLiteralBase dataLiteral)
         {
             if (dataLiteral.DataType != TypeCode.String)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "terminal '{0}' should be a String", dataLiteral.Name);
 
-            return Parse<String>(dataLiteral, (context, parseNode) => { return (String)parseNode.FindToken().Value; }, IdentityFunctionForceCast<String, object>, astForChild: false);
+            return Intro<String>(dataLiteral, (context, parseNode) => { return (String)parseNode.FindToken().Value; }, IdentityFunctionForceCast<String, object>, astForChild: false);
         }
 	}
 
@@ -1529,9 +1529,9 @@ namespace Sarcasm.GrammarAst
 
     public static partial class GrammarHelper
 	{
-        public static BnfiTermValue<String> ParseDataLiteralString(this DataLiteralBase dataLiteral)
+        public static BnfiTermValue<String> IntroDataLiteralString(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermValue.ParseDataLiteralString(dataLiteral);
+			return BnfiTermValue.IntroDataLiteralString(dataLiteral);
         }
 	}
 
@@ -1543,34 +1543,34 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<String> ParseDataLiteralString(string name = "dataliteralString")
+        public static BnfiTermValue<String> IntroDataLiteralString(string name = "dataliteralString")
 		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.String).ParseDataLiteralString();
+			return new DataLiteralBase(name: name, dataType: TypeCode.String).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> ParseDataLiteralStringDsv(string name)
+        public static BnfiTermValue<String> IntroDataLiteralStringDsv(string name)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.String).ParseDataLiteralString();
+			return new DsvLiteral(name: name, dataType: TypeCode.String).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> ParseDataLiteralStringDsv(string name, string terminator)
+        public static BnfiTermValue<String> IntroDataLiteralStringDsv(string name, string terminator)
 		{
-			return new DsvLiteral(name: name, dataType: TypeCode.String, terminator: terminator).ParseDataLiteralString();
+			return new DsvLiteral(name: name, dataType: TypeCode.String, terminator: terminator).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> ParseDataLiteralStringQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<String> IntroDataLiteralStringQuoted(string name, string startEndSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startEndSymbol: startEndSymbol).ParseDataLiteralString();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startEndSymbol: startEndSymbol).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> ParseDataLiteralStringQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<String> IntroDataLiteralStringQuoted(string name, string startSymbol, string endSymbol)
 		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startSymbol: startSymbol, endSymbol: endSymbol).ParseDataLiteralString();
+			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> ParseDataLiteralStringFixedLength(string name, int length)
+        public static BnfiTermValue<String> IntroDataLiteralStringFixedLength(string name, int length)
 		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.String, length: length).ParseDataLiteralString();
+			return new FixedLengthLiteral(name: name, dataType: TypeCode.String, length: length).IntroDataLiteralString();
 		}
 
 		#endregion

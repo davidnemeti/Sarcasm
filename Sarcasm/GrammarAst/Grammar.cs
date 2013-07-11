@@ -151,7 +151,7 @@ namespace Sarcasm.GrammarAst
 
         public BnfiTermValue<T> ToTerm<T>(string text, T value)
         {
-            return ToTerm(text).ParseValue(value);
+            return ToTerm(text).IntroValue(value);
         }
 
         public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
@@ -272,22 +272,22 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
         {
-            return new IdentifierTerminal(name).ParseIdentifier();
+            return new IdentifierTerminal(name).IntroIdentifier();
         }
 
         public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
         {
-            return new IdentifierTerminal(name, options).ParseIdentifier();
+            return new IdentifierTerminal(name, options).IntroIdentifier();
         }
 
         public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
         {
-            return new IdentifierTerminal(name, extraChars).ParseIdentifier();
+            return new IdentifierTerminal(name, extraChars).IntroIdentifier();
         }
 
         public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
-            return new IdentifierTerminal(name, extraChars, extraFirstChars).ParseIdentifier();
+            return new IdentifierTerminal(name, extraChars, extraFirstChars).IntroIdentifier();
         }
 
         #endregion
@@ -296,12 +296,12 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol)
         {
-            return new StringLiteral(name, startEndSymbol).ParseStringLiteral();
+            return new StringLiteral(name, startEndSymbol).IntroStringLiteral();
         }
 
         public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
         {
-            return new StringLiteral(name, startEndSymbol, options).ParseStringLiteral();
+            return new StringLiteral(name, startEndSymbol, options).IntroStringLiteral();
         }
 
         #endregion
