@@ -53,32 +53,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValueTL IntroDataLiteral(string name = "dataliteral")
+        public static BnfiTermValueTL CreateDataLiteral(string name = "dataliteral")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Object).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL IntroDataLiteralDsv(string name)
+        public static BnfiTermValueTL CreateDataLiteralDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Object).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL IntroDataLiteralDsv(string name, string terminator)
+        public static BnfiTermValueTL CreateDataLiteralDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Object, terminator: terminator).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL IntroDataLiteralQuoted(string name, string startEndSymbol)
+        public static BnfiTermValueTL CreateDataLiteralQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startEndSymbol: startEndSymbol).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL IntroDataLiteralQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValueTL CreateDataLiteralQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Object, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral();
 		}
 
-        public static BnfiTermValueTL IntroDataLiteralFixedLength(string name, int length)
+        public static BnfiTermValueTL CreateDataLiteralFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Object, length: length).IntroDataLiteral();
 		}
@@ -144,32 +144,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNull(string name = "dataliteralDBNull")
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNull(string name = "dataliteralDBNull")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.DBNull).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullDsv(string name)
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNullDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.DBNull).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullDsv(string name, string terminator)
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNullDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.DBNull, terminator: terminator).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNullQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startEndSymbol: startEndSymbol).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNullQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.DBNull, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDBNull();
 		}
 
-        public static BnfiTermValue<DBNull> IntroDataLiteralDBNullFixedLength(string name, int length)
+        public static BnfiTermValue<DBNull> CreateDataLiteralDBNullFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.DBNull, length: length).IntroDataLiteralDBNull();
 		}
@@ -216,32 +216,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBoolean(string name = "dataliteralBoolean")
+        public static BnfiTermValue<Boolean> CreateDataLiteralBoolean(string name = "dataliteralBoolean")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Boolean).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanDsv(string name)
+        public static BnfiTermValue<Boolean> CreateDataLiteralBooleanDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Boolean).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanDsv(string name, string terminator)
+        public static BnfiTermValue<Boolean> CreateDataLiteralBooleanDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Boolean, terminator: terminator).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Boolean> CreateDataLiteralBooleanQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startEndSymbol: startEndSymbol).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Boolean> CreateDataLiteralBooleanQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Boolean, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralBoolean();
 		}
 
-        public static BnfiTermValue<Boolean> IntroDataLiteralBooleanFixedLength(string name, int length)
+        public static BnfiTermValue<Boolean> CreateDataLiteralBooleanFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Boolean, length: length).IntroDataLiteralBoolean();
 		}
@@ -288,32 +288,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Char> IntroDataLiteralChar(string name = "dataliteralChar")
+        public static BnfiTermValue<Char> CreateDataLiteralChar(string name = "dataliteralChar")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Char).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> IntroDataLiteralCharDsv(string name)
+        public static BnfiTermValue<Char> CreateDataLiteralCharDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Char).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> IntroDataLiteralCharDsv(string name, string terminator)
+        public static BnfiTermValue<Char> CreateDataLiteralCharDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Char, terminator: terminator).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> IntroDataLiteralCharQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Char> CreateDataLiteralCharQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startEndSymbol: startEndSymbol).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> IntroDataLiteralCharQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Char> CreateDataLiteralCharQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Char, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralChar();
 		}
 
-        public static BnfiTermValue<Char> IntroDataLiteralCharFixedLength(string name, int length)
+        public static BnfiTermValue<Char> CreateDataLiteralCharFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Char, length: length).IntroDataLiteralChar();
 		}
@@ -370,32 +370,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByte(string name = "dataliteralSByte")
+        public static BnfiTermValue<SByte> CreateDataLiteralSByte(string name = "dataliteralSByte")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.SByte).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByteDsv(string name)
+        public static BnfiTermValue<SByte> CreateDataLiteralSByteDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.SByte).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByteDsv(string name, string terminator)
+        public static BnfiTermValue<SByte> CreateDataLiteralSByteDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.SByte, terminator: terminator).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByteQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<SByte> CreateDataLiteralSByteQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startEndSymbol: startEndSymbol).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByteQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<SByte> CreateDataLiteralSByteQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.SByte, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralSByte();
 		}
 
-        public static BnfiTermValue<SByte> IntroDataLiteralSByteFixedLength(string name, int length)
+        public static BnfiTermValue<SByte> CreateDataLiteralSByteFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.SByte, length: length).IntroDataLiteralSByte();
 		}
@@ -471,32 +471,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByte(string name = "dataliteralByte")
+        public static BnfiTermValue<Byte> CreateDataLiteralByte(string name = "dataliteralByte")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Byte).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByteDsv(string name)
+        public static BnfiTermValue<Byte> CreateDataLiteralByteDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Byte).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByteDsv(string name, string terminator)
+        public static BnfiTermValue<Byte> CreateDataLiteralByteDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Byte, terminator: terminator).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByteQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Byte> CreateDataLiteralByteQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startEndSymbol: startEndSymbol).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByteQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Byte> CreateDataLiteralByteQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Byte, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralByte();
 		}
 
-        public static BnfiTermValue<Byte> IntroDataLiteralByteFixedLength(string name, int length)
+        public static BnfiTermValue<Byte> CreateDataLiteralByteFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Byte, length: length).IntroDataLiteralByte();
 		}
@@ -572,32 +572,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16(string name = "dataliteralInt16")
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16(string name = "dataliteralInt16")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Int16).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16Dsv(string name)
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int16).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16Dsv(string name, string terminator)
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int16, terminator: terminator).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startEndSymbol: startEndSymbol).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int16, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt16();
 		}
 
-        public static BnfiTermValue<Int16> IntroDataLiteralInt16FixedLength(string name, int length)
+        public static BnfiTermValue<Int16> CreateDataLiteralInt16FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int16, length: length).IntroDataLiteralInt16();
 		}
@@ -673,32 +673,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16(string name = "dataliteralUInt16")
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16(string name = "dataliteralUInt16")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.UInt16).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Dsv(string name)
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt16).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt16, terminator: terminator).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startEndSymbol: startEndSymbol).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt16, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt16();
 		}
 
-        public static BnfiTermValue<UInt16> IntroDataLiteralUInt16FixedLength(string name, int length)
+        public static BnfiTermValue<UInt16> CreateDataLiteralUInt16FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt16, length: length).IntroDataLiteralUInt16();
 		}
@@ -774,32 +774,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32(string name = "dataliteralInt32")
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32(string name = "dataliteralInt32")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Int32).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32Dsv(string name)
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int32).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32Dsv(string name, string terminator)
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int32, terminator: terminator).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startEndSymbol: startEndSymbol).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int32, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt32();
 		}
 
-        public static BnfiTermValue<Int32> IntroDataLiteralInt32FixedLength(string name, int length)
+        public static BnfiTermValue<Int32> CreateDataLiteralInt32FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int32, length: length).IntroDataLiteralInt32();
 		}
@@ -875,32 +875,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32(string name = "dataliteralUInt32")
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32(string name = "dataliteralUInt32")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.UInt32).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Dsv(string name)
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt32).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt32, terminator: terminator).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startEndSymbol: startEndSymbol).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt32, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt32();
 		}
 
-        public static BnfiTermValue<UInt32> IntroDataLiteralUInt32FixedLength(string name, int length)
+        public static BnfiTermValue<UInt32> CreateDataLiteralUInt32FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt32, length: length).IntroDataLiteralUInt32();
 		}
@@ -976,32 +976,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64(string name = "dataliteralInt64")
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64(string name = "dataliteralInt64")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Int64).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64Dsv(string name)
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int64).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64Dsv(string name, string terminator)
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Int64, terminator: terminator).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startEndSymbol: startEndSymbol).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Int64, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralInt64();
 		}
 
-        public static BnfiTermValue<Int64> IntroDataLiteralInt64FixedLength(string name, int length)
+        public static BnfiTermValue<Int64> CreateDataLiteralInt64FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Int64, length: length).IntroDataLiteralInt64();
 		}
@@ -1077,32 +1077,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64(string name = "dataliteralUInt64")
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64(string name = "dataliteralUInt64")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.UInt64).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Dsv(string name)
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt64).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Dsv(string name, string terminator)
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.UInt64, terminator: terminator).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startEndSymbol: startEndSymbol).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.UInt64, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralUInt64();
 		}
 
-        public static BnfiTermValue<UInt64> IntroDataLiteralUInt64FixedLength(string name, int length)
+        public static BnfiTermValue<UInt64> CreateDataLiteralUInt64FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.UInt64, length: length).IntroDataLiteralUInt64();
 		}
@@ -1178,32 +1178,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingle(string name = "dataliteralSingle")
+        public static BnfiTermValue<Single> CreateDataLiteralSingle(string name = "dataliteralSingle")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Single).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingleDsv(string name)
+        public static BnfiTermValue<Single> CreateDataLiteralSingleDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Single).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingleDsv(string name, string terminator)
+        public static BnfiTermValue<Single> CreateDataLiteralSingleDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Single, terminator: terminator).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingleQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Single> CreateDataLiteralSingleQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startEndSymbol: startEndSymbol).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingleQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Single> CreateDataLiteralSingleQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Single, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralSingle();
 		}
 
-        public static BnfiTermValue<Single> IntroDataLiteralSingleFixedLength(string name, int length)
+        public static BnfiTermValue<Single> CreateDataLiteralSingleFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Single, length: length).IntroDataLiteralSingle();
 		}
@@ -1279,32 +1279,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Double> IntroDataLiteralDouble(string name = "dataliteralDouble")
+        public static BnfiTermValue<Double> CreateDataLiteralDouble(string name = "dataliteralDouble")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Double).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> IntroDataLiteralDoubleDsv(string name)
+        public static BnfiTermValue<Double> CreateDataLiteralDoubleDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Double).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> IntroDataLiteralDoubleDsv(string name, string terminator)
+        public static BnfiTermValue<Double> CreateDataLiteralDoubleDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Double, terminator: terminator).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> IntroDataLiteralDoubleQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Double> CreateDataLiteralDoubleQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startEndSymbol: startEndSymbol).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> IntroDataLiteralDoubleQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Double> CreateDataLiteralDoubleQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Double, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDouble();
 		}
 
-        public static BnfiTermValue<Double> IntroDataLiteralDoubleFixedLength(string name, int length)
+        public static BnfiTermValue<Double> CreateDataLiteralDoubleFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Double, length: length).IntroDataLiteralDouble();
 		}
@@ -1380,32 +1380,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimal(string name = "dataliteralDecimal")
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimal(string name = "dataliteralDecimal")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.Decimal).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalDsv(string name)
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimalDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Decimal).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalDsv(string name, string terminator)
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimalDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.Decimal, terminator: terminator).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimalQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startEndSymbol: startEndSymbol).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimalQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.Decimal, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDecimal();
 		}
 
-        public static BnfiTermValue<Decimal> IntroDataLiteralDecimalFixedLength(string name, int length)
+        public static BnfiTermValue<Decimal> CreateDataLiteralDecimalFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.Decimal, length: length).IntroDataLiteralDecimal();
 		}
@@ -1471,32 +1471,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTime(string name = "dataliteralDateTime")
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTime(string name = "dataliteralDateTime")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.DateTime).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeDsv(string name)
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTimeDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.DateTime).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeDsv(string name, string terminator)
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTimeDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.DateTime, terminator: terminator).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTimeQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startEndSymbol: startEndSymbol).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTimeQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.DateTime, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralDateTime();
 		}
 
-        public static BnfiTermValue<DateTime> IntroDataLiteralDateTimeFixedLength(string name, int length)
+        public static BnfiTermValue<DateTime> CreateDataLiteralDateTimeFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.DateTime, length: length).IntroDataLiteralDateTime();
 		}
@@ -1543,32 +1543,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<String> IntroDataLiteralString(string name = "dataliteralString")
+        public static BnfiTermValue<String> CreateDataLiteralString(string name = "dataliteralString")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.String).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> IntroDataLiteralStringDsv(string name)
+        public static BnfiTermValue<String> CreateDataLiteralStringDsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.String).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> IntroDataLiteralStringDsv(string name, string terminator)
+        public static BnfiTermValue<String> CreateDataLiteralStringDsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.String, terminator: terminator).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> IntroDataLiteralStringQuoted(string name, string startEndSymbol)
+        public static BnfiTermValue<String> CreateDataLiteralStringQuoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startEndSymbol: startEndSymbol).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> IntroDataLiteralStringQuoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<String> CreateDataLiteralStringQuoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.String, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteralString();
 		}
 
-        public static BnfiTermValue<String> IntroDataLiteralStringFixedLength(string name, int length)
+        public static BnfiTermValue<String> CreateDataLiteralStringFixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.String, length: length).IntroDataLiteralString();
 		}

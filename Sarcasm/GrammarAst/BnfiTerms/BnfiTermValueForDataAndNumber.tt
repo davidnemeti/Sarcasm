@@ -97,32 +97,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>(string name = "dataliteral<#= methodNameExt #>")
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>(string name = "dataliteral<#= methodNameExt #>")
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>Dsv(string name)
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>Dsv(string name, string terminator)
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string terminator)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>, terminator: terminator).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>Quoted(string name, string startEndSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startEndSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermValue<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>FixedLength(string name, int length)
+        public static BnfiTermValue<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>FixedLength(string name, int length)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.<#= typeCode #>, length: length).IntroDataLiteral<#= methodNameExt #>();
 		}
