@@ -85,7 +85,7 @@ namespace MiniPL.Grammars
                     { "false", false }
                 };
 
-                this.IDENTIFIER = CreateIdentifier();
+                this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
             }
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
@@ -371,8 +371,8 @@ namespace MiniPL.Grammars
                 + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
-            B.NumberLiteral.Rule = CreateNumberLiteral().MakeContractible().BindTo(B.NumberLiteral, t => t.Value);
-            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeContractible().BindTo(B.StringLiteral, t => t.Value);
+            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().MakeContractible().BindTo(B.NumberLiteral, t => t.Value);
+            B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeContractible().BindTo(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;

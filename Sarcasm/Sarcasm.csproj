@@ -108,6 +108,7 @@
     </Compile>
     <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
+    <Compile Include="GrammarAst\TerminalFactoryS.cs" />
     <Compile Include="Reflection\MetaRepository.cs" />
     <Compile Include="Utility\ResourceCounter.cs" />
     <Compile Include="Utility\ReverseList.cs" />

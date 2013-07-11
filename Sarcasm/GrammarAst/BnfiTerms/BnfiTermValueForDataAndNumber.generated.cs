@@ -47,9 +47,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -138,9 +138,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -210,9 +210,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -282,9 +282,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -364,9 +364,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -465,9 +465,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -566,9 +566,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -667,9 +667,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -768,9 +768,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -869,9 +869,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -970,9 +970,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1071,9 +1071,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1172,9 +1172,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1273,9 +1273,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1374,9 +1374,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1465,9 +1465,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 
@@ -1537,9 +1537,9 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region Grammar
+	#region TerminalFactoryS
 
-    public partial class Grammar
+    public partial class TerminalFactoryS
 	{
 		#region Data
 

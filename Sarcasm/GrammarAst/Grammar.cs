@@ -268,44 +268,6 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        #region Identifiers
-
-        public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
-        {
-            return new IdentifierTerminal(name).IntroIdentifier();
-        }
-
-        public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
-        {
-            return new IdentifierTerminal(name, options).IntroIdentifier();
-        }
-
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
-        {
-            return new IdentifierTerminal(name, extraChars).IntroIdentifier();
-        }
-
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
-        {
-            return new IdentifierTerminal(name, extraChars, extraFirstChars).IntroIdentifier();
-        }
-
-        #endregion
-
-        #region String literals
-
-        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol)
-        {
-            return new StringLiteral(name, startEndSymbol).IntroStringLiteral();
-        }
-
-        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
-        {
-            return new StringLiteral(name, startEndSymbol, options).IntroStringLiteral();
-        }
-
-        #endregion
-
         #region Misc
 
         public static new Grammar CurrentGrammar
