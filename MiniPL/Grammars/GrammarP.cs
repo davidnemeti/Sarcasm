@@ -42,6 +42,7 @@ namespace MiniPL.Grammars
                 this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                 this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
                 this.VAR = TerminalFactoryS.CreateKeyTerm("var");
+
                 this.DOT = TerminalFactoryS.CreatePunctuation(".");
                 this.LET = TerminalFactoryS.CreatePunctuation(":=");
                 this.SEMICOLON = TerminalFactoryS.CreatePunctuation(";");
