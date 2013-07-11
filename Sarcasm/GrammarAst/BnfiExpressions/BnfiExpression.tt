@@ -60,22 +60,22 @@ namespace Sarcasm.GrammarAst
 		multiCore: true
 	);
 
-	var bnfTermCoreTypeNamesForBnfiExpressionValue =
+	var bnfTermCoreTypeNamesForBnfiExpressionConversion =
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionValueTL",
+		"BnfiExpressionConversionTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermValue"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermConversion"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
 	);
 
-	var bnfTermCoreTypeNamesForBnfiExpressionValueGeneric =
+	var bnfTermCoreTypeNamesForBnfiExpressionConversionGeneric =
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionValue<T>",
+		"BnfiExpressionConversion<T>",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermValue<T>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermConversion<T>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: false
 	);
@@ -87,7 +87,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord", "BnfiTermChoice", "BnfiTermCollectionTL"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionConversion,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);
@@ -97,7 +97,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
-		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
+		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionConversionGeneric,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
 	);

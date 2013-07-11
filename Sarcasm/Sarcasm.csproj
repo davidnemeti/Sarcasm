@@ -101,10 +101,10 @@
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTerm.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermNoAst.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermValueForDataAndNumber.generated.cs">
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>BnfiTermValueForDataAndNumber.tt</DependentUpon>
+      <DependentUpon>BnfiTermConversionForDataAndNumber.tt</DependentUpon>
     </Compile>
     <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
@@ -116,7 +116,7 @@
     <Compile Include="Parsing\ParseTree.cs" />
     <Compile Include="GrammarAst\GrammarHelper.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermConstant.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermValue.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConversion.cs" />
     <Compile Include="Parsing\ParseTreeNodeWithoutAst.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermChoice.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermCollection.cs" />
@@ -144,9 +144,9 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
     </None>
-    <None Include="GrammarAst\BnfiTerms\BnfiTermValueForDataAndNumber.tt">
+    <None Include="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>BnfiTermValueForDataAndNumber.generated.cs</LastGenOutput>
+      <LastGenOutput>BnfiTermConversionForDataAndNumber.generated.cs</LastGenOutput>
     </None>
     <None Include="Signature\Sarcasm.pub" />
     <None Include="Signature\Sarcasm.snk" />

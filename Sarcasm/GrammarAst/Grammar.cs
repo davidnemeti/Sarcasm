@@ -149,7 +149,7 @@ namespace Sarcasm.GrammarAst
             #endregion
         }
 
-        public BnfiTermValue<T> ToTerm<T>(string text, T value)
+        public BnfiTermConversion<T> ToTerm<T>(string text, T value)
         {
             return ToTerm(text).IntroValue(value);
         }
@@ -283,17 +283,17 @@ namespace Sarcasm.GrammarAst
 
         public static ValueConverter<object, object> NoUnparseByInverse()
         {
-            return BnfiTermValue.NoUnparseByInverse();
+            return BnfiTermConversion.NoUnparseByInverse();
         }
 
         public static ValueConverter<T, object> NoUnparseByInverse<T>()
         {
-            return BnfiTermValue.NoUnparseByInverse<T>();
+            return BnfiTermConversion.NoUnparseByInverse<T>();
         }
 
         public static ValueConverter<TIn, TOut> NoUnparseByInverse<TIn, TOut>()
         {
-            return BnfiTermValue.NoUnparseByInverse<TIn, TOut>();
+            return BnfiTermConversion.NoUnparseByInverse<TIn, TOut>();
         }
 
         #endregion

@@ -34,7 +34,7 @@ namespace Sarcasm.GrammarAst
             return grammar.ToTerm(text, name);
         }
 
-        public BnfiTermValue<T> CreateKeyTerm<T>(string text, T value)
+        public BnfiTermConversion<T> CreateKeyTerm<T>(string text, T value)
         {
             return grammar.ToTerm(text, value);
         }
@@ -48,22 +48,22 @@ namespace Sarcasm.GrammarAst
 
         #region Identifiers
 
-        public static BnfiTermValue<string> CreateIdentifier(string name = "identifier")
+        public static BnfiTermConversion<string> CreateIdentifier(string name = "identifier")
         {
             return new IdentifierTerminal(name).IntroIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, IdOptions options)
+        public static BnfiTermConversion<string> CreateIdentifier(string name, IdOptions options)
         {
             return new IdentifierTerminal(name, options).IntroIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars)
+        public static BnfiTermConversion<string> CreateIdentifier(string name, string extraChars)
         {
             return new IdentifierTerminal(name, extraChars).IntroIdentifier();
         }
 
-        public static BnfiTermValue<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
+        public static BnfiTermConversion<string> CreateIdentifier(string name, string extraChars, string extraFirstChars = "")
         {
             return new IdentifierTerminal(name, extraChars, extraFirstChars).IntroIdentifier();
         }
@@ -72,12 +72,12 @@ namespace Sarcasm.GrammarAst
 
         #region String literals
 
-        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol)
+        public static BnfiTermConversion<string> CreateStringLiteral(string name, string startEndSymbol)
         {
             return new StringLiteral(name, startEndSymbol).IntroStringLiteral();
         }
 
-        public static BnfiTermValue<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
+        public static BnfiTermConversion<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
         {
             return new StringLiteral(name, startEndSymbol, options).IntroStringLiteral();
         }

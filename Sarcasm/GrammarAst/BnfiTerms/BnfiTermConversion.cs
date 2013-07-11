@@ -16,7 +16,7 @@ using Sarcasm.Utility;
 
 namespace Sarcasm.GrammarAst
 {
-    public abstract partial class BnfiTermValue : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
+    public abstract partial class BnfiTermConversion : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         #region State
 
@@ -30,31 +30,31 @@ namespace Sarcasm.GrammarAst
 
         #region Construction
 
-        protected BnfiTermValue(string name)
+        protected BnfiTermConversion(string name)
             : this(typeof(object), name)
         {
         }
 
-        protected BnfiTermValue(Type type, string name)
+        protected BnfiTermConversion(Type type, string name)
             : base(type, name)
         {
             this.inverseValueConverterForUnparse = IdentityFunction;
-            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermValue will contain the BnfiTermValue which actually does something)
+            GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermConversion will contain the BnfiTermConversion which actually does something)
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
+        protected BnfiTermConversion(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
             : this(type, bnfTerm, (context, parseNode) => value, IdentityFunction, isOptionalValue, name, astForChild)
         {
             this.value = value;
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
+        protected BnfiTermConversion(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
             : this(type, bnfTerm, valueIntroducer, NoUnparseByInverse(), isOptionalValue, name, astForChild)
         {
         }
 
-        protected BnfiTermValue(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse,
+        protected BnfiTermConversion(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse,
             bool isOptionalValue, string name, bool astForChild)
             : base(type, name)
         {
@@ -78,74 +78,74 @@ namespace Sarcasm.GrammarAst
 
         #region Intro
 
-        public static BnfiTermValueTL Intro(Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Terminal terminal, object value, bool astForChild = true)
         {
             return Intro(typeof(object), terminal, value, astForChild);
         }
 
-        public static BnfiTermValueTL Intro(Type type, Terminal terminal, object value, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Type type, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermValueTL(type, terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversionTL(type, terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValueTL Intro(Terminal terminal, ValueIntroducer<object> valueIntroducer, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Terminal terminal, ValueIntroducer<object> valueIntroducer, bool astForChild = true)
         {
             return Intro(terminal, valueIntroducer, NoUnparseByInverse(), astForChild);
         }
 
-        public static BnfiTermValueTL Intro(Terminal terminal, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Terminal terminal, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
             return Intro(typeof(object), terminal, valueIntroducer, inverseValueConverterForUnparse, astForChild);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValueTL Intro(Type type, Terminal terminal, ValueIntroducer<object> valueIntroducer, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Type type, Terminal terminal, ValueIntroducer<object> valueIntroducer, bool astForChild = true)
         {
             return Intro(type, terminal, valueIntroducer, NoUnparseByInverse(), astForChild);
         }
 
-        public static BnfiTermValueTL Intro(Type type, Terminal terminal, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
+        public static BnfiTermConversionTL Intro(Type type, Terminal terminal, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermValueTL(type, terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
+            return new BnfiTermConversionTL(type, terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
                 name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
-        public static BnfiTermValue<T> Intro<T>(Terminal terminal, T value, bool astForChild = true)
+        public static BnfiTermConversion<T> Intro<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversion<T>(terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<T> Intro<T>(Terminal terminal, ValueIntroducer<T> valueIntroducer, bool astForChild = true)
+        public static BnfiTermConversion<T> Intro<T>(Terminal terminal, ValueIntroducer<T> valueIntroducer, bool astForChild = true)
         {
             return Intro(terminal, valueIntroducer, NoUnparseByInverse<T>(), astForChild);
         }
 
-        public static BnfiTermValue<T> Intro<T>(Terminal terminal, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool astForChild = true)
+        public static BnfiTermConversion<T> Intro<T>(Terminal terminal, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermValue<T>(terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
+            return new BnfiTermConversion<T>(terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
                 name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
-        public static BnfiTermValue<string> IntroIdentifier(IdentifierTerminal identifierTerminal)
+        public static BnfiTermConversion<string> IntroIdentifier(IdentifierTerminal identifierTerminal)
         {
             return Intro<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
-        public static BnfiTermValue<string> IntroStringLiteral(StringLiteral stringLiteral)
+        public static BnfiTermConversion<string> IntroStringLiteral(StringLiteral stringLiteral)
         {
             return Intro<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
         }
 
-        public static BnfiTermValue<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)
+        public static BnfiTermConversion<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)
         {
             // NOTE: unparse for constant terminal is handled specifically in the unparser
             return Intro<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false);
         }
 
-        [Obsolete(BnfiTermValue.messageForIntroForBnfiTermConstant, error: true)]
-        public static BnfiTermValue<T> IntroConstantTerminal<T>(BnfiTermConstant<T> bnfiTermConstant)
+        [Obsolete(BnfiTermConversion.messageForIntroForBnfiTermConstant, error: true)]
+        public static BnfiTermConversion<T> IntroConstantTerminal<T>(BnfiTermConstant<T> bnfiTermConstant)
         {
             return IntroConstantTerminal<T>(bnfiTermConstant);
         }
@@ -155,25 +155,25 @@ namespace Sarcasm.GrammarAst
         #region Convert
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValueTL Convert(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermConversionTL Convert(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert(bnfiTerm, valueConverter, NoUnparseByInverse());
         }
 
-        public static BnfiTermValueTL Convert(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
+        public static BnfiTermConversionTL Convert(IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
         {
             return Convert(typeof(object), bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValueTL Convert(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
+        public static BnfiTermConversionTL Convert(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter)
         {
             return Convert(type, bnfiTerm, valueConverter, NoUnparseByInverse());
         }
 
-        public static BnfiTermValueTL Convert(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
+        public static BnfiTermConversionTL Convert(Type type, IBnfiTermTL bnfiTerm, ValueConverter<object, object> valueConverter, ValueConverter<object, object> inverseValueConverterForUnparse)
         {
-            return new BnfiTermValueTL(
+            return new BnfiTermConversionTL(
                 type,
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
@@ -185,14 +185,14 @@ namespace Sarcasm.GrammarAst
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> Convert<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        public static BnfiTermConversion<TOut> Convert<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
         {
             return Convert<TOut>(bnfiTerm, valueConverter, NoUnparseByInverse<TOut, object>());
         }
 
-        public static BnfiTermValue<TOut> Convert<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TOut> Convert<TOut>(IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
         {
-            return new BnfiTermValue<TOut>(
+            return new BnfiTermConversion<TOut>(
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 inverseValueConverterForUnparse,
@@ -203,14 +203,14 @@ namespace Sarcasm.GrammarAst
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> Convert<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermConversion<TOut> Convert<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)
         {
             return Convert<TIn, TOut>(bnfiTerm, valueConverter, NoUnparseByInverse<TOut, TIn>());
         }
 
-        public static BnfiTermValue<TOut> Convert<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TOut> Convert<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
         {
-            return new BnfiTermValue<TOut>(
+            return new BnfiTermConversion<TOut>(
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
@@ -224,63 +224,63 @@ namespace Sarcasm.GrammarAst
 
         #region ConvertOpt
 
-        public static BnfiTermValue<T?> ConvertOptVal<T>(IBnfiTerm<T> bnfTerm)
+        public static BnfiTermConversion<T?> ConvertOptVal<T>(IBnfiTerm<T> bnfTerm)
             where T : struct
         {
             return ConvertOptVal(bnfTerm, value => value, value => value);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut?> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermConversion<TOut?> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : struct
             where TOut : struct
         {
             return ConvertOptVal<TIn, TOut>(bnfTerm, valueConverter, NoUnparseByInverse<TOut, TIn>());
         }
 
-        public static BnfiTermValue<TOut?> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TOut?> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
             where TIn : struct
             where TOut : struct
         {
             return ConvertOpt<TIn, TOut?>(bnfTerm, value => valueConverter(value), value => inverseValueConverterForUnparse(value.Value));
         }
 
-        public static BnfiTermValue<T> ConvertOptRef<T>(IBnfiTerm<T> bnfTerm)
+        public static BnfiTermConversion<T> ConvertOptRef<T>(IBnfiTerm<T> bnfTerm)
             where T : class
         {
             return ConvertOptRef(bnfTerm, value => value, value => value);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermConversion<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter)
             where TIn : class
             where TOut : class
         {
             return ConvertOptRef<TIn, TOut>(bnfTerm, valueConverter, NoUnparseByInverse<TOut, TIn>());
         }
 
-        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfTerm, ValueConverter<TIn, TOut> valueConverter, ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
             where TIn : class
             where TOut : class
         {
             return ConvertOpt<TIn, TOut>(bnfTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
-        public static BnfiTermValue<T> ConvertOptVal<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+        public static BnfiTermConversion<T> ConvertOptVal<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
             where T : struct
         {
             return ConvertOptVal(bnfiTerm, value => value, value => value, defaultValue);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+        public static BnfiTermConversion<TOut> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
             where TIn : struct
             where TOut : struct
         {
             return ConvertOptVal<TIn, TOut>(bnfiTerm, valueConverter, NoUnparseByInverse<TOut, TIn>(), defaultValue);
         }
 
-        public static BnfiTermValue<TOut> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
+        public static BnfiTermConversion<TOut> ConvertOptVal<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
             ValueConverter<TOut, TIn> inverseValueConverterForUnparse, TOut defaultValue)
             where TIn : struct
             where TOut : struct
@@ -288,21 +288,21 @@ namespace Sarcasm.GrammarAst
             return ConvertOpt<TIn, TOut>(bnfiTerm, valueConverter, inverseValueConverterForUnparse, defaultValue);
         }
 
-        public static BnfiTermValue<T> ConvertOptRef<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
+        public static BnfiTermConversion<T> ConvertOptRef<T>(IBnfiTerm<T> bnfiTerm, T defaultValue)
             where T : class
         {
             return ConvertOptRef(bnfiTerm, value => value, value => value, defaultValue);
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
-        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
+        public static BnfiTermConversion<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter, TOut defaultValue)
             where TIn : class
             where TOut : class
         {
             return ConvertOptRef<TIn, TOut>(bnfiTerm, valueConverter, NoUnparseByInverse<TOut, TIn>(), defaultValue);
         }
 
-        public static BnfiTermValue<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
+        public static BnfiTermConversion<TOut> ConvertOptRef<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
             ValueConverter<TOut, TIn> inverseValueConverterForUnparse, TOut defaultValue)
             where TIn : class
             where TOut : class
@@ -310,10 +310,10 @@ namespace Sarcasm.GrammarAst
             return ConvertOptRef(bnfiTerm, valueConverter, inverseValueConverterForUnparse, defaultValue);
         }
 
-        protected static BnfiTermValue<TOut> ConvertOpt<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
+        protected static BnfiTermConversion<TOut> ConvertOpt<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
             ValueConverter<TOut, TIn> inverseValueConverterForUnparse, TOut defaultValue = default(TOut))
         {
-            return new BnfiTermValue<TOut>(
+            return new BnfiTermConversion<TOut>(
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducerOpt(valueConverter, defaultValue),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
@@ -327,12 +327,12 @@ namespace Sarcasm.GrammarAst
 
         #region Cast
 
-        public static BnfiTermValue<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
+        public static BnfiTermConversion<TOut> Cast<TIn, TOut>(IBnfiTerm<TIn> bnfTerm)
         {
             return Convert(bnfTerm, IdentityFunctionForceCast<TIn, TOut>, IdentityFunctionForceCast<TOut, TIn>);
         }
 
-        public static BnfiTermValue<TOut> Cast<TOut>(Terminal terminal)
+        public static BnfiTermConversion<TOut> Cast<TOut>(Terminal terminal)
         {
             return Intro<TOut>(terminal, (context, parseNode) => GrammarHelper.AstNodeToValue<TOut>(parseNode.Token.Value), IdentityFunctionForceCast<TOut, object>);
         }
@@ -372,9 +372,9 @@ namespace Sarcasm.GrammarAst
                 catch (InvalidOperationException)
                 {
                     if (isOptionalValue)
-                        throw new ArgumentException("Only zero or one child with ast node is allowed for an optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                        throw new ArgumentException("Only zero or one child with ast node is allowed for an optional BnfiTermConversion term: {0}", parseTreeNode.Term.Name);
                     else
-                        throw new ArgumentException("Exactly one child with ast node is allowed for a non-optional BnfiTermValue term: {0}", parseTreeNode.Term.Name);
+                        throw new ArgumentException("Exactly one child with ast node is allowed for a non-optional BnfiTermConversion term: {0}", parseTreeNode.Term.Name);
                 }
             };
         }
@@ -391,7 +391,7 @@ namespace Sarcasm.GrammarAst
             return (TOut)(object)obj;
         }
 
-        protected void SetState(BnfiTermValue source)
+        protected void SetState(BnfiTermConversion source)
         {
             this.bnfTerm = source.bnfTerm;
             this.value = source.value;
@@ -414,7 +414,7 @@ namespace Sarcasm.GrammarAst
             this.UtokenizerForUnparse = null;
         }
 
-        protected void ContractTo(BnfiTermValue target)
+        protected void ContractTo(BnfiTermConversion target)
         {
             if (!this.IsContractible)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "This value should not be a right-value: {0}", this.Name);
@@ -439,14 +439,14 @@ namespace Sarcasm.GrammarAst
                     goto LDefaultRuleSetting;
 
                 /*
-                 * Examine whether there is only one single BnfiTermValue inside 'value', and if it is true, then move the state of that BnfiTermValue
-                 * so we can "destroy" that BnfiTermValue in order to eliminate unneccessary, extra "rule-embedding"
+                 * Examine whether there is only one single BnfiTermConversion inside 'value', and if it is true, then move the state of that BnfiTermConversion
+                 * so we can "destroy" that BnfiTermConversion in order to eliminate unneccessary, extra "rule-embedding"
                  * */
                 var bnfTerms = value.GetBnfTermsList().SingleOrDefaultNoException();
                 if (bnfTerms == null)
                     goto LDefaultRuleSetting;
 
-                BnfiTermValue onlyBnfTermInValue = bnfTerms.SingleOrDefaultNoException() as BnfiTermValue;
+                BnfiTermConversion onlyBnfTermInValue = bnfTerms.SingleOrDefaultNoException() as BnfiTermConversion;
 
                 if (onlyBnfTermInValue != null && onlyBnfTermInValue.IsContractible)
                     onlyBnfTermInValue.ContractTo(this);
@@ -506,7 +506,7 @@ namespace Sarcasm.GrammarAst
         {
             return this.bnfTerm != null
                 ? new UnparsableObject(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
-                : children.Single(child => IsMainChild(child.BnfTerm));    // "transient" unparse with the actual BnfiTermValue(s) under the current one (set by Rule)
+                : children.Single(child => IsMainChild(child.BnfTerm));    // "transient" unparse with the actual BnfiTermConversion(s) under the current one (set by Rule)
         }
 
         private object ConvertObjectForChild(object obj, BnfTerm childBnfTerm)
@@ -541,7 +541,7 @@ namespace Sarcasm.GrammarAst
         internal const string messageForMissingUnparseValueConverter = "Value converter parameter for unparse is missing. "
             + "You should do any of the followings: [ "
             + "1. Specify a value converter for unparse in order to get a functional unparse behavior | "
-            + "2. Specify explicitly that you do not want unparse for this BnfiTermValue by passing NoUnparse | "
+            + "2. Specify explicitly that you do not want unparse for this BnfiTermConversion by passing NoUnparse | "
             + "3. Disable the warning with \"#pragma warning disable 618\" ]";
 
         internal const string messageForIntroForBnfiTermConstant = "You do not have to use IntroConstantTerminal for a BnfiTermConstant, since it has a built-in ast creation handling";
@@ -567,72 +567,72 @@ namespace Sarcasm.GrammarAst
         }
     }
 
-    public partial class BnfiTermValueTL : BnfiTermValue, IBnfiTermTL
+    public partial class BnfiTermConversionTL : BnfiTermConversion, IBnfiTermTL
     {
         #region Construction
 
-        public BnfiTermValueTL(string name = null)
+        public BnfiTermConversionTL(string name = null)
             : base(name)
         {
         }
 
-        public BnfiTermValueTL(Type type, string name = null)
+        public BnfiTermConversionTL(Type type, string name = null)
             : base(type, name)
         {
         }
 
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversionTL(Type type, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
             : base(type, bnfTerm, value, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversionTL(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
             : this(type, bnfTerm, valueIntroducer, NoUnparseByInverse(), isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermValueTL(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversionTL(Type type, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
             : base(type, bnfTerm, valueIntroducer, inverseValueConverterForUnparse, isOptionalValue, name, astForChild)
         {
         }
 
         #endregion
 
-        public new BnfiExpressionValueTL Rule { set { base.Rule = value; } }
+        public new BnfiExpressionConversionTL Rule { set { base.Rule = value; } }
 
-        public BnfiTermValueTL MakeContractible()
+        public BnfiTermConversionTL MakeContractible()
         {
             this.IsContractible = true;
             return this;
         }
 
-        public BnfiTermValueTL MakeUncontractible()
+        public BnfiTermConversionTL MakeUncontractible()
         {
             this.IsContractible = false;
             return this;
         }
     }
 
-    public partial class BnfiTermValue<T> : BnfiTermValue, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, INonTerminal<T>
+    public partial class BnfiTermConversion<T> : BnfiTermConversion, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, INonTerminal<T>
     {
-        public BnfiTermValue(string name = null)
+        public BnfiTermConversion(string name = null)
             : base(typeof(T), name)
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, T value, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, T value, bool isOptionalValue, string name, bool astForChild)
             : base(typeof(T), bnfTerm, value, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermValue(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
             : this(bnfTerm, valueIntroducer, NoUnparseByInverse<T>(), isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermValue(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
             : base(typeof(T), bnfTerm, (context, parseNode) => valueIntroducer(context, parseNode), CastValueConverter<T, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, name, astForChild)
         {
         }
@@ -645,9 +645,9 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        public BnfiExpressionValueTL RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionConversionTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionValue<T> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionConversion<T> Rule { set { base.Rule = value; } }
 
         [Obsolete(BnfiTermNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
@@ -655,13 +655,13 @@ namespace Sarcasm.GrammarAst
             return base.Q();
         }
 
-        public BnfiTermValue<T> MakeContractible()
+        public BnfiTermConversion<T> MakeContractible()
         {
             this.IsContractible = true;
             return this;
         }
 
-        public BnfiTermValue<T> MakeUncontractible()
+        public BnfiTermConversion<T> MakeUncontractible()
         {
             this.IsContractible = false;
             return this;

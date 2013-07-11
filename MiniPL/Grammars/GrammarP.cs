@@ -103,7 +103,7 @@ namespace MiniPL.Grammars
 //            public readonly BnfiTermRecord<IfElse> IfElse = new BnfiTermRecord<IfElse>();
             public readonly BnfiTermRecord<Return> Return = new BnfiTermRecord<Return>();
             public readonly BnfiTermRecord<Assignment> Assignment = new BnfiTermRecord<Assignment>();
-            public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
+            public readonly BnfiTermConversion<Reference<Function>> FunctionReference = new BnfiTermConversion<Reference<Function>>();
             public readonly BnfiTermRecord<FunctionCall> FunctionCall = new BnfiTermRecord<FunctionCall>();
             public readonly BnfiTermRecord<Write> Write = new BnfiTermRecord<Write>();
             public readonly BnfiTermRecord<WriteLn> WriteLn = new BnfiTermRecord<WriteLn>();
@@ -122,8 +122,8 @@ namespace MiniPL.Grammars
             public readonly BnfiTermRecord<BoolLiteral> BoolLiteral = new BnfiTermRecord<BoolLiteral>();
 
             public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
-            public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
-            public readonly BnfiTermValue<NameRef> NameRef = new BnfiTermValue<NameRef>();
+            public readonly BnfiTermConversion<NameRef> NamespaceName = new BnfiTermConversion<NameRef>("namespace_name");
+            public readonly BnfiTermConversion<NameRef> NameRef = new BnfiTermConversion<NameRef>();
 
             public readonly BnfiTermKeyTerm PROGRAM;
             public readonly BnfiTermKeyTerm NAMESPACE;
@@ -149,37 +149,37 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
             public readonly BnfiTermKeyTermPunctuation QUESTION_MARK;
 
-            public readonly BnfiTermValue<BinaryOperator> ADD_OP;
-            public readonly BnfiTermValue<BinaryOperator> SUB_OP;
-            public readonly BnfiTermValue<BinaryOperator> MUL_OP;
-            public readonly BnfiTermValue<BinaryOperator> DIV_OP;
-            public readonly BnfiTermValue<BinaryOperator> POW_OP;
-            public readonly BnfiTermValue<BinaryOperator> MOD_OP;
+            public readonly BnfiTermConversion<BinaryOperator> ADD_OP;
+            public readonly BnfiTermConversion<BinaryOperator> SUB_OP;
+            public readonly BnfiTermConversion<BinaryOperator> MUL_OP;
+            public readonly BnfiTermConversion<BinaryOperator> DIV_OP;
+            public readonly BnfiTermConversion<BinaryOperator> POW_OP;
+            public readonly BnfiTermConversion<BinaryOperator> MOD_OP;
 
-            public readonly BnfiTermValue<UnaryOperator> POS_OP;
-            public readonly BnfiTermValue<UnaryOperator> NEG_OP;
+            public readonly BnfiTermConversion<UnaryOperator> POS_OP;
+            public readonly BnfiTermConversion<UnaryOperator> NEG_OP;
 
-            public readonly BnfiTermValue<BinaryOperator> EQ_OP;
-            public readonly BnfiTermValue<BinaryOperator> NEQ_OP;
-            public readonly BnfiTermValue<BinaryOperator> LT_OP;
-            public readonly BnfiTermValue<BinaryOperator> LTE_OP;
-            public readonly BnfiTermValue<BinaryOperator> GT_OP;
-            public readonly BnfiTermValue<BinaryOperator> GTE_OP;
+            public readonly BnfiTermConversion<BinaryOperator> EQ_OP;
+            public readonly BnfiTermConversion<BinaryOperator> NEQ_OP;
+            public readonly BnfiTermConversion<BinaryOperator> LT_OP;
+            public readonly BnfiTermConversion<BinaryOperator> LTE_OP;
+            public readonly BnfiTermConversion<BinaryOperator> GT_OP;
+            public readonly BnfiTermConversion<BinaryOperator> GTE_OP;
 
-            public readonly BnfiTermValue<BinaryOperator> AND_OP;
-            public readonly BnfiTermValue<BinaryOperator> OR_OP;
+            public readonly BnfiTermConversion<BinaryOperator> AND_OP;
+            public readonly BnfiTermConversion<BinaryOperator> OR_OP;
 
-            public readonly BnfiTermValue<UnaryOperator> NOT_OP;
+            public readonly BnfiTermConversion<UnaryOperator> NOT_OP;
 
-            public readonly BnfiTermValue<Type> INTEGER_TYPE;
-            public readonly BnfiTermValue<Type> REAL_TYPE;
-            public readonly BnfiTermValue<Type> STRING_TYPE;
-            public readonly BnfiTermValue<Type> CHAR_TYPE;
-            public readonly BnfiTermValue<Type> BOOL_TYPE;
+            public readonly BnfiTermConversion<Type> INTEGER_TYPE;
+            public readonly BnfiTermConversion<Type> REAL_TYPE;
+            public readonly BnfiTermConversion<Type> STRING_TYPE;
+            public readonly BnfiTermConversion<Type> CHAR_TYPE;
+            public readonly BnfiTermConversion<Type> BOOL_TYPE;
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
-            public readonly BnfiTermValue<string> IDENTIFIER;
+            public readonly BnfiTermConversion<string> IDENTIFIER;
         }
 
         public readonly BnfTerms B;
