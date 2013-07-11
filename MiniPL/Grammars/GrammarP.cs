@@ -89,39 +89,39 @@ namespace MiniPL.Grammars
                 this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
             }
 
-            public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
-            public readonly BnfiTermType<Function> Function = new BnfiTermType<Function>();
+            public readonly BnfiTermRecord<Program> Program = new BnfiTermRecord<Program>();
+            public readonly BnfiTermRecord<Function> Function = new BnfiTermRecord<Function>();
             public readonly BnfiTermChoice<Type> Type = new BnfiTermChoice<Type>();
-            public readonly BnfiTermType<LocalVariable> LocalVariable = new BnfiTermType<LocalVariable>();
-            public readonly BnfiTermType<Parameter> Parameter = new BnfiTermType<Parameter>();
-            public readonly BnfiTermType<Argument> Argument = new BnfiTermType<Argument>();
+            public readonly BnfiTermRecord<LocalVariable> LocalVariable = new BnfiTermRecord<LocalVariable>();
+            public readonly BnfiTermRecord<Parameter> Parameter = new BnfiTermRecord<Parameter>();
+            public readonly BnfiTermRecord<Argument> Argument = new BnfiTermRecord<Argument>();
             public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
-            public readonly BnfiTermType<StatementList> StatementList = new BnfiTermType<StatementList>();
-            public readonly BnfiTermType<While> While = new BnfiTermType<While>();
-            public readonly BnfiTermType<For> For = new BnfiTermType<For>();
-            public readonly BnfiTermType<If> If = new BnfiTermType<If>();
-//            public readonly BnfiTermType<IfElse> IfElse = new BnfiTermType<IfElse>();
-            public readonly BnfiTermType<Return> Return = new BnfiTermType<Return>();
-            public readonly BnfiTermType<Assignment> Assignment = new BnfiTermType<Assignment>();
+            public readonly BnfiTermRecord<StatementList> StatementList = new BnfiTermRecord<StatementList>();
+            public readonly BnfiTermRecord<While> While = new BnfiTermRecord<While>();
+            public readonly BnfiTermRecord<For> For = new BnfiTermRecord<For>();
+            public readonly BnfiTermRecord<If> If = new BnfiTermRecord<If>();
+//            public readonly BnfiTermRecord<IfElse> IfElse = new BnfiTermRecord<IfElse>();
+            public readonly BnfiTermRecord<Return> Return = new BnfiTermRecord<Return>();
+            public readonly BnfiTermRecord<Assignment> Assignment = new BnfiTermRecord<Assignment>();
             public readonly BnfiTermValue<Reference<Function>> FunctionReference = new BnfiTermValue<Reference<Function>>();
-            public readonly BnfiTermType<FunctionCall> FunctionCall = new BnfiTermType<FunctionCall>();
-            public readonly BnfiTermType<Write> Write = new BnfiTermType<Write>();
-            public readonly BnfiTermType<WriteLn> WriteLn = new BnfiTermType<WriteLn>();
-            public readonly BnfiTermType<VariableReference> VariableReference = new BnfiTermType<VariableReference>();
+            public readonly BnfiTermRecord<FunctionCall> FunctionCall = new BnfiTermRecord<FunctionCall>();
+            public readonly BnfiTermRecord<Write> Write = new BnfiTermRecord<Write>();
+            public readonly BnfiTermRecord<WriteLn> WriteLn = new BnfiTermRecord<WriteLn>();
+            public readonly BnfiTermRecord<VariableReference> VariableReference = new BnfiTermRecord<VariableReference>();
 
             public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
-            public readonly BnfiTermType<BinaryExpression> BinaryExpression = new BnfiTermType<BinaryExpression>();
-            public readonly BnfiTermType<UnaryExpression> UnaryExpression = new BnfiTermType<UnaryExpression>();
-            public readonly BnfiTermType<ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermType<ConditionalTernaryExpression>();
+            public readonly BnfiTermRecord<BinaryExpression> BinaryExpression = new BnfiTermRecord<BinaryExpression>();
+            public readonly BnfiTermRecord<UnaryExpression> UnaryExpression = new BnfiTermRecord<UnaryExpression>();
+            public readonly BnfiTermRecord<ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<ConditionalTernaryExpression>();
 
             public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
             public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
 
-            public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
-            public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
-            public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
+            public readonly BnfiTermRecord<NumberLiteral> NumberLiteral = new BnfiTermRecord<NumberLiteral>();
+            public readonly BnfiTermRecord<StringLiteral> StringLiteral = new BnfiTermRecord<StringLiteral>();
+            public readonly BnfiTermRecord<BoolLiteral> BoolLiteral = new BnfiTermRecord<BoolLiteral>();
 
-            public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
+            public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
             public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
             public readonly BnfiTermValue<NameRef> NameRef = new BnfiTermValue<NameRef>();
 

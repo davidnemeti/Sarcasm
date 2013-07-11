@@ -17,7 +17,7 @@ using Sarcasm.Utility;
 
 namespace Sarcasm.GrammarAst
 {
-    public abstract partial class BnfiTermType : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
+    public abstract partial class BnfiTermRecord : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
         private struct ParseIndexedBnfTerm
         {
@@ -34,7 +34,7 @@ namespace Sarcasm.GrammarAst
         private IDictionary<ParseIndexedBnfTerm, Member> parseIndexedBnfTermToMember = new Dictionary<ParseIndexedBnfTerm, Member>();
         private IDictionary<int, int> ruleIndexToParseIndex = new Dictionary<int, int>();
 
-        protected BnfiTermType(Type type, string name)
+        protected BnfiTermRecord(Type type, string name)
             : base(type, name)
         {
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
@@ -241,29 +241,29 @@ namespace Sarcasm.GrammarAst
         #endregion
     }
 
-    public partial class BnfiTermTypeTL : BnfiTermType, IBnfiTermTL, IBnfiTermCopyableTL
+    public partial class BnfiTermRecordTL : BnfiTermRecord, IBnfiTermTL, IBnfiTermCopyableTL
     {
-        public BnfiTermTypeTL(Type type, string name = null)
+        public BnfiTermRecordTL(Type type, string name = null)
             : base(type, name)
         {
         }
 
-        public new BnfiExpressionTypeTL Rule { set { base.Rule = value; } }
+        public new BnfiExpressionRecordTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermType<TType> : BnfiTermType, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
+    public partial class BnfiTermRecord<TType> : BnfiTermRecord, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
         where TType : new()
     {
         public static TType __ { get; private set; }
 
-        static BnfiTermType()
+        static BnfiTermRecord()
         {
             __ = new TType();
         }
 
-        public TType _ { get { return BnfiTermType<TType>.__; } }
+        public TType _ { get { return BnfiTermRecord<TType>.__; } }
 
-        public BnfiTermType(string name = null)
+        public BnfiTermRecord(string name = null)
             : base(typeof(TType), name)
         {
         }
@@ -274,9 +274,9 @@ namespace Sarcasm.GrammarAst
             return base.Q();
         }
 
-        public BnfiExpressionTypeTL RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionRecordTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionType<TType> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionRecord<TType> Rule { set { base.Rule = value; } }
 
         // NOTE: type inference for superclasses works only if SetRulePlus is an instance method and not an extension method
         public void SetRulePlus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
@@ -284,9 +284,9 @@ namespace Sarcasm.GrammarAst
             this.Rule = Plus(bnfiTermFirst, bnfiTermSecond, bnfiTerms);
         }
 
-        public BnfiExpressionType<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        public BnfiExpressionRecord<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
         {
-            return (BnfiExpressionType<TType>)bnfiTerms
+            return (BnfiExpressionRecord<TType>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
                 bnfiTermFirst.AsBnfTerm() + bnfiTermSecond.AsBnfTerm(),

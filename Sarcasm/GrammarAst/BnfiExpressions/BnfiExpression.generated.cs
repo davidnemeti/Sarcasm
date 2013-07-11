@@ -521,24 +521,24 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiExpressionTypeTL definition and operators
+	#region BnfiExpressionRecordTL definition and operators
 
-	#region BnfiExpressionTypeTL definition
+	#region BnfiExpressionRecordTL definition
 
-	public partial class BnfiExpressionTypeTL : BnfiExpression, IBnfiExpressionTL
+	public partial class BnfiExpressionRecordTL : BnfiExpression, IBnfiExpressionTL
 	{
 		#region Construction
 
-		public BnfiExpressionTypeTL()
+		public BnfiExpressionRecordTL()
 		{
 		}
 
-		public BnfiExpressionTypeTL(BnfExpression bnfExpression)
+		public BnfiExpressionRecordTL(BnfExpression bnfExpression)
 			: base(bnfExpression)
 		{
 		}
 
-        public BnfiExpressionTypeTL(BnfTerm bnfTerm)
+        public BnfiExpressionRecordTL(BnfTerm bnfTerm)
 			: base(bnfTerm)
         {
         }
@@ -547,9 +547,9 @@ namespace Sarcasm.GrammarAst
 
 		#region Cast operators
 
-		public static explicit operator BnfiExpressionTypeTL(BnfExpression bnfExpression)
+		public static explicit operator BnfiExpressionRecordTL(BnfExpression bnfExpression)
 		{
-			return new BnfiExpressionTypeTL(bnfExpression);
+			return new BnfiExpressionRecordTL(bnfExpression);
 		}
 
 		#endregion
@@ -557,21 +557,21 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [Member, BnfiTermCopyTL]: implicit conversions from BnfiExpressionTypeTL
+	#region [Member, BnfiTermCopyTL]: implicit conversions from BnfiExpressionRecordTL
 
 	public partial class Member
 	{
-		public static implicit operator BnfiExpressionTypeTL(Member term)
+		public static implicit operator BnfiExpressionRecordTL(Member term)
 		{
-			return new BnfiExpressionTypeTL((BnfTerm)term);
+			return new BnfiExpressionRecordTL((BnfTerm)term);
 		}
 	}
 
 	public partial class BnfiTermCopyTL
 	{
-		public static implicit operator BnfiExpressionTypeTL(BnfiTermCopyTL term)
+		public static implicit operator BnfiExpressionRecordTL(BnfiTermCopyTL term)
 		{
-			return new BnfiExpressionTypeTL((BnfTerm)term);
+			return new BnfiExpressionRecordTL((BnfTerm)term);
 		}
 	}
 
@@ -581,69 +581,69 @@ namespace Sarcasm.GrammarAst
 
 	public partial class Member
 	{
-        public static BnfiExpressionTypeTL operator +(Member term1, BnfiTermNoAst term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermNoAst term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermNoAst term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiTermKeyTerm term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermKeyTerm term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTerm term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, Terminal term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, Terminal term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Terminal term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(Terminal term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, GrammarHint term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, GrammarHint term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(GrammarHint term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(GrammarHint term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiExpressionTerminals term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTerminals term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionTerminals term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -654,59 +654,59 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCopyTL
 	{
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, BnfiTermNoAst term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermNoAst term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermNoAst term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, BnfiTermKeyTerm term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermKeyTerm term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTerm term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, Terminal term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, Terminal term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Terminal term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(Terminal term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, GrammarHint term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, GrammarHint term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(GrammarHint term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(GrammarHint term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, BnfiExpressionTerminals term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTerminals term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionTerminals term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -717,29 +717,29 @@ namespace Sarcasm.GrammarAst
 
 	public partial class Member
 	{
-        public static BnfiExpressionTypeTL operator |(Member term1, Member term2)
+        public static BnfiExpressionRecordTL operator |(Member term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(Member term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator |(Member term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(BnfiTermCopyTL term1, Member term2)
+        public static BnfiExpressionRecordTL operator |(BnfiTermCopyTL term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(Member term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator |(Member term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(BnfiExpressionTypeTL term1, Member term2)
+        public static BnfiExpressionRecordTL operator |(BnfiExpressionRecordTL term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -750,115 +750,115 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCopyTL
 	{
-        public static BnfiExpressionTypeTL operator |(BnfiTermCopyTL term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator |(BnfiTermCopyTL term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(BnfiTermCopyTL term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator |(BnfiTermCopyTL term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator |(BnfiExpressionTypeTL term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator |(BnfiExpressionRecordTL term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
 
 	#endregion
 
-	#region BnfiExpressionTypeTL '+' operators for BnfExpression
+	#region BnfiExpressionRecordTL '+' operators for BnfExpression
 
-	public partial class BnfiExpressionTypeTL
+	public partial class BnfiExpressionRecordTL
 	{
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, BnfiTermNoAst term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermNoAst term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermNoAst term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiTermKeyTerm term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermKeyTerm term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTerm term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, Terminal term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, Terminal term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Terminal term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(Terminal term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, GrammarHint term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, GrammarHint term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(GrammarHint term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(GrammarHint term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiExpressionTerminals term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTerminals term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionTerminals term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, Member term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, Member term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(Member term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, BnfiTermCopyTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiTermCopyTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiTermCopyTL term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopyTL term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionTypeTL operator +(BnfiExpressionTypeTL term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
 
 	#endregion
 
-	#region BnfiExpressionTypeTL '|' operators for BnfExpression
+	#region BnfiExpressionRecordTL '|' operators for BnfExpression
 
-	public partial class BnfiExpressionTypeTL
+	public partial class BnfiExpressionRecordTL
 	{
-        public static BnfiExpressionTypeTL operator |(BnfiExpressionTypeTL term1, BnfiExpressionTypeTL term2)
+        public static BnfiExpressionRecordTL operator |(BnfiExpressionRecordTL term1, BnfiExpressionRecordTL term2)
         {
-            return (BnfiExpressionTypeTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -867,24 +867,24 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiExpressionType<T> definition and operators
+	#region BnfiExpressionRecord<T> definition and operators
 
-	#region BnfiExpressionType<T> definition
+	#region BnfiExpressionRecord<T> definition
 
-	public partial class BnfiExpressionType<T> : BnfiExpression, IBnfiExpression<T>, IBnfiTermPlusAbleForType<T>
+	public partial class BnfiExpressionRecord<T> : BnfiExpression, IBnfiExpression<T>, IBnfiTermPlusAbleForType<T>
 	{
 		#region Construction
 
-		public BnfiExpressionType()
+		public BnfiExpressionRecord()
 		{
 		}
 
-		public BnfiExpressionType(BnfExpression bnfExpression)
+		public BnfiExpressionRecord(BnfExpression bnfExpression)
 			: base(bnfExpression)
 		{
 		}
 
-        public BnfiExpressionType(BnfTerm bnfTerm)
+        public BnfiExpressionRecord(BnfTerm bnfTerm)
 			: base(bnfTerm)
         {
         }
@@ -893,9 +893,9 @@ namespace Sarcasm.GrammarAst
 
 		#region Cast operators
 
-		public static explicit operator BnfiExpressionType<T>(BnfExpression bnfExpression)
+		public static explicit operator BnfiExpressionRecord<T>(BnfExpression bnfExpression)
 		{
-			return new BnfiExpressionType<T>(bnfExpression);
+			return new BnfiExpressionRecord<T>(bnfExpression);
 		}
 
 		#endregion
@@ -903,21 +903,21 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [Member<TDeclaringType>, BnfiTermCopy<T>]: implicit conversions from BnfiExpressionType<T>
+	#region [Member<TDeclaringType>, BnfiTermCopy<T>]: implicit conversions from BnfiExpressionRecord<T>
 
 	public partial class Member<TDeclaringType>
 	{
-		public static implicit operator BnfiExpressionType<TDeclaringType>(Member<TDeclaringType> term)
+		public static implicit operator BnfiExpressionRecord<TDeclaringType>(Member<TDeclaringType> term)
 		{
-			return new BnfiExpressionType<TDeclaringType>((BnfTerm)term);
+			return new BnfiExpressionRecord<TDeclaringType>((BnfTerm)term);
 		}
 	}
 
 	public partial class BnfiTermCopy<T>
 	{
-		public static implicit operator BnfiExpressionType<T>(BnfiTermCopy<T> term)
+		public static implicit operator BnfiExpressionRecord<T>(BnfiTermCopy<T> term)
 		{
-			return new BnfiExpressionType<T>((BnfTerm)term);
+			return new BnfiExpressionRecord<T>((BnfTerm)term);
 		}
 	}
 
@@ -927,69 +927,69 @@ namespace Sarcasm.GrammarAst
 
 	public partial class Member<TDeclaringType>
 	{
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermNoAst term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(BnfiTermNoAst term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(BnfiTermNoAst term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermKeyTerm term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(BnfiTermKeyTerm term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(BnfiTermKeyTerm term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, Terminal term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, Terminal term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Terminal term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Terminal term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, GrammarHint term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, GrammarHint term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(GrammarHint term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(GrammarHint term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiExpressionTerminals term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(BnfiExpressionTerminals term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(BnfiExpressionTerminals term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermCopy<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermCopy<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator +(BnfiTermCopy<TDeclaringType> term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator +(BnfiTermCopy<TDeclaringType> term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1000,59 +1000,59 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCopy<T>
 	{
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, BnfiTermNoAst term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermNoAst term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermNoAst term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiTermKeyTerm term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermKeyTerm term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTerm term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, Terminal term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, Terminal term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(Terminal term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(Terminal term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, GrammarHint term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, GrammarHint term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(GrammarHint term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(GrammarHint term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiExpressionTerminals term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiExpressionTerminals term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionTerminals term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1063,29 +1063,29 @@ namespace Sarcasm.GrammarAst
 
 	public partial class Member<TDeclaringType>
 	{
-        public static BnfiExpressionType<TDeclaringType> operator |(Member<TDeclaringType> term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator |(Member<TDeclaringType> term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator |(Member<TDeclaringType> term1, BnfiTermCopy<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator |(Member<TDeclaringType> term1, BnfiTermCopy<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator |(BnfiTermCopy<TDeclaringType> term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator |(BnfiTermCopy<TDeclaringType> term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator |(Member<TDeclaringType> term1, BnfiExpressionType<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator |(Member<TDeclaringType> term1, BnfiExpressionRecord<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<TDeclaringType> operator |(BnfiExpressionType<TDeclaringType> term1, Member<TDeclaringType> term2)
+        public static BnfiExpressionRecord<TDeclaringType> operator |(BnfiExpressionRecord<TDeclaringType> term1, Member<TDeclaringType> term2)
         {
-            return (BnfiExpressionType<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1096,115 +1096,115 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCopy<T>
 	{
-        public static BnfiExpressionType<T> operator |(BnfiTermCopy<T> term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator |(BnfiTermCopy<T> term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator |(BnfiTermCopy<T> term1, BnfiExpressionType<T> term2)
+        public static BnfiExpressionRecord<T> operator |(BnfiTermCopy<T> term1, BnfiExpressionRecord<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionType<T> operator |(BnfiExpressionType<T> term1, BnfiTermCopy<T> term2)
+        public static BnfiExpressionRecord<T> operator |(BnfiExpressionRecord<T> term1, BnfiTermCopy<T> term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiExpressionType<T> '+' operators for BnfExpression
-
-	public partial class BnfiExpressionType<T>
-	{
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiTermNoAst term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, Terminal term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(Terminal term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, GrammarHint term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(GrammarHint term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, BnfiExpressionTerminals term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionTerminals term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, Member<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(Member<T> term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, BnfiTermCopy<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiTermCopy<T> term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionType<T> operator +(BnfiExpressionType<T> term1, BnfiExpressionType<T> term2)
-        {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
 
 	#endregion
 
-	#region BnfiExpressionType<T> '|' operators for BnfExpression
+	#region BnfiExpressionRecord<T> '+' operators for BnfExpression
 
-	public partial class BnfiExpressionType<T>
+	public partial class BnfiExpressionRecord<T>
 	{
-        public static BnfiExpressionType<T> operator |(BnfiExpressionType<T> term1, BnfiExpressionType<T> term2)
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiTermNoAst term2)
         {
-            return (BnfiExpressionType<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermNoAst term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, Terminal term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(Terminal term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, GrammarHint term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(GrammarHint term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiExpressionTerminals term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionTerminals term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, Member<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(Member<T> term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiTermCopy<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiExpressionRecord<T> '|' operators for BnfExpression
+
+	public partial class BnfiExpressionRecord<T>
+	{
+        public static BnfiExpressionRecord<T> operator |(BnfiExpressionRecord<T> term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -1653,11 +1653,11 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [BnfiTermType, BnfiTermChoice, BnfiTermCollectionTL]: implicit conversions from BnfiExpressionChoiceTL
+	#region [BnfiTermRecord, BnfiTermChoice, BnfiTermCollectionTL]: implicit conversions from BnfiExpressionChoiceTL
 
-	public partial class BnfiTermType
+	public partial class BnfiTermRecord
 	{
-		public static implicit operator BnfiExpressionChoiceTL(BnfiTermType term)
+		public static implicit operator BnfiExpressionChoiceTL(BnfiTermRecord term)
 		{
 			return new BnfiExpressionChoiceTL((BnfTerm)term);
 		}
@@ -1697,36 +1697,36 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiTermType '+' operators for BnfExpression
+	#region BnfiTermRecord '+' operators for BnfExpression
 
-	public partial class BnfiTermType
+	public partial class BnfiTermRecord
 	{
-        public static BnfiExpressionChoiceTL operator +(BnfiTermType term1, BnfiTermKeyTermPunctuation term2)
+        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTermPunctuation term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTermPunctuation term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermType term1, GrammarHint term2)
+        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, GrammarHint term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(GrammarHint term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator +(GrammarHint term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermType term1, BnfiExpressionKeyTermPunctuations term2)
+        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiExpressionKeyTermPunctuations term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1811,61 +1811,61 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiTermType '|' operators for BnfExpression
+	#region BnfiTermRecord '|' operators for BnfExpression
 
-	public partial class BnfiTermType
+	public partial class BnfiTermRecord
 	{
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiTermValue term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiTermValue term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermValue term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermValue term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiExpressionValueTL term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiExpressionValueTL term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiExpressionValueTL term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiExpressionValueTL term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiTermChoice term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiTermChoice term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermChoice term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermChoice term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiTermCollectionTL term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiTermCollectionTL term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermCollectionTL term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermCollectionTL term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiTermType term1, BnfiExpressionChoiceTL term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiTermRecord term1, BnfiExpressionChoiceTL term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator |(BnfiExpressionChoiceTL term1, BnfiTermType term2)
+        public static BnfiExpressionChoiceTL operator |(BnfiExpressionChoiceTL term1, BnfiTermRecord term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2079,11 +2079,11 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [BnfiTermType<TType>, BnfiTermConstant<T>, BnfiTermChoice<TType>, BnfiTermCollectionWithCollectionType<TCollectionType>]: implicit conversions from BnfiExpressionChoice<T>
+	#region [BnfiTermRecord<TType>, BnfiTermConstant<T>, BnfiTermChoice<TType>, BnfiTermCollectionWithCollectionType<TCollectionType>]: implicit conversions from BnfiExpressionChoice<T>
 
-	public partial class BnfiTermType<TType>
+	public partial class BnfiTermRecord<TType>
 	{
-		public static implicit operator BnfiExpressionChoice<TType>(BnfiTermType<TType> term)
+		public static implicit operator BnfiExpressionChoice<TType>(BnfiTermRecord<TType> term)
 		{
 			return new BnfiExpressionChoice<TType>((BnfTerm)term);
 		}
@@ -2131,36 +2131,36 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiTermType<TType> '+' operators for BnfExpression
+	#region BnfiTermRecord<TType> '+' operators for BnfExpression
 
-	public partial class BnfiTermType<TType>
+	public partial class BnfiTermRecord<TType>
 	{
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermType<TType> term1, BnfiTermKeyTermPunctuation term2)
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermKeyTermPunctuation term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermKeyTermPunctuation term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermType<TType> term1, GrammarHint term2)
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, GrammarHint term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(GrammarHint term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator +(GrammarHint term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermType<TType> term1, BnfiExpressionKeyTermPunctuations term2)
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiExpressionKeyTermPunctuations term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2283,71 +2283,71 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiTermType<TType> '|' operators for BnfExpression
+	#region BnfiTermRecord<TType> '|' operators for BnfExpression
 
-	public partial class BnfiTermType<TType>
+	public partial class BnfiTermRecord<TType>
 	{
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiTermValue<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiTermValue<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermValue<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermValue<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiExpressionValue<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiExpressionValue<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiExpressionValue<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiExpressionValue<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiTermConstant<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiTermConstant<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermConstant<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermConstant<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiTermChoice<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiTermChoice<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermChoice<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermChoice<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiTermCollectionWithCollectionType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiTermCollectionWithCollectionType<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermCollectionWithCollectionType<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermCollectionWithCollectionType<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiTermType<TType> term1, BnfiExpressionChoice<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiTermRecord<TType> term1, BnfiExpressionChoice<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator |(BnfiExpressionChoice<TType> term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionChoice<TType> operator |(BnfiExpressionChoice<TType> term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2624,11 +2624,11 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [BnfiTermType<TType>, BnfiTermConstant<T>, BnfiTermChoice<TType>, BnfiTermCollectionWithCollectionType<TCollectionType>]: implicit conversions from BnfiExpressionGeneral<T>
+	#region [BnfiTermRecord<TType>, BnfiTermConstant<T>, BnfiTermChoice<TType>, BnfiTermCollectionWithCollectionType<TCollectionType>]: implicit conversions from BnfiExpressionGeneral<T>
 
-	public partial class BnfiTermType<TType>
+	public partial class BnfiTermRecord<TType>
 	{
-		public static implicit operator BnfiExpressionGeneral<TType>(BnfiTermType<TType> term)
+		public static implicit operator BnfiExpressionGeneral<TType>(BnfiTermRecord<TType> term)
 		{
 			return new BnfiExpressionGeneral<TType>((BnfTerm)term);
 		}
@@ -2660,46 +2660,46 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region BnfiTermType<TType> '+' operators for BnfExpression
+	#region BnfiTermRecord<TType> '+' operators for BnfExpression
 
-	public partial class BnfiTermType<TType>
+	public partial class BnfiTermRecord<TType>
 	{
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, BnfiTermNoAst term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermNoAst term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, BnfiTermKeyTerm term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermKeyTerm term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, Terminal term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(Terminal term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionGeneral<TType> operator +(Terminal term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermType<TType> term1, BnfiExpressionTerminals term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, BnfiExpressionTerminals term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionGeneral<TType> operator +(BnfiExpressionTerminals term1, BnfiTermType<TType> term2)
+        public static BnfiExpressionGeneral<TType> operator +(BnfiExpressionTerminals term1, BnfiTermRecord<TType> term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }

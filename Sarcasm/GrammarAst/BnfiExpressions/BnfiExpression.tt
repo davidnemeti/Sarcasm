@@ -43,7 +43,7 @@ namespace Sarcasm.GrammarAst
 	);
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionTypeTL",
+		"BnfiExpressionRecordTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"Member", "BnfiTermCopyTL"},
@@ -52,7 +52,7 @@ namespace Sarcasm.GrammarAst
 	);
 
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionType<T>",
+		"BnfiExpressionRecord<T>",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermPlusAbleForType<T>"},
 		bnfTermCoreTypeNames: new[]{"Member<TDeclaringType>", "BnfiTermCopy<T>"},
@@ -86,7 +86,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionChoiceTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType", "BnfiTermChoice", "BnfiTermCollectionTL"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermRecord", "BnfiTermChoice", "BnfiTermCollectionTL"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValue,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
@@ -96,7 +96,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionChoice<T>",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionValueGeneric,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
@@ -106,7 +106,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionGeneral<T>",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermType<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"GrammarHint"}),
 		multiCore: false,
 		pipeable: false

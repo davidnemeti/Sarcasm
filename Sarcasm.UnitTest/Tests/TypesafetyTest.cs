@@ -140,9 +140,9 @@ namespace Sarcasm.UnitTest
                     + B.RIGHT_PAREN;
             ";
 
-            // BindTo for Type is good
+            // BindTo for Record is good
             string sourceCodeSuccess = @"
-                var numberLiteral = new BnfiTermType<MiniPL.DomainModel.NumberLiteral>();
+                var numberLiteral = new BnfiTermRecord<MiniPL.DomainModel.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
                     + B.Expression.BindTo(numberLiteral, t => t.Value)
@@ -158,9 +158,9 @@ namespace Sarcasm.UnitTest
         public void TypesafetyCheck_BindTo_ValueTypeMemberTypeMismatch_SpecialCaseWithInheritance()
         {
             string sourceCodeInit = @"
-                var logicalBinaryBoolExpression = new BnfiTermType<MiniPLExtension.LogicalBinaryBoolExpression>();
-                var logicalBinaryBoolExpressionTL = new BnfiTermTypeTL(typeof(MiniPLExtension.LogicalBinaryBoolExpression));
-                var boolExpression = new BnfiTermType<MiniPLExtension.BoolExpression>();
+                var logicalBinaryBoolExpression = new BnfiTermRecord<MiniPLExtension.LogicalBinaryBoolExpression>();
+                var logicalBinaryBoolExpressionTL = new BnfiTermRecordTL(typeof(MiniPLExtension.LogicalBinaryBoolExpression));
+                var boolExpression = new BnfiTermRecord<MiniPLExtension.BoolExpression>();
                 var expressionTL = new BnfiTermChoiceTL(typeof(MiniPL.DomainModel.Expression));
             ";
 
@@ -199,12 +199,12 @@ namespace Sarcasm.UnitTest
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindTo(B.While, t => t.Body);
+                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindTo(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).BindTo(() => new MiniPL.DomainModel.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -222,12 +222,12 @@ namespace Sarcasm.UnitTest
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(B.While, t => t.Body);
+                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(() => new MiniPL.DomainModel.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -279,7 +279,7 @@ namespace Sarcasm.UnitTest
 
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
-                B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type);
+                B.Program.RuleTypeless = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");
@@ -299,8 +299,8 @@ namespace Sarcasm.UnitTest
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
                 B.Program.RuleTypeless =
-                    new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type)
-                    + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindTo(() => new MiniPL.DomainModel.LocalVariable().InitValue);
+                    new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type)
+                    + new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Expression)).BindTo(() => new MiniPL.DomainModel.LocalVariable().InitValue);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");

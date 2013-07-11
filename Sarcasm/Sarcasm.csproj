@@ -120,7 +120,7 @@
     <Compile Include="Parsing\ParseTreeNodeWithoutAst.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermChoice.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermCollection.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermType.cs" />
+    <Compile Include="GrammarAst\BnfiTerms\BnfiTermRecord.cs" />
     <Compile Include="GrammarAst\BnfiTerms\Member.cs" />
     <Compile Include="GrammarAst\Grammar.cs" />
     <Compile Include="Utility\Bag.cs" />
