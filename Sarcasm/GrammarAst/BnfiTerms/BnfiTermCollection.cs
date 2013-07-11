@@ -373,6 +373,7 @@ namespace Sarcasm.GrammarAst
         {
             bnfiTermCollection.SetState(ListKind.Plus, element, delimiter);
             Irony.Parsing.Grammar.CurrentGrammar.MakePlusRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.CheckAfterRuleHasBeenSetThatChildrenAreNotContracted();
             return bnfiTermCollection;
         }
 
@@ -380,6 +381,7 @@ namespace Sarcasm.GrammarAst
         {
             bnfiTermCollection.SetState(ListKind.Star, element, delimiter);
             Irony.Parsing.Grammar.CurrentGrammar.MakeStarRule(bnfiTermCollection, delimiter, element);
+            bnfiTermCollection.CheckAfterRuleHasBeenSetThatChildrenAreNotContracted();
             return bnfiTermCollection;
         }
 
@@ -417,6 +419,7 @@ namespace Sarcasm.GrammarAst
 
             this.RuleRaw = null;
             this.ClearState();
+            this.hasBeenContracted = true;
         }
 
         protected string GetName()

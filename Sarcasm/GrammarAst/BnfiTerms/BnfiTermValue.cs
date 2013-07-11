@@ -130,18 +130,18 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermValue<string> ParseIdentifier(IdentifierTerminal identifierTerminal)
         {
-            return Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
+            return Parse<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false).MakeUncontractible();
         }
 
         public static BnfiTermValue<string> ParseStringLiteral(StringLiteral stringLiteral)
         {
-            return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
+            return Parse<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false).MakeUncontractible();
         }
 
         public static BnfiTermValue<T> ParseConstantTerminal<T>(ConstantTerminal constantTerminal)
         {
             // NOTE: unparse for constant terminal is handled specifically in the unparser
-            return Parse<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false);
+            return Parse<T>(constantTerminal, (context, parseNode) => (T)parseNode.FindToken().Value, IdentityFunctionForceCast<T, object>, astForChild: false).MakeUncontractible();
         }
 
         [Obsolete(BnfiTermValue.messageForParseForBnfiTermConstant, error: true)]
@@ -424,6 +424,7 @@ namespace Sarcasm.GrammarAst
 
             this.RuleRaw = null;
             this.ClearState();
+            this.hasBeenContracted = true;
         }
 
         protected new BnfiExpression Rule { set { RuleRawWithMove = value; } }

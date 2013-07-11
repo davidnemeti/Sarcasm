@@ -82,6 +82,7 @@ namespace Sarcasm.GrammarAst
         {
             this.type = type;
             this.IsContractible = false;
+            this.hasBeenContracted = false;
             this.hasExplicitName = name != null;
         }
 
@@ -90,6 +91,7 @@ namespace Sarcasm.GrammarAst
         internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use 'SetRuleOr' or 'Or' method instead.";
 
         public bool IsContractible { get; protected set; }
+        protected bool hasBeenContracted;
 
         Type IHasType.Type
         {
@@ -120,5 +122,33 @@ namespace Sarcasm.GrammarAst
         public bool verboseToString = false;
 
         public object Tag { get; set; }
+
+        protected new BnfExpression Rule
+        {
+            get { return base.Rule; }
+            set
+            {
+                base.Rule = value;
+                CheckAfterRuleHasBeenSetThatChildrenAreNotContracted();
+            }
+        }
+
+        protected void CheckAfterRuleHasBeenSetThatChildrenAreNotContracted()
+        {
+            if (Rule != null)
+            {
+                var children = Rule.Data
+                    .SelectMany(_children => _children)
+                    .OfType<BnfiTermNonTerminal>();
+
+                if (children.Any(child => child.hasBeenContracted))
+                {
+                    GrammarHelper.ThrowGrammarErrorException(
+                        GrammarErrorLevel.Error,
+                        "NonTerminal '{0}' has been contracted. You should use MakeUncontractible() on it.", children.First(child => child.hasBeenContracted)
+                        );
+                }
+            }
+        }
     }
 }

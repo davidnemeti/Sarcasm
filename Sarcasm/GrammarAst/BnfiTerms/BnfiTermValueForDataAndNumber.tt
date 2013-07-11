@@ -49,7 +49,7 @@ namespace Sarcasm.GrammarAst
 <#
         }
 #>
-            return Parse<#= parseMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Parse<#= parseMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MakeUncontractible();
         }
 <#
 		if (IsNumeric(typeCode))
@@ -58,7 +58,7 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermValue<#= typeParamsStr #> ParseNumberLiteral<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
-            return Parse<#= parseMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Parse<#= parseMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MakeUncontractible();
         }
 <#
         }

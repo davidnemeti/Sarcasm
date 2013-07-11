@@ -84,6 +84,8 @@ namespace MiniPL.Grammars
                     { "true", true },
                     { "false", false }
                 };
+
+                this.IDENTIFIER = CreateIdentifier();
             }
 
             public readonly BnfiTermType<Program> Program = new BnfiTermType<Program>();
@@ -117,7 +119,6 @@ namespace MiniPL.Grammars
             public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
             public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
             public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
-            public readonly BnfiTermValue<string> IDENTIFIER = new BnfiTermValue<string>("identifier");
 
             public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
             public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
@@ -176,6 +177,8 @@ namespace MiniPL.Grammars
             public readonly BnfiTermValue<Type> BOOL_TYPE;
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
+
+            public readonly BnfiTermValue<string> IDENTIFIER;
         }
 
         public readonly BnfTerms B;
@@ -368,16 +371,14 @@ namespace MiniPL.Grammars
                 + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
-            B.NumberLiteral.Rule = CreateNumberLiteral().BindMember(B.NumberLiteral, t => t.Value);
-            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").BindMember(B.StringLiteral, t => t.Value);
+            B.NumberLiteral.Rule = CreateNumberLiteral().MakeContractible().BindMember(B.NumberLiteral, t => t.Value);
+            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeContractible().BindMember(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
 
             B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
-
-            B.IDENTIFIER.Rule = CreateIdentifier();
 
             /*
              * NOTE: RegisterOperators in Irony is string-based, therefore it is impossible to specify different precedences
