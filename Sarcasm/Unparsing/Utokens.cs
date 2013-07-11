@@ -82,7 +82,7 @@ namespace Sarcasm.Unparsing
     {
         public string Text { get; private set; }
         public UnparsableObject Reference { get; private set; }
-        public object Tag { get; set; }
+        public Decoration Decoration { get; set; }
 
         internal UtokenText(UnparsableObject reference)
             : this(text: null, reference: reference)

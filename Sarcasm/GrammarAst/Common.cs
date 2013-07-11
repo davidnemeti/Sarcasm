@@ -11,6 +11,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Parsing;
+using Sarcasm.Unparsing;
 
 namespace Sarcasm.GrammarAst
 {
@@ -121,7 +122,7 @@ namespace Sarcasm.GrammarAst
 
         public bool verboseToString = false;
 
-        public object Tag { get; set; }
+        public Decoration Decoration { get; set; }
 
         protected new BnfExpression Rule
         {

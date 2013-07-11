@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Sarcasm.Unparsing;
 
 namespace Sarcasm.GrammarAst
 {
@@ -22,6 +23,6 @@ namespace Sarcasm.GrammarAst
             return this;
         }
 
-        public object Tag { get; set; }
+        public Decoration Decoration { get; set; }
     }
 }
