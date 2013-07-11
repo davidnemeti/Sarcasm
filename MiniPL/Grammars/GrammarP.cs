@@ -25,59 +25,59 @@ namespace MiniPL.Grammars
     {
         public class BnfTerms
         {
-            internal BnfTerms(Sarcasm.GrammarAst.Grammar grammar)
+            internal BnfTerms(TerminalFactoryS TerminalFactoryS)
             {
-                this.PROGRAM = grammar.ToTerm("program");
-                this.NAMESPACE = grammar.ToTerm("namespace");
-                this.BEGIN = grammar.ToTerm("begin");
-                this.END = grammar.ToTerm("end");
-                this.FUNCTION = grammar.ToTerm("function");
-                this.WHILE = grammar.ToTerm("while");
-                this.FOR = grammar.ToTerm("for");
-                this.IF = grammar.ToTerm("if");
-                this.THEN = grammar.ToTerm("then");
-                this.ELSE = grammar.ToTerm("else");
-                this.DO = grammar.ToTerm("do");
-                this.RETURN = grammar.ToTerm("return");
-                this.WRITE = grammar.ToTerm("Write");
-                this.WRITELN = grammar.ToTerm("WriteLn");
-                this.VAR = grammar.ToTerm("var");
-                this.DOT = ToPunctuation(".");
-                this.LET = ToPunctuation(":=");
-                this.SEMICOLON = ToPunctuation(";");
-                this.COLON = ToPunctuation(":");
-                this.COMMA = ToPunctuation(",");
-                this.LEFT_PAREN = ToPunctuation("(");
-                this.RIGHT_PAREN = ToPunctuation(")");
-                this.QUESTION_MARK = ToPunctuation("?");
+                this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
+                this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("namespace");
+                this.BEGIN = TerminalFactoryS.CreateKeyTerm("begin");
+                this.END = TerminalFactoryS.CreateKeyTerm("end");
+                this.FUNCTION = TerminalFactoryS.CreateKeyTerm("function");
+                this.WHILE = TerminalFactoryS.CreateKeyTerm("while");
+                this.FOR = TerminalFactoryS.CreateKeyTerm("for");
+                this.IF = TerminalFactoryS.CreateKeyTerm("if");
+                this.THEN = TerminalFactoryS.CreateKeyTerm("then");
+                this.ELSE = TerminalFactoryS.CreateKeyTerm("else");
+                this.DO = TerminalFactoryS.CreateKeyTerm("do");
+                this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
+                this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
+                this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
+                this.VAR = TerminalFactoryS.CreateKeyTerm("var");
+                this.DOT = TerminalFactoryS.CreatePunctuation(".");
+                this.LET = TerminalFactoryS.CreatePunctuation(":=");
+                this.SEMICOLON = TerminalFactoryS.CreatePunctuation(";");
+                this.COLON = TerminalFactoryS.CreatePunctuation(":");
+                this.COMMA = TerminalFactoryS.CreatePunctuation(",");
+                this.LEFT_PAREN = TerminalFactoryS.CreatePunctuation("(");
+                this.RIGHT_PAREN = TerminalFactoryS.CreatePunctuation(")");
+                this.QUESTION_MARK = TerminalFactoryS.CreatePunctuation("?");
 
-                this.ADD_OP = grammar.ToTerm("+", DomainModel.BinaryOperator.Add);
-                this.SUB_OP = grammar.ToTerm("-", DomainModel.BinaryOperator.Sub);
-                this.MUL_OP = grammar.ToTerm("*", DomainModel.BinaryOperator.Mul);
-                this.DIV_OP = grammar.ToTerm("/", DomainModel.BinaryOperator.Div);
-                this.POW_OP = grammar.ToTerm("^", DomainModel.BinaryOperator.Pow);
-                this.MOD_OP = grammar.ToTerm("%", DomainModel.BinaryOperator.Mod);
+                this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DomainModel.BinaryOperator.Add);
+                this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DomainModel.BinaryOperator.Sub);
+                this.MUL_OP = TerminalFactoryS.CreateKeyTerm("*", DomainModel.BinaryOperator.Mul);
+                this.DIV_OP = TerminalFactoryS.CreateKeyTerm("/", DomainModel.BinaryOperator.Div);
+                this.POW_OP = TerminalFactoryS.CreateKeyTerm("^", DomainModel.BinaryOperator.Pow);
+                this.MOD_OP = TerminalFactoryS.CreateKeyTerm("%", DomainModel.BinaryOperator.Mod);
 
-                this.POS_OP = grammar.ToTerm("+", DomainModel.UnaryOperator.Pos);
-                this.NEG_OP = grammar.ToTerm("-", DomainModel.UnaryOperator.Neg);
+                this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DomainModel.UnaryOperator.Pos);
+                this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DomainModel.UnaryOperator.Neg);
 
-                this.EQ_OP = grammar.ToTerm("=", DomainModel.BinaryOperator.Eq);
-                this.NEQ_OP = grammar.ToTerm("<>", DomainModel.BinaryOperator.Neq);
-                this.LT_OP = grammar.ToTerm("<", DomainModel.BinaryOperator.Lt);
-                this.LTE_OP = grammar.ToTerm("<=", DomainModel.BinaryOperator.Lte);
-                this.GT_OP = grammar.ToTerm(">", DomainModel.BinaryOperator.Gt);
-                this.GTE_OP = grammar.ToTerm(">=", DomainModel.BinaryOperator.Gte);
+                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("=", DomainModel.BinaryOperator.Eq);
+                this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DomainModel.BinaryOperator.Neq);
+                this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DomainModel.BinaryOperator.Lt);
+                this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainModel.BinaryOperator.Lte);
+                this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainModel.BinaryOperator.Gt);
+                this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainModel.BinaryOperator.Gte);
 
-                this.AND_OP = grammar.ToTerm("and", DomainModel.BinaryOperator.And);
-                this.OR_OP = grammar.ToTerm("or", DomainModel.BinaryOperator.Or);
+                this.AND_OP = TerminalFactoryS.CreateKeyTerm("and", DomainModel.BinaryOperator.And);
+                this.OR_OP = TerminalFactoryS.CreateKeyTerm("or", DomainModel.BinaryOperator.Or);
 
-                this.NOT_OP = grammar.ToTerm("not", DomainModel.UnaryOperator.Not);
+                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("not", DomainModel.UnaryOperator.Not);
 
-                this.INTEGER_TYPE = grammar.ToTerm("integer", DomainModel.Type.Integer);
-                this.REAL_TYPE = grammar.ToTerm("real", DomainModel.Type.Real);
-                this.STRING_TYPE = grammar.ToTerm("string", DomainModel.Type.String);
-                this.CHAR_TYPE = grammar.ToTerm("char", DomainModel.Type.Char);
-                this.BOOL_TYPE = grammar.ToTerm("boolean", DomainModel.Type.Bool);
+                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("integer", DomainModel.Type.Integer);
+                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("real", DomainModel.Type.Real);
+                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainModel.Type.String);
+                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainModel.Type.Char);
+                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", DomainModel.Type.Bool);
 
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
@@ -186,7 +186,7 @@ namespace MiniPL.Grammars
         public GrammarP()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
-            B = new BnfTerms(this);
+            B = new BnfTerms(new TerminalFactoryS(this));
 
             this.Root = B.Program;
 

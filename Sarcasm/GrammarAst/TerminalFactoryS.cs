@@ -39,7 +39,7 @@ namespace Sarcasm.GrammarAst
             return grammar.ToTerm(text, value);
         }
 
-        public static BnfiTermKeyTermPunctuation CreateKeyTermPunctuation(string text)
+        public static BnfiTermKeyTermPunctuation CreatePunctuation(string text)
         {
             return Grammar.ToPunctuation(text);
         }
