@@ -129,23 +129,23 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMemberForChoice()
+        public void TypesafetyCheck_BindToForChoice()
         {
-            // BindMember for Choice is not good
+            // BindTo for Choice is not good
             string sourceCodeFail = @"
                 var numberLiteral = new BnfiTermChoice<MiniPL.DomainModel.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
-                    + B.Expression.BindMember(numberLiteral, t => t.Value)
+                    + B.Expression.BindTo(numberLiteral, t => t.Value)
                     + B.RIGHT_PAREN;
             ";
 
-            // BindMember for Type is good
+            // BindTo for Type is good
             string sourceCodeSuccess = @"
                 var numberLiteral = new BnfiTermType<MiniPL.DomainModel.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
-                    + B.Expression.BindMember(numberLiteral, t => t.Value)
+                    + B.Expression.BindTo(numberLiteral, t => t.Value)
                     + B.RIGHT_PAREN;
             ";
 
@@ -155,7 +155,7 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_ValueTypeMemberTypeMismatch_SpecialCaseWithInheritance()
+        public void TypesafetyCheck_BindTo_ValueTypeMemberTypeMismatch_SpecialCaseWithInheritance()
         {
             string sourceCodeInit = @"
                 var logicalBinaryBoolExpression = new BnfiTermType<MiniPLExtension.LogicalBinaryBoolExpression>();
@@ -165,22 +165,22 @@ namespace Sarcasm.UnitTest
             ";
 
             string sourceCodeFail = @"
-                var foo = B.Expression.BindMember(logicalBinaryBoolExpression, t => t.Term1);
+                var foo = B.Expression.BindTo(logicalBinaryBoolExpression, t => t.Term1);
             ";
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = expressionTL.BindMember(logicalBinaryBoolExpression, t => t.Term1);
+                var foo2 = expressionTL.BindTo(logicalBinaryBoolExpression, t => t.Term1);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = expressionTL.BindMember(() => new MiniPLExtension.LogicalBinaryBoolExpression().Term1);
+                var foo3 = expressionTL.BindTo(() => new MiniPLExtension.LogicalBinaryBoolExpression().Term1);
             ";
 
             // opposite situation with type safety is okay
             string sourceCodeSuccess3 = @"
-                var foo4 = boolExpression.BindMember(B.BinaryExpression, t => t.Term1);
+                var foo4 = boolExpression.BindTo(B.BinaryExpression, t => t.Term1);
             ";
 
             CompileShouldFail(sourceCodeInit + sourceCodeFail, "CS0311");
@@ -191,20 +191,20 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_ValueTypeMemberTypeMismatch()
+        public void TypesafetyCheck_BindTo_ValueTypeMemberTypeMismatch()
         {
             string sourceCodeFail = @"
-                var foo = B.Function.BindMember(B.While, t => t.Body);
+                var foo = B.Function.BindTo(B.While, t => t.Body);
             ";
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(B.While, t => t.Body);
+                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindMember(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).BindTo(() => new MiniPL.DomainModel.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -214,20 +214,20 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_ValueTypeMemberTypeMismatchForCollection()
+        public void TypesafetyCheck_BindTo_ValueTypeMemberTypeMismatchForCollection()
         {
             string sourceCodeFail = @"
-                var foo = B.Function.PlusList().BindMember(B.Write, t => t.Arguments);
+                var foo = B.Function.PlusList().BindTo(B.Write, t => t.Arguments);
             ";
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(B.While, t => t.Body);
+                var foo2 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindMember(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(() => new MiniPL.DomainModel.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -237,15 +237,15 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_MissingDeclaringType()
+        public void TypesafetyCheck_BindTo_MissingDeclaringType()
         {
             string sourceCodeFail = @"
-                var foo = B.Statement.BindMember(t => t.Body);
+                var foo = B.Statement.BindTo(t => t.Body);
             ";
 
             // with declaring type specified it is okay
             string sourceCodeSuccess = @"
-                var foo2 = B.Statement.BindMember(B.While, t => t.Body);
+                var foo2 = B.Statement.BindTo(B.While, t => t.Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS1660");
@@ -254,15 +254,15 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_NonExistentMember()
+        public void TypesafetyCheck_BindTo_NonExistentMember()
         {
             string sourceCodeFail = @"
-                var foo = B.Statement.BindMember(B.Return, t => t.Body);
+                var foo = B.Statement.BindTo(B.Return, t => t.Body);
             ";
 
             // with proper declaring type it is okay
             string sourceCodeSuccess = @"
-                var foo2 = B.Statement.BindMember(B.While, t => t.Body);
+                var foo2 = B.Statement.BindTo(B.While, t => t.Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS1061");
@@ -271,15 +271,15 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_DeclaringTypeMismatch()
+        public void TypesafetyCheck_BindTo_DeclaringTypeMismatch()
         {
             string sourceCodeFail = @"
-                B.Program.Rule = B.Type.BindMember(B.LocalVariable, t => t.Type);
+                B.Program.Rule = B.Type.BindTo(B.LocalVariable, t => t.Type);
             ";
 
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
-                B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type);
+                B.Program.RuleTypeless = new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");
@@ -288,19 +288,19 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void TypesafetyCheck_BindMember_DeclaringTypeMismatch_ComplexRule()
+        public void TypesafetyCheck_BindTo_DeclaringTypeMismatch_ComplexRule()
         {
             string sourceCodeFail = @"
                 B.Program.RuleTypeless =
-                    B.Type.BindMember(B.LocalVariable, t => t.Type)
-                    + B.Expression.BindMember(B.LocalVariable, t => t.InitValue);
+                    B.Type.BindTo(B.LocalVariable, t => t.Type)
+                    + B.Expression.BindTo(B.LocalVariable, t => t.InitValue);
             ";
 
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
                 B.Program.RuleTypeless =
-                    new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindMember(() => new MiniPL.DomainModel.LocalVariable().Type)
-                    + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindMember(() => new MiniPL.DomainModel.LocalVariable().InitValue);
+                    new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type)
+                    + new BnfiTermTypeTL(typeof(MiniPL.DomainModel.Expression)).BindTo(() => new MiniPL.DomainModel.LocalVariable().InitValue);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");

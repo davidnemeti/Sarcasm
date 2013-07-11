@@ -192,32 +192,32 @@ namespace MiniPL.Grammars
 
             B.Program.Rule =
                 B.PROGRAM
-                + B.Name.BindMember(B.Program, t => t.Name)
-                + (B.NAMESPACE + B.NamespaceName).QRef().BindMember(B.Program, t => t.Namespace)
-                + B.Function.StarList().BindMember(B.Program, t => t.Functions)
+                + B.Name.BindTo(B.Program, t => t.Name)
+                + (B.NAMESPACE + B.NamespaceName).QRef().BindTo(B.Program, t => t.Namespace)
+                + B.Function.StarList().BindTo(B.Program, t => t.Functions)
                 + B.BEGIN
-                + B.Statement.PlusList().BindMember(B.Program, t => t.Body)
+                + B.Statement.PlusList().BindTo(B.Program, t => t.Body)
                 + B.END
                 + B.DOT
                 ;
 
             B.Function.Rule =
                 B.FUNCTION
-                + B.Name.BindMember(B.Function, t => t.Name)
+                + B.Name.BindTo(B.Function, t => t.Name)
                 + B.LEFT_PAREN
-                + B.Parameter.StarList(B.COMMA).BindMember(B.Function, t => t.Parameters)
+                + B.Parameter.StarList(B.COMMA).BindTo(B.Function, t => t.Parameters)
                 + B.RIGHT_PAREN
-                + (B.COLON + B.Type).QVal().BindMember(B.Function, t => t.ReturnType)
+                + (B.COLON + B.Type).QVal().BindTo(B.Function, t => t.ReturnType)
                 + B.BEGIN
-                + B.Statement.PlusList().BindMember(B.Function, t => t.Body)
+                + B.Statement.PlusList().BindTo(B.Function, t => t.Body)
                 + B.END
                 ;
 
             B.Parameter.Rule =
                 B.VAR
-                + B.Name.BindMember(B.Parameter, t => t.Name)
+                + B.Name.BindTo(B.Parameter, t => t.Name)
                 + B.COLON
-                + B.Type.BindMember(B.Parameter, t => t.Type)
+                + B.Type.BindTo(B.Parameter, t => t.Type)
                 ;
 
             B.Statement.SetRuleOr(
@@ -235,27 +235,27 @@ namespace MiniPL.Grammars
 
             B.Return.Rule =
                 B.RETURN
-                + B.Expression.BindMember(B.Return, t => t.Value)
+                + B.Expression.BindTo(B.Return, t => t.Value)
                 ;
 
             B.LocalVariable.Rule =
                 B.VAR
-                + B.Name.BindMember(B.LocalVariable, t => t.Name)
+                + B.Name.BindTo(B.LocalVariable, t => t.Name)
                 + B.COLON
-                + B.Type.BindMember(B.LocalVariable, t => t.Type)
-                + (B.LET + B.Expression).QRef().BindMember(B.LocalVariable, t => t.InitValue)
+                + B.Type.BindTo(B.LocalVariable, t => t.Type)
+                + (B.LET + B.Expression).QRef().BindTo(B.LocalVariable, t => t.InitValue)
                 ;
 
             B.Assignment.Rule =
-                B.VariableReference.BindMember(B.Assignment, t => t.LValue)
+                B.VariableReference.BindTo(B.Assignment, t => t.LValue)
                 + B.LET 
-                + B.Expression.BindMember(B.Assignment, t => t.RValue)
+                + B.Expression.BindTo(B.Assignment, t => t.RValue)
                 ;
 
             B.VariableReference.Rule =
                 B.NameRef
                 .ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
-                .BindMember(B.VariableReference, t => t.Target)
+                .BindTo(B.VariableReference, t => t.Target)
                 ;
 
             B.FunctionReference.Rule =
@@ -264,68 +264,68 @@ namespace MiniPL.Grammars
 
             B.StatementList.Rule =
                 B.BEGIN
-                + B.Statement.PlusList().BindMember(B.StatementList, t => t.Body)
+                + B.Statement.PlusList().BindTo(B.StatementList, t => t.Body)
                 + B.END
                 ;
 
             B.While.Rule =
                 B.WHILE
                 + B.LEFT_PAREN
-                + B.Expression.BindMember(B.While, t => t.Condition)
+                + B.Expression.BindTo(B.While, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.DO
-                + B.Statement.BindMember(B.While, t => t.Body)
+                + B.Statement.BindTo(B.While, t => t.Body)
                 ;
 
             B.For.Rule =
                 B.FOR
                 + B.LEFT_PAREN
-                + B.LocalVariable.StarList(B.COMMA).BindMember(B.For, t => t.Init)
+                + B.LocalVariable.StarList(B.COMMA).BindTo(B.For, t => t.Init)
                 + B.SEMICOLON
-                + B.Expression.BindMember(B.For, t => t.Condition)
+                + B.Expression.BindTo(B.For, t => t.Condition)
                 + B.SEMICOLON
-                + B.Assignment.StarList(B.COMMA).BindMember(B.For, t => t.Update)
+                + B.Assignment.StarList(B.COMMA).BindTo(B.For, t => t.Update)
                 + B.RIGHT_PAREN
                 + B.DO
-                + B.Statement.BindMember(B.For, t => t.Body)
+                + B.Statement.BindTo(B.For, t => t.Body)
                 ;
 
             B.If.Rule =
                 B.IF
                 + B.LEFT_PAREN
-                + B.Expression.BindMember(B.If, t => t.Condition)
+                + B.Expression.BindTo(B.If, t => t.Condition)
                 + B.RIGHT_PAREN
                 + B.THEN
-                + B.Statement.BindMember(B.If, t => t.Body)
-                + (B.ELSE + B.Statement).QRef().BindMember(B.If, t => t.ElseBody)
+                + B.Statement.BindTo(B.If, t => t.Body)
+                + (B.ELSE + B.Statement).QRef().BindTo(B.If, t => t.ElseBody)
                 ;
 
             B.FunctionCall.Rule =
-                B.FunctionReference.BindMember(B.FunctionCall, t => t.FunctionReference)
+                B.FunctionReference.BindTo(B.FunctionCall, t => t.FunctionReference)
                 + B.LEFT_PAREN
-                + B.Argument.StarList(B.COMMA).BindMember(B.FunctionCall, t => t.Arguments)
+                + B.Argument.StarList(B.COMMA).BindTo(B.FunctionCall, t => t.Arguments)
                 + B.RIGHT_PAREN
                 ;
 
             B.Argument.Rule =
-                B.Expression.BindMember(B.Argument, t => t.Expression)
+                B.Expression.BindTo(B.Argument, t => t.Expression)
                 ;
 
             B.Write.Rule =
                 B.WRITE
                 + B.LEFT_PAREN
-                + B.Expression.StarList(B.COMMA).BindMember(B.Write, t => t.Arguments)
+                + B.Expression.StarList(B.COMMA).BindTo(B.Write, t => t.Arguments)
                 + B.RIGHT_PAREN
                 ;
 
             B.WriteLn.Rule =
                 B.WRITELN
                 + B.LEFT_PAREN
-                + B.Expression.StarList(B.COMMA).BindMember(B.WriteLn, t => t.Arguments)
+                + B.Expression.StarList(B.COMMA).BindTo(B.WriteLn, t => t.Arguments)
                 + B.RIGHT_PAREN
                 ;
 
-            B.Name.Rule = B.IDENTIFIER.BindMember(B.Name, t => t.Value);
+            B.Name.Rule = B.IDENTIFIER.BindTo(B.Name, t => t.Value);
             B.NameRef.Rule = B.IDENTIFIER.ConvertValue(_identifier => new NameRef(_identifier), _nameRef => _nameRef.Value);
             B.NamespaceName.Rule =
                 B.IDENTIFIER
@@ -348,9 +348,9 @@ namespace MiniPL.Grammars
                 );
 
             B.BinaryExpression.Rule =
-                B.Expression.BindMember(B.BinaryExpression, t => t.Term1)
-                + B.BinaryOperator.BindMember(B.BinaryExpression, t => t.Op)
-                + B.Expression.BindMember(B.BinaryExpression, t => t.Term2)
+                B.Expression.BindTo(B.BinaryExpression, t => t.Term1)
+                + B.BinaryOperator.BindTo(B.BinaryExpression, t => t.Op)
+                + B.Expression.BindTo(B.BinaryExpression, t => t.Term2)
                 ;
 
             /*
@@ -358,22 +358,22 @@ namespace MiniPL.Grammars
              * So we use ReduceHere instead, which means that unary operators has the highest precedence among operators when used inside a unary expressions.
              * */
             B.UnaryExpression.Rule =
-                B.UnaryOperator.BindMember(B.UnaryExpression, t => t.Op)
-                + B.Expression.BindMember(B.UnaryExpression, t => t.Term)
+                B.UnaryOperator.BindTo(B.UnaryExpression, t => t.Op)
+                + B.Expression.BindTo(B.UnaryExpression, t => t.Term)
                 + ReduceHere()      // this is needed for implying precedence (see note above)
                 ;
 
             B.ConditionalTernaryExpression.Rule =
-                B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Cond)
+                B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Cond)
                 + B.QUESTION_MARK
-                + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term1)
+                + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term1)
                 + B.COLON
-                + B.Expression.BindMember(B.ConditionalTernaryExpression, t => t.Term2)
+                + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
-            B.NumberLiteral.Rule = CreateNumberLiteral().MakeContractible().BindMember(B.NumberLiteral, t => t.Value);
-            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeContractible().BindMember(B.StringLiteral, t => t.Value);
-            B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindMember(B.BoolLiteral, t => t.Value);
+            B.NumberLiteral.Rule = CreateNumberLiteral().MakeContractible().BindTo(B.NumberLiteral, t => t.Value);
+            B.StringLiteral.Rule = CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeContractible().BindTo(B.StringLiteral, t => t.Value);
+            B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;

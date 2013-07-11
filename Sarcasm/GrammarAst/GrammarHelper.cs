@@ -96,61 +96,61 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        #region BindMember
+        #region BindTo
 
-        // NOTE: the method's name is BindMember_ instead of BindMember to avoid ambiguous calls
-        public static Member<TDeclaringType> BindMember_<TDeclaringType, TMemberType>(this BnfTerm bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+        // NOTE: the method's name is BindTo_ instead of BindTo to avoid ambiguous calls
+        public static Member<TDeclaringType> BindTo_<TDeclaringType, TMemberType>(this BnfTerm bnfTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
         {
             return Member.Bind_(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfTerm);
         }
 
-        public static MemberTL BindMember<TMemberType>(this IBnfiTermTL bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static MemberTL BindTo<TMemberType>(this IBnfiTermTL bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
         {
             return Member.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberType>(this IBnfiTermTL bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberType>(this IBnfiTermTL bnfiTerm, IBnfiTerm<TDeclaringType> dummyBnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
         {
             return Member.Bind(exprForFieldOrPropertyAccess, dummyBnfiTerm, bnfiTerm);
         }
 
-        public static MemberTL BindMember<TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
+        public static MemberTL BindTo<TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm, Expression<Func<TMemberType>> exprForFieldOrPropertyAccess)
             where TValueType : TMemberType
         {
             return Member.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static MemberTL BindMember<TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static MemberTL BindTo<TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             Expression<Func<ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
             return Member.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static MemberTL BindMember<TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static MemberTL BindTo<TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             Expression<Func<IList<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
             return Member.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm,
             Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TValueType : TMemberType
         {
             return Member.Bind(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             Expression<Func<TDeclaringType, ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
             return Member.Bind<TDeclaringType, TMemberElementType, TValueElementType>(exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             Expression<Func<TDeclaringType, IList<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
@@ -161,16 +161,16 @@ namespace Sarcasm.GrammarAst
          * NOTE: separate TMemberType and TValueType, and the constraint are necessary.
          * With only TMemberType (without TValueType) the following situation does not result in compile error, which is bad:
          * 
-         * B.Expression.BindMember(B.LogicalBinaryBoolExpression, t => t.Term1)
+         * B.Expression.BindTo(B.LogicalBinaryBoolExpression, t => t.Term1)
          * 
          * where Term1 is a BoolExpression (which is BTW a derived class of Expression), so this could not be happened.
          * The opposite situation is fine:
          * 
-         * B.BoolExpression.BindMember(B.BinaryExpression, t => t.Term1)
+         * B.BoolExpression.BindTo(B.BinaryExpression, t => t.Term1)
          * 
          * where Term1 is a Expression.
          * */
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberType, TValueType>(this IBnfiTerm<TValueType> bnfiTerm,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, Expression<Func<TDeclaringType, TMemberType>> exprForFieldOrPropertyAccess)
             where TValueType : TMemberType
         {
@@ -180,30 +180,30 @@ namespace Sarcasm.GrammarAst
         /*
          * NOTE: however, separate TMemberType and TValueType causes unwanted compile errors in a simple collection binding:
          * 
-         * B.Statement.StarList().BindMember(B.If, t => t.Body)
+         * B.Statement.StarList().BindTo(B.If, t => t.Body)
          * 
          * So we should handle it separately.
          * */
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, Expression<Func<TDeclaringType, ICollection<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
             return Member.Bind(dummyBnfiTerm, exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static Member<TDeclaringType> BindMember<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
+        public static Member<TDeclaringType> BindTo<TDeclaringType, TMemberElementType, TValueElementType>(this IBnfiTerm<IEnumerable<TValueElementType>> bnfiTerm,
             IBnfiTerm<TDeclaringType> dummyBnfiTerm, Expression<Func<TDeclaringType, IList<TMemberElementType>>> exprForFieldOrPropertyAccess)
             where TValueElementType : TMemberElementType
         {
             return Member.Bind(dummyBnfiTerm, exprForFieldOrPropertyAccess, bnfiTerm);
         }
 
-        public static MemberTL BindMember(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
+        public static MemberTL BindTo(this BnfTerm bnfTerm, PropertyInfo propertyInfo)
         {
             return Member.Bind(propertyInfo, bnfTerm);
         }
 
-        public static MemberTL BindMember(this BnfTerm bnfTerm, FieldInfo fieldInfo)
+        public static MemberTL BindTo(this BnfTerm bnfTerm, FieldInfo fieldInfo)
         {
             return Member.Bind(fieldInfo, bnfTerm);
         }
