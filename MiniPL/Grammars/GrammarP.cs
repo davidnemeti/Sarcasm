@@ -117,7 +117,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermType<NumberLiteral> NumberLiteral = new BnfiTermType<NumberLiteral>();
             public readonly BnfiTermType<StringLiteral> StringLiteral = new BnfiTermType<StringLiteral>();
             public readonly BnfiTermType<BoolLiteral> BoolLiteral = new BnfiTermType<BoolLiteral>();
-            public readonly BnfiTermValue<string> IDENTIFIER = new BnfiTermValue<string>();
+            public readonly BnfiTermValue<string> IDENTIFIER = new BnfiTermValue<string>("identifier");
 
             public readonly BnfiTermType<Name> Name = new BnfiTermType<Name>();
             public readonly BnfiTermValue<NameRef> NamespaceName = new BnfiTermValue<NameRef>("namespace_name");
