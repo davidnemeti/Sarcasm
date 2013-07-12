@@ -8,6 +8,7 @@ namespace Sarcasm.Unparsing
 {
     public interface IReadOnlyDecoration
     {
+        bool ContainsKey(object key);
         bool TryGetValue<TValue>(object key, out TValue value);
     }
 
@@ -18,11 +19,21 @@ namespace Sarcasm.Unparsing
 
     public static class DecorationExtensions
     {
+        public static bool ContainsKey<T>(this IReadOnlyDecoration decoration)
+        {
+            return decoration.ContainsKey(typeof(T));
+        }
+
         public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration)
+        {
+            return GetValueOrDefault<T>(decoration, typeof(T));
+        }
+
+        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration, object key)
         {
             T value;
 
-            if (decoration.TryGetValue<T>(out value))
+            if (decoration.TryGetValue<T>(key, out value))
                 return value;
             else
                 return default(T);
@@ -30,9 +41,14 @@ namespace Sarcasm.Unparsing
 
         public static T GetValue<T>(this IReadOnlyDecoration decoration)
         {
-            T value;
+            return GetValue<T>(decoration, typeof(T));
+        }
 
-            if (decoration.TryGetValue<T>(out value))
+        public static TValue GetValue<TValue>(this IReadOnlyDecoration decoration, object key)
+        {
+            TValue value;
+
+            if (decoration.TryGetValue<TValue>(key, out value))
                 return value;
             else
                 throw new KeyNotFoundException();
@@ -68,6 +84,11 @@ namespace Sarcasm.Unparsing
         }
 
         public static readonly IDecoration None = null;
+
+        public bool ContainsKey(object key)
+        {
+            return keyToValue.ContainsKey(key);
+        }
     }
 
     public class DecorationComposer : IReadOnlyDecoration
@@ -84,6 +105,11 @@ namespace Sarcasm.Unparsing
         public bool TryGetValue<TValue>(object key, out TValue value)
         {
             return primaryDecoration.TryGetValue(key, out value) || secondaryDecoration.TryGetValue(key, out value);
+        }
+
+        public bool ContainsKey(object key)
+        {
+            return primaryDecoration.ContainsKey(key) || secondaryDecoration.ContainsKey(key);
         }
     }
 }
