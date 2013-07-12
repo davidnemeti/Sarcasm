@@ -48,6 +48,7 @@ namespace Sarcasm.Unparsing
     public interface Utoken
     {
         string ToText(Formatting formatting);
+        IReadOnlyDecoration GetDecoration();
     }
 
     public abstract class UtokenValue : UtokenBase
@@ -103,6 +104,11 @@ namespace Sarcasm.Unparsing
         public string ToText(Formatting formatting)
         {
             return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.Obj);
+        }
+
+        IReadOnlyDecoration Utoken.GetDecoration()
+        {
+            return this.Decoration;
         }
 
         public override string ToString()
@@ -180,6 +186,11 @@ namespace Sarcasm.Unparsing
             }
         }
 
+        IReadOnlyDecoration Utoken.GetDecoration()
+        {
+            return Decoration.None;
+        }
+
         public override string ToString()
         {
             return ToString("." + kind);
@@ -246,6 +257,11 @@ namespace Sarcasm.Unparsing
         public string ToText(Formatting formatting)
         {
             return string.Concat(Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
+        }
+
+        IReadOnlyDecoration Utoken.GetDecoration()
+        {
+            return Decoration.None;
         }
 
         public override string ToString()
