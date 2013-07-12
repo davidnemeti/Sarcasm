@@ -432,18 +432,19 @@ namespace MiniPL.Grammars
                 {
                     if (unparsableObject.BnfTerm == B.If)
                     {
-                        return new Decoration().Add(FontStyle.Bold);
+                        return new Decoration().Add(DecorationKey.FontStyle, FontStyle.Bold);
                     }
                     else if (unparsableObject.BnfTerm == B.PROGRAM)
                     {
-                        return new Decoration().Add(FontStyle.Italic);
+                        return new Decoration().Add(DecorationKey.FontStyle, FontStyle.Italic);
                     }
                     else if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
                     {
                         int number = (int)unparsableObject.Obj;
+
                         return number % 2 == 0
-                            ? new Decoration().Add(Color.Red)
-                            : new Decoration().Add(Color.DarkGreen);
+                            ? new Decoration().Add(DecorationKey.ForegroundColor, Color.Red)
+                            : new Decoration().Add(DecorationKey.BackgroundColor, Color.DarkGreen);
                     }
                     else
                         return Decoration.None;

@@ -17,6 +17,18 @@ namespace Sarcasm.Unparsing
         IDecoration Add(object key, object value);
     }
 
+    public enum DecorationKey
+    {
+        Font,
+        FontFamily,
+        FontStretch,
+        FontStyle,
+        FontWeight,
+        FontSize,
+        ForegroundColor,
+        BackgroundColor
+    }
+
     public static class DecorationExtensions
     {
         public static bool ContainsKey<T>(this IReadOnlyDecoration decoration)
@@ -75,6 +87,8 @@ namespace Sarcasm.Unparsing
             return this;
         }
 
+        public static readonly IDecoration None = null;
+
         public bool TryGetValue<TValue>(object key, out TValue value)
         {
             object _value;
@@ -82,8 +96,6 @@ namespace Sarcasm.Unparsing
             value = _value != null ? (TValue)_value : default(TValue);
             return success;
         }
-
-        public static readonly IDecoration None = null;
 
         public bool ContainsKey(object key)
         {
