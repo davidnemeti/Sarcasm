@@ -58,10 +58,7 @@ namespace Sarcasm.Unparsing
 
         #region State
 
-        private bool hasDecorationDynamic = false;
-        private bool hasDecorationStatic = false;
         private Decorator decorator = null;
-        private IDictionary<BnfTerm, IDecoration> bnfTermToDecoration = new Dictionary<BnfTerm, IDecoration>();
         private IDictionary<BnfTermPartialContext, BlockIndentation> contextToBlockIndentation = new Dictionary<BnfTermPartialContext, BlockIndentation>();
         private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation> contextToBlockIndentation2 = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation>();
         private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensLeft = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
@@ -269,25 +266,12 @@ namespace Sarcasm.Unparsing
 
         #region Decoration
 
-        public void DecorateStatic(BnfTerm bnfTerm, object key, object value)
-        {
-            EnforceExistence(bnfTerm).Add(key, value);
-            hasDecorationStatic = true;
-        }
-
-        public void DecorateStatic<T>(BnfTerm bnfTerm, T value)
-        {
-            EnforceExistence(bnfTerm).Add<T>(value);
-            hasDecorationStatic = true;
-        }
-
-        public void DecorateDynamic(Decorator decorator)
+        public void SetDecorator(Decorator decorator)
         {
             if (this.decorator != null)
                 GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Double set for DecorateDynamic is not allowed");
 
             this.decorator = decorator;
-            this.hasDecorationDynamic = true;
         }
 
         #endregion
@@ -338,40 +322,9 @@ namespace Sarcasm.Unparsing
             return false;
         }
 
-        internal bool HasDecoration
-        {
-            get
-            {
-                return HasDecorationStatic || HasDecorationDynamic;
-            }
-        }
+        internal bool HasDecorator { get { return decorator != null; } }
 
-        internal bool HasDecorationStatic
-        {
-            get
-            {
-                return hasDecorationStatic;
-            }
-        }
-
-        internal bool HasDecorationDynamic
-        {
-            get
-            {
-                return hasDecorationDynamic;
-            }
-        }
-
-        internal IDecoration GetDecorationStatic(BnfTerm bnfTerm)
-        {
-            IDecoration decoration;
-
-            return bnfTermToDecoration.TryGetValue(bnfTerm, out decoration)
-                ? decoration
-                : Decoration.None;
-        }
-
-        internal IDecoration GetDecorationDynamic(UnparsableObject unparsableObject)
+        internal IDecoration GetDecoration(UnparsableObject unparsableObject)
         {
             return decorator != null
                 ? decorator(unparsableObject)
@@ -424,19 +377,6 @@ namespace Sarcasm.Unparsing
                 return false;
             else
                 return true;
-        }
-
-        private IDecoration EnforceExistence(BnfTerm bnfTerm)
-        {
-            IDecoration decoration;
-
-            if (!bnfTermToDecoration.TryGetValue(bnfTerm, out decoration))
-            {
-                decoration = new Decoration();
-                bnfTermToDecoration.Add(bnfTerm, decoration);
-            }
-
-            return decoration;
         }
 
         #endregion

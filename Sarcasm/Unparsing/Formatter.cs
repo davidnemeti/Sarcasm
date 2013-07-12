@@ -904,7 +904,7 @@ namespace Sarcasm.Unparsing
 
         public static IEnumerable<UtokenBase> Decorate(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
-            return postProcessHelper.Formatting.HasDecoration
+            return postProcessHelper.Formatting.HasDecorator
                 ? _Decorate(utokens, postProcessHelper)
                 : utokens;
         }
@@ -919,21 +919,8 @@ namespace Sarcasm.Unparsing
                 {
                     UtokenText utokenText = (UtokenText)utoken;
 
-                    if (formatting.HasDecorationDynamic && formatting.HasDecorationStatic)
-                    {
-                        utokenText.Decoration = new DecorationComposer(
-                            primaryDecoration: formatting.GetDecorationDynamic(utokenText.Reference),
-                            secondaryDecoration: formatting.GetDecorationStatic(utokenText.Reference.BnfTerm)
-                            );
-                    }
-                    else if (formatting.HasDecorationDynamic)
-                    {
-                        utokenText.Decoration = formatting.GetDecorationDynamic(utokenText.Reference);
-                    }
-                    else if (formatting.HasDecorationStatic)
-                    {
-                        utokenText.Decoration = formatting.GetDecorationStatic(utokenText.Reference.BnfTerm);
-                    }
+                    if (formatting.HasDecorator)
+                        utokenText.Decoration = formatting.GetDecoration(utokenText.Reference);
                 }
 
                 yield return utoken;

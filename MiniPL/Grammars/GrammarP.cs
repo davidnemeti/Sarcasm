@@ -427,21 +427,26 @@ namespace MiniPL.Grammars
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
-            UnparseControl.DefaultFormatting.DecorateStatic(B.If, FontStyle.Bold);
-            UnparseControl.DefaultFormatting.DecorateStatic(B.PROGRAM, FontStyle.Italic);
-
-            UnparseControl.DefaultFormatting.DecorateDynamic(
+            UnparseControl.DefaultFormatting.SetDecorator(
                 unparsableObject =>
                 {
-                    if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
+                    if (unparsableObject.BnfTerm == B.If)
+                    {
+                        return new Decoration().Add(FontStyle.Bold);
+                    }
+                    else if (unparsableObject.BnfTerm == B.PROGRAM)
+                    {
+                        return new Decoration().Add(FontStyle.Italic);
+                    }
+                    else if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
                     {
                         int number = (int)unparsableObject.Obj;
                         return number % 2 == 0
                             ? new Decoration().Add(Color.Red)
                             : new Decoration().Add(Color.DarkGreen);
                     }
-
-                    return Decoration.None;
+                    else
+                        return Decoration.None;
                 }
                 );
 
