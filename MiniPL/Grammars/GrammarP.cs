@@ -13,7 +13,7 @@ using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
 
 using MiniPL.DomainModel;
-
+using D = MiniPL.DomainModel;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
@@ -111,7 +111,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermRecord<WriteLn> WriteLn = new BnfiTermRecord<WriteLn>();
             public readonly BnfiTermRecord<VariableReference> VariableReference = new BnfiTermRecord<VariableReference>();
 
-            public readonly BnfiTermChoice<Expression> Expression = new BnfiTermChoice<Expression>();
+            public readonly BnfiTermChoice<D.Expression> Expression = new BnfiTermChoice<D.Expression>();
             public readonly BnfiTermRecord<BinaryExpression> BinaryExpression = new BnfiTermRecord<BinaryExpression>();
             public readonly BnfiTermRecord<UnaryExpression> UnaryExpression = new BnfiTermRecord<UnaryExpression>();
             public readonly BnfiTermRecord<ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<ConditionalTernaryExpression>();
@@ -428,12 +428,28 @@ namespace MiniPL.Grammars
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
+            UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
+
             UnparseControl.DefaultFormatting.SetDecorator(
                 unparsableObject =>
                 {
-                    if (unparsableObject.BnfTerm == B.If)
+                    if (unparsableObject.Obj is D.If)
                     {
-                        return new Decoration().Add(DecorationKey.FontStyle, FontStyles.Oblique);
+                        if (unparsableObject.BnfTerm == B.LEFT_PAREN)
+                        {
+                            return new Decoration()
+                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
+                                .Add(DecorationKey.FontSizeRelativePercent, 2.0)
+                                .Add(DecorationKey.Foreground, Colors.Blue)
+                                ;
+                        }
+                        else
+                        {
+                            return new Decoration()
+                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
+                                .Add(DecorationKey.TextDecorations, TextDecorations.Underline)
+                                ;
+                        }
                     }
                     else if (unparsableObject.BnfTerm == B.PROGRAM)
                     {
@@ -443,13 +459,19 @@ namespace MiniPL.Grammars
                             .Add(DecorationKey.Background, Colors.Red)
                             .Add(DecorationKey.FontSize, 30.0);
                     }
-                    else if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
+                    else if (unparsableObject.Obj is D.Type)
+                    {
+                        return new Decoration()
+                            .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
+                            .Add(DecorationKey.FontSizeRelativePercent, 0.75);
+                    }
+                    else if (unparsableObject.Obj is int)
                     {
                         int number = (int)unparsableObject.Obj;
 
                         return number % 2 == 0
                             ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
-                            : new Decoration().Add(DecorationKey.Background, Colors.DarkGreen);
+                            : new Decoration().Add(DecorationKey.Background, Colors.Yellow);
                     }
                     else
                         return Decoration.None;

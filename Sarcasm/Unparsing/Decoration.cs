@@ -25,6 +25,9 @@ namespace Sarcasm.Unparsing
         FontStyle,
         FontWeight,
         FontSize,
+        FontSizeRelativePercent,
+        TextDecorations,
+        BaselineAlignment,
         Foreground,
         Background
     }

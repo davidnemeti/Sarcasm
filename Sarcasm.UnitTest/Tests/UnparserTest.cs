@@ -32,6 +32,8 @@ namespace Sarcasm.UnitTest
         [ClassInitialize]
         public static void InitializeUnparser(TestContext testContext)
         {
+            grammar.UnparseControl.ClearManualSetOfParenthesesForExpressions();     // we want to test the automatic parentheses stuff
+
             CommonTest.InitializeParser();
             Directory.CreateDirectory(actualUnparsedFilesDir);
             unparser = new Unparser(grammar);

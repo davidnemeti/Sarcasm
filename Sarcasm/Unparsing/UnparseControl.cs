@@ -50,5 +50,11 @@ namespace Sarcasm.Unparsing
         {
             ExpressionToParenthesesHasBeenManuallySet = true;
         }
+
+        public void ClearManualSetOfParenthesesForExpressions()
+        {
+            expressionToParentheses.Clear();
+            ExpressionToParenthesesHasBeenManuallySet = false;
+        }
     }
 }
