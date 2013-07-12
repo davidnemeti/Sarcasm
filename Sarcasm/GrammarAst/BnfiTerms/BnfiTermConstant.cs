@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm.Unparsing;
 
 namespace Sarcasm.GrammarAst
 {
@@ -49,7 +48,5 @@ namespace Sarcasm.GrammarAst
         {
             return GetEnumerator();
         }
-
-        public Decoration Decoration { get; set; }
     }
 }

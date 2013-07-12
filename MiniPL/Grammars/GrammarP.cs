@@ -17,6 +17,7 @@ using MiniPL.DomainModel;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
+using System.Drawing;
 
 namespace MiniPL.Grammars
 {
@@ -426,6 +427,23 @@ namespace MiniPL.Grammars
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
 
+            UnparseControl.DefaultFormatting.DecorateStatic(B.If, FontStyle.Bold);
+            UnparseControl.DefaultFormatting.DecorateStatic(B.PROGRAM, FontStyle.Italic);
+
+            UnparseControl.DefaultFormatting.DecorateDynamic(
+                unparsableObject =>
+                {
+                    if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
+                    {
+                        int number = (int)unparsableObject.Obj;
+                        return number % 2 == 0
+                            ? new Decoration().Add(Color.Red)
+                            : new Decoration().Add(Color.DarkGreen);
+                    }
+
+                    return Decoration.None;
+                }
+                );
 
             #endregion
         }

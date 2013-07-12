@@ -65,6 +65,7 @@ namespace Sarcasm.Unparsing
 
     internal interface IPostProcessHelper
     {
+        Formatting Formatting { get; }
         Unparser.Direction Direction { get; }
         bool IndentEmptyLines { get; }
         Action<UnparsableObject> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }

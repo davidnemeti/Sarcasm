@@ -237,6 +237,7 @@ namespace Sarcasm.Unparsing
                 .FilterInsertedUtokens(postProcessHelper)       .DebugWriteLines(tsFiltered)
                 .Flatten()                                      .DebugWriteLines(tsFlattened)
                 .ProcessControls(postProcessHelper)             .DebugWriteLines(tsProcessedControls)
+                .Decorate(postProcessHelper)
                 .Cast<Utoken>()
                 ;
         }
@@ -899,6 +900,44 @@ namespace Sarcasm.Unparsing
         private static bool IsControl(UtokenBase utoken)
         {
             return utoken is UtokenControl;
+        }
+
+        public static IEnumerable<UtokenBase> Decorate(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
+        {
+            return postProcessHelper.Formatting.HasDecoration
+                ? _Decorate(utokens, postProcessHelper)
+                : utokens;
+        }
+
+        private static IEnumerable<UtokenBase> _Decorate(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
+        {
+            var formatting = postProcessHelper.Formatting;
+
+            foreach (UtokenBase utoken in utokens)
+            {
+                if (utoken is UtokenText)
+                {
+                    UtokenText utokenText = (UtokenText)utoken;
+
+                    if (formatting.HasDecorationDynamic && formatting.HasDecorationStatic)
+                    {
+                        utokenText.Decoration = new DecorationComposer(
+                            primaryDecoration: formatting.GetDecorationDynamic(utokenText.Reference),
+                            secondaryDecoration: formatting.GetDecorationStatic(utokenText.Reference.BnfTerm)
+                            );
+                    }
+                    else if (formatting.HasDecorationDynamic)
+                    {
+                        utokenText.Decoration = formatting.GetDecorationDynamic(utokenText.Reference);
+                    }
+                    else if (formatting.HasDecorationStatic)
+                    {
+                        utokenText.Decoration = formatting.GetDecorationStatic(utokenText.Reference.BnfTerm);
+                    }
+                }
+
+                yield return utoken;
+            }
         }
     }
 }

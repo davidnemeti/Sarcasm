@@ -122,8 +122,6 @@ namespace Sarcasm.GrammarAst
 
         public bool verboseToString = false;
 
-        public Decoration Decoration { get; set; }
-
         protected new BnfExpression Rule
         {
             get { return base.Rule; }

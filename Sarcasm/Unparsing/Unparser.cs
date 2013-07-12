@@ -690,6 +690,8 @@ namespace Sarcasm.Unparsing
 
         #region IPostProcessHelper implementation
 
+        Formatting IPostProcessHelper.Formatting { get { return this.Formatting; } }
+
         Unparser.Direction IPostProcessHelper.Direction
         {
             get { return this.direction; }
