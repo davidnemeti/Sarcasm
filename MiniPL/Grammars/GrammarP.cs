@@ -437,7 +437,11 @@ namespace MiniPL.Grammars
                     }
                     else if (unparsableObject.BnfTerm == B.PROGRAM)
                     {
-                        return new Decoration().Add(DecorationKey.FontStyle, FontStyles.Italic).Add(DecorationKey.Foreground, Colors.Purple);
+                        return new Decoration()
+                            .Add(DecorationKey.FontStyle, FontStyles.Italic)
+                            .Add(DecorationKey.Foreground, Colors.White)
+                            .Add(DecorationKey.Background, Colors.Red)
+                            .Add(DecorationKey.FontSize, 30.0);
                     }
                     else if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
                     {
