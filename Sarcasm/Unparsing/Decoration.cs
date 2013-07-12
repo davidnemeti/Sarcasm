@@ -79,7 +79,7 @@ namespace Sarcasm.Unparsing
         {
             object _value;
             bool success = keyToValue.TryGetValue(key, out _value);
-            value = (TValue)_value;
+            value = _value != null ? (TValue)_value : default(TValue);
             return success;
         }
 
