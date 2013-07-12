@@ -17,7 +17,8 @@ using MiniPL.DomainModel;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
-using System.Drawing;
+using System.Windows;
+using System.Windows.Media;
 
 namespace MiniPL.Grammars
 {
@@ -432,19 +433,19 @@ namespace MiniPL.Grammars
                 {
                     if (unparsableObject.BnfTerm == B.If)
                     {
-                        return new Decoration().Add(DecorationKey.FontStyle, FontStyle.Bold);
+                        return new Decoration().Add(DecorationKey.FontStyle, FontStyles.Oblique);
                     }
                     else if (unparsableObject.BnfTerm == B.PROGRAM)
                     {
-                        return new Decoration().Add(DecorationKey.FontStyle, FontStyle.Italic);
+                        return new Decoration().Add(DecorationKey.FontStyle, FontStyles.Italic);
                     }
                     else if (unparsableObject.BnfTerm == B.NumberLiteral && unparsableObject.Obj is int)
                     {
                         int number = (int)unparsableObject.Obj;
 
                         return number % 2 == 0
-                            ? new Decoration().Add(DecorationKey.Foreground, Color.Red)
-                            : new Decoration().Add(DecorationKey.Background, Color.DarkGreen);
+                            ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
+                            : new Decoration().Add(DecorationKey.Background, Colors.DarkGreen);
                     }
                     else
                         return Decoration.None;
