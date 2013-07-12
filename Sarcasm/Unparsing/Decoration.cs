@@ -9,7 +9,7 @@ namespace Sarcasm.Unparsing
     public interface IReadOnlyDecoration
     {
         bool ContainsKey(object key);
-        bool TryGetValue<TValue>(object key, out TValue value);
+        bool TryGetValue(object key, out object value);
     }
 
     public interface IDecoration : IReadOnlyDecoration
@@ -41,14 +41,19 @@ namespace Sarcasm.Unparsing
             return GetValueOrDefault<T>(decoration, typeof(T));
         }
 
-        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration, object key)
+        public static TValue GetValueOrDefault<TValue>(this IReadOnlyDecoration decoration, object key)
         {
-            T value;
+            TValue value;
 
-            if (decoration.TryGetValue<T>(key, out value))
+            if (decoration.TryGetValue<TValue>(key, out value))
                 return value;
             else
-                return default(T);
+                return default(TValue);
+        }
+
+        public static object GetValueOrNull(this IReadOnlyDecoration decoration, object key)
+        {
+            return decoration.GetValueOrDefault<object>(key);
         }
 
         public static T GetValue<T>(this IReadOnlyDecoration decoration)
@@ -60,15 +65,28 @@ namespace Sarcasm.Unparsing
         {
             TValue value;
 
-            if (decoration.TryGetValue<TValue>(key, out value))
+            if (decoration.TryGetValue(key, out value))
                 return value;
             else
                 throw new KeyNotFoundException();
         }
 
+        public static object GetValue(this IReadOnlyDecoration decoration, object key)
+        {
+            return decoration.GetValue<object>(key);
+        }
+
         public static bool TryGetValue<T>(this IReadOnlyDecoration decoration, out T value)
         {
             return decoration.TryGetValue<T>(typeof(T), out value);
+        }
+
+        public static bool TryGetValue<TValue>(this IReadOnlyDecoration decoration, object key, out TValue value)
+        {
+            object _value;
+            bool success = decoration.TryGetValue(key, out _value);
+            value = _value != null ? (TValue)_value : default(TValue);
+            return success;
         }
 
         public static IDecoration Add<T>(this IDecoration decoration, T value)
@@ -89,12 +107,9 @@ namespace Sarcasm.Unparsing
 
         public static readonly IDecoration None = null;
 
-        public bool TryGetValue<TValue>(object key, out TValue value)
+        public bool TryGetValue(object key, out object value)
         {
-            object _value;
-            bool success = keyToValue.TryGetValue(key, out _value);
-            value = _value != null ? (TValue)_value : default(TValue);
-            return success;
+            return keyToValue.TryGetValue(key, out value);
         }
 
         public bool ContainsKey(object key)
@@ -114,7 +129,7 @@ namespace Sarcasm.Unparsing
             this.secondaryDecoration = secondaryDecoration;
         }
 
-        public bool TryGetValue<TValue>(object key, out TValue value)
+        public bool TryGetValue(object key, out object value)
         {
             return primaryDecoration.TryGetValue(key, out value) || secondaryDecoration.TryGetValue(key, out value);
         }
