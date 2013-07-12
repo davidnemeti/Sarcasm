@@ -443,8 +443,8 @@ namespace MiniPL.Grammars
                         int number = (int)unparsableObject.Obj;
 
                         return number % 2 == 0
-                            ? new Decoration().Add(DecorationKey.ForegroundColor, Color.Red)
-                            : new Decoration().Add(DecorationKey.BackgroundColor, Color.DarkGreen);
+                            ? new Decoration().Add(DecorationKey.Foreground, Color.Red)
+                            : new Decoration().Add(DecorationKey.Background, Color.DarkGreen);
                     }
                     else
                         return Decoration.None;

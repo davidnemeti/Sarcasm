@@ -25,8 +25,8 @@ namespace Sarcasm.Unparsing
         FontStyle,
         FontWeight,
         FontSize,
-        ForegroundColor,
-        BackgroundColor
+        Foreground,
+        Background
     }
 
     public static class DecorationExtensions
