@@ -22,8 +22,8 @@ using System.Windows.Media;
 
 namespace MiniPL.Grammars
 {
-    [Grammar(typeof(Program), "Pascal-like")]
-    public class GrammarP : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
+    [Grammar(typeof(Program), "C-like")]
+    public class GrammarC : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
     {
         public class BnfTerms
         {
@@ -31,9 +31,8 @@ namespace MiniPL.Grammars
             {
                 this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
                 this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("namespace");
-                this.BEGIN = TerminalFactoryS.CreateKeyTerm("begin");
-                this.END = TerminalFactoryS.CreateKeyTerm("end");
-                this.FUNCTION = TerminalFactoryS.CreateKeyTerm("function");
+                this.BEGIN = TerminalFactoryS.CreateKeyTerm("{");
+                this.END = TerminalFactoryS.CreateKeyTerm("}");
                 this.WHILE = TerminalFactoryS.CreateKeyTerm("while");
                 this.FOR = TerminalFactoryS.CreateKeyTerm("for");
                 this.IF = TerminalFactoryS.CreateKeyTerm("if");
@@ -43,10 +42,9 @@ namespace MiniPL.Grammars
                 this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
                 this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                 this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
-                this.VAR = TerminalFactoryS.CreateKeyTerm("var");
 
                 this.DOT = TerminalFactoryS.CreatePunctuation(".");
-                this.LET = TerminalFactoryS.CreatePunctuation(":=");
+                this.LET = TerminalFactoryS.CreatePunctuation("=");
                 this.SEMICOLON = TerminalFactoryS.CreatePunctuation(";");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
@@ -64,28 +62,28 @@ namespace MiniPL.Grammars
                 this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DomainModel.UnaryOperator.Pos);
                 this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DomainModel.UnaryOperator.Neg);
 
-                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("=", DomainModel.BinaryOperator.Eq);
+                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("==", DomainModel.BinaryOperator.Eq);
                 this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DomainModel.BinaryOperator.Neq);
                 this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DomainModel.BinaryOperator.Lt);
                 this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainModel.BinaryOperator.Lte);
                 this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainModel.BinaryOperator.Gt);
                 this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainModel.BinaryOperator.Gte);
 
-                this.AND_OP = TerminalFactoryS.CreateKeyTerm("and", DomainModel.BinaryOperator.And);
-                this.OR_OP = TerminalFactoryS.CreateKeyTerm("or", DomainModel.BinaryOperator.Or);
+                this.AND_OP = TerminalFactoryS.CreateKeyTerm("&&", DomainModel.BinaryOperator.And);
+                this.OR_OP = TerminalFactoryS.CreateKeyTerm("||", DomainModel.BinaryOperator.Or);
 
-                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("not", DomainModel.UnaryOperator.Not);
+                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", DomainModel.UnaryOperator.Not);
 
-                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("integer", DomainModel.Type.Integer);
-                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("real", DomainModel.Type.Real);
+                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("int", DomainModel.Type.Integer);
+                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("double", DomainModel.Type.Real);
                 this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainModel.Type.String);
                 this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainModel.Type.Char);
-                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", DomainModel.Type.Bool);
+                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("bool", DomainModel.Type.Bool);
 
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
-                    { "True", true },
-                    { "False", false }
+                    { "true", true },
+                    { "false", false }
                 };
 
                 this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
@@ -131,7 +129,6 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm NAMESPACE;
             public readonly BnfiTermKeyTerm BEGIN;
             public readonly BnfiTermKeyTerm END;
-            public readonly BnfiTermKeyTerm FUNCTION;
             public readonly BnfiTermKeyTerm WHILE;
             public readonly BnfiTermKeyTerm FOR;
             public readonly BnfiTermKeyTerm IF;
@@ -141,7 +138,6 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm RETURN;
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
-            public readonly BnfiTermKeyTerm VAR;
             public readonly BnfiTermKeyTermPunctuation DOT;
             public readonly BnfiTermKeyTermPunctuation LET;
             public readonly BnfiTermKeyTermPunctuation SEMICOLON;
@@ -186,7 +182,7 @@ namespace MiniPL.Grammars
 
         public readonly BnfTerms B;
 
-        public GrammarP()
+        public GrammarC()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
             B = new BnfTerms(new TerminalFactoryS(this));
@@ -205,22 +201,19 @@ namespace MiniPL.Grammars
                 ;
 
             B.Function.Rule =
-                B.FUNCTION
+                B.Type.QVal().BindTo(B.Function, t => t.ReturnType)
                 + B.Name.BindTo(B.Function, t => t.Name)
                 + B.LEFT_PAREN
                 + B.Parameter.StarList(B.COMMA).BindTo(B.Function, t => t.Parameters)
                 + B.RIGHT_PAREN
-                + (B.COLON + B.Type).QVal().BindTo(B.Function, t => t.ReturnType)
                 + B.BEGIN
                 + B.Statement.PlusList().BindTo(B.Function, t => t.Body)
                 + B.END
                 ;
 
             B.Parameter.Rule =
-                B.VAR
+                B.Type.BindTo(B.Parameter, t => t.Type)
                 + B.Name.BindTo(B.Parameter, t => t.Name)
-                + B.COLON
-                + B.Type.BindTo(B.Parameter, t => t.Type)
                 ;
 
             B.Statement.SetRuleOr(
@@ -242,10 +235,8 @@ namespace MiniPL.Grammars
                 ;
 
             B.LocalVariable.Rule =
-                B.VAR
+                B.Type.BindTo(B.LocalVariable, t => t.Type)
                 + B.Name.BindTo(B.LocalVariable, t => t.Name)
-                + B.COLON
-                + B.Type.BindTo(B.LocalVariable, t => t.Type)
                 + (B.LET + B.Expression).QRef().BindTo(B.LocalVariable, t => t.InitValue)
                 ;
 
@@ -433,45 +424,29 @@ namespace MiniPL.Grammars
             UnparseControl.DefaultFormatting.SetDecorator(
                 unparsableObject =>
                 {
-                    if (unparsableObject.Obj is D.If)
-                    {
-                        if (unparsableObject.BnfTerm == B.LEFT_PAREN)
-                        {
-                            return new Decoration()
-                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                                .Add(DecorationKey.FontSizeRelativePercent, 2.0)
-                                .Add(DecorationKey.Foreground, Colors.Blue)
-                                ;
-                        }
-                        else
-                        {
-                            return new Decoration()
-                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                                .Add(DecorationKey.TextDecorations, TextDecorations.Underline)
-                                ;
-                        }
-                    }
-                    else if (unparsableObject.BnfTerm == B.PROGRAM)
+                    if (unparsableObject.BnfTerm is KeyTerm)
                     {
                         return new Decoration()
-                            .Add(DecorationKey.FontStyle, FontStyles.Italic)
-                            .Add(DecorationKey.Foreground, Colors.White)
-                            .Add(DecorationKey.Background, Colors.Red)
-                            .Add(DecorationKey.FontSize, 30.0);
+                            .Add(DecorationKey.Foreground, Colors.Blue)
+                            ;
+                    }
+                    else if (unparsableObject.BnfTerm.IsOperator())
+                    {
+                        return new Decoration()
+                            .Add(DecorationKey.Foreground, Colors.Purple)
+                            ;
                     }
                     else if (unparsableObject.Obj is D.Type)
                     {
                         return new Decoration()
-                            .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
-                            .Add(DecorationKey.FontSizeRelativePercent, 0.75);
+                            .Add(DecorationKey.Foreground, Colors.Cyan)
+                            ;
                     }
-                    else if (unparsableObject.Obj is int)
+                    else if (unparsableObject.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
                     {
-                        int number = (int)unparsableObject.Obj;
-
-                        return number % 2 == 0
-                            ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
-                            : new Decoration().Add(DecorationKey.Background, Colors.Yellow);
+                        return new Decoration()
+                            .Add(DecorationKey.Foreground, Colors.Red)
+                            ;
                     }
                     else
                         return Decoration.None;

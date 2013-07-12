@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DomainModel.cs" />
+    <Compile Include="Grammars\GrammarC.cs" />
     <Compile Include="Grammars\GrammarP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
