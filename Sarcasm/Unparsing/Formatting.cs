@@ -18,8 +18,6 @@ using Grammar = Sarcasm.GrammarAst.Grammar;
 
 namespace Sarcasm.Unparsing
 {
-    public delegate IDecoration Decorator(UnparsableObject unparsableObject);
-
     public class Formatting
     {
         #region Types
@@ -58,7 +56,6 @@ namespace Sarcasm.Unparsing
 
         #region State
 
-        private Decorator decorator = null;
         private IDictionary<BnfTermPartialContext, BlockIndentation> contextToBlockIndentation = new Dictionary<BnfTermPartialContext, BlockIndentation>();
         private IDictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation> contextToBlockIndentation2 = new Dictionary<Tuple<BnfTerm, BnfTermPartialContext>, BlockIndentation>();
         private IDictionary<BnfTermPartialContext, InsertedUtokens> contextToUtokensLeft = new Dictionary<BnfTermPartialContext, InsertedUtokens>();
@@ -266,12 +263,9 @@ namespace Sarcasm.Unparsing
 
         #region Decoration
 
-        public void SetDecorator(Decorator decorator)
+        public virtual IDecoration GetDecoration(UnparsableObject unparsableObject)
         {
-            if (this.decorator != null)
-                GrammarHelper.ThrowGrammarErrorException(GrammarErrorLevel.Error, "Double set for DecorateDynamic is not allowed");
-
-            this.decorator = decorator;
+            return Decoration.None;
         }
 
         #endregion
@@ -320,15 +314,6 @@ namespace Sarcasm.Unparsing
             }
 
             return false;
-        }
-
-        internal bool HasDecorator { get { return decorator != null; } }
-
-        internal IDecoration GetDecoration(UnparsableObject unparsableObject)
-        {
-            return decorator != null
-                ? decorator(unparsableObject)
-                : Decoration.None;
         }
 
         #endregion

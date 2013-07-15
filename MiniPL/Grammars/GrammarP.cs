@@ -404,6 +404,8 @@ namespace MiniPL.Grammars
 
             #region Unparse
 
+            UnparseControl.DefaultFormatting = new Formatting(B);
+
             UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
@@ -430,55 +432,63 @@ namespace MiniPL.Grammars
 
             UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
-            UnparseControl.DefaultFormatting.SetDecorator(
-                unparsableObject =>
-                {
-                    if (unparsableObject.Obj is D.If)
-                    {
-                        if (unparsableObject.BnfTerm == B.LEFT_PAREN)
-                        {
-                            return new Decoration()
-                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                                .Add(DecorationKey.FontSizeRelativePercent, 2.0)
-                                .Add(DecorationKey.Foreground, Colors.Blue)
-                                ;
-                        }
-                        else
-                        {
-                            return new Decoration()
-                                .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                                .Add(DecorationKey.TextDecorations, TextDecorations.Underline)
-                                ;
-                        }
-                    }
-                    else if (unparsableObject.BnfTerm == B.PROGRAM)
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.FontStyle, FontStyles.Italic)
-                            .Add(DecorationKey.Foreground, Colors.White)
-                            .Add(DecorationKey.Background, Colors.Red)
-                            .Add(DecorationKey.FontSize, 30.0);
-                    }
-                    else if (unparsableObject.Obj is D.Type)
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
-                            .Add(DecorationKey.FontSizeRelativePercent, 0.75);
-                    }
-                    else if (unparsableObject.Obj is int)
-                    {
-                        int number = (int)unparsableObject.Obj;
+            #endregion
+        }
 
-                        return number % 2 == 0
-                            ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
-                            : new Decoration().Add(DecorationKey.Background, Colors.Yellow);
+        public class Formatting : Sarcasm.Unparsing.Formatting
+        {
+            private readonly BnfTerms B;
+
+            public Formatting(BnfTerms b)
+            {
+                this.B = b;
+            }
+
+            public override IDecoration GetDecoration(UnparsableObject unparsableObject)
+            {
+                if (unparsableObject.Obj is D.If)
+                {
+                    if (unparsableObject.BnfTerm == B.LEFT_PAREN)
+                    {
+                        return new Decoration()
+                            .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
+                            .Add(DecorationKey.FontSizeRelativePercent, 2.0)
+                            .Add(DecorationKey.Foreground, Colors.Blue)
+                            ;
                     }
                     else
-                        return Decoration.None;
+                    {
+                        return new Decoration()
+                            .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
+                            .Add(DecorationKey.TextDecorations, TextDecorations.Underline)
+                            ;
+                    }
                 }
-                );
+                else if (unparsableObject.BnfTerm == B.PROGRAM)
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.FontStyle, FontStyles.Italic)
+                        .Add(DecorationKey.Foreground, Colors.White)
+                        .Add(DecorationKey.Background, Colors.Red)
+                        .Add(DecorationKey.FontSize, 30.0);
+                }
+                else if (unparsableObject.Obj is D.Type)
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
+                        .Add(DecorationKey.FontSizeRelativePercent, 0.75);
+                }
+                else if (unparsableObject.Obj is int)
+                {
+                    int number = (int)unparsableObject.Obj;
 
-            #endregion
+                    return number % 2 == 0
+                        ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
+                        : new Decoration().Add(DecorationKey.Background, Colors.Yellow);
+                }
+                else
+                    return Decoration.None;
+            }
         }
     }
 }

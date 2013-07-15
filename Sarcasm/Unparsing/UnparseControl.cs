@@ -38,6 +38,10 @@ namespace Sarcasm.Unparsing
 
                 return _defaultFormatting;
             }
+            set
+            {
+                _defaultFormatting = value;
+            }
         }
 
         public void SetAutomaticParenthesesExplicitlyForExpression(BnfTerm expression, BnfTerm leftParenthesis, BnfTerm rightParenthesis)

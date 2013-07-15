@@ -395,6 +395,8 @@ namespace MiniPL.Grammars
 
             #region Unparse
 
+            UnparseControl.DefaultFormatting = new Formatting(B);
+
             UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
             UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
@@ -421,39 +423,47 @@ namespace MiniPL.Grammars
 
             UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
-            UnparseControl.DefaultFormatting.SetDecorator(
-                unparsableObject =>
-                {
-                    if (unparsableObject.BnfTerm is KeyTerm)
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.Foreground, Colors.Blue)
-                            ;
-                    }
-                    else if (unparsableObject.BnfTerm.IsOperator())
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.Foreground, Colors.Purple)
-                            ;
-                    }
-                    else if (unparsableObject.Obj is D.Type)
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.Foreground, Colors.Cyan)
-                            ;
-                    }
-                    else if (unparsableObject.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
-                    {
-                        return new Decoration()
-                            .Add(DecorationKey.Foreground, Colors.Red)
-                            ;
-                    }
-                    else
-                        return Decoration.None;
-                }
-                );
-
             #endregion
+        }
+
+        public class Formatting : Sarcasm.Unparsing.Formatting
+        {
+            private readonly BnfTerms B;
+
+            public Formatting(BnfTerms b)
+            {
+                this.B = b;
+            }
+
+            public override IDecoration GetDecoration(UnparsableObject unparsableObject)
+            {
+                if (unparsableObject.BnfTerm is KeyTerm)
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.Foreground, Colors.Blue)
+                        ;
+                }
+                else if (unparsableObject.BnfTerm.IsOperator())
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.Foreground, Colors.Purple)
+                        ;
+                }
+                else if (unparsableObject.Obj is D.Type)
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.Foreground, Colors.Cyan)
+                        ;
+                }
+                else if (unparsableObject.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
+                {
+                    return new Decoration()
+                        .Add(DecorationKey.Foreground, Colors.Red)
+                        ;
+                }
+                else
+                    return Decoration.None;
+            }
         }
     }
 }
