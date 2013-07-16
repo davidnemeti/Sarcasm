@@ -21,7 +21,7 @@ namespace Sarcasm.Unparsing
     {
         public static string AsText(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatting)));
+            return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatter)));
         }
 
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
@@ -29,7 +29,7 @@ namespace Sarcasm.Unparsing
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    await sw.WriteAsync(utoken.ToText(unparser.Formatting));
+                    await sw.WriteAsync(utoken.ToText(unparser.Formatter));
             }
         }
 
@@ -38,7 +38,7 @@ namespace Sarcasm.Unparsing
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    sw.Write(utoken.ToText(unparser.Formatting));
+                    sw.Write(utoken.ToText(unparser.Formatter));
             }
         }
 
@@ -65,9 +65,8 @@ namespace Sarcasm.Unparsing
 
     internal interface IPostProcessHelper
     {
-        Formatting Formatting { get; }
+        Formatter Formatter { get; }
         Unparser.Direction Direction { get; }
-        bool IndentEmptyLines { get; }
         Action<UnparsableObject> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
     }
 

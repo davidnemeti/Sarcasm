@@ -59,7 +59,6 @@ namespace Sarcasm.Unparsing
         #region Immutable after initialization or public settings
 
         public Grammar Grammar { get; private set; }
-        private Formatting formatting;
         private readonly UnparseControl unparseControl;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
@@ -68,7 +67,7 @@ namespace Sarcasm.Unparsing
 
         #region Mutable
 
-        private Formatter formatter;
+        public Formatter Formatter { get; set; }
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
         private ResourceCounter parallelTaskCounter;
@@ -79,17 +78,6 @@ namespace Sarcasm.Unparsing
         #endregion
 
         #region Settings
-
-        public Formatting Formatting
-        {
-            get { return formatting; }
-
-            set
-            {
-                formatting = value;
-                formatter = new Formatter(value);
-            }
-        }
 
         public int DegreeOfParallelism
         {
@@ -114,10 +102,10 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public Unparser(Grammar grammar, Formatting formatting)
+        public Unparser(Grammar grammar, Formatter formatter)
         {
             this.Grammar = grammar;
-            this.Formatting = formatting;   // also sets Formatter
+            this.Formatter = formatter;
             this.unparseControl = grammar.UnparseControl;
             this.expressionUnparser = new ExpressionUnparser(this, grammar.UnparseControl);
             this.EnablePartialInvalidation = enablePartialInvalidationDefault;
@@ -127,14 +115,13 @@ namespace Sarcasm.Unparsing
         }
 
         public Unparser(Grammar grammar)
-            : this(grammar, grammar.UnparseControl.DefaultFormatting)
+            : this(grammar, grammar.UnparseControl.DefaultFormatter)
         {
         }
 
         private Unparser(Unparser that)
         {
             this.Grammar = that.Grammar;
-            this.formatting = that.formatting;  // we are not using the property because it would set the formatter which we don't want
             this.unparseControl = that.unparseControl;
             this.EnablePartialInvalidation = that.EnablePartialInvalidation;
             this.EnableParallelProcessing = that.EnableParallelProcessing;
@@ -143,7 +130,7 @@ namespace Sarcasm.Unparsing
             this.constantTerminalToInverseConstantTable = that.constantTerminalToInverseConstantTable;
 
             // the following should be set after the constructor
-            this.formatter = null;
+            this.Formatter = null;
             this.expressionUnparser = null;
         }
 
@@ -155,7 +142,7 @@ namespace Sarcasm.Unparsing
         private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
         {
             Unparser spawn = new Unparser(this);
-            spawn.formatter = this.formatter.Spawn(child, childLocation);
+            spawn.Formatter = this.Formatter.Spawn(child, childLocation);
             spawn.expressionUnparser = this.expressionUnparser.Spawn(spawn);
             return spawn;
         }
@@ -185,13 +172,13 @@ namespace Sarcasm.Unparsing
             set
             {
                 this._direction = value;
-                formatter.Direction = value;
+                Formatter.Direction = value;
             }
         }
 
         private void ResetMutableState()
         {
-            formatter.ResetMutableState();
+            Formatter.ResetMutableState();
             // NOTE: expressionUnparser does ResetMutableState automatically
         }
 
@@ -205,9 +192,9 @@ namespace Sarcasm.Unparsing
             return expressionUnparser.OngoingOperatorGet
                 ? UnparseRawMiddle(self)
                 : ConcatIfAnyMiddle(
-                    formatter.YieldBefore(self, out @params),
+                    Formatter.YieldBefore(self, out @params),
                     UnparseRawMiddle(self),
-                    formatter.YieldAfter(self, @params)
+                    Formatter.YieldAfter(self, @params)
                     );
         }
 
@@ -689,22 +676,17 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        IFormatProvider IUnparser.FormatProvider { get { return this.Formatting.FormatProvider; } }
+        IFormatProvider IUnparser.FormatProvider { get { return this.Formatter.FormatProvider; } }
 
         #endregion
 
         #region IPostProcessHelper implementation
 
-        Formatting IPostProcessHelper.Formatting { get { return this.Formatting; } }
+        Formatter IPostProcessHelper.Formatter { get { return this.Formatter; } }
 
         Unparser.Direction IPostProcessHelper.Direction
         {
             get { return this.direction; }
-        }
-
-        bool IPostProcessHelper.IndentEmptyLines
-        {
-            get { return formatting.IndentEmptyLines; }
         }
 
         Action<UnparsableObject> IPostProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse

@@ -81,16 +81,16 @@ void GenerateTestMethod(string filePath, bool typesafe, bool leftToRight, bool e
 
 void GenerateInitializerForUnparser(string filePath, bool enableParallelProcessing)
 {
-        string formatting;
+        string formatter;
 
         if (Path.GetFileNameWithoutExtension(filePath) == "MiniPL2")
-            formatting = "formatting2";
+            formatter = "formatter2";
         else if (Path.GetFileNameWithoutExtension(filePath) == "MiniPL3")
-            formatting = "formatting3";
+            formatter = "formatter3";
         else
-            formatting = "formattingDefault";
+            formatter = "formatterDefault";
 #>
-            unparser.Formatting = <#= formatting #>;
+            unparser.Formatter = <#= formatter #>;
             unparser.EnableParallelProcessing = <#= enableParallelProcessing.ToString().ToLower() #>;
 <#+
 }

@@ -25,9 +25,9 @@ namespace Sarcasm.UnitTest
         protected readonly static string actualUnparsedFilesDir = Path.Combine(actualResultsDir, @"Unparsed files");
 
         protected static Unparser unparser;
-        protected static Formatting formattingDefault { get { return CommonTest.grammar.UnparseControl.DefaultFormatting; } }
-        protected static Formatting formatting2;
-        protected static Formatting formatting3;
+        protected static Formatter formatterDefault { get { return CommonTest.grammar.UnparseControl.DefaultFormatter; } }
+        protected static Formatter formatter2;
+        protected static Formatter formatter3;
 
         [ClassInitialize]
         public static void InitializeUnparser(TestContext testContext)
@@ -36,8 +36,8 @@ namespace Sarcasm.UnitTest
             Directory.CreateDirectory(actualUnparsedFilesDir);
             unparser = new Unparser(grammar);
 
-            formatting2 = new SpecialFormatting(grammar.B) { IndentEmptyLines = false };
-            formatting3 = new SpecialFormatting(grammar.B) { IndentEmptyLines = true };
+            formatter2 = new SpecialFormatter(grammar.B) { IndentEmptyLines = false };
+            formatter3 = new SpecialFormatter(grammar.B) { IndentEmptyLines = true };
 
             grammar.UnparseControl.ClearManualSetOfParenthesesForExpressions();     // we want to test the automatic parentheses stuff
         }
@@ -72,9 +72,9 @@ namespace Sarcasm.UnitTest
             Assert.AreEqual(expected: originalSourceText, actual: unparsedSourceText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
         }
 
-        private class SpecialFormatting : MiniPL.Grammars.GrammarP.Formatting
+        private class SpecialFormatter : MiniPL.Grammars.GrammarP.Formatter
         {
-            public SpecialFormatting(MiniPL.Grammars.GrammarP.BnfTerms b)
+            public SpecialFormatter(MiniPL.Grammars.GrammarP.BnfTerms b)
                 : base(b)
             {
             }

@@ -269,6 +269,8 @@ namespace Sarcasm.Unparsing
 
         public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
+            var formatter = postProcessHelper.Formatter;
+
             int indentLevel = 0;
             int indentLevelForCurrentLine = 0;
             Stack<int> storedIndentLevel = new Stack<int>();
@@ -318,12 +320,12 @@ namespace Sarcasm.Unparsing
                 }
                 else
                 {
-                    if (postProcessHelper.Direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (postProcessHelper.IndentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))
+                    if (postProcessHelper.Direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (formatter.IndentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     indentLevelForCurrentLine = indentLevel;
 
-                    if (postProcessHelper.Direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevNotControlUtoken) && (postProcessHelper.IndentEmptyLines || !IsLineSeparator(utoken)))
+                    if (postProcessHelper.Direction == Unparser.Direction.LeftToRight && IsLineSeparator(prevNotControlUtoken) && (formatter.IndentEmptyLines || !IsLineSeparator(utoken)))
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && utoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
@@ -355,7 +357,7 @@ namespace Sarcasm.Unparsing
 
         public static IEnumerable<UtokenBase> Decorate(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
-            var formatting = postProcessHelper.Formatting;
+            var formatter = postProcessHelper.Formatter;
 
             foreach (UtokenBase utoken in utokens)
             {
@@ -363,7 +365,7 @@ namespace Sarcasm.Unparsing
                 {
                     UtokenText utokenText = (UtokenText)utoken;
 
-                    utokenText.Decoration = formatting._GetDecoration(utokenText.Reference);
+                    utokenText.Decoration = formatter._GetDecoration(utokenText.Reference);
                 }
 
                 yield return utoken;

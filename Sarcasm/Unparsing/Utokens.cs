@@ -47,7 +47,7 @@ namespace Sarcasm.Unparsing
 
     public interface Utoken
     {
-        string ToText(Formatting formatting);
+        string ToText(Formatter formatter);
         IReadOnlyDecoration GetDecoration();
     }
 
@@ -101,9 +101,9 @@ namespace Sarcasm.Unparsing
             return new UtokenText(text);
         }
 
-        public string ToText(Formatting formatting)
+        public string ToText(Formatter formatter)
         {
-            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.AstValue);
+            return this.Text ?? Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
         }
 
         IReadOnlyDecoration Utoken.GetDecoration()
@@ -162,24 +162,24 @@ namespace Sarcasm.Unparsing
         // for internal use only
         internal static readonly UtokenWhitespace WhiteSpaceBetweenUtokens = new UtokenWhitespace(Kind.WhiteSpaceBetweenUtokens);
 
-        public string ToText(Formatting formatting)
+        public string ToText(Formatter formatter)
         {
             switch (kind)
             {
                 case Kind.NewLine:
-                    return formatting.NewLine;
+                    return formatter.NewLine;
 
                 case Kind.EmptyLine:
-                    return formatting.NewLine + formatting.NewLine;
+                    return formatter.NewLine + formatter.NewLine;
 
                 case Kind.Space:
-                    return formatting.Space;
+                    return formatter.Space;
 
                 case Kind.Tab:
-                    return formatting.Tab;
+                    return formatter.Tab;
 
                 case Kind.WhiteSpaceBetweenUtokens:
-                    return formatting.WhiteSpaceBetweenUtokens;
+                    return formatter.WhiteSpaceBetweenUtokens;
 
                 default:
                     throw new InvalidOperationException("Unknown UtokenWhitespace");
@@ -254,9 +254,9 @@ namespace Sarcasm.Unparsing
             this.IndentLevel = indentLevel;
         }
 
-        public string ToText(Formatting formatting)
+        public string ToText(Formatter formatter)
         {
-            return string.Concat(Enumerable.Repeat(formatting.IndentUnit, IndentLevel));
+            return string.Concat(Enumerable.Repeat(formatter.IndentUnit, IndentLevel));
         }
 
         IReadOnlyDecoration Utoken.GetDecoration()

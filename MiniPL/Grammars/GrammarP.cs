@@ -405,19 +405,19 @@ namespace MiniPL.Grammars
 
             #region Unparse
 
-            UnparseControl.DefaultFormatting = new Formatting(B);
+            UnparseControl.DefaultFormatter = new Formatter(B);
             UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
             #endregion
         }
 
-        #region Formatting
+        #region Formatter
 
-        public class Formatting : Sarcasm.Unparsing.Formatting
+        public class Formatter : Sarcasm.Unparsing.Formatter
         {
             private readonly BnfTerms B;
 
-            public Formatting(BnfTerms b)
+            public Formatter(BnfTerms b)
             {
                 this.B = b;
             }

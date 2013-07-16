@@ -28,19 +28,19 @@ namespace Sarcasm.Unparsing
 
         internal IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> ExpressionToParentheses { get { return expressionToParentheses; } }
 
-        private Formatting _defaultFormatting;
-        public Formatting DefaultFormatting
+        private Formatter _defaultFormatter;
+        public Formatter DefaultFormatter
         {
             get
             {
-                if (_defaultFormatting == null)
-                    _defaultFormatting = new Formatting(grammar);
+                if (_defaultFormatter == null)
+                    _defaultFormatter = new Formatter(grammar);
 
-                return _defaultFormatting;
+                return _defaultFormatter;
             }
             set
             {
-                _defaultFormatting = value;
+                _defaultFormatter = value;
             }
         }
 

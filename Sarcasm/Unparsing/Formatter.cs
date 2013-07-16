@@ -15,10 +15,11 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Utility;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
+using System.Globalization;
 
 namespace Sarcasm.Unparsing
 {
-    internal class Formatter
+    public class Formatter
     {
         #region Tracing
 
@@ -58,7 +59,7 @@ namespace Sarcasm.Unparsing
 
         private enum State { Begin, End }
 
-        public enum ChildLocation { Unknown, First, Middle, Last, Only }
+        internal enum ChildLocation { Unknown, First, Middle, Last, Only }
 
         internal class Params
         {
@@ -74,11 +75,29 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
+        #region Default values
+
+        private static readonly string newLineDefault = Environment.NewLine;
+        private const string spaceDefault = " ";
+        private const string tabDefault = "\t";
+        private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));
+        private const string whiteSpaceBetweenUtokensDefault = spaceDefault;
+        private const bool indentEmptyLinesDefault = false;
+        private static readonly IFormatProvider formatProviderDefault = CultureInfo.InvariantCulture;
+
+        #endregion
+
         #region State
 
         #region Immutable after initialization
 
-        private readonly Formatting formatting;
+        public string NewLine { get; set; }
+        public string Space { get; set; }
+        public string Tab { get; set; }
+        public string IndentUnit { get; set; }
+        public string WhiteSpaceBetweenUtokens { get; set; }
+        public bool IndentEmptyLines { get; set; }
+        public IFormatProvider FormatProvider { get; private set; }
 
         #endregion
 
@@ -93,23 +112,52 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public Formatter(Formatting formatting)
+        public Formatter()
+            : this(formatProviderDefault)
         {
-            this.formatting = formatting;
+        }
+
+        public Formatter(Grammar grammar)
+            : this(grammar.DefaultCulture)
+        {
+        }
+
+        public Formatter(Parser parser)
+            : this(parser.Context.Culture)
+        {
+        }
+
+        protected Formatter(IFormatProvider formatProvider)
+        {
+            this.FormatProvider = formatProvider;
+
+            this.NewLine = newLineDefault;
+            this.Space = spaceDefault;
+            this.Tab = tabDefault;
+            this.IndentUnit = indentUnitDefault;
+            this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
+            this.IndentEmptyLines = indentEmptyLinesDefault;
         }
 
         private Formatter(Formatter that)
         {
-            this.formatting = that.formatting;
+            this.NewLine = that.NewLine;
+            this.Space = that.Space;
+            this.Tab = that.Tab;
+            this.IndentUnit = that.IndentUnit;
+            this.WhiteSpaceBetweenUtokens = that.WhiteSpaceBetweenUtokens;
+            this.IndentEmptyLines = that.IndentEmptyLines;
+            this.FormatProvider = that.FormatProvider;
+
             this.direction = that.direction;
         }
 
-        public Formatter Spawn(ChildLocation childLocation = ChildLocation.Unknown)
+        internal Formatter Spawn(ChildLocation childLocation = ChildLocation.Unknown)
         {
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        public Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.Unknown)
+        internal Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.Unknown)
         {
             if (childLocation == ChildLocation.Unknown)
             {
@@ -138,7 +186,59 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Public interface
+        #region Interface to grammar
+
+        public CultureInfo CultureInfo { get { return FormatProvider as CultureInfo; } }
+
+        public void SetFormatProviderIndependentlyFromParser(IFormatProvider formatProvider)
+        {
+            this.FormatProvider = formatProvider;
+
+        }
+
+        public void SetCultureInfoIndependentlyFromParser(CultureInfo cultureInfo)
+        {
+            SetFormatProviderIndependentlyFromParser(cultureInfo);
+        }
+
+        public void SetCultureInfo(CultureInfo cultureInfo, Parser parser)
+        {
+            SetCultureInfoIndependentlyFromParser(cultureInfo);
+            parser.Context.Culture = cultureInfo;
+        }
+
+        #endregion
+
+        #region Virtuals
+
+        protected virtual InsertedUtokens GetUtokensLeft(UnparsableObject target)
+        {
+            return InsertedUtokens.None;
+        }
+
+        protected virtual InsertedUtokens GetUtokensRight(UnparsableObject target)
+        {
+            return InsertedUtokens.None;
+        }
+
+        protected virtual InsertedUtokens GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+        {
+            return InsertedUtokens.None;
+        }
+
+        protected virtual BlockIndentation GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+        {
+            return BlockIndentation.IndentNotNeeded;
+        }
+
+        protected virtual IDecoration GetDecoration(UnparsableObject target)
+        {
+            return Decoration.None;
+        }
+
+        #endregion
+
+        #region Interface to unparser
 
         internal Unparser.Direction Direction
         {
@@ -155,7 +255,7 @@ namespace Sarcasm.Unparsing
         /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
-        public IReadOnlyList<UtokenBase> YieldBefore(UnparsableObject self, out Params @params)
+        internal IReadOnlyList<UtokenBase> YieldBefore(UnparsableObject self, out Params @params)
         {
             /*
              * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
@@ -183,8 +283,8 @@ namespace Sarcasm.Unparsing
             @params = new Params(blockIndentation);
 
             GetUtokensBeforeAfter getUtokensBefore = direction == Unparser.Direction.LeftToRight
-                ? (GetUtokensBeforeAfter)formatting._GetUtokensLeft
-                : (GetUtokensBeforeAfter)formatting._GetUtokensRight;
+                ? (GetUtokensBeforeAfter)_GetUtokensLeft
+                : (GetUtokensBeforeAfter)_GetUtokensRight;
 
             InsertedUtokens insertedUtokensBefore = getUtokensBefore(self);
 
@@ -197,15 +297,15 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        public IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
+        internal IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
         {
             Unparser.tsUnparse.Debug("YieldAfter");
 
             UpdateTopAncestorCacheForLeftOnTheFly(self);
 
             GetUtokensBeforeAfter getUtokensAfter = direction == Unparser.Direction.LeftToRight
-                ? (GetUtokensBeforeAfter)formatting._GetUtokensRight
-                : (GetUtokensBeforeAfter)formatting._GetUtokensLeft;
+                ? (GetUtokensBeforeAfter)_GetUtokensRight
+                : (GetUtokensBeforeAfter)_GetUtokensLeft;
 
             InsertedUtokens insertedUtokensAfter = getUtokensAfter(self);
 
@@ -232,7 +332,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
+        internal static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
             return utokens                                      .DebugWriteLines(tsRaw)
                 .CalculateDeferredUtokens(postProcessHelper)    .DebugWriteLines(tsCalculatedDeferred)
@@ -244,7 +344,7 @@ namespace Sarcasm.Unparsing
                 ;
         }
 
-        public void ResetMutableState()
+        internal void ResetMutableState()
         {
             topAncestorCacheForLeft = UnparsableObject.NonCalculated;
         }
@@ -271,7 +371,7 @@ namespace Sarcasm.Unparsing
             {
                 // NOTE: topAncestorCacheForLeft may get updated by _YieldBetween
                 // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
-                return _YieldBetween(self, formatter: this, formatting: this.formatting).ToList();
+                return _YieldBetween(self, formatter: this).ToList();
             }
             catch (NonCalculatedException)
             {
@@ -280,7 +380,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     new DeferredUtokens(
-                        () => _YieldBetween(self, formatter: null, formatting: this.formatting),
+                        () => _YieldBetween(self, formatter: this),
                         self: self,
                         helpMessage: "YieldBetween"
                         )
@@ -291,7 +391,7 @@ namespace Sarcasm.Unparsing
         /// <exception cref="UnparsableObject.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
-        private static IEnumerable<UtokenBase> _YieldBetween(UnparsableObject self, Formatter formatter, Formatting formatting)
+        private static IEnumerable<UtokenBase> _YieldBetween(UnparsableObject self, Formatter formatter)
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
@@ -299,7 +399,7 @@ namespace Sarcasm.Unparsing
 
             if (leftObject != null)
             {
-                InsertedUtokens insertedUtokensBetween = formatting._GetUtokensBetween(leftObject, self);
+                InsertedUtokens insertedUtokensBetween = formatter._GetUtokensBetween(leftObject, self);
 
                 if (insertedUtokensBetween != InsertedUtokens.None)
                 {
@@ -329,7 +429,7 @@ namespace Sarcasm.Unparsing
             {
                 // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation
                 // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
-                return _YieldIndentation(self, ref blockIndentation, direction, this.formatting, formatter: this, left: true).ToList();
+                return _YieldIndentation(self, ref blockIndentation, direction, formatter: this, left: true).ToList();
             }
             catch (NonCalculatedException)
             {
@@ -346,7 +446,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     blockIndentation.LeftDeferred = new DeferredUtokens(
-                        () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: true),
+                        () => _YieldIndentation(self, _blockIndentation, direction, formatter: this, left: true),
                         self: self,
                         helpMessage: "YieldIndentationLeft",
                         helpCalculatedObject: _blockIndentation
@@ -375,7 +475,7 @@ namespace Sarcasm.Unparsing
             {
                 // NOTE: topAncestorCacheForLeft may get updated by YieldIndentation
                 // NOTE: ToList is needed to fully evaluate the called function, so we can catch the exception
-                return _YieldIndentation(self, ref blockIndentation, direction, this.formatting, formatter: this, left: false).ToList();
+                return _YieldIndentation(self, ref blockIndentation, direction, formatter: this, left: false).ToList();
             }
             catch (NonCalculatedException)
             {
@@ -392,7 +492,7 @@ namespace Sarcasm.Unparsing
                 return new[]
                 {
                     blockIndentation.RightDeferred = new DeferredUtokens(
-                        () => _YieldIndentation(self, _blockIndentation, direction, this.formatting, formatter: null, left: false),
+                        () => _YieldIndentation(self, _blockIndentation, direction, formatter: this, left: false),
                         self: self,
                         helpMessage: "YieldIndentationRight",
                         helpCalculatedObject: _blockIndentation
@@ -405,12 +505,12 @@ namespace Sarcasm.Unparsing
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
         private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
-            Formatting formatting, Formatter formatter, bool left)
+            Formatter formatter, bool left)
         {
 #if DEBUG
             BlockIndentation originalBlockIndentationParameter = blockIndentationParameter;
 #endif
-            var utokens = _YieldIndentation(self, ref blockIndentationParameter, direction, formatting, formatter, left);
+            var utokens = _YieldIndentation(self, ref blockIndentationParameter, direction, formatter, left);
 #if DEBUG
             Debug.Assert(object.ReferenceEquals(blockIndentationParameter, originalBlockIndentationParameter),
                 string.Format("unwanted change of blockIndentationParameter reference in _YieldIndentation ({0})", left ? "left" : "right"));
@@ -422,7 +522,7 @@ namespace Sarcasm.Unparsing
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
         private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableObject self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
-            Formatting formatting, Formatter formatter, bool left)
+            Formatter formatter, bool left)
         {
             if (!left && direction == Unparser.Direction.RightToLeft && blockIndentationParameter.IsDeferred() && blockIndentationParameter.LeftDeferred != null)
             {
@@ -444,7 +544,7 @@ namespace Sarcasm.Unparsing
             if (blockIndentationParameter == BlockIndentation.ToBeSet || blockIndentationParameter.IsDeferred())
             {
                 UnparsableObject leftObject = GetLeft(self);
-                BlockIndentation blockIndentation = formatting._GetBlockIndentation(leftObject, self);
+                BlockIndentation blockIndentation = formatter._GetBlockIndentation(leftObject, self);
 
                 // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
 
@@ -496,6 +596,37 @@ namespace Sarcasm.Unparsing
         #endregion
 
         #region Helpers
+
+        private InsertedUtokens _GetUtokensLeft(UnparsableObject target)
+        {
+            return GetUtokensLeft(target)
+                .SetKind(InsertedUtokens.Kind.Left)
+                .SetAffected(target);
+        }
+
+        private InsertedUtokens _GetUtokensRight(UnparsableObject target)
+        {
+            return GetUtokensRight(target)
+                .SetKind(InsertedUtokens.Kind.Right)
+                .SetAffected(target);
+        }
+
+        private InsertedUtokens _GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+        {
+            return GetUtokensBetween(leftTarget, rightTarget)
+                .SetKind(InsertedUtokens.Kind.Between)
+                .SetAffected(leftTarget, rightTarget);
+        }
+
+        private BlockIndentation _GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+        {
+            return GetBlockIndentation(leftIfAny, target);
+        }
+
+        internal IDecoration _GetDecoration(UnparsableObject target)
+        {
+            return GetDecoration(target);
+        }
 
         private static IEnumerable<UnparsableObject> GetSelfAndAncestors(UnparsableObject self)
         {
@@ -556,5 +687,24 @@ namespace Sarcasm.Unparsing
         }
 
         #endregion
+    }
+
+    internal static class InsertedUtokensExtensions
+    {
+        public static InsertedUtokens SetKind(this InsertedUtokens insertedUtokens, InsertedUtokens.Kind kind)
+        {
+            if (insertedUtokens != null)
+                insertedUtokens.kind = kind;
+
+            return insertedUtokens;
+        }
+
+        public static InsertedUtokens SetAffected(this InsertedUtokens insertedUtokens, params UnparsableObject[] affectedUnparsableObjects)
+        {
+            if (insertedUtokens != null)
+                insertedUtokens.affectedUnparsableObjects_FOR_DEBUG = affectedUnparsableObjects;
+
+            return insertedUtokens;
+        }
     }
 }

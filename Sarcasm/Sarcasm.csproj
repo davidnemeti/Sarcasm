@@ -133,7 +133,7 @@
     <Compile Include="Unparsing\ExpressionUnparser.cs" />
     <Compile Include="Unparsing\Formatter.cs" />
     <Compile Include="Unparsing\Exceptions.cs" />
-    <Compile Include="Unparsing\Formatting.cs" />
+    <Compile Include="Unparsing\BlockIndentation.cs" />
     <Compile Include="Unparsing\UnparseControl.cs" />
     <Compile Include="Unparsing\UnparserRelated.cs" />
     <Compile Include="Unparsing\Utokens.cs" />
