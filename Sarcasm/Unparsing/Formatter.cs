@@ -104,6 +104,7 @@ namespace Sarcasm.Unparsing
         #region Mutable
 
         private UnparsableObject topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+        private UnparsableObject leftTerminalLeaveCache = UnparsableObject.NonCalculated;
         private Unparser.Direction direction;
 
         #endregion
@@ -266,6 +267,7 @@ namespace Sarcasm.Unparsing
             Unparser.tsUnparse.Debug("YieldBefore");
 
             UpdateTopAncestorCacheForLeftOnTheFly(self);
+            UpdateLeftTerminalLeaveCacheOnTheFly(self);
 
             var utokens = new List<UtokenBase>();
             BlockIndentation blockIndentation = BlockIndentation.ToBeSet;
@@ -302,6 +304,7 @@ namespace Sarcasm.Unparsing
             Unparser.tsUnparse.Debug("YieldAfter");
 
             UpdateTopAncestorCacheForLeftOnTheFly(self);
+            UpdateLeftTerminalLeaveCacheOnTheFly(self);
 
             GetUtokensBeforeAfter getUtokensAfter = direction == Unparser.Direction.LeftToRight
                 ? (GetUtokensBeforeAfter)_GetUtokensRight
@@ -353,6 +356,17 @@ namespace Sarcasm.Unparsing
 
         #region Yield logic for indentation and between
 
+        private void UpdateLeftTerminalLeaveCacheOnTheFly(UnparsableObject self)
+        {
+            if (self.BnfTerm is Terminal)
+            {
+                if (direction == Unparser.Direction.LeftToRight)
+                    leftTerminalLeaveCache = self;
+                else if (leftTerminalLeaveCache == topAncestorCacheForLeft)
+                    leftTerminalLeaveCache = UnparsableObject.NonCalculated;
+            }
+        }
+
         private void UpdateTopAncestorCacheForLeftOnTheFly(UnparsableObject self)
         {
             if (self.SyntaxParent == null)
@@ -395,7 +409,7 @@ namespace Sarcasm.Unparsing
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
-            UnparsableObject leftObject = GetLeft(self);
+            UnparsableObject leftObject = GetLeftTerminalLeave(self);
 
             if (leftObject != null)
             {
@@ -543,7 +557,7 @@ namespace Sarcasm.Unparsing
 
             if (blockIndentationParameter == BlockIndentation.ToBeSet || blockIndentationParameter.IsDeferred())
             {
-                UnparsableObject leftObject = GetLeft(self);
+                UnparsableObject leftObject = GetLeftTerminalLeave(self);
                 BlockIndentation blockIndentation = formatter._GetBlockIndentation(leftObject, self);
 
                 // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
@@ -640,7 +654,7 @@ namespace Sarcasm.Unparsing
 
         private static UnparsableObject GetTopAncestorForLeft(UnparsableObject self, Formatter formatter = null)
         {
-            // NOTE: topAncestorCacheForLeft will not be changed if canUseTopAncestorCacheForLeft is false, that's why we use topAncestorForLeft + the static vs. instance behavior
+            // NOTE: topAncestorCacheForLeft will not be changed if we have no formatter, that's why we use topAncestorForLeft + the static vs. instance behavior
             UnparsableObject topAncestorForLeft;
 
             if (formatter == null || !UnparsableObject.IsCalculated(formatter.topAncestorCacheForLeft))
@@ -653,7 +667,7 @@ namespace Sarcasm.Unparsing
             else
             {
                 topAncestorForLeft = formatter.topAncestorCacheForLeft;
-                //Unparser.tsUnparse.Debug(formatter.topAncestorCacheForLeft != CalculateTopAncestorForLeft(self)),
+                //Unparser.tsUnparse.Debug(formatter.topAncestorCacheForLeft != CalculateTopAncestorForLeft(self),
                 //    "!!!!!!!! should be equal for {0}, but topAncestorCacheForLeft is '{1}' and calculated value is '{2}'", self, formatter.topAncestorCacheForLeft, CalculateTopAncestorForLeft(self));
                 Debug.Assert(formatter.topAncestorCacheForLeft == CalculateTopAncestorForLeft(self));
             }
@@ -681,7 +695,30 @@ namespace Sarcasm.Unparsing
         /// <exception cref="UnparsableObject.NonCalculatedException">
         /// If topLeft is non-calculated.
         /// </exception>
-        private static UnparsableObject GetLeft(UnparsableObject self, Formatter formatter = null)
+        private static UnparsableObject GetLeftTerminalLeave(UnparsableObject self, Formatter formatter = null)
+        {
+            // NOTE: topAncestorCacheForLeft will not be changed if we have no formatter, that's why we use topAncestorForLeft + the static vs. instance behavior
+            UnparsableObject leftTerminalLeave;
+
+            if (formatter == null || !UnparsableObject.IsCalculated(formatter.topAncestorCacheForLeft))
+            {
+                leftTerminalLeave = CalculateLeftTerminalLeave(self, formatter);
+
+                if (formatter != null)
+                    formatter.leftTerminalLeaveCache = leftTerminalLeave;
+            }
+            else
+            {
+                leftTerminalLeave = formatter.leftTerminalLeaveCache;
+                //Unparser.tsUnparse.Debug(formatter.leftTerminalLeaveCache != CalculateLeftTerminalLeave(self, formatter),
+                //    "!!!!!!!! should be equal for {0}, but leftTerminalLeaveCache is '{1}' and calculated value is '{2}'", self, formatter.leftTerminalLeaveCache, CalculateLeftTerminalLeave(self, formatter));
+                Debug.Assert(formatter.leftTerminalLeaveCache == CalculateLeftTerminalLeave(self, formatter));
+            }
+
+            return leftTerminalLeave;
+        }
+
+        private static UnparsableObject CalculateLeftTerminalLeave(UnparsableObject self, Formatter formatter)
         {
             return GetLeftsFromTopToBottom(self, formatter).LastOrDefault();
         }

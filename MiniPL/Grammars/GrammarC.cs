@@ -432,7 +432,7 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Foreground, Colors.Cyan)
                         ;
                 }
-                else if (target.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
+                else if (target.BnfTerm.IsLiteral())
                 {
                     return new Decoration()
                         .Add(DecorationKey.Foreground, Colors.Red)

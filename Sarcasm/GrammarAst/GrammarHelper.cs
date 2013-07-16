@@ -473,6 +473,11 @@ namespace Sarcasm.GrammarAst
             return bnfTerm.Flags.IsSet(TermFlags.IsPunctuation);
         }
 
+        public static bool IsLiteral(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsLiteral);
+        }
+
         internal static void MarkTransient(NonTerminal nonTerminal)
         {
             nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);
