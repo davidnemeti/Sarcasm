@@ -285,7 +285,7 @@ namespace Sarcasm.Unparsing
         public static InsertedUtokens SetAffected(this InsertedUtokens insertedUtokens, params UnparsableObject[] affectedUnparsableObjects)
         {
             if (insertedUtokens != null)
-                insertedUtokens.affectedUnparsableObjects = affectedUnparsableObjects;
+                insertedUtokens.affectedUnparsableObjects_FOR_DEBUG = affectedUnparsableObjects;
 
             return insertedUtokens;
         }

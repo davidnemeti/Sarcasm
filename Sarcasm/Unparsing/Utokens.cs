@@ -299,10 +299,12 @@ namespace Sarcasm.Unparsing
         internal enum Kind { Left, Right, Between }
 
         internal Kind kind { get; set; }
-        public readonly double Priority;
-        public readonly Behavior Behavior;
-        public readonly IEnumerable<UtokenInsert> Utokens;
-        internal IEnumerable<UnparsableObject> affectedUnparsableObjects;
+
+        public double Priority { get; set; }
+        public Behavior Behavior { get; set; }
+        public IEnumerable<UtokenInsert> Utokens { get; private set; }
+
+        internal IEnumerable<UnparsableObject> affectedUnparsableObjects_FOR_DEBUG;
 
         public const InsertedUtokens None = null;
         private const double priorityDefault = 0;
@@ -337,7 +339,7 @@ namespace Sarcasm.Unparsing
                 Behavior,
                 Priority,
                 string.Join(", ", Utokens),
-                string.Join(", ", affectedUnparsableObjects)
+                affectedUnparsableObjects_FOR_DEBUG != null ? string.Join(", ", affectedUnparsableObjects_FOR_DEBUG) : "<<NO DEBUG INFO>>"
                 );
         }
 
@@ -374,6 +376,23 @@ namespace Sarcasm.Unparsing
         public static implicit operator InsertedUtokens(UtokenInsert[] utokens)
         {
             return new InsertedUtokens(utokens);
+        }
+    }
+
+    public static class UtokenInsertExtensions
+    {
+        public static InsertedUtokens SetPriority(this UtokenInsert utoken, double priority)
+        {
+            InsertedUtokens insertedUtokens = utoken;
+            insertedUtokens.Priority = priority;
+            return insertedUtokens;
+        }
+
+        public static InsertedUtokens SetBehavior(this UtokenInsert utoken, Behavior behavior)
+        {
+            InsertedUtokens insertedUtokens = utoken;
+            insertedUtokens.Behavior = behavior;
+            return insertedUtokens;
         }
     }
 

@@ -478,7 +478,7 @@ namespace MiniPL.Grammars
                 else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.Obj is D.Program)
                     return UtokenInsert.EmptyLine;
                 else if (target.BnfTerm == B.END && target.Obj is D.Function)
-                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.EmptyLine);
+                    return UtokenInsert.EmptyLine.SetPriority(10);
                 else if (target.BnfTerm == B.BEGIN)
                     return UtokenInsert.NewLine;
                 else if (target.BnfTerm == B.END)
@@ -498,9 +498,9 @@ namespace MiniPL.Grammars
                 else if (leftTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
                 else if (leftTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
-                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.Space);
+                    return UtokenInsert.Space.SetPriority(10);
                 else if (leftTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
-                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.NoWhitespace);
+                    return UtokenInsert.NoWhitespace.SetPriority(10);
                 else
                     return base.GetUtokensBetween(leftTarget, rightTarget);
             }
