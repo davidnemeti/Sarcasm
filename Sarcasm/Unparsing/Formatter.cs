@@ -222,12 +222,12 @@ namespace Sarcasm.Unparsing
             return InsertedUtokens.None;
         }
 
-        protected virtual InsertedUtokens GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+        protected virtual InsertedUtokens GetUtokensBetween(UnparsableObject leftTerminalLeaveTarget, UnparsableObject rightTarget)
         {
             return InsertedUtokens.None;
         }
 
-        protected virtual BlockIndentation GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+        protected virtual BlockIndentation GetBlockIndentation(UnparsableObject leftTerminalLeaveIfAny, UnparsableObject target)
         {
             return BlockIndentation.IndentNotNeeded;
         }

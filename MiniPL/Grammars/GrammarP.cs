@@ -512,32 +512,32 @@ namespace MiniPL.Grammars
                     return base.GetUtokensRight(target);
             }
 
-            protected override InsertedUtokens GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+            protected override InsertedUtokens GetUtokensBetween(UnparsableObject leftTerminalLeaveTarget, UnparsableObject rightTarget)
             {
-                if (leftTarget.AstParent != null && leftTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
+                if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
-                else if (leftTarget.AstParent != null && leftTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
-                else if (leftTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
-                else if (leftTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTerminalLeaveTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
-                else if (leftTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
+                else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
                     return UtokenInsert.Space.SetPriority(10);
-                else if (leftTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
+                else if (leftTerminalLeaveTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace.SetPriority(10);
                 else
-                    return base.GetUtokensBetween(leftTarget, rightTarget);
+                    return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
             }
 
-            protected override BlockIndentation GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+            protected override BlockIndentation GetBlockIndentation(UnparsableObject leftTerminalLeaveIfAny, UnparsableObject target)
             {
                 if (target.BnfTerm == B.Statement)
                     return BlockIndentation.Indent;
-                else if (leftIfAny != null && leftIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
+                else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
                     return BlockIndentation.Unindent;
                 else
-                    return base.GetBlockIndentation(leftIfAny, target);
+                    return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);
             }
         }
 
