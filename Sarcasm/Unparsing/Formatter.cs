@@ -57,7 +57,7 @@ namespace Sarcasm.Unparsing
 
         #region Types
 
-        private enum State { Begin, End }
+        private enum State { Before, After }
 
         internal enum ChildLocation { Unknown, First, Middle, Last, Only }
 
@@ -266,8 +266,7 @@ namespace Sarcasm.Unparsing
 
             Unparser.tsUnparse.Debug("YieldBefore");
 
-            UpdateTopAncestorCacheForLeftOnTheFly(self);
-            UpdateLeftTerminalLeaveCacheOnTheFly(self);
+            UpdateCacheOnTheFly(self, State.Before);
 
             var utokens = new List<UtokenBase>();
             BlockIndentation blockIndentation = BlockIndentation.ToBeSet;
@@ -303,9 +302,6 @@ namespace Sarcasm.Unparsing
         {
             Unparser.tsUnparse.Debug("YieldAfter");
 
-            UpdateTopAncestorCacheForLeftOnTheFly(self);
-            UpdateLeftTerminalLeaveCacheOnTheFly(self);
-
             GetUtokensBeforeAfter getUtokensAfter = direction == Unparser.Direction.LeftToRight
                 ? (GetUtokensBeforeAfter)_GetUtokensRight
                 : (GetUtokensBeforeAfter)_GetUtokensLeft;
@@ -333,6 +329,8 @@ namespace Sarcasm.Unparsing
                 foreach (UtokenBase utoken in YieldBetween(self))
                     yield return utoken;
             }
+
+            UpdateCacheOnTheFly(self, State.After);
         }
 
         internal static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
@@ -356,25 +354,24 @@ namespace Sarcasm.Unparsing
 
         #region Yield logic for indentation and between
 
-        private void UpdateLeftTerminalLeaveCacheOnTheFly(UnparsableObject self)
+        private void UpdateCacheOnTheFly(UnparsableObject self, State state)
         {
-            if (self.BnfTerm is Terminal)
+            if (state == State.Before)
             {
-                if (direction == Unparser.Direction.LeftToRight)
+                if (self.SyntaxParent == null)
+                    topAncestorCacheForLeft = null;     // self is root node
+                else if (self.IsLeftSiblingCalculated && self.LeftSibling != null)
+                    topAncestorCacheForLeft = self;
+                else
+                    topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+            }
+            else if (state == State.After)
+            {
+                if (direction == Unparser.Direction.LeftToRight && self.BnfTerm is Terminal)
                     leftTerminalLeaveCache = self;
-                else if (leftTerminalLeaveCache == topAncestorCacheForLeft)
+                else if (direction == Unparser.Direction.RightToLeft && self == topAncestorCacheForLeft)
                     leftTerminalLeaveCache = UnparsableObject.NonCalculated;
             }
-        }
-
-        private void UpdateTopAncestorCacheForLeftOnTheFly(UnparsableObject self)
-        {
-            if (self.SyntaxParent == null)
-                topAncestorCacheForLeft = null;     // self is root node
-            else if (self.IsLeftSiblingCalculated && self.LeftSibling != null)
-                topAncestorCacheForLeft = self;
-            else
-                topAncestorCacheForLeft = UnparsableObject.NonCalculated;
         }
 
         private IReadOnlyList<UtokenBase> YieldBetween(UnparsableObject self)
