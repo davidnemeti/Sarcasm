@@ -198,7 +198,6 @@ namespace MiniPL.Grammars
                 + B.BEGIN
                 + B.Statement.PlusList().BindTo(B.Program, t => t.Body)
                 + B.END
-                + B.DOT
                 ;
 
             B.Function.Rule =
