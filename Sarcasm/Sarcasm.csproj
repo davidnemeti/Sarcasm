@@ -110,6 +110,7 @@
     <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="GrammarAst\TerminalFactoryS.cs" />
     <Compile Include="Reflection\MetaRepository.cs" />
+    <Compile Include="Unparsing\FormatterExtensions.cs" />
     <Compile Include="Unparsing\Decoration.cs" />
     <Compile Include="Utility\ResourceCounter.cs" />
     <Compile Include="Utility\ReverseList.cs" />
