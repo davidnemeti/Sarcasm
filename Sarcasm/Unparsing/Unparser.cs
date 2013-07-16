@@ -439,7 +439,12 @@ namespace Sarcasm.Unparsing
             if (child != null)
             {
                 tsUnparse.Debug("child is linked: {0}", child);
-                child.Parent = self;
+
+                child.SyntaxParent = self;
+
+                child.AstParent =   child.Obj != self.Obj       ?   self :
+                                    self.IsAstParentCalculated  ?   self.AstParent :
+                                                                    UnparsableObject.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
             }
 
             if (!IsPrevMostChildCalculated(self))

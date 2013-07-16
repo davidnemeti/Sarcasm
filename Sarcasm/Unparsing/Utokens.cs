@@ -294,52 +294,63 @@ namespace Sarcasm.Unparsing
 
     public enum Behavior { Overridable, NonOverridableSkipThrough, NonOverridableSeparator }
 
-    internal class InsertedUtokens : UtokenBase, IComparable<InsertedUtokens>
+    public class InsertedUtokens : UtokenBase, IComparable<InsertedUtokens>
     {
-        public enum Kind { Left, Right, Between }
+        internal enum Kind { Left, Right, Between }
 
-        public readonly Kind kind;
-        public readonly double priority;
-        public readonly Behavior behavior;
-        public readonly IEnumerable<UtokenInsert> utokens;
+        internal Kind kind { get; set; }
+        public readonly double Priority;
+        public readonly Behavior Behavior;
+        public readonly IEnumerable<UtokenInsert> Utokens;
+        internal IEnumerable<UnparsableObject> affectedUnparsableObjects;
 
-        private readonly IEnumerable<BnfTermPartialContext> affectedContexts;
+        public const InsertedUtokens None = null;
+        private const double priorityDefault = 0;
+        private const Behavior behaviorDefault = Behavior.Overridable;
 
-        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<UtokenInsert> utokens, params BnfTermPartialContext[] affectedContexts)
-            : this(kind, priority, behavior, utokens, (IEnumerable<BnfTermPartialContext>)affectedContexts)
+        public InsertedUtokens(double priority, Behavior behavior, IEnumerable<UtokenInsert> utokens)
+            : this(priority, behavior, utokens.ToArray())
         {
         }
 
-        internal InsertedUtokens(Kind kind, double priority, Behavior behavior, IEnumerable<UtokenInsert> utokens, IEnumerable<BnfTermPartialContext> affectedContexts)
+        public InsertedUtokens(double priority, Behavior behavior, params UtokenInsert[] utokens)
         {
-            this.priority = priority;
-            this.kind = kind;
-            this.behavior = behavior;
-            this.utokens = utokens.ToList();
-            this.affectedContexts = affectedContexts.ToList();
+            this.Priority = priority;
+            this.Behavior = behavior;
+            this.Utokens = utokens;
+        }
+
+        public InsertedUtokens(params UtokenInsert[] utokens)
+            : this(priorityDefault, behaviorDefault, utokens)
+        {
+        }
+
+        public InsertedUtokens(UtokenInsert utoken)
+            : this(priorityDefault, behaviorDefault, new UtokenInsert[] {utoken})
+        {
         }
 
         public override string ToString()
         {
-            return string.Format("{0}, behavior {1}, priority {2}: {{ {3} }}; affected contexts: {{ {4} }}",
+            return string.Format("{0}, behavior {1}, priority {2}: {{ {3} }}; affected objects: {{ {4} }}",
                 kind,
-                behavior,
-                priority,
-                string.Join(", ", utokens),
-                string.Join(", ", affectedContexts)
+                Behavior,
+                Priority,
+                string.Join(", ", Utokens),
+                string.Join(", ", affectedUnparsableObjects)
                 );
         }
 
         public override IEnumerable<UtokenBase> Flatten()
         {
-            return utokens.SelectMany(utoken => utoken.Flatten());
+            return Utokens.SelectMany(utoken => utoken.Flatten());
         }
 
         public int CompareTo(InsertedUtokens that)
         {
-            if (that == null || this.priority > that.priority || this.specificScore > that.specificScore)
+            if (that == null || this.Priority > that.Priority)
                 return 1;
-            else if (this.priority < that.priority || this.specificScore < that.specificScore)
+            else if (this.Priority < that.Priority)
                 return -1;
             else
                 return 0;
@@ -355,18 +366,14 @@ namespace Sarcasm.Unparsing
                 return insertedUtokens1.CompareTo(insertedUtokens2);
         }
 
-        private int? _specificScore;
-        private int specificScore
+        public static implicit operator InsertedUtokens(UtokenInsert utokenInsert)
         {
-            get
-            {
-                if (!_specificScore.HasValue)
-                    _specificScore = affectedContexts.Sum(context => context.Length);
+            return new InsertedUtokens(utokenInsert);
+        }
 
-                // NOTE: BnfTermPartialContext.Any.Length == 0
-
-                return _specificScore.Value;
-            }
+        public static implicit operator InsertedUtokens(UtokenInsert[] utokens)
+        {
+            return new InsertedUtokens(utokens);
         }
     }
 

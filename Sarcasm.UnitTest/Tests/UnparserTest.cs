@@ -32,44 +32,14 @@ namespace Sarcasm.UnitTest
         [ClassInitialize]
         public static void InitializeUnparser(TestContext testContext)
         {
-            grammar.UnparseControl.ClearManualSetOfParenthesesForExpressions();     // we want to test the automatic parentheses stuff
-
             CommonTest.InitializeParser();
             Directory.CreateDirectory(actualUnparsedFilesDir);
             unparser = new Unparser(grammar);
 
-            formatting2 = new Formatting() { IndentEmptyLines = false };
-            InitializeFormatting(formatting2);
+            formatting2 = new SpecialFormatting(grammar.B) { IndentEmptyLines = false };
+            formatting3 = new SpecialFormatting(grammar.B) { IndentEmptyLines = true };
 
-            formatting3 = new Formatting() { IndentEmptyLines = true };
-            InitializeFormatting(formatting3);
-        }
-
-        private static void InitializeFormatting(Formatting formatting)
-        {
-            formatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensRightOf(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensLeftOf(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensLeftOf(B.SEMICOLON, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensLeftOf(B.COMMA, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensRightOf(B.UnaryOperator, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            formatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-
-            formatting.InsertUtokensRightOf(B.Statement, UtokenInsert.NewLine);
-            formatting.InsertUtokensLeftOf(B.Statement, UtokenInsert.NewLine, UtokenInsert.NewLine);
-            formatting.SetBlockIndentationOn(B.Statement, BlockIndentation.Indent);
-            formatting.InsertUtokensBetweenOrdered(B.ELSE, B.If, UtokenInsert.Space);
-            formatting.SetBlockIndentationOn(B.ELSE, B.If, BlockIndentation.Unindent);
-            formatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
-            formatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
-            formatting.InsertUtokensLeftOf(B.BEGIN, UtokenInsert.NewLine);
-            formatting.InsertUtokensRightOf(B.BEGIN, UtokenInsert.NewLine);
-            formatting.InsertUtokensLeftOf(B.END, UtokenInsert.NewLine);
-            formatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
-            formatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
+            grammar.UnparseControl.ClearManualSetOfParenthesesForExpressions();     // we want to test the automatic parentheses stuff
         }
 
         protected void ReunparseCheck(NonTerminal root, string parseFileName, bool leftToRight)
@@ -100,6 +70,22 @@ namespace Sarcasm.UnitTest
 
             // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
             Assert.AreEqual(expected: originalSourceText, actual: unparsedSourceText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
+        }
+
+        private class SpecialFormatting : MiniPL.Grammars.GrammarP.Formatting
+        {
+            public SpecialFormatting(MiniPL.Grammars.GrammarP.BnfTerms b)
+                : base(b)
+            {
+            }
+
+            protected override InsertedUtokens GetUtokensLeft(UnparsableObject target)
+            {
+                if (target.BnfTerm == B.Statement)
+                    return new[] { UtokenInsert.NewLine, UtokenInsert.NewLine };
+                else
+                    return base.GetUtokensLeft(target);
+            }
         }
     }
 }

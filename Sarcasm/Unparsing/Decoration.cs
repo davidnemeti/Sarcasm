@@ -108,7 +108,7 @@ namespace Sarcasm.Unparsing
             return this;
         }
 
-        public static readonly IDecoration None = null;
+        public const IDecoration None = null;
 
         public bool TryGetValue(object key, out object value)
         {

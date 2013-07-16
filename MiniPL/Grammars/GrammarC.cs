@@ -14,6 +14,7 @@ using Sarcasm.DomainCore;
 
 using MiniPL.DomainModel;
 using D = MiniPL.DomainModel;
+using DC = Sarcasm.DomainCore;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
@@ -396,35 +397,12 @@ namespace MiniPL.Grammars
             #region Unparse
 
             UnparseControl.DefaultFormatting = new Formatting(B);
-
-            UnparseControl.DefaultFormatting.InsertUtokensAround(B.DOT, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.RIGHT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.SEMICOLON, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.COMMA, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.UnaryOperator, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.Name, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.NameRef, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITE, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.WRITELN, B.LEFT_PAREN, UtokenInsert.NoWhitespace);
-
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.Statement, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.Statement, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.Statement, BlockIndentation.Indent);
-            UnparseControl.DefaultFormatting.InsertUtokensBetweenOrdered(B.ELSE, B.If, UtokenInsert.Space);
-            UnparseControl.DefaultFormatting.SetBlockIndentationOn(B.ELSE, B.If, BlockIndentation.Unindent);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.Name), UtokenInsert.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Program, B.NamespaceName), UtokenInsert.EmptyLine);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.BEGIN, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.BEGIN, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensLeftOf(B.END, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(B.END, UtokenInsert.NewLine);
-            UnparseControl.DefaultFormatting.InsertUtokensRightOf(new BnfTermPartialContext(B.Function, B.END), UtokenInsert.EmptyLine);
-
             UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
             #endregion
         }
+
+        #region Formatting
 
         public class Formatting : Sarcasm.Unparsing.Formatting
         {
@@ -435,27 +413,27 @@ namespace MiniPL.Grammars
                 this.B = b;
             }
 
-            public override IDecoration GetDecoration(UnparsableObject unparsableObject)
+            protected override IDecoration GetDecoration(UnparsableObject target)
             {
-                if (unparsableObject.BnfTerm is KeyTerm)
+                if (target.BnfTerm is KeyTerm)
                 {
                     return new Decoration()
                         .Add(DecorationKey.Foreground, Colors.Blue)
                         ;
                 }
-                else if (unparsableObject.BnfTerm.IsOperator())
+                else if (target.BnfTerm.IsOperator())
                 {
                     return new Decoration()
                         .Add(DecorationKey.Foreground, Colors.Purple)
                         ;
                 }
-                else if (unparsableObject.Obj is D.Type)
+                else if (target.Obj is D.Type)
                 {
                     return new Decoration()
                         .Add(DecorationKey.Foreground, Colors.Cyan)
                         ;
                 }
-                else if (unparsableObject.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
+                else if (target.BnfTerm.Flags.HasFlag(TermFlags.IsLiteral))
                 {
                     return new Decoration()
                         .Add(DecorationKey.Foreground, Colors.Red)
@@ -464,6 +442,80 @@ namespace MiniPL.Grammars
                 else
                     return Decoration.None;
             }
+
+            protected override InsertedUtokens GetUtokensLeft(UnparsableObject target)
+            {
+                if (target.BnfTerm == B.DOT)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.RIGHT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.SEMICOLON)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.COMMA)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.Statement)
+                    return UtokenInsert.NewLine;
+                else if (target.BnfTerm == B.BEGIN)
+                    return UtokenInsert.NewLine;
+                else if (target.BnfTerm == B.END)
+                    return UtokenInsert.NewLine;
+                else
+                    return base.GetUtokensLeft(target);
+            }
+
+            protected override InsertedUtokens GetUtokensRight(UnparsableObject target)
+            {
+                if (target.BnfTerm == B.DOT)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.LEFT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.UnaryOperator)
+                    return UtokenInsert.NoWhitespace;
+                else if (target.BnfTerm == B.Statement)
+                    return UtokenInsert.NewLine;
+                else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.Obj is D.Program)
+                    return UtokenInsert.EmptyLine;
+                else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.Obj is D.Program)
+                    return UtokenInsert.EmptyLine;
+                else if (target.BnfTerm == B.END && target.Obj is D.Function)
+                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.EmptyLine);
+                else if (target.BnfTerm == B.BEGIN)
+                    return UtokenInsert.NewLine;
+                else if (target.BnfTerm == B.END)
+                    return UtokenInsert.NewLine;
+                else
+                    return base.GetUtokensRight(target);
+            }
+
+            protected override InsertedUtokens GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+            {
+                if (leftTarget.AstParent != null && leftTarget.AstParent.Obj is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (leftTarget.AstParent != null && leftTarget.AstParent.Obj is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (leftTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (leftTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
+                    return UtokenInsert.NoWhitespace;
+                else if (leftTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
+                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.Space);
+                else if (leftTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
+                    return new InsertedUtokens(10, Behavior.Overridable, UtokenInsert.NoWhitespace);
+                else
+                    return base.GetUtokensBetween(leftTarget, rightTarget);
+            }
+
+            protected override BlockIndentation GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+            {
+                if (target.BnfTerm == B.Statement)
+                    return BlockIndentation.Indent;
+                else if (leftIfAny != null && leftIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
+                    return BlockIndentation.Unindent;
+                else
+                    return base.GetBlockIndentation(leftIfAny, target);
+            }
         }
+
+        #endregion
     }
 }

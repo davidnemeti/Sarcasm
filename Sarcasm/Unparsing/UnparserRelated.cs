@@ -88,7 +88,8 @@ namespace Sarcasm.Unparsing
         public BnfTerm BnfTerm { get; private set; }
         public object Obj { get; private set; }
 
-        private UnparsableObject parent = NonCalculated;
+        private UnparsableObject syntaxParent = NonCalculated;
+        private UnparsableObject astParent = NonCalculated;
         private UnparsableObject leftMostChild = NonCalculated;
         private UnparsableObject rightMostChild = NonCalculated;
         private UnparsableObject leftSibling = NonCalculated;
@@ -109,10 +110,23 @@ namespace Sarcasm.Unparsing
 
         #region Publics
 
-        public UnparsableObject Parent
+        public UnparsableObject SyntaxParent
         {
-            get { CheckIfValid(parent); return parent; }
-            set { CheckIfNotThrownOut(parent); parent = value; }
+            get { CheckIfValid(syntaxParent); return syntaxParent; }
+            set { CheckIfNotThrownOut(syntaxParent); syntaxParent = value; }
+        }
+
+        public UnparsableObject AstParent
+        {
+            get
+            {
+                CheckIfNotThrownOut(astParent);     // NOTE: special handling for AstParent getter, that's why it's CheckIfNotThrownOut and not CheckIfValid
+
+                return astParent != NonCalculated
+                    ? astParent
+                    : Util.RecurseStopBeforeNull(this, unparsableObject => unparsableObject.SyntaxParent).FirstOrDefault(unparsableObject => unparsableObject.Obj != this.Obj);
+            }
+            set { CheckIfNotThrownOut(astParent); astParent = value; }
         }
 
         public UnparsableObject LeftMostChild
@@ -139,7 +153,8 @@ namespace Sarcasm.Unparsing
             set { CheckIfNotThrownOut(rightSibling); rightSibling = value; }
         }
 
-        public bool IsParentCalculated { get { return IsCalculated(parent); } }
+        public bool IsSyntaxParentCalculated { get { return IsCalculated(syntaxParent); } }
+        public bool IsAstParentCalculated { get { return IsCalculated(astParent); } }
         public bool IsLeftMostChildCalculated { get { return IsCalculated(leftMostChild); } }
         public bool IsRightMostChildCalculated { get { return IsCalculated(rightMostChild); } }
         public bool IsLeftSiblingCalculated { get { return IsCalculated(leftSibling); } }
@@ -149,7 +164,7 @@ namespace Sarcasm.Unparsing
 
         public void SetAsRoot()
         {
-            Parent = null;
+            SyntaxParent = AstParent = null;
             LeftSibling = null;
             RightSibling = null;
         }

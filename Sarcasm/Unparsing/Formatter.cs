@@ -70,7 +70,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private delegate bool HasUtokensBeforeAfter(IEnumerable<BnfTerm> targetAndAncestors, out InsertedUtokens insertedUtokensBeforeAfter);
+        private delegate InsertedUtokens GetUtokensBeforeAfter(UnparsableObject target);
 
         #endregion
 
@@ -182,12 +182,13 @@ namespace Sarcasm.Unparsing
 
             @params = new Params(blockIndentation);
 
-            HasUtokensBeforeAfter hasUtokensBefore = direction == Unparser.Direction.LeftToRight
-                ? (HasUtokensBeforeAfter)formatting.TryGetUtokensLeft
-                : (HasUtokensBeforeAfter)formatting.TryGetUtokensRight;
+            GetUtokensBeforeAfter getUtokensBefore = direction == Unparser.Direction.LeftToRight
+                ? (GetUtokensBeforeAfter)formatting._GetUtokensLeft
+                : (GetUtokensBeforeAfter)formatting._GetUtokensRight;
 
-            InsertedUtokens insertedUtokensBefore;
-            if (hasUtokensBefore(GetSelfAndAncestorsB(self), out insertedUtokensBefore))
+            InsertedUtokens insertedUtokensBefore = getUtokensBefore(self);
+
+            if (insertedUtokensBefore != InsertedUtokens.None)
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
                 utokens.Add(insertedUtokensBefore);
@@ -202,12 +203,13 @@ namespace Sarcasm.Unparsing
 
             UpdateTopAncestorCacheForLeftOnTheFly(self);
 
-            HasUtokensBeforeAfter hasUtokensAfter = direction == Unparser.Direction.LeftToRight
-                ? (HasUtokensBeforeAfter)formatting.TryGetUtokensRight
-                : (HasUtokensBeforeAfter)formatting.TryGetUtokensLeft;
+            GetUtokensBeforeAfter getUtokensAfter = direction == Unparser.Direction.LeftToRight
+                ? (GetUtokensBeforeAfter)formatting._GetUtokensRight
+                : (GetUtokensBeforeAfter)formatting._GetUtokensLeft;
 
-            InsertedUtokens insertedUtokensAfter;
-            if (hasUtokensAfter(GetSelfAndAncestorsB(self), out insertedUtokensAfter))
+            InsertedUtokens insertedUtokensAfter = getUtokensAfter(self);
+
+            if (insertedUtokensAfter != InsertedUtokens.None)
             {
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensAfter);
                 yield return insertedUtokensAfter;
@@ -253,7 +255,7 @@ namespace Sarcasm.Unparsing
 
         private void UpdateTopAncestorCacheForLeftOnTheFly(UnparsableObject self)
         {
-            if (self.Parent == null)
+            if (self.SyntaxParent == null)
                 topAncestorCacheForLeft = null;     // self is root node
             else if (self.IsLeftSiblingCalculated && self.LeftSibling != null)
                 topAncestorCacheForLeft = self;
@@ -293,16 +295,16 @@ namespace Sarcasm.Unparsing
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
-            if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
+            UnparsableObject leftObject = GetLeft(self);
+
+            if (leftObject != null)
             {
-                foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
+                InsertedUtokens insertedUtokensBetween = formatting._GetUtokensBetween(leftObject, self);
+
+                if (insertedUtokensBetween != InsertedUtokens.None)
                 {
-                    InsertedUtokens insertedUtokensBetween;
-                    if (formatting.TryGetUtokensBetween(leftBnfTerm, GetSelfAndAncestorsB(self), out insertedUtokensBetween))
-                    {
-                        Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
-                        yield return insertedUtokensBetween;
-                    }
+                    Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBetween);
+                    yield return insertedUtokensBetween;
                 }
             }
         }
@@ -441,24 +443,13 @@ namespace Sarcasm.Unparsing
 
             if (blockIndentationParameter == BlockIndentation.ToBeSet || blockIndentationParameter.IsDeferred())
             {
-                BlockIndentation blockIndentation = BlockIndentation.IndentNotNeeded;
+                UnparsableObject leftObject = GetLeft(self);
+                BlockIndentation blockIndentation = formatting._GetBlockIndentation(leftObject, self);
 
                 // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
 
-                if (formatting.DoesTargetNeedsLeftBnfTerm(GetSelfAndAncestorsB(self)))
-                {
-                    foreach (BnfTerm leftBnfTerm in GetLeftsAndAnyFromTopToBottomB(self, formatter))
-                    {
-                        if (blockIndentation == BlockIndentation.IndentNotNeeded && formatting.TryGetBlockIndentation(leftBnfTerm, GetSelfAndAncestorsB(self), out blockIndentation))
-                        {
-                            Unparser.tsUnparse.Debug("blockindentation {0} for leftBnfTerm '{1}' and for unparsable object '{2}'", blockIndentation, leftBnfTerm, self);
-                            break;
-                        }
-                    }
-                }
-
-                if (blockIndentation == BlockIndentation.IndentNotNeeded && formatting.TryGetBlockIndentation(GetSelfAndAncestorsB(self), out blockIndentation))
-                    Unparser.tsUnparse.Debug("blockindentation {0} for unparsable object '{1}'", blockIndentation, self);
+                if (blockIndentation != BlockIndentation.IndentNotNeeded)
+                    Unparser.tsUnparse.Debug("blockindentation {0} for leftTarget '{1}' and for target '{2}'", blockIndentation, leftObject, self);
 
                 Debug.Assert(!blockIndentation.IsDeferred());
 
@@ -508,7 +499,7 @@ namespace Sarcasm.Unparsing
 
         private static IEnumerable<UnparsableObject> GetSelfAndAncestors(UnparsableObject self)
         {
-            return Util.RecurseStopBeforeNull(self, current => current.Parent);
+            return Util.RecurseStopBeforeNull(self, current => current.SyntaxParent);
         }
 
         private static IEnumerable<BnfTerm> GetSelfAndAncestorsB(UnparsableObject self)
@@ -553,15 +544,15 @@ namespace Sarcasm.Unparsing
 
             return topAncestorForLeft != null
                 ? Util.RecurseStopBeforeNull(topAncestorForLeft.LeftSibling, current => current.RightMostChild)
-                : new UnparsableObject[0];
+                : Enumerable.Empty<UnparsableObject>();
         }
 
         /// <exception cref="UnparsableObject.NonCalculatedException">
-        /// If topLeft is non-calculated or thrown out.
+        /// If topLeft is non-calculated.
         /// </exception>
-        private static IEnumerable<BnfTerm> GetLeftsAndAnyFromTopToBottomB(UnparsableObject self, Formatter formatter = null)
+        private static UnparsableObject GetLeft(UnparsableObject self, Formatter formatter = null)
         {
-            return GetLeftsFromTopToBottom(self, formatter).Select(current => current.BnfTerm).Concat(Formatting.AnyBnfTerm);
+            return GetLeftsFromTopToBottom(self, formatter).LastOrDefault();
         }
 
         #endregion
@@ -748,18 +739,18 @@ namespace Sarcasm.Unparsing
 
                     var switchToNextInsertedUtokens = new Lazy<bool>(() => IsNextStronger(prevInsertedUtokensToBeYield, nextInsertedUtokens, postProcessHelper.Direction));
 
-                    if (nextInsertedUtokens.behavior == Behavior.Overridable)
+                    if (nextInsertedUtokens.Behavior == Behavior.Overridable)
                     {
                         prevInsertedUtokensToBeYield = switchToNextInsertedUtokens.Value ? nextInsertedUtokens : prevInsertedUtokensToBeYield;
                     }
-                    else if (nextInsertedUtokens.behavior == Behavior.NonOverridableSkipThrough)
+                    else if (nextInsertedUtokens.Behavior == Behavior.NonOverridableSkipThrough)
                     {
                         if (postProcessHelper.Direction == Unparser.Direction.LeftToRight)
                             yield return nextInsertedUtokens;
                         else
                             nonOverridableSkipThroughBuffer.Enqueue(nextInsertedUtokens);
                     }
-                    else if (nextInsertedUtokens.behavior == Behavior.NonOverridableSeparator)
+                    else if (nextInsertedUtokens.Behavior == Behavior.NonOverridableSeparator)
                     {
                         if (!switchToNextInsertedUtokens.Value)
                             yield return prevInsertedUtokensToBeYield;
@@ -912,7 +903,7 @@ namespace Sarcasm.Unparsing
                 {
                     UtokenText utokenText = (UtokenText)utoken;
 
-                    utokenText.Decoration = formatting.GetDecoration(utokenText.Reference);
+                    utokenText.Decoration = formatting._GetDecoration(utokenText.Reference);
                 }
 
                 yield return utoken;
