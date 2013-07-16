@@ -86,7 +86,7 @@ namespace Sarcasm.Unparsing
         #region State
 
         public BnfTerm BnfTerm { get; private set; }
-        public object Obj { get; private set; }
+        public object AstValue { get; private set; }
 
         private UnparsableObject syntaxParent = NonCalculated;
         private UnparsableObject astParent = NonCalculated;
@@ -102,7 +102,7 @@ namespace Sarcasm.Unparsing
         public UnparsableObject(BnfTerm bnfTerm, object obj)
         {
             this.BnfTerm = bnfTerm;
-            this.Obj = obj;
+            this.AstValue = obj;
             this.IsLeftSiblingNeededForDeferredCalculation = false;
         }
 
@@ -124,7 +124,7 @@ namespace Sarcasm.Unparsing
 
                 return astParent != NonCalculated
                     ? astParent
-                    : Util.RecurseStopBeforeNull(this, unparsableObject => unparsableObject.SyntaxParent).FirstOrDefault(unparsableObject => unparsableObject.Obj != this.Obj);
+                    : Util.RecurseStopBeforeNull(this, unparsableObject => unparsableObject.SyntaxParent).FirstOrDefault(unparsableObject => unparsableObject.AstValue != this.AstValue);
             }
             set { CheckIfNotThrownOut(astParent); astParent = value; }
         }
@@ -178,7 +178,7 @@ namespace Sarcasm.Unparsing
         public override string ToString()
         {
             return IsCalculated(this)
-                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, Obj)
+                ? string.Format("[bnfTerm: {0}, obj: {1}]", BnfTerm, AstValue)
                 : "<<NonCalculated>>";
         }
 
@@ -192,7 +192,7 @@ namespace Sarcasm.Unparsing
                 ||
                 !object.ReferenceEquals(that, null) &&
                 this.BnfTerm == that.BnfTerm &&
-                this.Obj == that.Obj;
+                this.AstValue == that.AstValue;
         }
 
         public override bool Equals(object obj)
@@ -202,7 +202,7 @@ namespace Sarcasm.Unparsing
 
         public override int GetHashCode()
         {
-            return Util.GetHashCodeMulti(BnfTerm, Obj);
+            return Util.GetHashCodeMulti(BnfTerm, AstValue);
         }
 
         public static bool operator ==(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)

@@ -230,7 +230,7 @@ namespace Sarcasm.GrammarAst
 
         private static int? GetBnfTermPriorityForMember(IUnparser unparser, UnparsableObject unparsableObject)
         {
-            if (unparsableObject.Obj != null)
+            if (unparsableObject.AstValue != null)
                 return 1;
             else if (unparsableObject.BnfTerm is BnfiTermCollection)
                 return unparser.GetPriority(unparsableObject);

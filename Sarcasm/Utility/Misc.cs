@@ -24,7 +24,7 @@ namespace Sarcasm.Utility
                 messageBefore,
                 unparsableObject.BnfTerm,
                 messageInside != "" ? " " + messageInside : messageInside,
-                unparsableObject.Obj != null ? unparsableObject.Obj.ToString() : "<<NULL>>",
+                unparsableObject.AstValue != null ? unparsableObject.AstValue.ToString() : "<<NULL>>",
                 priority.HasValue ? priority.ToString() : "NULL",
                 messageAfter
                 );

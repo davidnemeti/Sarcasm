@@ -602,7 +602,7 @@ namespace Sarcasm.Unparsing
                 ? GetSurroundingParentheses().Left
                 : GetSurroundingParentheses().Right;
 
-            return new UnparsableObject(parenthesis, unparsableExpression.Obj);
+            return new UnparsableObject(parenthesis, unparsableExpression.AstValue);
         }
 
         private bool NeedParentheses(BnfTerm flaggedOperator)

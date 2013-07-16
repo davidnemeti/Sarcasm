@@ -222,9 +222,9 @@ namespace Sarcasm.Unparsing
             }
             else if (self.BnfTerm is ConstantTerminal)
             {
-                string lexeme = GetLexemeByValue((ConstantTerminal)self.BnfTerm, self.Obj);
+                string lexeme = GetLexemeByValue((ConstantTerminal)self.BnfTerm, self.AstValue);
 
-                tsUnparse.Debug("constant_terminal: [\"{0}\" ({1})]", lexeme, self.Obj.ToString());
+                tsUnparse.Debug("constant_terminal: [\"{0}\" ({1})]", lexeme, self.AstValue.ToString());
                 tsUnparse.Debug("SetAsLeave: {0}", self);
 
                 self.SetAsLeave();
@@ -232,7 +232,7 @@ namespace Sarcasm.Unparsing
             }
             else if (self.BnfTerm is Terminal)
             {
-                tsUnparse.Debug("terminal: [\"{0}\"]", self.Obj.ToString());
+                tsUnparse.Debug("terminal: [\"{0}\"]", self.AstValue.ToString());
                 tsUnparse.Debug("SetAsLeave: {0}", self);
                 self.SetAsLeave();
                 yield return UtokenValue.CreateText(self);
@@ -247,11 +247,11 @@ namespace Sarcasm.Unparsing
                     IUnparsableNonTerminal unparsableSelf = self.BnfTerm as IUnparsableNonTerminal;
 
                     if (unparsableSelf == null)
-                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
+                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", self.AstValue, self.AstValue.GetType().Name, self.BnfTerm.Name));
 
                     IEnumerable<UtokenValue> directUtokens;
 
-                    if (unparsableSelf.TryGetUtokensDirectly(this, self.Obj, out directUtokens))
+                    if (unparsableSelf.TryGetUtokensDirectly(this, self.AstValue, out directUtokens))
                     {
                         tsUnparse.Debug("SetAsLeave: {0}", self);
                         self.SetAsLeave();
@@ -269,7 +269,7 @@ namespace Sarcasm.Unparsing
                                 yield return directUtoken;
                         }
 
-                        tsUnparse.Debug("utokenized: [{0}]", self.Obj != null ? string.Format("\"{0}\"", self.Obj) : "<<NULL>>");
+                        tsUnparse.Debug("utokenized: [{0}]", self.AstValue != null ? string.Format("\"{0}\"", self.AstValue) : "<<NULL>>");
                     }
                     else
                     {
@@ -442,7 +442,7 @@ namespace Sarcasm.Unparsing
 
                 child.SyntaxParent = self;
 
-                child.AstParent =   child.Obj != self.Obj       ?   self :
+                child.AstParent =   child.AstValue != self.AstValue       ?   self :
                                     self.IsAstParentCalculated  ?   self.AstParent :
                                                                     UnparsableObject.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
             }
@@ -566,11 +566,11 @@ namespace Sarcasm.Unparsing
                 return GetChildBnfTermLists(unparsable.AsNonTerminal())
                     .Select(childBnfTerms =>
                         {
-                            var children = unparsable.GetChildren(childBnfTerms, self.Obj, direction);
+                            var children = unparsable.GetChildren(childBnfTerms, self.AstValue, direction);
                             return new
                             {
                                 Children = children,
-                                Priority = unparsable.GetChildrenPriority(this, self.Obj, children)
+                                Priority = unparsable.GetChildrenPriority(this, self.AstValue, children)
                                     .DebugWriteLinePriority(tsPriorities, self)
                             };
                         }
@@ -583,7 +583,7 @@ namespace Sarcasm.Unparsing
             {
                 // MaxItem got an empty children list because no children remained after filtering the children list -> unparse error
                 throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
-                    self.Obj, self.Obj.GetType().Name, self.BnfTerm.Name));
+                    self.AstValue, self.AstValue.GetType().Name, self.BnfTerm.Name));
             }
             finally
             {
@@ -673,7 +673,7 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.Obj, unparsable.GetChildren(childBnfTerms, unparsableObject.Obj, direction))
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.AstValue, unparsable.GetChildren(childBnfTerms, unparsableObject.AstValue, direction))
                         .DebugWriteLinePriority(tsPriorities, unparsableObject));
 
                 tsPriorities.Unindent();

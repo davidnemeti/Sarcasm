@@ -424,7 +424,7 @@ namespace MiniPL.Grammars
 
             protected override IDecoration GetDecoration(UnparsableObject target)
             {
-                if (target.Obj is D.If)
+                if (target.AstValue is D.If)
                 {
                     if (target.BnfTerm == B.LEFT_PAREN)
                     {
@@ -450,15 +450,15 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Background, Colors.Red)
                         .Add(DecorationKey.FontSize, 30.0);
                 }
-                else if (target.Obj is D.Type)
+                else if (target.AstValue is D.Type)
                 {
                     return new Decoration()
                         .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
                         .Add(DecorationKey.FontSizeRelativePercent, 0.75);
                 }
-                else if (target.Obj is int)
+                else if (target.AstValue is int)
                 {
-                    int number = (int)target.Obj;
+                    int number = (int)target.AstValue;
 
                     return number % 2 == 0
                         ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
@@ -498,11 +498,11 @@ namespace MiniPL.Grammars
                     return UtokenInsert.NoWhitespace;
                 else if (target.BnfTerm == B.Statement)
                     return UtokenInsert.NewLine;
-                else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.Obj is D.Program)
+                else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.AstValue is D.Program)
                     return UtokenInsert.EmptyLine;
-                else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.Obj is D.Program)
+                else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.AstValue is D.Program)
                     return UtokenInsert.EmptyLine;
-                else if (target.BnfTerm == B.END && target.Obj is D.Function)
+                else if (target.BnfTerm == B.END && target.AstValue is D.Function)
                     return UtokenInsert.EmptyLine.SetPriority(10);
                 else if (target.BnfTerm == B.BEGIN)
                     return UtokenInsert.NewLine;
@@ -514,9 +514,9 @@ namespace MiniPL.Grammars
 
             protected override InsertedUtokens GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
             {
-                if (leftTarget.AstParent != null && leftTarget.AstParent.Obj is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
+                if (leftTarget.AstParent != null && leftTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
-                else if (leftTarget.AstParent != null && leftTarget.AstParent.Obj is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTarget.AstParent != null && leftTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
                 else if (leftTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;

@@ -103,7 +103,7 @@ namespace Sarcasm.Unparsing
 
         public string ToText(Formatting formatting)
         {
-            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.Obj);
+            return this.Text ?? Util.ToString(formatting.FormatProvider, this.Reference.AstValue);
         }
 
         IReadOnlyDecoration Utoken.GetDecoration()
