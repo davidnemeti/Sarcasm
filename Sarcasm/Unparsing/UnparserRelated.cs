@@ -53,13 +53,13 @@ namespace Sarcasm.Unparsing
     public interface IUnparsableNonTerminal : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableObject> GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction);
-        int? GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children);
+        IEnumerable<UnparsableAst> GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction);
+        int? GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children);
     }
 
     public interface IUnparser
     {
-        int? GetPriority(UnparsableObject unparsableObject);
+        int? GetPriority(UnparsableAst unparsableAst);
         IFormatProvider FormatProvider { get; }
     }
 
@@ -67,18 +67,18 @@ namespace Sarcasm.Unparsing
     {
         Formatter Formatter { get; }
         Unparser.Direction Direction { get; }
-        Action<UnparsableObject> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
+        Action<UnparsableAst> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
     }
 
-    public class UnparsableObject
+    public class UnparsableAst
     {
         #region Constants
 
         private static readonly object nonCalculatedAstValue = new object();
         private static readonly object thrownOutAstValue = new object();
 
-        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, nonCalculatedAstValue);
-        internal static readonly UnparsableObject ThrownOut = new UnparsableObject(null, thrownOutAstValue);
+        internal static readonly UnparsableAst NonCalculated = new UnparsableAst(null, nonCalculatedAstValue);
+        internal static readonly UnparsableAst ThrownOut = new UnparsableAst(null, thrownOutAstValue);
 
         #endregion
 
@@ -88,18 +88,18 @@ namespace Sarcasm.Unparsing
         public object AstValue { get; private set; }
         public Member ParentMember { get; internal set; }
 
-        private UnparsableObject syntaxParent = NonCalculated;
-        private UnparsableObject astParent = NonCalculated;
-        private UnparsableObject leftMostChild = NonCalculated;
-        private UnparsableObject rightMostChild = NonCalculated;
-        private UnparsableObject leftSibling = NonCalculated;
-        private UnparsableObject rightSibling = NonCalculated;
+        private UnparsableAst syntaxParent = NonCalculated;
+        private UnparsableAst astParent = NonCalculated;
+        private UnparsableAst leftMostChild = NonCalculated;
+        private UnparsableAst rightMostChild = NonCalculated;
+        private UnparsableAst leftSibling = NonCalculated;
+        private UnparsableAst rightSibling = NonCalculated;
 
         #endregion
 
         #region Construction
 
-        public UnparsableObject(BnfTerm bnfTerm, object astValue, Member parentMember = null)
+        public UnparsableAst(BnfTerm bnfTerm, object astValue, Member parentMember = null)
         {
             this.BnfTerm = bnfTerm;
             this.AstValue = astValue;
@@ -112,13 +112,13 @@ namespace Sarcasm.Unparsing
 
         #region Publics
 
-        public UnparsableObject SyntaxParent
+        public UnparsableAst SyntaxParent
         {
             get { CheckIfValid(syntaxParent); return syntaxParent; }
             set { CheckIfNotThrownOut(syntaxParent); syntaxParent = value; }
         }
 
-        public UnparsableObject AstParent
+        public UnparsableAst AstParent
         {
             get
             {
@@ -126,30 +126,30 @@ namespace Sarcasm.Unparsing
 
                 return astParent != NonCalculated
                     ? astParent
-                    : Util.RecurseStopBeforeNull(this, unparsableObject => unparsableObject.SyntaxParent).FirstOrDefault(unparsableObject => unparsableObject.AstValue != this.AstValue);
+                    : Util.RecurseStopBeforeNull(this, unparsableAst => unparsableAst.SyntaxParent).FirstOrDefault(unparsableAst => unparsableAst.AstValue != this.AstValue);
             }
             set { CheckIfNotThrownOut(astParent); astParent = value; }
         }
 
-        public UnparsableObject LeftMostChild
+        public UnparsableAst LeftMostChild
         {
             get { CheckIfValid(leftMostChild); return leftMostChild; }
             set { CheckIfNotThrownOut(leftMostChild); leftMostChild = value; }
         }
 
-        public UnparsableObject RightMostChild
+        public UnparsableAst RightMostChild
         {
             get { CheckIfValid(rightMostChild); return rightMostChild; }
             set { CheckIfNotThrownOut(rightMostChild); rightMostChild = value; }
         }
 
-        public UnparsableObject LeftSibling
+        public UnparsableAst LeftSibling
         {
             get { CheckIfValid(leftSibling); return leftSibling; }
             set { CheckIfNotThrownOut(leftSibling); leftSibling = value; }
         }
 
-        public UnparsableObject RightSibling
+        public UnparsableAst RightSibling
         {
             get { CheckIfValid(rightSibling); return rightSibling; }
             set { CheckIfNotThrownOut(rightSibling); rightSibling = value; }
@@ -188,7 +188,7 @@ namespace Sarcasm.Unparsing
 
         #region Equality
 
-        public bool Equals(UnparsableObject that)
+        public bool Equals(UnparsableAst that)
         {
             return object.ReferenceEquals(this, that)
                 ||
@@ -199,7 +199,7 @@ namespace Sarcasm.Unparsing
 
         public override bool Equals(object obj)
         {
-            return obj is UnparsableObject && Equals((UnparsableObject)obj);
+            return obj is UnparsableAst && Equals((UnparsableAst)obj);
         }
 
         public override int GetHashCode()
@@ -207,21 +207,21 @@ namespace Sarcasm.Unparsing
             return Util.GetHashCodeMulti(BnfTerm, AstValue);
         }
 
-        public static bool operator ==(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
+        public static bool operator ==(UnparsableAst unparsableAst1, UnparsableAst unparsableAst2)
         {
-            return object.ReferenceEquals(unparsableObject1, unparsableObject2) || !object.ReferenceEquals(unparsableObject1, null) && unparsableObject1.Equals(unparsableObject2);
+            return object.ReferenceEquals(unparsableAst1, unparsableAst2) || !object.ReferenceEquals(unparsableAst1, null) && unparsableAst1.Equals(unparsableAst2);
         }
 
-        public static bool operator !=(UnparsableObject unparsableObject1, UnparsableObject unparsableObject2)
+        public static bool operator !=(UnparsableAst unparsableAst1, UnparsableAst unparsableAst2)
         {
-            return !(unparsableObject1 == unparsableObject2);
+            return !(unparsableAst1 == unparsableAst2);
         }
 
         #endregion
 
         #region Helpers
 
-        private void CheckIfValid(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
+        private void CheckIfValid(UnparsableAst relative, [CallerMemberName] string nameOfRelative = "")
         {
             if (!IsCalculated(relative))
                 throw new NonCalculatedException(string.Format("Tried to use a non-calculated relative '{0}' for {1}", nameOfRelative, this));
@@ -229,20 +229,20 @@ namespace Sarcasm.Unparsing
                 throw new ThrownOutException(string.Format("Tried to use a thrown out relative '{0}' for {1}", nameOfRelative, this));
         }
 
-        private void CheckIfNotThrownOut(UnparsableObject relative, [CallerMemberName] string nameOfRelative = "")
+        private void CheckIfNotThrownOut(UnparsableAst relative, [CallerMemberName] string nameOfRelative = "")
         {
             if (IsThrownOut(relative))
                 throw new ThrownOutException(string.Format("Tried to set a thrown out relative '{0}' for {1}", nameOfRelative, this));
         }
 
-        internal static bool IsCalculated(UnparsableObject unparsableObject)
+        internal static bool IsCalculated(UnparsableAst unparsableAst)
         {
-            return !object.ReferenceEquals(unparsableObject, NonCalculated);
+            return !object.ReferenceEquals(unparsableAst, NonCalculated);
         }
 
-        private static bool IsThrownOut(UnparsableObject unparsableObject)
+        private static bool IsThrownOut(UnparsableAst unparsableAst)
         {
-            return object.ReferenceEquals(unparsableObject, ThrownOut);
+            return object.ReferenceEquals(unparsableAst, ThrownOut);
         }
 
         #endregion

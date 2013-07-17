@@ -53,7 +53,7 @@ namespace Sarcasm.Unparsing
 
     public abstract class UtokenValue : UtokenBase
     {
-        public static UtokenValue CreateText(UnparsableObject reference)
+        public static UtokenValue CreateText(UnparsableAst reference)
         {
             return new UtokenText(reference);
         }
@@ -63,14 +63,14 @@ namespace Sarcasm.Unparsing
             return new UtokenText(text);
         }
 
-        public static UtokenValue CreateText(string text, UnparsableObject reference)
+        public static UtokenValue CreateText(string text, UnparsableAst reference)
         {
             return new UtokenText(text, reference);
         }
 
-        public static UtokenValue FurtherUnparse(UnparsableObject unparsableObject)
+        public static UtokenValue FurtherUnparse(UnparsableAst unparsableAst)
         {
-            return new UtokenToUnparse(unparsableObject);
+            return new UtokenToUnparse(unparsableAst);
         }
 
         public static implicit operator UtokenValue(string text)
@@ -82,15 +82,15 @@ namespace Sarcasm.Unparsing
     public class UtokenText : UtokenValue, Utoken
     {
         public string Text { get; private set; }
-        public UnparsableObject Reference { get; private set; }
+        public UnparsableAst Reference { get; private set; }
         public IReadOnlyDecoration Decoration { get; internal set; }
 
-        internal UtokenText(UnparsableObject reference)
+        internal UtokenText(UnparsableAst reference)
             : this(text: null, reference: reference)
         {
         }
 
-        internal UtokenText(string text, UnparsableObject reference = null)
+        internal UtokenText(string text, UnparsableAst reference = null)
         {
             this.Text = text;
             this.Reference = reference;
@@ -120,16 +120,16 @@ namespace Sarcasm.Unparsing
 
     public class UtokenToUnparse : UtokenValue
     {
-        public UnparsableObject UnparsableObject { get; private set; }
+        public UnparsableAst UnparsableAst { get; private set; }
 
-        internal UtokenToUnparse(UnparsableObject unparsableObject)
+        internal UtokenToUnparse(UnparsableAst unparsableAst)
         {
-            this.UnparsableObject = unparsableObject;
+            this.UnparsableAst = unparsableAst;
         }
 
         public override string ToString()
         {
-            return ToString("UtokenToUnparse: " + UnparsableObject.ToString());
+            return ToString("UtokenToUnparse: " + UnparsableAst.ToString());
         }
     }
 
@@ -304,7 +304,7 @@ namespace Sarcasm.Unparsing
         public Behavior Behavior { get; set; }
         public IEnumerable<UtokenInsert> Utokens { get; private set; }
 
-        internal IEnumerable<UnparsableObject> affectedUnparsableObjects_FOR_DEBUG;
+        internal IEnumerable<UnparsableAst> affectedUnparsableAsts_FOR_DEBUG;
 
         public const InsertedUtokens None = null;
         private const double priorityDefault = 0;
@@ -339,7 +339,7 @@ namespace Sarcasm.Unparsing
                 Behavior,
                 Priority,
                 string.Join(", ", Utokens),
-                affectedUnparsableObjects_FOR_DEBUG != null ? string.Join(", ", affectedUnparsableObjects_FOR_DEBUG) : "<<NO DEBUG INFO>>"
+                affectedUnparsableAsts_FOR_DEBUG != null ? string.Join(", ", affectedUnparsableAsts_FOR_DEBUG) : "<<NO DEBUG INFO>>"
                 );
         }
 
@@ -401,11 +401,11 @@ namespace Sarcasm.Unparsing
         private readonly Func<IEnumerable<UtokenBase>> utokenYielder;
         private IReadOnlyList<UtokenBase> calculatedUtokens;
 
-        public UnparsableObject Self { get; private set; }
+        public UnparsableAst Self { get; private set; }
         private readonly string helpMessage;
         private readonly object helpCalculatedObject;
 
-        public DeferredUtokens(Func<IEnumerable<UtokenBase>> utokenYielder, UnparsableObject self, string helpMessage = null, object helpCalculatedObject = null)
+        public DeferredUtokens(Func<IEnumerable<UtokenBase>> utokenYielder, UnparsableAst self, string helpMessage = null, object helpCalculatedObject = null)
         {
             this.utokenYielder = utokenYielder;
             this.Self = self;

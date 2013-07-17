@@ -139,7 +139,7 @@ namespace Sarcasm.Unparsing
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        private Unparser Spawn(UnparsableObject child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
+        private Unparser Spawn(UnparsableAst child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
         {
             Unparser spawn = new Unparser(this);
             spawn.Formatter = this.Formatter.Spawn(child, childLocation);
@@ -160,7 +160,7 @@ namespace Sarcasm.Unparsing
         {
             ResetMutableState();
             this.direction = direction;
-            var root = new UnparsableObject(bnfTerm, astValue);
+            var root = new UnparsableAst(bnfTerm, astValue);
             root.SetAsRoot();
             return UnparseRaw(root)
                 .Cook(this);
@@ -182,7 +182,7 @@ namespace Sarcasm.Unparsing
             // NOTE: expressionUnparser does ResetMutableState automatically
         }
 
-        internal IEnumerable<UtokenBase> UnparseRaw(UnparsableObject self)
+        internal IEnumerable<UtokenBase> UnparseRaw(UnparsableAst self)
         {
             if (self.BnfTerm == null)
                 throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
@@ -198,7 +198,7 @@ namespace Sarcasm.Unparsing
                     );
         }
 
-        private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableObject self)
+        private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableAst self)
         {
             if (self.BnfTerm is KeyTerm)
             {
@@ -247,7 +247,7 @@ namespace Sarcasm.Unparsing
                         {
                             if (directUtoken is UtokenToUnparse)
                             {
-                                UnparsableObject child = ((UtokenToUnparse)directUtoken).UnparsableObject;
+                                UnparsableAst child = ((UtokenToUnparse)directUtoken).UnparsableAst;
 
                                 foreach (UtokenBase utoken in UnparseRaw(child))
                                     yield return utoken;
@@ -260,7 +260,7 @@ namespace Sarcasm.Unparsing
                     }
                     else
                     {
-                        IEnumerable<UnparsableObject> chosenChildren = ChooseChildrenByPriority(self);
+                        IEnumerable<UnparsableAst> chosenChildren = ChooseChildrenByPriority(self);
 
                         if (expressionUnparser.NeedsExpressionUnparse(self.BnfTerm))
                         {
@@ -276,7 +276,7 @@ namespace Sarcasm.Unparsing
                             bool shouldUnparseParallel;
                             int numberOfParallelTaskToStartActually;
                             int subRangeCount;
-                            List<UnparsableObject> chosenChildrenList;
+                            List<UnparsableAst> chosenChildrenList;
 
                             shouldUnparseParallel = ShouldUnparseParallelAndAcquireTasksIfNeeded(
                                                         chosenChildren,
@@ -293,7 +293,7 @@ namespace Sarcasm.Unparsing
                             }
                             else
                             {
-                                foreach (UnparsableObject chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: true))
+                                foreach (UnparsableAst chosenChild in LinkChildrenToEachOthersAndToSelfLazy(self, chosenChildren, enableUnlinkOfChild: true))
                                     foreach (UtokenBase utoken in UnparseRaw(chosenChild))
                                         yield return utoken;
                             }
@@ -315,7 +315,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableObject> chosenChildrenList, int numberOfParallelTaskToStartActually, int subRangeCount)
+        private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableAst> chosenChildrenList, int numberOfParallelTaskToStartActually, int subRangeCount)
         {
             var subUnparseTasks = new Task[numberOfParallelTaskToStartActually];
             var subUtokensList = new List<UtokenBase>[numberOfParallelTaskToStartActually];
@@ -355,8 +355,8 @@ namespace Sarcasm.Unparsing
                     yield return utoken;
         }
 
-        private bool ShouldUnparseParallelAndAcquireTasksIfNeeded(IEnumerable<UnparsableObject> chosenChildren,
-            out int numberOfParallelTaskToStartActually, out int subRangeCount, out List<UnparsableObject> chosenChildrenList)
+        private bool ShouldUnparseParallelAndAcquireTasksIfNeeded(IEnumerable<UnparsableAst> chosenChildren,
+            out int numberOfParallelTaskToStartActually, out int subRangeCount, out List<UnparsableAst> chosenChildrenList)
         {
             numberOfParallelTaskToStartActually = -1;
             subRangeCount = -1;
@@ -402,9 +402,9 @@ namespace Sarcasm.Unparsing
                 return false;
         }
 
-        internal IEnumerable<UnparsableObject> LinkChildrenToEachOthersAndToSelfLazy(UnparsableObject self, IEnumerable<UnparsableObject> children, bool enableUnlinkOfChild = true)
+        internal IEnumerable<UnparsableAst> LinkChildrenToEachOthersAndToSelfLazy(UnparsableAst self, IEnumerable<UnparsableAst> children, bool enableUnlinkOfChild = true)
         {
-            UnparsableObject childPrevSibling = null;
+            UnparsableAst childPrevSibling = null;
 
             return children
                 .ForAll(
@@ -421,7 +421,7 @@ namespace Sarcasm.Unparsing
                 );
         }
 
-        private void LinkChild(UnparsableObject self, UnparsableObject child, UnparsableObject childPrevSibling, bool enableUnlinkOfChild)
+        private void LinkChild(UnparsableAst self, UnparsableAst child, UnparsableAst childPrevSibling, bool enableUnlinkOfChild)
         {
             if (child != null)
             {
@@ -431,7 +431,7 @@ namespace Sarcasm.Unparsing
 
                 child.AstParent =   child.AstValue != self.AstValue ?   self :
                                     self.IsAstParentCalculated      ?   self.AstParent :
-                                                                        UnparsableObject.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
+                                                                        UnparsableAst.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
 
                 if (child.ParentMember == null)
                     child.ParentMember = self.ParentMember;
@@ -463,16 +463,16 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private void UnlinkChildFromChildPrevSiblingIfNotFullUnparse(UnparsableObject child, bool enforce = false)
+        private void UnlinkChildFromChildPrevSiblingIfNotFullUnparse(UnparsableAst child, bool enforce = false)
         {
             if (!enforce && direction == Direction.LeftToRight && child.IsLeftSiblingNeededForDeferredCalculation)
                 return;
 
             if (!buildFullUnparseTree)
-                SetPrevSibling(child, UnparsableObject.ThrownOut);  // prev sibling is not needed anymore
+                SetPrevSibling(child, UnparsableAst.ThrownOut);  // prev sibling is not needed anymore
         }
 
-        private void SetPrevSibling(UnparsableObject current, UnparsableObject prev)
+        private void SetPrevSibling(UnparsableAst current, UnparsableAst prev)
         {
             if (direction == Direction.LeftToRight)
                 current.LeftSibling = prev;
@@ -480,7 +480,7 @@ namespace Sarcasm.Unparsing
                 current.RightSibling = prev;
         }
 
-        private void SetNextSibling(UnparsableObject current, UnparsableObject next)
+        private void SetNextSibling(UnparsableAst current, UnparsableAst next)
         {
             if (direction == Direction.LeftToRight)
                 current.RightSibling = next;
@@ -488,7 +488,7 @@ namespace Sarcasm.Unparsing
                 current.LeftSibling = next;
         }
 
-        private void SetPrevMostChild(UnparsableObject self, UnparsableObject prevMostChild)
+        private void SetPrevMostChild(UnparsableAst self, UnparsableAst prevMostChild)
         {
             if (direction == Direction.LeftToRight)
                 self.LeftMostChild = prevMostChild;
@@ -496,7 +496,7 @@ namespace Sarcasm.Unparsing
                 self.RightMostChild = prevMostChild;
         }
 
-        private void SetNextMostChild(UnparsableObject self, UnparsableObject nextMostChild)
+        private void SetNextMostChild(UnparsableAst self, UnparsableAst nextMostChild)
         {
             if (direction == Direction.LeftToRight)
                 self.RightMostChild = nextMostChild;
@@ -504,14 +504,14 @@ namespace Sarcasm.Unparsing
                 self.LeftMostChild = nextMostChild;
         }
 
-        private bool IsPrevMostChildCalculated(UnparsableObject self)
+        private bool IsPrevMostChildCalculated(UnparsableAst self)
         {
             return direction == Direction.LeftToRight
                 ? self.IsLeftMostChildCalculated
                 : self.IsRightMostChildCalculated;
         }
 
-        private bool IsNextMostChildCalculated(UnparsableObject self)
+        private bool IsNextMostChildCalculated(UnparsableAst self)
         {
             return direction == Direction.LeftToRight
                 ? self.IsRightMostChildCalculated
@@ -542,7 +542,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UnparsableObject> ChooseChildrenByPriority(UnparsableObject self)
+        private IEnumerable<UnparsableAst> ChooseChildrenByPriority(UnparsableAst self)
         {
             // TODO: we should check whether any bnfTermList has an UnparseHint
 
@@ -653,9 +653,9 @@ namespace Sarcasm.Unparsing
 
         #region IUnparser implementation
 
-        int? IUnparser.GetPriority(UnparsableObject unparsableObject)
+        int? IUnparser.GetPriority(UnparsableAst unparsableAst)
         {
-            IUnparsableNonTerminal unparsable = unparsableObject.BnfTerm as IUnparsableNonTerminal;
+            IUnparsableNonTerminal unparsable = unparsableAst.BnfTerm as IUnparsableNonTerminal;
 
             if (unparsable != null)
             {
@@ -663,18 +663,18 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Indent();
 
                 int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableObject.AstValue, unparsable.GetChildren(childBnfTerms, unparsableObject.AstValue, direction))
-                        .DebugWriteLinePriority(tsPriorities, unparsableObject));
+                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableAst.AstValue, unparsable.GetChildren(childBnfTerms, unparsableAst.AstValue, direction))
+                        .DebugWriteLinePriority(tsPriorities, unparsableAst));
 
                 tsPriorities.Unindent();
 
-                priority.DebugWriteLinePriority(tsPriorities, unparsableObject, messageAfter: " (MAX)");
+                priority.DebugWriteLinePriority(tsPriorities, unparsableAst, messageAfter: " (MAX)");
 
                 return priority;
             }
             else
             {
-                Misc.DebugWriteLinePriority(0, tsPriorities, unparsableObject, messageAfter: " (for terminal)");
+                Misc.DebugWriteLinePriority(0, tsPriorities, unparsableAst, messageAfter: " (for terminal)");
                 return 0;
             }
         }
@@ -692,7 +692,7 @@ namespace Sarcasm.Unparsing
             get { return this.direction; }
         }
 
-        Action<UnparsableObject> IPostProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse
+        Action<UnparsableAst> IPostProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse
         {
             get
             {

@@ -484,12 +484,12 @@ namespace Sarcasm.GrammarAst
                 throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertAstValueForChild(astValue, childBnfTerm)));
+            return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, ConvertAstValueForChild(astValue, childBnfTerm)));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children)
         {
             if (this.value != null)
                 return this.value.Equals(astValue) ? (int?)1 : null;
@@ -502,10 +502,10 @@ namespace Sarcasm.GrammarAst
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
         }
 
-        private UnparsableObject GetMainChild(object astValue, IEnumerable<UnparsableObject> children)
+        private UnparsableAst GetMainChild(object astValue, IEnumerable<UnparsableAst> children)
         {
             return this.bnfTerm != null
-                ? new UnparsableObject(this.bnfTerm, ConvertAstValueForChild(astValue, this.bnfTerm))
+                ? new UnparsableAst(this.bnfTerm, ConvertAstValueForChild(astValue, this.bnfTerm))
                 : children.Single(child => IsMainChild(child.BnfTerm));    // "transient" unparse with the actual BnfiTermConversion(s) under the current one (set by Rule)
         }
 

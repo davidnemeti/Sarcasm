@@ -71,7 +71,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private delegate InsertedUtokens GetUtokensBeforeAfter(UnparsableObject target);
+        private delegate InsertedUtokens GetUtokensBeforeAfter(UnparsableAst target);
 
         #endregion
 
@@ -103,8 +103,8 @@ namespace Sarcasm.Unparsing
 
         #region Mutable
 
-        private UnparsableObject topAncestorCacheForLeft = UnparsableObject.NonCalculated;
-        private UnparsableObject leftTerminalLeaveCache = UnparsableObject.NonCalculated;
+        private UnparsableAst topAncestorCacheForLeft = UnparsableAst.NonCalculated;
+        private UnparsableAst leftTerminalLeaveCache = UnparsableAst.NonCalculated;
         private Unparser.Direction direction;
 
         #endregion
@@ -158,13 +158,13 @@ namespace Sarcasm.Unparsing
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        internal Formatter Spawn(UnparsableObject child, ChildLocation childLocation = ChildLocation.Unknown)
+        internal Formatter Spawn(UnparsableAst child, ChildLocation childLocation = ChildLocation.Unknown)
         {
             if (childLocation == ChildLocation.Unknown)
             {
                 return new Formatter(this)
                 {
-                    topAncestorCacheForLeft = UnparsableObject.NonCalculated
+                    topAncestorCacheForLeft = UnparsableAst.NonCalculated
                 };
             }
             else
@@ -180,7 +180,7 @@ namespace Sarcasm.Unparsing
                 {
                     topAncestorCacheForLeft = isLeftMostChild
                         ? this.topAncestorCacheForLeft
-                        : (child ?? UnparsableObject.NonCalculated)
+                        : (child ?? UnparsableAst.NonCalculated)
                 };
             }
         }
@@ -212,27 +212,27 @@ namespace Sarcasm.Unparsing
 
         #region Virtuals
 
-        protected virtual InsertedUtokens GetUtokensLeft(UnparsableObject target)
+        protected virtual InsertedUtokens GetUtokensLeft(UnparsableAst target)
         {
             return InsertedUtokens.None;
         }
 
-        protected virtual InsertedUtokens GetUtokensRight(UnparsableObject target)
+        protected virtual InsertedUtokens GetUtokensRight(UnparsableAst target)
         {
             return InsertedUtokens.None;
         }
 
-        protected virtual InsertedUtokens GetUtokensBetween(UnparsableObject leftTerminalLeaveTarget, UnparsableObject rightTarget)
+        protected virtual InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
         {
             return InsertedUtokens.None;
         }
 
-        protected virtual BlockIndentation GetBlockIndentation(UnparsableObject leftTerminalLeaveIfAny, UnparsableObject target)
+        protected virtual BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
         {
             return BlockIndentation.IndentNotNeeded;
         }
 
-        protected virtual IDecoration GetDecoration(UnparsableObject target)
+        protected virtual IDecoration GetDecoration(UnparsableAst target)
         {
             return Decoration.None;
         }
@@ -246,7 +246,7 @@ namespace Sarcasm.Unparsing
             set
             {
                 if (direction != value)
-                    topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+                    topAncestorCacheForLeft = UnparsableAst.NonCalculated;
 
                 this.direction = value;
             }
@@ -256,7 +256,7 @@ namespace Sarcasm.Unparsing
         /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
-        internal IReadOnlyList<UtokenBase> YieldBefore(UnparsableObject self, out Params @params)
+        internal IReadOnlyList<UtokenBase> YieldBefore(UnparsableAst self, out Params @params)
         {
             /*
              * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
@@ -298,7 +298,7 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        internal IEnumerable<UtokenBase> YieldAfter(UnparsableObject self, Params @params)
+        internal IEnumerable<UtokenBase> YieldAfter(UnparsableAst self, Params @params)
         {
             Unparser.tsUnparse.Debug("YieldAfter");
 
@@ -347,14 +347,14 @@ namespace Sarcasm.Unparsing
 
         internal void ResetMutableState()
         {
-            topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+            topAncestorCacheForLeft = UnparsableAst.NonCalculated;
         }
 
         #endregion
 
         #region Yield logic for indentation and between
 
-        private void UpdateCacheOnTheFly(UnparsableObject self, State state)
+        private void UpdateCacheOnTheFly(UnparsableAst self, State state)
         {
             if (state == State.Before)
             {
@@ -363,18 +363,18 @@ namespace Sarcasm.Unparsing
                 else if (self.IsLeftSiblingCalculated && self.LeftSibling != null)
                     topAncestorCacheForLeft = self;
                 else
-                    topAncestorCacheForLeft = UnparsableObject.NonCalculated;
+                    topAncestorCacheForLeft = UnparsableAst.NonCalculated;
             }
             else if (state == State.After)
             {
                 if (direction == Unparser.Direction.LeftToRight && self.BnfTerm is Terminal)
                     leftTerminalLeaveCache = self;
                 else if (direction == Unparser.Direction.RightToLeft && self == topAncestorCacheForLeft)
-                    leftTerminalLeaveCache = UnparsableObject.NonCalculated;
+                    leftTerminalLeaveCache = UnparsableAst.NonCalculated;
             }
         }
 
-        private IReadOnlyList<UtokenBase> YieldBetween(UnparsableObject self)
+        private IReadOnlyList<UtokenBase> YieldBetween(UnparsableAst self)
         {
             Unparser.tsUnparse.Debug("YieldBetween");
 
@@ -399,14 +399,14 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// <exception cref="UnparsableAst.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
-        private static IEnumerable<UtokenBase> _YieldBetween(UnparsableObject self, Formatter formatter)
+        private static IEnumerable<UtokenBase> _YieldBetween(UnparsableAst self, Formatter formatter)
         {
             // NOTE: topAncestorCacheForLeft may get updated by GetUsedLeftsFromTopToBottomB
 
-            UnparsableObject leftObject = GetLeftTerminalLeave(self);
+            UnparsableAst leftObject = GetLeftTerminalLeave(self);
 
             if (leftObject != null)
             {
@@ -420,7 +420,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, BlockIndentation blockIndentation)
+        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableAst self, BlockIndentation blockIndentation)
         {
 #if DEBUG
             BlockIndentation originalBlockIndentation = blockIndentation;
@@ -432,7 +432,7 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableObject self, ref BlockIndentation blockIndentation)
+        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableAst self, ref BlockIndentation blockIndentation)
         {
             Unparser.tsUnparse.Debug("YieldIndentationLeft");
 
@@ -466,7 +466,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, BlockIndentation blockIndentation)
+        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableAst self, BlockIndentation blockIndentation)
         {
 #if DEBUG
             BlockIndentation originalBlockIndentation = blockIndentation;
@@ -478,7 +478,7 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableObject self, ref BlockIndentation blockIndentation)
+        private IEnumerable<UtokenBase> YieldIndentationRight(UnparsableAst self, ref BlockIndentation blockIndentation)
         {
             Unparser.tsUnparse.Debug("YieldIndentationRight");
 
@@ -512,10 +512,10 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// <exception cref="UnparsableAst.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
-        private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableObject self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+        private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableAst self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
             Formatter formatter, bool left)
         {
 #if DEBUG
@@ -529,10 +529,10 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// <exception cref="UnparsableAst.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
-        private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableObject self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
+        private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableAst self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
             Formatter formatter, bool left)
         {
             if (!left && direction == Unparser.Direction.RightToLeft && blockIndentationParameter.IsDeferred() && blockIndentationParameter.LeftDeferred != null)
@@ -554,7 +554,7 @@ namespace Sarcasm.Unparsing
 
             if (blockIndentationParameter == BlockIndentation.ToBeSet || blockIndentationParameter.IsDeferred())
             {
-                UnparsableObject leftObject = GetLeftTerminalLeave(self);
+                UnparsableAst leftObject = GetLeftTerminalLeave(self);
                 BlockIndentation blockIndentation = formatter._GetBlockIndentation(leftObject, self);
 
                 // NOTE: topAncestorCacheForLeft gets updated by GetUsedLeftsFromTopToBottomB
@@ -608,53 +608,53 @@ namespace Sarcasm.Unparsing
 
         #region Helpers
 
-        private InsertedUtokens _GetUtokensLeft(UnparsableObject target)
+        private InsertedUtokens _GetUtokensLeft(UnparsableAst target)
         {
             return GetUtokensLeft(target)
                 .SetKind(InsertedUtokens.Kind.Left)
                 .SetAffected(target);
         }
 
-        private InsertedUtokens _GetUtokensRight(UnparsableObject target)
+        private InsertedUtokens _GetUtokensRight(UnparsableAst target)
         {
             return GetUtokensRight(target)
                 .SetKind(InsertedUtokens.Kind.Right)
                 .SetAffected(target);
         }
 
-        private InsertedUtokens _GetUtokensBetween(UnparsableObject leftTarget, UnparsableObject rightTarget)
+        private InsertedUtokens _GetUtokensBetween(UnparsableAst leftTarget, UnparsableAst rightTarget)
         {
             return GetUtokensBetween(leftTarget, rightTarget)
                 .SetKind(InsertedUtokens.Kind.Between)
                 .SetAffected(leftTarget, rightTarget);
         }
 
-        private BlockIndentation _GetBlockIndentation(UnparsableObject leftIfAny, UnparsableObject target)
+        private BlockIndentation _GetBlockIndentation(UnparsableAst leftIfAny, UnparsableAst target)
         {
             return GetBlockIndentation(leftIfAny, target);
         }
 
-        internal IDecoration _GetDecoration(UnparsableObject target)
+        internal IDecoration _GetDecoration(UnparsableAst target)
         {
             return GetDecoration(target);
         }
 
-        private static IEnumerable<UnparsableObject> GetSelfAndAncestors(UnparsableObject self)
+        private static IEnumerable<UnparsableAst> GetSelfAndAncestors(UnparsableAst self)
         {
             return Util.RecurseStopBeforeNull(self, current => current.SyntaxParent);
         }
 
-        private static IEnumerable<BnfTerm> GetSelfAndAncestorsB(UnparsableObject self)
+        private static IEnumerable<BnfTerm> GetSelfAndAncestorsB(UnparsableAst self)
         {
             return GetSelfAndAncestors(self).Select(current => current.BnfTerm);
         }
 
-        private static UnparsableObject GetTopAncestorForLeft(UnparsableObject self, Formatter formatter = null)
+        private static UnparsableAst GetTopAncestorForLeft(UnparsableAst self, Formatter formatter = null)
         {
             // NOTE: topAncestorCacheForLeft will not be changed if we have no formatter, that's why we use topAncestorForLeft + the static vs. instance behavior
-            UnparsableObject topAncestorForLeft;
+            UnparsableAst topAncestorForLeft;
 
-            if (formatter == null || !UnparsableObject.IsCalculated(formatter.topAncestorCacheForLeft))
+            if (formatter == null || !UnparsableAst.IsCalculated(formatter.topAncestorCacheForLeft))
             {
                 topAncestorForLeft = CalculateTopAncestorForLeft(self);
 
@@ -672,32 +672,32 @@ namespace Sarcasm.Unparsing
             return topAncestorForLeft;
         }
 
-        private static UnparsableObject CalculateTopAncestorForLeft(UnparsableObject self)
+        private static UnparsableAst CalculateTopAncestorForLeft(UnparsableAst self)
         {
             return GetSelfAndAncestors(self).FirstOrDefault(current => current.LeftSibling != null);
         }
 
-        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// <exception cref="UnparsableAst.NonCalculatedException">
         /// If topLeft is non-calculated.
         /// </exception>
-        private static IEnumerable<UnparsableObject> GetLeftsFromTopToBottom(UnparsableObject self, Formatter formatter = null)
+        private static IEnumerable<UnparsableAst> GetLeftsFromTopToBottom(UnparsableAst self, Formatter formatter = null)
         {
-            UnparsableObject topAncestorForLeft = GetTopAncestorForLeft(self, formatter);
+            UnparsableAst topAncestorForLeft = GetTopAncestorForLeft(self, formatter);
 
             return topAncestorForLeft != null
                 ? Util.RecurseStopBeforeNull(topAncestorForLeft.LeftSibling, current => current.RightMostChild)
-                : Enumerable.Empty<UnparsableObject>();
+                : Enumerable.Empty<UnparsableAst>();
         }
 
-        /// <exception cref="UnparsableObject.NonCalculatedException">
+        /// <exception cref="UnparsableAst.NonCalculatedException">
         /// If topLeft is non-calculated.
         /// </exception>
-        private static UnparsableObject GetLeftTerminalLeave(UnparsableObject self, Formatter formatter = null)
+        private static UnparsableAst GetLeftTerminalLeave(UnparsableAst self, Formatter formatter = null)
         {
             // NOTE: topAncestorCacheForLeft will not be changed if we have no formatter, that's why we use topAncestorForLeft + the static vs. instance behavior
-            UnparsableObject leftTerminalLeave;
+            UnparsableAst leftTerminalLeave;
 
-            if (formatter == null || !UnparsableObject.IsCalculated(formatter.topAncestorCacheForLeft))
+            if (formatter == null || !UnparsableAst.IsCalculated(formatter.topAncestorCacheForLeft))
             {
                 leftTerminalLeave = CalculateLeftTerminalLeave(self, formatter);
 
@@ -715,7 +715,7 @@ namespace Sarcasm.Unparsing
             return leftTerminalLeave;
         }
 
-        private static UnparsableObject CalculateLeftTerminalLeave(UnparsableObject self, Formatter formatter)
+        private static UnparsableAst CalculateLeftTerminalLeave(UnparsableAst self, Formatter formatter)
         {
             return GetLeftsFromTopToBottom(self, formatter).LastOrDefault();
         }
@@ -733,10 +733,10 @@ namespace Sarcasm.Unparsing
             return insertedUtokens;
         }
 
-        public static InsertedUtokens SetAffected(this InsertedUtokens insertedUtokens, params UnparsableObject[] affectedUnparsableObjects)
+        public static InsertedUtokens SetAffected(this InsertedUtokens insertedUtokens, params UnparsableAst[] affectedUnparsableAsts)
         {
             if (insertedUtokens != null)
-                insertedUtokens.affectedUnparsableObjects_FOR_DEBUG = affectedUnparsableObjects;
+                insertedUtokens.affectedUnparsableAsts_FOR_DEBUG = affectedUnparsableAsts;
 
             return insertedUtokens;
         }

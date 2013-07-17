@@ -79,7 +79,7 @@ namespace Sarcasm.UnitTest
             {
             }
 
-            protected override InsertedUtokens GetUtokensLeft(UnparsableObject target)
+            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
             {
                 if (target.BnfTerm == B.Statement)
                     return new[] { UtokenInsert.NewLine, UtokenInsert.NewLine };

@@ -364,8 +364,8 @@ namespace Sarcasm.Unparsing
             foreach (var childBnfTerms in Unparser.GetChildBnfTermListsLeftToRight(nonTerminal))
             {
                 Unparse(
-                    new UnparsableObject(nonTerminal, astValue: null),
-                    childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, astValue: null)),
+                    new UnparsableAst(nonTerminal, astValue: null),
+                    childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue: null)),
                     initialization: true
                     );
             }
@@ -384,7 +384,7 @@ namespace Sarcasm.Unparsing
             return OngoingExpressionUnparse || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
-        public IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children, Unparser.Direction direction)
+        public IReadOnlyList<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
         {
             if (ongoingExpressionUnparseLevel == 0)
             {
@@ -405,7 +405,7 @@ namespace Sarcasm.Unparsing
             // ongoingExpressionUnparseLevel and ongoingOperatorUnparseLevel do not need reset, since they are automatically in good state
         }
 
-        private IReadOnlyList<UtokenBase> Unparse(UnparsableObject self, IEnumerable<UnparsableObject> children, bool initialization)
+        private IReadOnlyList<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, bool initialization)
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
@@ -569,17 +569,17 @@ namespace Sarcasm.Unparsing
                 throw new ArgumentException("invalid operator", "@operator");
         }
 
-        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableObject unparsableObject, bool initialization)
+        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization)
         {
             OperatorInfo operatorInfoUnused;
-            return UnparseRawEager(unparsableObject, initialization, out operatorInfoUnused);
+            return UnparseRawEager(unparsableAst, initialization, out operatorInfoUnused);
         }
 
-        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableObject unparsableObject, bool initialization, out OperatorInfo operatorInfo)
+        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization, out OperatorInfo operatorInfo)
         {
             if (initialization)
             {
-                NonTerminal nonTerminal = unparsableObject.BnfTerm as NonTerminal;
+                NonTerminal nonTerminal = unparsableAst.BnfTerm as NonTerminal;
 
                 if (nonTerminal != null)
                     RegisteringExpressionsThatNeedParentheses(nonTerminal);
@@ -589,20 +589,20 @@ namespace Sarcasm.Unparsing
             }
             else
             {
-                var utokens = unparser.UnparseRaw(unparsableObject).ToList();
-                UpdateOperatorInfo(unparsableObject.BnfTerm);
+                var utokens = unparser.UnparseRaw(unparsableAst).ToList();
+                UpdateOperatorInfo(unparsableAst.BnfTerm);
                 operatorInfo = GetOperatorInfo();
                 return utokens;
             }
         }
 
-        private UnparsableObject GetParenthesis(ParenthesisKind parenthesisKind, UnparsableObject unparsableExpression)
+        private UnparsableAst GetParenthesis(ParenthesisKind parenthesisKind, UnparsableAst unparsableExpression)
         {
             BnfTerm parenthesis = parenthesisKind == ParenthesisKind.Left
                 ? GetSurroundingParentheses().Left
                 : GetSurroundingParentheses().Right;
 
-            return new UnparsableObject(parenthesis, unparsableExpression.AstValue);
+            return new UnparsableAst(parenthesis, unparsableExpression.AstValue);
         }
 
         private bool NeedParentheses(BnfTerm flaggedOperator)
@@ -633,14 +633,14 @@ namespace Sarcasm.Unparsing
                 : @operator.FlaggedOperator;
         }
 
-        private IEnumerable<Operator> GetOperators(IEnumerable<UnparsableObject> children, bool initialization)
+        private IEnumerable<Operator> GetOperators(IEnumerable<UnparsableAst> children, bool initialization)
         {
             using (ongoingOperatorGetLevel.IncrAutoDecr())
             using (ongoingOperatorUnparseLevel.IncrAutoDecr())
             {
                 int parenthesesLevel = 0;
 
-                foreach (UnparsableObject child in children)
+                foreach (UnparsableAst child in children)
                 {
                     if (IsFlaggedOrDerivedOperator(child.BnfTerm))
                     {

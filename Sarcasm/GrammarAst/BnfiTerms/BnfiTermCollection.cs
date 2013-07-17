@@ -459,7 +459,7 @@ namespace Sarcasm.GrammarAst
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
             System.Collections.IEnumerable astCollection = (System.Collections.IEnumerable)astValue;
 
@@ -474,15 +474,15 @@ namespace Sarcasm.GrammarAst
             foreach (object astElement in astCollection)
             {
                 if (!firstElement && this.delimiter != null)
-                    yield return new UnparsableObject(this.delimiter, astCollection);
+                    yield return new UnparsableAst(this.delimiter, astCollection);
 
-                yield return new UnparsableObject(this.element, astElement);
+                yield return new UnparsableAst(this.element, astElement);
 
                 firstElement = false;
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)astValue;
 

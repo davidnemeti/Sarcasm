@@ -191,7 +191,7 @@ namespace Sarcasm.GrammarAst
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
             foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
                 new
@@ -220,11 +220,11 @@ namespace Sarcasm.GrammarAst
                     childAstValue = astValue;
                 }
 
-                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childAstValue, member);
+                yield return new UnparsableAst(childRuleIndexedBnfTerm.BnfTerm, childAstValue, member);
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children)
         {
             return children
                 .SumIncludingNullValues(
@@ -234,12 +234,12 @@ namespace Sarcasm.GrammarAst
                     );
         }
 
-        private static int? GetBnfTermPriorityForMember(IUnparser unparser, UnparsableObject unparsableObject)
+        private static int? GetBnfTermPriorityForMember(IUnparser unparser, UnparsableAst unparsableAst)
         {
-            if (unparsableObject.AstValue != null)
+            if (unparsableAst.AstValue != null)
                 return 1;
-            else if (unparsableObject.BnfTerm is BnfiTermCollection)
-                return unparser.GetPriority(unparsableObject);
+            else if (unparsableAst.BnfTerm is BnfiTermCollection)
+                return unparser.GetPriority(unparsableAst);
             else
                 return null;
         }

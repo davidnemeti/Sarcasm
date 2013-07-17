@@ -423,7 +423,7 @@ namespace MiniPL.Grammars
                 this.B = b;
             }
 
-            protected override IDecoration GetDecoration(UnparsableObject target)
+            protected override IDecoration GetDecoration(UnparsableAst target)
             {
                 if (target.AstValue is D.If)
                 {
@@ -469,7 +469,7 @@ namespace MiniPL.Grammars
                     return Decoration.None;
             }
 
-            protected override InsertedUtokens GetUtokensLeft(UnparsableObject target)
+            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
             {
                 if (target.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace;
@@ -496,7 +496,7 @@ namespace MiniPL.Grammars
                     return base.GetUtokensLeft(target);
             }
 
-            protected override InsertedUtokens GetUtokensRight(UnparsableObject target)
+            protected override InsertedUtokens GetUtokensRight(UnparsableAst target)
             {
                 // alternative way to handle "else if" spacing
                 //if (target.AstValue is D.If &&
@@ -540,7 +540,7 @@ namespace MiniPL.Grammars
                     return base.GetUtokensRight(target);
             }
 
-            protected override InsertedUtokens GetUtokensBetween(UnparsableObject leftTerminalLeaveTarget, UnparsableObject rightTarget)
+            protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
                 if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
@@ -569,7 +569,7 @@ namespace MiniPL.Grammars
                     return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
             }
 
-            protected override BlockIndentation GetBlockIndentation(UnparsableObject leftTerminalLeaveIfAny, UnparsableObject target)
+            protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
                 if (target.BnfTerm == B.Statement)
                     return BlockIndentation.Indent;

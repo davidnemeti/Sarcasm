@@ -17,14 +17,14 @@ namespace Sarcasm.Utility
 {
     internal static class Misc
     {
-        internal static int? DebugWriteLinePriority(this int? priority, TraceSource ts, UnparsableObject unparsableObject, string messageBefore = "", string messageAfter = "", string messageInside = "")
+        internal static int? DebugWriteLinePriority(this int? priority, TraceSource ts, UnparsableAst unparsableAst, string messageBefore = "", string messageAfter = "", string messageInside = "")
         {
             ts.Debug(
                 "{0}{1}{2} obj: {3}; priority = {4}{5}",
                 messageBefore,
-                unparsableObject.BnfTerm,
+                unparsableAst.BnfTerm,
                 messageInside != "" ? " " + messageInside : messageInside,
-                unparsableObject.AstValue != null ? unparsableObject.AstValue.ToString() : "<<NULL>>",
+                unparsableAst.AstValue != null ? unparsableAst.AstValue.ToString() : "<<NULL>>",
                 priority.HasValue ? priority.ToString() : "NULL",
                 messageAfter
                 );
