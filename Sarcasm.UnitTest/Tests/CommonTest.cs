@@ -158,8 +158,8 @@ namespace Sarcasm.UnitTest
                     Formatting = Newtonsoft.Json.Formatting.Indented,
                     NullValueHandling = NullValueHandling.Ignore,
                     TypeNameHandling = TypeNameHandling.All,
+                    Converters = { new StringEnumConverter() }
                 };
-            settings.Converters.Add(new StringEnumConverter());
 
             return JsonConvert.SerializeObject(astValue, settings);
         }
