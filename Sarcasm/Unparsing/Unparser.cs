@@ -429,9 +429,9 @@ namespace Sarcasm.Unparsing
 
                 child.SyntaxParent = self;
 
-                child.AstParent =   child.AstValue != self.AstValue       ?   self :
-                                    self.IsAstParentCalculated  ?   self.AstParent :
-                                                                    UnparsableObject.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
+                child.AstParent =   child.AstValue != self.AstValue ?   self :
+                                    self.IsAstParentCalculated      ?   self.AstParent :
+                                                                        UnparsableObject.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
             }
 
             if (!IsPrevMostChildCalculated(self))
