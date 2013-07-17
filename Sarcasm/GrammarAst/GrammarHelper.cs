@@ -368,62 +368,6 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        #region GetMember
-
-        public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
-        {
-            var memberExpression = exprForPropertyAccess.Body as MemberExpression;
-            if (memberExpression == null)
-                throw new InvalidOperationException("Expression is not a member access expression.");
-
-            var propertyInfo = memberExpression.Member as PropertyInfo;
-            if (propertyInfo == null)
-                throw new InvalidOperationException("Member in expression is not a property.");
-
-            return propertyInfo;
-        }
-
-        public static FieldInfo GetField<T>(Expression<Func<T>> exprForFieldAccess)
-        {
-            var memberExpression = exprForFieldAccess.Body as MemberExpression;
-            if (memberExpression == null)
-                throw new InvalidOperationException("Expression is not a member access expression.");
-
-            var fieldInfo = memberExpression.Member as FieldInfo;
-            if (fieldInfo == null)
-                throw new InvalidOperationException("Member in expression is not a field.");
-
-            return fieldInfo;
-        }
-
-        public static MemberInfo GetMember<T>(Expression<Func<T>> exprForMemberAccess)
-        {
-            var memberExpression = exprForMemberAccess.Body as MemberExpression;
-            if (memberExpression == null)
-                throw new InvalidOperationException("Expression is not a member access expression.");
-
-            var memberInfo = memberExpression.Member as MemberInfo;
-            if (memberInfo == null)
-                throw new InvalidOperationException("Member in expression is not a member.");
-
-            return memberInfo;
-        }
-
-        public static MemberInfo GetMember<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForMemberAccess)
-        {
-            var memberExpression = exprForMemberAccess.Body as MemberExpression;
-            if (memberExpression == null)
-                throw new InvalidOperationException("Expression is not a member access expression.");
-
-            var memberInfo = memberExpression.Member as MemberInfo;
-            if (memberInfo == null)
-                throw new InvalidOperationException("Member in expression is not a member.");
-
-            return memberInfo;
-        }
-
-        #endregion
-
         #region Value <-> AstNode conversion
 
         public static object ValueToAstNode(object value, AstContext context, ParseTreeNode parseTreeNode)

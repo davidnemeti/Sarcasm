@@ -4,11 +4,79 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.Reflection;
+using System.Linq.Expressions;
 
 namespace Sarcasm.Utility
 {
     public static class Util
     {
+        #region GetType/GetMember
+
+        public static T GetType<T>()
+        {
+            return default(T);
+        }
+
+        public static PropertyInfo GetProperty<T>(Expression<Func<T>> exprForPropertyAccess)
+        {
+            var memberExpression = exprForPropertyAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var propertyInfo = memberExpression.Member as PropertyInfo;
+            if (propertyInfo == null)
+                throw new InvalidOperationException("Member in expression is not a property.");
+
+            return propertyInfo;
+        }
+
+        public static FieldInfo GetField<T>(Expression<Func<T>> exprForFieldAccess)
+        {
+            var memberExpression = exprForFieldAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var fieldInfo = memberExpression.Member as FieldInfo;
+            if (fieldInfo == null)
+                throw new InvalidOperationException("Member in expression is not a field.");
+
+            return fieldInfo;
+        }
+
+        public static MemberInfo GetMember<T>(Expression<Func<T>> exprForMemberAccess)
+        {
+            var memberExpression = exprForMemberAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var memberInfo = memberExpression.Member as MemberInfo;
+            if (memberInfo == null)
+                throw new InvalidOperationException("Member in expression is not a member.");
+
+            return memberInfo;
+        }
+
+        public static MemberInfo GetMember<TDeclaringType, TMemberType>(Expression<Func<TDeclaringType, TMemberType>> exprForMemberAccess)
+        {
+            var memberExpression = exprForMemberAccess.Body as MemberExpression;
+            if (memberExpression == null)
+                throw new InvalidOperationException("Expression is not a member access expression.");
+
+            var memberInfo = memberExpression.Member as MemberInfo;
+            if (memberInfo == null)
+                throw new InvalidOperationException("Member in expression is not a member.");
+
+            return memberInfo;
+        }
+
+        public static MemberInfo GetMember<TDeclaringType, TMemberType>(this TDeclaringType objDummy, Expression<Func<TDeclaringType, TMemberType>> exprForMemberAccess)
+        {
+            return GetMember(exprForMemberAccess);
+        }
+
+        #endregion
+
         public static void ConsumeAll<T>(this IEnumerable<T> items)
         {
             foreach (T item in items)

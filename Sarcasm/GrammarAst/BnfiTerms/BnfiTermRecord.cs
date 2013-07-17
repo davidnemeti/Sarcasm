@@ -202,15 +202,25 @@ namespace Sarcasm.GrammarAst
                 ))
             {
                 object childObj;
+                Member member;
 
                 if (IsMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex))
-                    childObj = GetValue(GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex).MemberInfo, obj);
+                {
+                    member = GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex);
+                    childObj = GetValue(member.MemberInfo, obj);
+                }
                 else if (childRuleIndexedBnfTerm.BnfTerm is BnfiTermCopy)
+                {
+                    member = null;
                     childObj = obj;
+                }
                 else
+                {
+                    member = null;
                     childObj = obj;
+                }
 
-                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childObj);
+                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childObj, member);
             }
         }
 

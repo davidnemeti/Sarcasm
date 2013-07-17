@@ -86,6 +86,7 @@ namespace Sarcasm.Unparsing
 
         public BnfTerm BnfTerm { get; private set; }
         public object AstValue { get; private set; }
+        public Member ParentMember { get; private set; }
 
         private UnparsableObject syntaxParent = NonCalculated;
         private UnparsableObject astParent = NonCalculated;
@@ -98,10 +99,12 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public UnparsableObject(BnfTerm bnfTerm, object obj)
+        public UnparsableObject(BnfTerm bnfTerm, object astValue, Member parentMember = null)
         {
             this.BnfTerm = bnfTerm;
-            this.AstValue = obj;
+            this.AstValue = astValue;
+            this.ParentMember = parentMember;
+
             this.IsLeftSiblingNeededForDeferredCalculation = false;
         }
 
