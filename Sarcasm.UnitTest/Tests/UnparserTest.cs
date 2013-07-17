@@ -36,8 +36,8 @@ namespace Sarcasm.UnitTest
             Directory.CreateDirectory(actualUnparsedFilesDir);
             unparser = new Unparser(grammar);
 
-            formatter2 = new SpecialFormatter(grammar.B) { IndentEmptyLines = false };
-            formatter3 = new SpecialFormatter(grammar.B) { IndentEmptyLines = true };
+            formatter2 = new SpecialFormatter(grammar) { IndentEmptyLines = false };
+            formatter3 = new SpecialFormatter(grammar) { IndentEmptyLines = true };
 
             grammar.UnparseControl.ClearPrecedenceBasedParenthesesForExpressions();     // we want to test the automatic parentheses stuff
         }
@@ -74,8 +74,8 @@ namespace Sarcasm.UnitTest
 
         private class SpecialFormatter : MiniPL.Grammars.GrammarP.Formatter
         {
-            public SpecialFormatter(MiniPL.Grammars.GrammarP.BnfTerms b)
-                : base(b)
+            public SpecialFormatter(MiniPL.Grammars.GrammarP grammar)
+                : base(grammar)
             {
             }
 

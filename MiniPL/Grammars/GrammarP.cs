@@ -406,7 +406,7 @@ namespace MiniPL.Grammars
 
             #region Unparse
 
-            UnparseControl.DefaultFormatter = new Formatter(B);
+            UnparseControl.DefaultFormatter = new Formatter(this);
             UnparseControl.SetPrecedenceBasedParenthesesForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
             #endregion
@@ -419,9 +419,10 @@ namespace MiniPL.Grammars
         {
             private readonly BnfTerms B;
 
-            public Formatter(BnfTerms b)
+            public Formatter(GrammarP grammar)
+                : base(grammar)
             {
-                this.B = b;
+                this.B = grammar.B;
             }
 
             protected override IDecoration GetDecoration(UnparsableAst target)

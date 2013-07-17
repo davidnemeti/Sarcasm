@@ -126,11 +126,6 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public Formatter()
-            : this(formatProviderDefault)
-        {
-        }
-
         public Formatter(Grammar grammar)
             : this(grammar.DefaultCulture)
         {

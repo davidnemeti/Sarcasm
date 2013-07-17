@@ -27,8 +27,8 @@ namespace Sarcasm.Reflection
             metaGrammarsWithNonRegisteredDomains = new ObservableCollectionAndReadOnly<MetaGrammar>();
         }
 
-        public IReadOnlyCollection<Domain> Domains { get { return domains.ReadOnlyItems; } }
-        public IReadOnlyCollection<Type> DomainRoots { get { return domainRoots.ReadOnlyItems; } }
+        public ReadOnlyObservableCollection<Domain> Domains { get { return domains.ReadOnlyItems; } }
+        public ReadOnlyObservableCollection<Type> DomainRoots { get { return domainRoots.ReadOnlyItems; } }
 
         private ObservableCollectionAndReadOnly<Domain> domains;
         private ObservableCollectionAndReadOnly<Type> domainRoots;
@@ -121,6 +121,7 @@ namespace Sarcasm.Reflection
             else
                 metaGrammarsWithNonRegisteredDomains.Items.Add(metaGrammar);
 
+            metaGrammarToMetaFormatters.Add(metaGrammar, new ObservableCollectionAndReadOnly<MetaFormatter>());
             grammarTypeToMetaGrammar.Add(metaGrammar.GrammarType, metaGrammar);
         }
 
@@ -134,18 +135,15 @@ namespace Sarcasm.Reflection
             return IsGrammarRegistered(metaGrammar.GrammarType);
         }
 
-        public void RegisterFormatter(Type formatterType)
-        {
-            RegisterFormatter(new MetaFormatter(formatterType));
-        }
-
         public void RegisterFormatter(MetaFormatter metaFormatter)
         {
             if (IsFormatterRegistered(metaFormatter))
                 throw new ArgumentException("Formatter already registered", "metaFormatter");
 
-            metaGrammarToMetaFormatters[grammarTypeToMetaGrammar[metaFormatter.GrammarType]].Items.Add(metaFormatter);
+            MetaGrammar metaGrammar = grammarTypeToMetaGrammar[metaFormatter.GrammarType];
+            metaGrammarToMetaFormatters[metaGrammar].Items.Add(metaFormatter);
             formatterTypeToMetaFormatter.Add(metaFormatter.FormatterType, metaFormatter);
+            metaFormatter.Grammar = metaGrammar.Grammar;
         }
 
         public bool IsFormatterRegistered(Type formatterType)
@@ -287,6 +285,7 @@ namespace Sarcasm.Reflection
         public Type FormatterType { get; private set; }
         public FormatterAttribute FormatterAttribute { get; private set; }
         public Formatter Formatter { get; private set; }
+        private Grammar grammar;
         public Type GrammarType { get; private set; }
 
         public string Name { get { return FormatterAttribute.Name; } }
@@ -300,13 +299,26 @@ namespace Sarcasm.Reflection
 
             this.FormatterType = formatterType;
             this.FormatterAttribute = formatterAttribute;
-            this.Formatter = (Formatter)Activator.CreateInstance(formatterType);
             this.GrammarType = formatterAttribute.GrammarType;
         }
 
         public static bool IsFormatterType(Type type)
         {
             return type.IsSubclassOf(typeof(Formatter)) && type.GetCustomAttribute<FormatterAttribute>() != null;
+        }
+
+        public Grammar Grammar
+        {
+            get {  return grammar; }
+
+            internal set
+            {
+                if (!GrammarType.IsInstanceOfType(value))
+                    throw new InvalidOperationException("GrammarType and type of Grammar differs");
+
+                grammar = value;
+                this.Formatter = (Formatter)Activator.CreateInstance(FormatterType, value);
+            }
         }
     }
 }
