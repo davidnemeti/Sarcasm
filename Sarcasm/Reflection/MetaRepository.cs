@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using Sarcasm.DomainCore;
 using Sarcasm.GrammarAst;
+using Sarcasm.Unparsing;
 
 namespace Sarcasm.Reflection
 {
@@ -19,8 +20,10 @@ namespace Sarcasm.Reflection
             domains = new ObservableCollectionAndReadOnly<Domain>();
             domainRoots = new ObservableCollectionAndReadOnly<Type>();
             domainToMetaGrammars = new Dictionary<Domain, ObservableCollectionAndReadOnly<MetaGrammar>>();
+            metaGrammarToMetaFormatters = new Dictionary<MetaGrammar, ObservableCollectionAndReadOnly<MetaFormatter>>();
             domainRootToDomain = new Dictionary<Type, Domain>();
             grammarTypeToMetaGrammar = new Dictionary<Type, MetaGrammar>();
+            formatterTypeToMetaFormatter = new Dictionary<Type, MetaFormatter>();
             metaGrammarsWithNonRegisteredDomains = new ObservableCollectionAndReadOnly<MetaGrammar>();
         }
 
@@ -31,8 +34,10 @@ namespace Sarcasm.Reflection
         private ObservableCollectionAndReadOnly<Type> domainRoots;
 
         private Dictionary<Domain, ObservableCollectionAndReadOnly<MetaGrammar>> domainToMetaGrammars;
+        private Dictionary<MetaGrammar, ObservableCollectionAndReadOnly<MetaFormatter>> metaGrammarToMetaFormatters;
         private Dictionary<Type, Domain> domainRootToDomain;
         private Dictionary<Type, MetaGrammar> grammarTypeToMetaGrammar;
+        private Dictionary<Type, MetaFormatter> formatterTypeToMetaFormatter;
 
         private ObservableCollectionAndReadOnly<MetaGrammar> metaGrammarsWithNonRegisteredDomains;
 
@@ -43,7 +48,17 @@ namespace Sarcasm.Reflection
 
         public ReadOnlyObservableCollection<MetaGrammar> GetGrammars(Type domainRoot)
         {
-            return domainToMetaGrammars[domainRootToDomain[domainRoot]].ReadOnlyItems;
+            return GetGrammars(domainRootToDomain[domainRoot]);
+        }
+
+        public ReadOnlyObservableCollection<MetaFormatter> GetFormatters(MetaGrammar metaGrammar)
+        {
+            return metaGrammarToMetaFormatters[metaGrammar].ReadOnlyItems;
+        }
+
+        public ReadOnlyObservableCollection<MetaFormatter> GetFormatters(Type grammarType)
+        {
+            return GetFormatters(grammarTypeToMetaGrammar[grammarType]);
         }
 
         private class ObservableCollectionAndReadOnly<T>
@@ -119,6 +134,37 @@ namespace Sarcasm.Reflection
             return IsGrammarRegistered(metaGrammar.GrammarType);
         }
 
+        public void RegisterFormatter(Type formatterType)
+        {
+            RegisterFormatter(new MetaFormatter(formatterType));
+        }
+
+        public void RegisterFormatter(MetaFormatter metaFormatter)
+        {
+            if (IsFormatterRegistered(metaFormatter))
+                throw new ArgumentException("Formatter already registered", "metaFormatter");
+
+            metaGrammarToMetaFormatters[grammarTypeToMetaGrammar[metaFormatter.GrammarType]].Items.Add(metaFormatter);
+            formatterTypeToMetaFormatter.Add(metaFormatter.FormatterType, metaFormatter);
+        }
+
+        public bool IsFormatterRegistered(Type formatterType)
+        {
+            return formatterTypeToMetaFormatter.ContainsKey(formatterType);
+        }
+
+        public bool IsFormatterRegistered(MetaFormatter metaFormatter)
+        {
+            return IsFormatterRegistered(metaFormatter.FormatterType);
+        }
+
+        public void RegisterAll(Assembly assembly)
+        {
+            RegisterDomains(assembly);
+            RegisterGrammars(assembly);
+            RegisterFormatters(assembly);
+        }
+
         public void RegisterDomains(Assembly assembly)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
@@ -145,6 +191,21 @@ namespace Sarcasm.Reflection
 
             foreach (MetaGrammar newMetaGrammar in newMetaGrammars)
                 RegisterGrammar(newMetaGrammar);
+
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+        }
+
+        public void RegisterFormatters(Assembly assembly)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            var newMetaFormatters = assembly
+                .GetTypes()
+                .Where(type => MetaFormatter.IsFormatterType(type))
+                .Select(formatterType => new MetaFormatter(formatterType));
+
+            foreach (MetaFormatter newMetaFormatter in newMetaFormatters)
+                RegisterFormatter(newMetaFormatter);
 
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
         }
@@ -218,6 +279,34 @@ namespace Sarcasm.Reflection
         public static bool IsGrammarType(Type type)
         {
             return type.IsSubclassOf(typeof(Grammar)) && type.GetCustomAttribute<GrammarAttribute>() != null;
+        }
+    }
+
+    public class MetaFormatter
+    {
+        public Type FormatterType { get; private set; }
+        public FormatterAttribute FormatterAttribute { get; private set; }
+        public Formatter Formatter { get; private set; }
+        public Type GrammarType { get; private set; }
+
+        public string Name { get { return FormatterAttribute.Name; } }
+
+        public MetaFormatter(Type formatterType)
+        {
+            var formatterAttribute = formatterType.GetCustomAttribute<FormatterAttribute>();
+
+            if (!IsFormatterType(formatterType))
+                throw new ArgumentException("Type should be a formatter type, i.e. a subclass of Formatter with FormatterAttribute", "type");
+
+            this.FormatterType = formatterType;
+            this.FormatterAttribute = formatterAttribute;
+            this.Formatter = (Formatter)Activator.CreateInstance(formatterType);
+            this.GrammarType = formatterAttribute.GrammarType;
+        }
+
+        public static bool IsFormatterType(Type type)
+        {
+            return type.IsSubclassOf(typeof(Formatter)) && type.GetCustomAttribute<FormatterAttribute>() != null;
         }
     }
 }
