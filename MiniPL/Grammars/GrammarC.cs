@@ -396,7 +396,7 @@ namespace MiniPL.Grammars
             #region Unparse
 
             UnparseControl.DefaultFormatter = new Formatter(B);
-            UnparseControl.SetAutomaticParenthesesExplicitlyForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
+            UnparseControl.SetPrecedenceBasedParenthesesForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
 
             #endregion
         }

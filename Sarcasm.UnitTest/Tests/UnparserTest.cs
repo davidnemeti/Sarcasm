@@ -39,7 +39,7 @@ namespace Sarcasm.UnitTest
             formatter2 = new SpecialFormatter(grammar.B) { IndentEmptyLines = false };
             formatter3 = new SpecialFormatter(grammar.B) { IndentEmptyLines = true };
 
-            grammar.UnparseControl.ClearManualSetOfParenthesesForExpressions();     // we want to test the automatic parentheses stuff
+            grammar.UnparseControl.ClearPrecedenceBasedParenthesesForExpressions();     // we want to test the automatic parentheses stuff
         }
 
         protected void ReunparseCheck(NonTerminal root, string parseFileName, bool leftToRight)

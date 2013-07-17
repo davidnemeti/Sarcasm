@@ -50,8 +50,8 @@ namespace Sarcasm.Unparsing
         private readonly Unparser unparser;
 
         private ISet<BnfTerm> expressionsThatCanCauseOthersBeingParenthesized;
-        private IDictionary<BnfTerm, Parentheses> expressionThatMayNeedParenthesesToParentheses;
-        private IDictionary<BnfTerm, BnfTermKind> bnfTermToBnfTermKind;
+        private Dictionary<BnfTerm, Parentheses> expressionThatMayNeedParenthesesToParentheses;
+        private Dictionary<BnfTerm, BnfTermKind> bnfTermToBnfTermKind;
 
         #endregion
 
@@ -344,10 +344,10 @@ namespace Sarcasm.Unparsing
 
         private void RegisteringExpressionsThatNeedParentheses(UnparseControl unparseControl)
         {
-            if (unparseControl.ExpressionToParenthesesHasBeenManuallySet)
+            if (unparseControl.ExpressionToParenthesesHasBeenSet)
             {
-                this.expressionsThatCanCauseOthersBeingParenthesized = new HashSet<BnfTerm>(unparseControl.ExpressionToParentheses.Keys);
-                this.expressionThatMayNeedParenthesesToParentheses = new Dictionary<BnfTerm, Parentheses>((IDictionary<BnfTerm, Parentheses>)unparseControl.ExpressionToParentheses);
+                this.expressionsThatCanCauseOthersBeingParenthesized = new HashSet<BnfTerm>(unparseControl.GetExpressionToParentheses().Keys);
+                this.expressionThatMayNeedParenthesesToParentheses = unparseControl.GetExpressionToParentheses().ToDictionary(pair => pair.Key, pair => pair.Value);
             }
             else
             {
@@ -356,6 +356,12 @@ namespace Sarcasm.Unparsing
                 this._examinedBnfTermsInCurrentPath = new Bag<BnfTerm>();
 
                 RegisteringExpressionsThatNeedParentheses(unparser.Grammar.Root);
+
+                lock (unparseControl)
+                {   // handle concurrent unparsers initializations with one shared grammar and unparseControl
+                    if (!unparseControl.ExpressionToParenthesesHasBeenSet)
+                        unparseControl.SetExpressionToParentheses(expressionThatMayNeedParenthesesToParentheses);
+                }
             }
         }
 

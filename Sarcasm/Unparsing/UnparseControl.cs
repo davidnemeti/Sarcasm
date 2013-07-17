@@ -18,15 +18,24 @@ namespace Sarcasm.Unparsing
     {
         private readonly Grammar grammar;
         private Dictionary<BnfTerm, ExpressionUnparser.Parentheses> expressionToParentheses = new Dictionary<BnfTerm, ExpressionUnparser.Parentheses>();
-        internal bool ExpressionToParenthesesHasBeenManuallySet { get; private set; }
+        internal bool ExpressionToParenthesesHasBeenSet { get; private set; }
 
         public UnparseControl(Grammar grammar)
         {
             this.grammar = grammar;
-            this.ExpressionToParenthesesHasBeenManuallySet = false;
+            this.ExpressionToParenthesesHasBeenSet = false;
         }
 
-        internal IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> ExpressionToParentheses { get { return expressionToParentheses; } }
+        internal IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> GetExpressionToParentheses()
+        {
+            return expressionToParentheses;
+        }
+
+        internal void SetExpressionToParentheses(IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> expressionToParentheses)
+        {
+            this.expressionToParentheses = expressionToParentheses.ToDictionary(pair => pair.Key, pair => pair.Value);
+            this.ExpressionToParenthesesHasBeenSet = true;
+        }
 
         private Formatter _defaultFormatter;
         public Formatter DefaultFormatter
@@ -44,21 +53,21 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        public void SetAutomaticParenthesesExplicitlyForExpression(BnfTerm expression, BnfTerm leftParenthesis, BnfTerm rightParenthesis)
+        public void SetPrecedenceBasedParenthesesForExpression(BnfTerm expression, BnfTerm leftParenthesis, BnfTerm rightParenthesis)
         {
             expressionToParentheses.Add(expression, new ExpressionUnparser.Parentheses() { Expression = expression, Left = leftParenthesis, Right = rightParenthesis });
-            ExpressionToParenthesesHasBeenManuallySet = true;
+            ExpressionToParenthesesHasBeenSet = true;
         }
 
-        public void NoAutomaticParenthesesNeededForExpressions()
+        public void NoPrecedenceBasedParenthesesNeededForExpressions()
         {
-            ExpressionToParenthesesHasBeenManuallySet = true;
+            ExpressionToParenthesesHasBeenSet = true;
         }
 
-        public void ClearManualSetOfParenthesesForExpressions()
+        public void ClearPrecedenceBasedParenthesesForExpressions()
         {
             expressionToParentheses.Clear();
-            ExpressionToParenthesesHasBeenManuallySet = false;
+            ExpressionToParenthesesHasBeenSet = false;
         }
     }
 }
