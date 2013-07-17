@@ -20,6 +20,7 @@ using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
 using System.Windows;
 using System.Windows.Media;
+using Sarcasm.Utility;
 
 namespace MiniPL.Grammars
 {
@@ -472,42 +473,69 @@ namespace MiniPL.Grammars
             {
                 if (target.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.RIGHT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.SEMICOLON)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.COMMA)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.Statement)
                     return UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.BEGIN)
                     return UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.END)
                     return UtokenInsert.NewLine;
+
                 else
                     return base.GetUtokensLeft(target);
             }
 
             protected override InsertedUtokens GetUtokensRight(UnparsableObject target)
             {
+                // alternative way to handle "else if" spacing
+                //if (target.AstValue is D.If &&
+                //    target.AstParent != null && target.AstParent.AstValue is D.If &&
+                //    //                    target.ParentMember != null && target.ParentMember.MemberInfo == Util.GetType<D.If>().GetMember(@if => @if.ElseBody))
+                //    target.ParentMember != null && target.ParentMember.MemberInfo == Util.GetMember(() => Util.GetType<D.If>().ElseBody) &&
+                //    target.BnfTerm == B.ELSE)
+                //{
+                //    var foo = target.BnfTerm;
+                //    return UtokenInsert.Space.SetPriority(10);
+                //}
+
                 if (target.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.UnaryOperator)
                     return UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.Statement)
                     return UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.AstValue is D.Program)
                     return UtokenInsert.EmptyLine;
+
                 else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.AstValue is D.Program)
                     return UtokenInsert.EmptyLine;
+
                 else if (target.BnfTerm == B.END && target.AstValue is D.Function)
                     return UtokenInsert.EmptyLine.SetPriority(10);
+
                 else if (target.BnfTerm == B.BEGIN)
                     return UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.END)
                     return UtokenInsert.NewLine;
+
                 else
                     return base.GetUtokensRight(target);
             }
@@ -516,16 +544,27 @@ namespace MiniPL.Grammars
             {
                 if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
                 else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace;
+
+                // alternative ways to handle "else if" spacing
                 else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
                     return UtokenInsert.Space.SetPriority(10);
+                //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.IF)
+                //    return UtokenInsert.Space.SetPriority(10);
+                //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.AstValue is D.If)
+                //    return UtokenInsert.Space.SetPriority(10);
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace.SetPriority(10);
+
                 else
                     return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
             }
@@ -534,8 +573,13 @@ namespace MiniPL.Grammars
             {
                 if (target.BnfTerm == B.Statement)
                     return BlockIndentation.Indent;
+
+                // alternative ways to handle "else if" indentation
                 else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
                     return BlockIndentation.Unindent;
+                //else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.AstValue is D.If)
+                //    return BlockIndentation.Unindent;
+
                 else
                     return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);
             }

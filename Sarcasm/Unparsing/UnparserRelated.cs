@@ -86,7 +86,7 @@ namespace Sarcasm.Unparsing
 
         public BnfTerm BnfTerm { get; private set; }
         public object AstValue { get; private set; }
-        public Member ParentMember { get; private set; }
+        public Member ParentMember { get; internal set; }
 
         private UnparsableObject syntaxParent = NonCalculated;
         private UnparsableObject astParent = NonCalculated;
