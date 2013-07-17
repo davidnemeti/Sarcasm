@@ -155,10 +155,6 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        private void RegisterMember(ParseIndexedBnfTerm parseIndexedBnfTerm, int ruleIndex, Member member)
-        {
-        }
-
         private void RegisterMember(BnfTerm bnfTerm, int parseIndex, int ruleIndex, Member member)
         {
             this.parseIndexedBnfTermToMember.Add(new ParseIndexedBnfTerm(bnfTerm, parseIndex), member);
