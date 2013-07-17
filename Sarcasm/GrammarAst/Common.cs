@@ -16,7 +16,7 @@ using Sarcasm.Unparsing;
 namespace Sarcasm.GrammarAst
 {
     public delegate T ValueIntroducer<T>(AstContext context, ParseTreeNodeWithoutAst parseTreeNode);
-    public delegate TOut ValueConverter<TIn, TOut>(TIn inputObject);
+    public delegate TOut ValueConverter<TIn, TOut>(TIn inputAstValue);
 
     public interface IBnfiTerm
     {

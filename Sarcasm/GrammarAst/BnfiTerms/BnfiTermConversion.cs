@@ -381,14 +381,14 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        protected static object IdentityFunction(object obj)
+        protected static object IdentityFunction(object astValue)
         {
-            return obj;
+            return astValue;
         }
 
-        protected static TOut IdentityFunctionForceCast<TIn, TOut>(TIn obj)
+        protected static TOut IdentityFunctionForceCast<TIn, TOut>(TIn astValue)
         {
-            return (TOut)(object)obj;
+            return (TOut)(object)astValue;
         }
 
         protected void SetState(BnfiTermConversion source)
@@ -468,11 +468,11 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
         {
             if (this.UtokenizerForUnparse != null)
             {
-                utokens = this.UtokenizerForUnparse(unparser.FormatProvider, obj);
+                utokens = this.UtokenizerForUnparse(unparser.FormatProvider, astValue);
                 return true;
             }
             else if (this.inverseValueConverterForUnparse != null && this.inverseValueConverterForUnparse != NoUnparseByInverse())
@@ -484,17 +484,17 @@ namespace Sarcasm.GrammarAst
                 throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertObjectForChild(obj, childBnfTerm)));
+            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, ConvertAstValueForChild(astValue, childBnfTerm)));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
         {
             if (this.value != null)
-                return this.value.Equals(obj) ? (int?)1 : null;
+                return this.value.Equals(astValue) ? (int?)1 : null;
             else
-                return unparser.GetPriority(GetMainChild(obj, children));
+                return unparser.GetPriority(GetMainChild(astValue, children));
         }
 
         private static bool IsMainChild(BnfTerm bnfTerm)
@@ -502,19 +502,19 @@ namespace Sarcasm.GrammarAst
             return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
         }
 
-        private UnparsableObject GetMainChild(object obj, IEnumerable<UnparsableObject> children)
+        private UnparsableObject GetMainChild(object astValue, IEnumerable<UnparsableObject> children)
         {
             return this.bnfTerm != null
-                ? new UnparsableObject(this.bnfTerm, ConvertObjectForChild(obj, this.bnfTerm))
+                ? new UnparsableObject(this.bnfTerm, ConvertAstValueForChild(astValue, this.bnfTerm))
                 : children.Single(child => IsMainChild(child.BnfTerm));    // "transient" unparse with the actual BnfiTermConversion(s) under the current one (set by Rule)
         }
 
-        private object ConvertObjectForChild(object obj, BnfTerm childBnfTerm)
+        private object ConvertAstValueForChild(object astValue, BnfTerm childBnfTerm)
         {
             if (IsMainChild(childBnfTerm))
-                return this.inverseValueConverterForUnparse(obj);
+                return this.inverseValueConverterForUnparse(astValue);
             else
-                return obj;
+                return astValue;
         }
 
         private static readonly ValueConverter<object, object> noUnparseByInverse =

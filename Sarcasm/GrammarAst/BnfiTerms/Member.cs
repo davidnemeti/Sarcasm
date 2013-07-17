@@ -20,11 +20,6 @@ namespace Sarcasm.GrammarAst
         public MemberInfo MemberInfo { get; private set; }
         public BnfTerm BnfTerm { get; private set; }
 
-        protected Member()
-            : base("NON_CALCULATED")
-        {
-        }
-
         protected Member(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(name: string.Format("{0}.{1}", GrammarHelper.TypeNameWithDeclaringTypes(memberInfo.DeclaringType), memberInfo.Name.ToLower()))
         {
@@ -164,21 +159,12 @@ namespace Sarcasm.GrammarAst
 
         public override string ToString()
         {
-            return this == NonCalculated
-                ? this.Name
-                : string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
+            return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
         }
-
-        internal static readonly Member NonCalculated = new MemberTL();
     }
 
     public partial class MemberTL : Member, IBnfiTermTL
     {
-        internal MemberTL()
-            : base()
-        {
-        }
-
         internal MemberTL(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(memberInfo, bnfTerm)
         {

@@ -42,7 +42,7 @@ namespace Sarcasm.GrammarAst
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
-                object obj = Activator.CreateInstance(type, nonPublic: true);
+                object astValue = Activator.CreateInstance(type, nonPublic: true);
 
                 var parseIndexedChildValues = parseTreeNode.ChildNodes
                     .Select(
@@ -57,14 +57,14 @@ namespace Sarcasm.GrammarAst
                     .ToList();
 
                 // 1. memberwise copy for BnfiTermCopy items
-                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => obj.GetType().IsAssignableFrom(indexedChildValue.ChildValue.GetType())))
-                    MemberwiseCopyExceptNullValues(obj, parseIndexedChildValue.ChildValue);
+                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => astValue.GetType().IsAssignableFrom(indexedChildValue.ChildValue.GetType())))
+                    MemberwiseCopyExceptNullValues(astValue, parseIndexedChildValue.ChildValue);
 
                 // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
                 foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => IsMemberByParseIndex(indexedChildValue.ChildBnfTerm, indexedChildValue.ChildParseIndex)))
-                    SetValue(GetMemberByParseIndex(parseIndexedChildValue.ChildBnfTerm, parseIndexedChildValue.ChildParseIndex).MemberInfo, obj, parseIndexedChildValue.ChildValue);
+                    SetValue(GetMemberByParseIndex(parseIndexedChildValue.ChildBnfTerm, parseIndexedChildValue.ChildParseIndex).MemberInfo, astValue, parseIndexedChildValue.ChildValue);
 
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(obj, context, parseTreeNode);
+                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
         }
 
@@ -185,13 +185,13 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
             foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
                 new
@@ -201,30 +201,30 @@ namespace Sarcasm.GrammarAst
                 }
                 ))
             {
-                object childObj;
+                object childAstValue;
                 Member member;
 
                 if (IsMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex))
                 {
                     member = GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex);
-                    childObj = GetValue(member.MemberInfo, obj);
+                    childAstValue = GetValue(member.MemberInfo, astValue);
                 }
                 else if (childRuleIndexedBnfTerm.BnfTerm is BnfiTermCopy)
                 {
                     member = null;
-                    childObj = obj;
+                    childAstValue = astValue;
                 }
                 else
                 {
                     member = null;
-                    childObj = obj;
+                    childAstValue = astValue;
                 }
 
-                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childObj, member);
+                yield return new UnparsableObject(childRuleIndexedBnfTerm.BnfTerm, childAstValue, member);
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
         {
             return children
                 .SumIncludingNullValues(

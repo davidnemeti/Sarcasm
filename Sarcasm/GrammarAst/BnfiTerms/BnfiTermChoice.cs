@@ -30,22 +30,22 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, obj));
+            return childBnfTerms.Select(childBnfTerm => new UnparsableObject(childBnfTerm, astValue));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
         {
             UnparsableObject mainChild = children.Single(childValue => IsMainChild(childValue.BnfTerm));
 
-            if (obj.GetType() == this.type)
+            if (astValue.GetType() == this.type)
                 return unparser.GetPriority(mainChild);
             else
             {
@@ -54,10 +54,10 @@ namespace Sarcasm.GrammarAst
                 if (mainChildBnfTermWithType == null)
                 {
                     throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
-                        obj, obj.GetType().Name, mainChild.BnfTerm));
+                        astValue, astValue.GetType().Name, mainChild.BnfTerm));
                 }
 
-                int? priority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(obj);
+                int? priority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
 
                 Unparser.tsPriorities.Indent();
                 priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);

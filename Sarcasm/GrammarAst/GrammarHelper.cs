@@ -370,11 +370,11 @@ namespace Sarcasm.GrammarAst
 
         #region Value <-> AstNode conversion
 
-        public static object ValueToAstNode(object value, AstContext context, ParseTreeNode parseTreeNode)
+        public static object ValueToAstNode(object astValue, AstContext context, ParseTreeNode parseTreeNode)
         {
-            return ((Grammar)context.Language.Grammar).AstCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes && !(value is IBrowsableAstNode)
-                ? new AstNodeWrapper(value, context, parseTreeNode)
-                : value;
+            return ((Grammar)context.Language.Grammar).AstCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes && !(astValue is IBrowsableAstNode)
+                ? new AstNodeWrapper(astValue, context, parseTreeNode)
+                : astValue;
         }
 
         public static object AstNodeToValue(object astNode)

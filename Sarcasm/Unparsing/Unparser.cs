@@ -151,16 +151,16 @@ namespace Sarcasm.Unparsing
 
         #region Unparse logic
 
-        public IEnumerable<Utoken> Unparse(object obj, Direction direction = directionDefault)
+        public IEnumerable<Utoken> Unparse(object astValue, Direction direction = directionDefault)
         {
-            return Unparse(obj, Grammar.Root, direction);
+            return Unparse(astValue, Grammar.Root, direction);
         }
 
-        public IEnumerable<Utoken> Unparse(object obj, BnfTerm bnfTerm, Direction direction = directionDefault)
+        public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, Direction direction = directionDefault)
         {
             ResetMutableState();
             this.direction = direction;
-            var root = new UnparsableObject(bnfTerm, obj);
+            var root = new UnparsableObject(bnfTerm, astValue);
             root.SetAsRoot();
             return UnparseRaw(root)
                 .Cook(this);

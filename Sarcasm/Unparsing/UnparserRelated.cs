@@ -52,9 +52,9 @@ namespace Sarcasm.Unparsing
 
     public interface IUnparsableNonTerminal : INonTerminal
     {
-        bool TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableObject> GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction);
-        int? GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children);
+        bool TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens);
+        IEnumerable<UnparsableObject> GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction);
+        int? GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children);
     }
 
     public interface IUnparser
@@ -74,11 +74,11 @@ namespace Sarcasm.Unparsing
     {
         #region Constants
 
-        private static readonly object nonCalculatedObj = new object();
-        private static readonly object thrownOutObj = new object();
+        private static readonly object nonCalculatedAstValue = new object();
+        private static readonly object thrownOutAstValue = new object();
 
-        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, nonCalculatedObj);
-        internal static readonly UnparsableObject ThrownOut = new UnparsableObject(null, thrownOutObj);
+        internal static readonly UnparsableObject NonCalculated = new UnparsableObject(null, nonCalculatedAstValue);
+        internal static readonly UnparsableObject ThrownOut = new UnparsableObject(null, thrownOutAstValue);
 
         #endregion
 

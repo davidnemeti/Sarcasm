@@ -453,38 +453,38 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object obj, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object obj, Unparser.Direction direction)
+        IEnumerable<UnparsableObject> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
+            System.Collections.IEnumerable astCollection = (System.Collections.IEnumerable)astValue;
 
-            if (collection == null && this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
+            if (astCollection == null && this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
                 yield break;    // this null value should be handled as an empty collection
 
             if (direction == Unparser.Direction.RightToLeft)
-                collection = collection.ReverseNonGenericOptimized();
+                astCollection = astCollection.ReverseNonGenericOptimized();
 
             bool firstElement = true;
 
-            foreach (object element in collection)
+            foreach (object astElement in astCollection)
             {
                 if (!firstElement && this.delimiter != null)
-                    yield return new UnparsableObject(this.delimiter, obj);
+                    yield return new UnparsableObject(this.delimiter, astCollection);
 
-                yield return new UnparsableObject(this.element, element);
+                yield return new UnparsableObject(this.element, astElement);
 
                 firstElement = false;
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object obj, IEnumerable<UnparsableObject> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableObject> children)
         {
-            System.Collections.IEnumerable collection = (System.Collections.IEnumerable)obj;
+            System.Collections.IEnumerable collection = (System.Collections.IEnumerable)astValue;
 
             if (collection != null || this.EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
                 return 1;
