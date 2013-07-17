@@ -414,6 +414,7 @@ namespace MiniPL.Grammars
 
         #region Formatter
 
+        [Formatter(typeof(GrammarP), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
             private readonly BnfTerms B;

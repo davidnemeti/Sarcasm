@@ -403,6 +403,7 @@ namespace MiniPL.Grammars
 
         #region Formatter
 
+        [Formatter(typeof(GrammarC), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
             private readonly BnfTerms B;
