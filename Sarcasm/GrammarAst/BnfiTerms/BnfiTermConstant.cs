@@ -10,23 +10,12 @@ using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public partial class BnfiTermConstant<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>, IBnfiTermOrAbleForChoice<T>
+    public abstract class BnfiTermConstantBase<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>, IBnfiTermOrAbleForChoice<T>
     {
-        public BnfiTermConstant()
+        public BnfiTermConstantBase()
             : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
         {
             this.AstConfig.NodeCreator = (context, parseTreeNode) => parseTreeNode.AstNode = parseTreeNode.Token.Value;
-        }
-
-        public void Add(string lexeme, T value)
-        {
-            base.Add(lexeme, value);
-        }
-
-        [Obsolete("Type of value does not match", error: true)]
-        public new void Add(string lexeme, object value)
-        {
-            base.Add(lexeme, value);
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
@@ -48,5 +37,23 @@ namespace Sarcasm.GrammarAst
         {
             return GetEnumerator();
         }
+    }
+
+    public partial class BnfiTermConstant<T> : BnfiTermConstantBase<T>
+    {
+        public void Add(string lexeme, T value)
+        {
+            base.Add(lexeme, value);
+        }
+
+        [Obsolete("Type of value does not match", error: true)]
+        public new void Add(string lexeme, object value)
+        {
+            base.Add(lexeme, value);
+        }
+    }
+
+    public partial class BnfiTermConstant : BnfiTermConstantBase<object>
+    {
     }
 }
