@@ -63,6 +63,7 @@ namespace Sarcasm.UniversalGrammars
         public readonly BnfTerms B;
         public const string TYPE_KEYWORD = "$type";
         public const string COLLECTION_VALUES_KEYWORD = "$values";
+        public const string ENUM_KEYWORD = "$enum";
 
         public JsonGrammar()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
@@ -74,7 +75,7 @@ namespace Sarcasm.UniversalGrammars
             B.Object.Rule =
                 B.NUMBER.ConvertValue<object>(numberLiteral => numberLiteral, numberObject => CheckNumber(numberObject))
                 |
-                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, NoUnparseByInverse<object, string>())
+                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, stringObject => (string)stringObject)
                 |
                 B.BOOLEAN.ConvertValue(booleanLiteral => (object)booleanLiteral, booleanObject => (bool)booleanObject)
                 |
@@ -125,12 +126,18 @@ namespace Sarcasm.UniversalGrammars
 
             string typeNameWithAssembly = (string)typeKeyValue.Value;
             Type type = Type.GetType(typeNameWithAssembly);
-            object obj = Activator.CreateInstance(type);
+            object obj;
 
-            var collectionKeyValue = keyValuePairs.ElementAtOrDefault(1);
+            var discriminatorKeyValue = keyValuePairs.ElementAtOrDefault(1);
 
-            if (collectionKeyValue.Key == COLLECTION_VALUES_KEYWORD)
+            if (discriminatorKeyValue.Key == ENUM_KEYWORD)
             {
+                obj = Enum.Parse(type, (string)discriminatorKeyValue.Value);
+            }
+            else if (discriminatorKeyValue.Key == COLLECTION_VALUES_KEYWORD)
+            {
+                obj = Activator.CreateInstance(type);
+
                 if (!IsCollectionType(type))
                     throw new InvalidOperationException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
 
@@ -138,13 +145,15 @@ namespace Sarcasm.UniversalGrammars
                     throw new InvalidOperationException(string.Format("For collection style there can be only {0} and {1} specified", TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD));
 
                 dynamic collection = obj;
-                IEnumerable elements = (IEnumerable)collectionKeyValue.Value;
+                IEnumerable elements = (IEnumerable)discriminatorKeyValue.Value;
 
                 foreach (object element in elements)
                     collection.Add(element);
             }
             else
             {
+                obj = Activator.CreateInstance(type);
+
                 foreach (var keyValuePair in keyValuePairs.Skip(1))
                 {
                     string fieldName = keyValuePair.Key;
@@ -168,17 +177,27 @@ namespace Sarcasm.UniversalGrammars
 
             yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
 
-            if (IsCollectionType(type))
+            if (type.IsEnum)
+            {
+                yield return new KeyValuePair<string, object>(ENUM_KEYWORD, obj.ToString());
+            }
+            else if (IsCollectionType(type))
             {
                 yield return new KeyValuePair<string, object>(COLLECTION_VALUES_KEYWORD, obj);
             }
             else
             {
-                foreach (FieldInfo field in type.GetFields())
-                    yield return new KeyValuePair<string, object>(field.Name, field.GetValue(obj));
+                var keyValuePairs =
+                    type.GetFields()
+                        .Select(field => KeyValuePair.Create(field.Name, field.GetValue(obj)))
+                    .Concat(
+                    type.GetProperties()
+                        .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj)))
+                    )
+                    .Where(keyValuePair => keyValuePair.Value != null);
 
-                foreach (PropertyInfo property in type.GetProperties())
-                    yield return new KeyValuePair<string, object>(property.Name, property.GetValue(obj));
+                foreach (var keyValuePair in keyValuePairs)
+                    yield return keyValuePair;
             }
         }
 
@@ -209,6 +228,14 @@ namespace Sarcasm.UniversalGrammars
 
             public TKey Key { get; set; }
             public TValue Value { get; set; }
+        }
+
+        public static class KeyValuePair
+        {
+            public static KeyValuePair<TKey, TValue> Create<TKey, TValue>(TKey key, TValue value)
+            {
+                return new KeyValuePair<TKey, TValue>(key, value);
+            }
         }
     }
 }
