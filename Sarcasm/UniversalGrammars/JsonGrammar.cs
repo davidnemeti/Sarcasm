@@ -13,6 +13,7 @@ using System.Reflection;
 using Irony.Parsing;
 using System.Collections;
 using Sarcasm.Utility;
+using System.IO;
 
 namespace Sarcasm.UniversalGrammars
 {
@@ -100,14 +101,29 @@ namespace Sarcasm.UniversalGrammars
 
             B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
             B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
+
+            RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
+            RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
+
+            #region Unparse
+
+            UnparseControl.DefaultFormatter = new Formatter(this);
+            UnparseControl.NoPrecedenceBasedParenthesesNeededForExpressions();
+
+            #endregion
         }
 
-        private object CheckNumber(object numberObject)
+        private static object CheckNumber(object numberObject)
         {
-            if (numberObject is int || numberObject is long || numberObject is float || numberObject is double || numberObject is decimal)
+            if (IsNumber(numberObject))
                 return numberObject;
             else
                 throw new InvalidCastException(string.Format("{0} is not a number", numberObject));
+        }
+
+        private static bool IsNumber(object numberObject)
+        {
+            return numberObject is int || numberObject is long || numberObject is float || numberObject is double || numberObject is decimal;
         }
 
         private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
@@ -171,8 +187,29 @@ namespace Sarcasm.UniversalGrammars
             return obj;
         }
 
+        private string ToString(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        {
+            StringWriter sw = new StringWriter();
+            foreach (var keyValuePair in keyValuePairs)
+                sw.WriteLine("{{ {0}, {1} }}", keyValuePair.Key, keyValuePair.Value);
+            return sw.ToString();
+        }
+
         private IEnumerable<KeyValuePair<string, object>> ObjectToKeyValuePairs(object obj)
         {
+            if (IsNumber(obj) || obj is string || obj is bool || obj == null)
+                return null;
+
+            var foo = _ObjectToKeyValuePairs(obj).ToList();
+            string st = ToString(foo);
+            return foo;
+        }
+
+        private IEnumerable<KeyValuePair<string, object>> _ObjectToKeyValuePairs(object obj)
+        {
+            if (IsNumber(obj) || obj is string || obj is bool || obj == null)
+                yield break;
+
             Type type = obj.GetType();
 
             yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
@@ -203,7 +240,7 @@ namespace Sarcasm.UniversalGrammars
 
         private static bool IsCollectionType(Type type)
         {
-            return type is IList || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(ICollection<>);
+            return type is IList || type.IsGenericType && type.GetInterfaces().Any(interfaceType => interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
         private object Identity(object o)
@@ -237,5 +274,80 @@ namespace Sarcasm.UniversalGrammars
                 return new KeyValuePair<TKey, TValue>(key, value);
             }
         }
+
+        #region Formatter
+
+        [Formatter(typeof(JsonGrammar), "Default")]
+        public class Formatter : Sarcasm.Unparsing.Formatter
+        {
+            private readonly BnfTerms B;
+
+            public Formatter(JsonGrammar grammar)
+                : base(grammar)
+            {
+                this.B = grammar.B;
+            }
+
+            protected override IDecoration GetDecoration(UnparsableAst target)
+            {
+                return Decoration.None;
+            }
+
+            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
+            {
+                if (target.BnfTerm == B.OBJECT_BEGIN)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.OBJECT_END)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.ARRAY_BEGIN)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.ARRAY_END)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.COMMA)
+                    return UtokenInsert.NoWhitespace;
+
+                else
+                    return base.GetUtokensLeft(target);
+            }
+
+            protected override InsertedUtokens GetUtokensRight(UnparsableAst target)
+            {
+                if (target.BnfTerm == B.OBJECT_BEGIN)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.OBJECT_END)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.ARRAY_BEGIN)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.ARRAY_END)
+                    return UtokenInsert.NewLine;
+
+                else if (target.BnfTerm == B.COMMA)
+                    return UtokenInsert.NewLine;
+
+                else
+                    return base.GetUtokensRight(target);
+            }
+
+            protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
+            {
+                if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.OBJECT_BEGIN)
+                    return BlockIndentation.Indent;
+
+                else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ARRAY_BEGIN)
+                    return BlockIndentation.Indent;
+
+                else
+                    return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);
+            }
+        }
+
+        #endregion
     }
 }
