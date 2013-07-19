@@ -322,7 +322,7 @@ namespace Sarcasm.GrammarAst
             where TIn : class
             where TOut : class
         {
-            return ConvertOptRef(bnfiTerm, valueConverter, inverseValueConverterForUnparse, defaultValue);
+            return ConvertOpt(bnfiTerm, valueConverter, inverseValueConverterForUnparse, defaultValue);
         }
 
         protected static BnfiTermConversion<TOut> ConvertOpt<TIn, TOut>(IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
