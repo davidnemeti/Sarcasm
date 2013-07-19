@@ -398,7 +398,7 @@ namespace Sarcasm.Utility
             {
                 return new[] { descendant.BaseType }.Concat(descendant.GetInterfaces())
                     .Select(parentType => GetInheritanceDistance(ancestor, parentType))
-                    .FirstOrDefault(distance => distance != null);
+                    .FirstOrDefault(distance => distance != null) + 1;
             }
         }
 
