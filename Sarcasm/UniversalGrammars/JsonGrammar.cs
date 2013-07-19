@@ -20,7 +20,7 @@ namespace Sarcasm.UniversalGrammars
     {
         public class BnfTerms
         {
-            public readonly BnfiTermConversion<object> Object = new BnfiTermConversion<object>();
+            public readonly BnfiTermChoice<object> Object = new BnfiTermChoice<object>();
             public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string,object>>();
             public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
 
