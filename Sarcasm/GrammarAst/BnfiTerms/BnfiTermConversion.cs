@@ -107,8 +107,16 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversionTL Intro(Type type, Terminal terminal, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermConversionTL(type, terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
-                name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversionTL(
+                type,
+                terminal,
+                (context, parseNode) => valueIntroducer(context, parseNode),
+                inverseValueConverterForUnparse,
+                isOptionalValue: false,
+                name: terminal.Name + "_intro",
+                astForChild: astForChild
+                )
+                .MakeUncontractible();
         }
 
         public static BnfiTermConversion<T> Intro<T>(Terminal terminal, T value, bool astForChild = true)
@@ -124,8 +132,15 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversion<T> Intro<T>(Terminal terminal, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
-            return new BnfiTermConversion<T>(terminal, (context, parseNode) => valueIntroducer(context, parseNode), inverseValueConverterForUnparse, isOptionalValue: false,
-                name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversion<T>(
+                terminal,
+                (context, parseNode) => valueIntroducer(context, parseNode),
+                inverseValueConverterForUnparse, 
+                isOptionalValue: false,
+                name: terminal.Name + "_introAs_" + typeof(T).Name.ToLower(),
+                astForChild: astForChild
+                )
+                .MakeUncontractible();
         }
 
         public static BnfiTermConversion<string> IntroIdentifier(IdentifierTerminal identifierTerminal)
@@ -197,7 +212,7 @@ namespace Sarcasm.GrammarAst
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 inverseValueConverterForUnparse,
                 isOptionalValue: false,
-                name: bnfiTerm.AsBnfTerm().Name + "_convert",
+                name: bnfiTerm.AsBnfTerm().Name + "_convertTo_" + typeof(TOut).Name.ToLower(),
                 astForChild: true
                 );
         }
@@ -215,7 +230,7 @@ namespace Sarcasm.GrammarAst
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
                 isOptionalValue: false,
-                name: bnfiTerm.AsBnfTerm().Name + "_convertfrom_" + typeof(TIn).Name.ToLower(),
+                name: typeof(TIn).Name.ToLower() + "_convertTo_" + typeof(TOut).Name.ToLower(),
                 astForChild: true
                 );
         }
@@ -318,7 +333,7 @@ namespace Sarcasm.GrammarAst
                 ConvertValueConverterToValueIntroducerOpt(valueConverter, defaultValue),
                 CastValueConverter<TOut, TIn, TOut, object>(inverseValueConverterForUnparse),
                 isOptionalValue: true,
-                name: bnfiTerm.AsBnfTerm().Name + "_convertoptfrom_" + typeof(TIn).Name.ToLower(),
+                name: typeof(TIn).Name.ToLower() + "_convertOptTo_" + typeof(TOut).Name.ToLower(),
                 astForChild: true
                 );
         }
