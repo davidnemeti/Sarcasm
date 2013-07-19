@@ -23,8 +23,10 @@ namespace Sarcasm.UniversalGrammars
         public class BnfTerms
         {
             public readonly BnfiTermChoice<object> Object = new BnfiTermChoice<object>();
-            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string,object>>();
+            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string, object>>();
+            public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
             public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
+            public readonly BnfiTermCollection<List<object>, object> ArrayElements = new BnfiTermCollection<List<object>, object>();
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -85,8 +87,12 @@ namespace Sarcasm.UniversalGrammars
                 B.Array.ConvertValue(array => (object)array, arrayObject => (IEnumerable)arrayObject)
                 |
                 B.OBJECT_BEGIN
-                + B.KeyValuePair.StarList(B.COMMA).ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
+                + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
                 + B.OBJECT_END
+                ;
+
+            B.KeyValuePairs.Rule =
+                B.KeyValuePair.StarList(B.COMMA)
                 ;
 
             B.KeyValuePair.Rule =
@@ -96,8 +102,12 @@ namespace Sarcasm.UniversalGrammars
 
             B.Array.Rule =
                 B.ARRAY_BEGIN
-                + B.Object.StarList(B.COMMA).ConvertValue(array => (IEnumerable)array, arrayObject => arrayObject.Cast<object>())
+                + B.ArrayElements.ConvertValue(array => (IEnumerable)array, arrayObject => arrayObject.Cast<object>())
                 + B.ARRAY_END;
+
+            B.ArrayElements.Rule =
+                B.Object.StarList(B.COMMA)
+                ;
 
             B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
             B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
@@ -337,10 +347,10 @@ namespace Sarcasm.UniversalGrammars
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.OBJECT_BEGIN)
+                if (target.BnfTerm == B.KeyValuePairs)
                     return BlockIndentation.Indent;
 
-                else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ARRAY_BEGIN)
+                else if (target.BnfTerm == B.ArrayElements)
                     return BlockIndentation.Indent;
 
                 else
