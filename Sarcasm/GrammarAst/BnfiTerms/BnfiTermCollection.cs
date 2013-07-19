@@ -107,6 +107,9 @@ namespace Sarcasm.GrammarAst
             if (collectionTypeOrTypeDefinition == null)
                 throw new ArgumentNullException("collectionTypeOrTypeDefinition", "collectionTypeOrTypeDefinition should not be null");
 
+            if (collectionTypeOrTypeDefinition.IsInterface && collectionTypeOrTypeDefinition.IsAbstract)
+                throw new ArgumentNullException("collectionTypeOrTypeDefinition", "collectionTypeOrTypeDefinition should not be an interface or abstract class (a concrete class is needed)");
+
             if (!runtimeCheck)
             {
                 if (elementTypeHint == null)
