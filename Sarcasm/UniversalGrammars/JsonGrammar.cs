@@ -20,17 +20,18 @@ namespace Sarcasm.UniversalGrammars
     {
         public class BnfTerms
         {
-            public readonly BnfiTermConversion<object> Object;
-            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair;
-            public readonly BnfiTermConversion<IEnumerable> Array;
+            public readonly BnfiTermConversion<object> Object = new BnfiTermConversion<object>();
+            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string,object>>();
+            public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
+
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
             public readonly BnfiTermKeyTermPunctuation ARRAY_BEGIN;
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
-            public readonly BnfiTermConversionTL NumberLiteral;
-            public readonly BnfiTermConversion<string> StringLiteral;
+            public readonly BnfiTermConversionTL NUMBER;
+            public readonly BnfiTermConversion<string> STRING;
             public readonly BnfiTermConstant<bool> BOOLEAN;
             public readonly BnfiTermConstant NULL;
 
@@ -42,8 +43,8 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
-                this.NumberLiteral = TerminalFactoryS.CreateNumberLiteral();
-                this.StringLiteral = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"");
+                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
+                this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 
                 this.BOOLEAN = new BnfiTermConstant<bool>()
                 {
@@ -76,16 +77,16 @@ namespace Sarcasm.UniversalGrammars
                 |
                 B.Array.ConvertValue(array => (object)array, arrayObject => (IEnumerable)arrayObject)
                 |
-                B.NumberLiteral.ConvertValue<object>(Identity<object>, Identity<object>)
+                B.NUMBER.ConvertValue<object>(Identity<object>, Identity<object>)
                 |
-                B.StringLiteral.ConvertValue(stringLiteral => (object)stringLiteral, stringObject => (string)stringObject)
+                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, stringObject => (string)stringObject)
                 |
                 B.BOOLEAN.ConvertValue(booleanLiteral => (object)booleanLiteral, booleanObject => (bool)booleanObject)
                 |
                 B.NULL.ConvertValue(nullLiteral => nullLiteral, nullObject => nullObject);
 
             B.KeyValuePair.Rule =
-                B.StringLiteral.BindTo(B.KeyValuePair, fv => fv.Key)
+                B.STRING.BindTo(B.KeyValuePair, fv => fv.Key)
                 + B.COLON
                 + B.Object.BindTo(B.KeyValuePair, fv => fv.Value);
 
@@ -181,6 +182,20 @@ namespace Sarcasm.UniversalGrammars
         private T Identity<T>(T t)
         {
             return t;
+        }
+
+        public class KeyValuePair<TKey, TValue>
+        {
+            public KeyValuePair() { }
+
+            public KeyValuePair(TKey key, TValue value)
+            {
+                this.Key = key;
+                this.Value = value;
+            }
+
+            public TKey Key { get; set; }
+            public TValue Value { get; set; }
         }
     }
 }
