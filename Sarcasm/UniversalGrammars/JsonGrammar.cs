@@ -12,6 +12,7 @@ using Sarcasm.DomainCore;
 using System.Reflection;
 using Irony.Parsing;
 using System.Collections;
+using Sarcasm.Utility;
 
 namespace Sarcasm.UniversalGrammars
 {
@@ -71,19 +72,20 @@ namespace Sarcasm.UniversalGrammars
             this.Root = B.Object;
 
             B.Object.Rule =
-                B.OBJECT_BEGIN
-                + B.KeyValuePair.StarList(B.COMMA).ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
-                + B.OBJECT_END
+                B.NUMBER.ConvertValue<object>(numberLiteral => numberLiteral, numberObject => CheckNumber(numberObject))
                 |
-                B.Array.ConvertValue(array => (object)array, arrayObject => (IEnumerable)arrayObject)
-                |
-                B.NUMBER.ConvertValue<object>(Identity<object>, Identity<object>)
-                |
-                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, stringObject => (string)stringObject)
+                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, NoUnparseByInverse<object, string>())
                 |
                 B.BOOLEAN.ConvertValue(booleanLiteral => (object)booleanLiteral, booleanObject => (bool)booleanObject)
                 |
-                B.NULL.ConvertValue(nullLiteral => nullLiteral, nullObject => nullObject);
+                B.NULL.ConvertValue(nullLiteral => nullLiteral, nullObject => nullObject)
+                |
+                B.Array.ConvertValue(array => (object)array, arrayObject => (IEnumerable)arrayObject)
+                |
+                B.OBJECT_BEGIN
+                + B.KeyValuePair.StarList(B.COMMA).ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
+                + B.OBJECT_END
+                ;
 
             B.KeyValuePair.Rule =
                 B.STRING.BindTo(B.KeyValuePair, fv => fv.Key)
@@ -94,6 +96,17 @@ namespace Sarcasm.UniversalGrammars
                 B.ARRAY_BEGIN
                 + B.Object.StarList(B.COMMA).ConvertValue(array => (IEnumerable)array, arrayObject => arrayObject.Cast<object>())
                 + B.ARRAY_END;
+
+            B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
+            B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
+        }
+
+        private object CheckNumber(object numberObject)
+        {
+            if (numberObject is int || numberObject is long || numberObject is float || numberObject is double || numberObject is decimal)
+                return numberObject;
+            else
+                throw new InvalidCastException(string.Format("{0} is not a number", numberObject));
         }
 
         private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)

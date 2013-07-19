@@ -57,7 +57,9 @@ namespace Sarcasm.GrammarAst
                         astValue, astValue.GetType().Name, mainChild.BnfTerm));
                 }
 
-                int? priority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
+                int? inheritancePriority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
+                int? childPriority = inheritancePriority != null && (mainChild.BnfTerm != this || mainChild.AstValue != astValue) ? unparser.GetPriority(mainChild) : null;
+                int? priority = inheritancePriority * 100 + childPriority;
 
                 Unparser.tsPriorities.Indent();
                 priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);
