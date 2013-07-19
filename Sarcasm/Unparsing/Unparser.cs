@@ -58,7 +58,8 @@ namespace Sarcasm.Unparsing
 
         #region Immutable after initialization or public settings
 
-        public Grammar Grammar { get; private set; }
+        private Grammar _grammar;
+        private LanguageData _language;
         private readonly UnparseControl unparseControl;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
@@ -97,6 +98,23 @@ namespace Sarcasm.Unparsing
         }
 
         private bool UseParallelProcessing { get { return multiCoreSystem && EnableParallelProcessing; } }
+
+        #endregion
+
+        #region Properties
+
+        public Grammar Grammar
+        {
+            get { return _grammar; }
+
+            private set
+            {
+                _grammar = value;
+                _language = new LanguageData(value);
+            }
+        }
+
+        public LanguageData Language { get { return _language; } }
 
         #endregion
 
