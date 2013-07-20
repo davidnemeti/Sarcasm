@@ -572,21 +572,7 @@ namespace Sarcasm.Unparsing
 
             try
             {
-                return GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Select(childBnfTerms =>
-                        {
-                            var children = unparsable.GetChildren(childBnfTerms, self.AstValue, direction);
-                            return new
-                            {
-                                Children = children,
-                                Priority = unparsable.GetChildrenPriority(this, self.AstValue, children)
-                                    .DebugWriteLinePriority(tsPriorities, self)
-                            };
-                        }
-                    )
-                    .Where(childrenWithPriority => childrenWithPriority.Priority.HasValue && !childrenWithPriority.Children.Contains(self))
-                    .MaxItem(childrenWithPriority => childrenWithPriority.Priority.Value)
-                    .Children;
+                return GetChildrenWithMaxPriority(self).Children;
             }
             catch (InvalidOperationException)
             {
@@ -600,6 +586,26 @@ namespace Sarcasm.Unparsing
                 tsPriorities.Debug("{0} END priorities", unparsable.AsNonTerminal());
                 tsPriorities.Debug("");
             }
+        }
+
+        private ChildrenWithPriority GetChildrenWithMaxPriority(UnparsableAst self)
+        {
+            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
+
+            return GetChildBnfTermLists(unparsable.AsNonTerminal())
+                .Select(childBnfTerms =>
+                    {
+                        var children = unparsable.GetChildren(childBnfTerms, self.AstValue, direction);
+                        return new ChildrenWithPriority
+                        {
+                            Children = children,
+                            Priority = unparsable.GetChildrenPriority(this, self.AstValue, children)
+                                .DebugWriteLinePriority(tsPriorities, self)
+                        };
+                    }
+                )
+                .Where(childrenWithPriority => !childrenWithPriority.Children.Contains(self))
+                .MaxItem(childrenWithPriority => childrenWithPriority.Priority);
         }
 
         internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
@@ -659,9 +665,7 @@ namespace Sarcasm.Unparsing
 
                 tsPriorities.Indent();
 
-                int? priority = GetChildBnfTermLists(unparsable.AsNonTerminal())
-                    .Max(childBnfTerms => unparsable.GetChildrenPriority(this, unparsableAst.AstValue, unparsable.GetChildren(childBnfTerms, unparsableAst.AstValue, direction))
-                        .DebugWriteLinePriority(tsPriorities, unparsableAst));
+                int? priority = GetChildrenWithMaxPriority(unparsableAst).Priority;
 
                 tsPriorities.Unindent();
 
@@ -706,6 +710,12 @@ namespace Sarcasm.Unparsing
         #region Types
 
         public enum Direction { LeftToRight, RightToLeft }
+
+        private class ChildrenWithPriority
+        {
+            public IEnumerable<UnparsableAst> Children;
+            public int? Priority;
+        }
 
         #endregion
     }
