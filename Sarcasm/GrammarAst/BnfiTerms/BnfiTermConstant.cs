@@ -10,11 +10,14 @@ using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public abstract class BnfiTermConstantBase<T> : ConstantTerminal, IBnfiTerm<T>, IHasType, IEnumerable<KeyValuePair<string, T>>, IBnfiTermOrAbleForChoice<T>
+    public abstract partial class BnfiTermConstant : ConstantTerminal, IBnfiTerm, IHasType
     {
-        public BnfiTermConstantBase()
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(typeof(T)))
+        protected readonly Type type;
+
+        protected BnfiTermConstant(Type type)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
+            this.type = type;
             this.AstConfig.NodeCreator = (context, parseTreeNode) => parseTreeNode.AstNode = parseTreeNode.Token.Value;
         }
 
@@ -25,7 +28,44 @@ namespace Sarcasm.GrammarAst
 
         Type IHasType.Type
         {
-            get { return typeof(T); }
+            get { return type; }
+        }
+    }
+
+    public partial class BnfiTermConstantTL : BnfiTermConstant, IBnfiTermTL, IEnumerable<KeyValuePair<string, object>>
+    {
+        public BnfiTermConstantTL()
+            : base(typeof(object))
+        {
+        }
+
+        public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        {
+            return base.Constants.Select(keyValuePair => new KeyValuePair<string, object>(keyValuePair.Key, keyValuePair.Value)).GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+    public partial class BnfiTermConstant<T> : BnfiTermConstant, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, IEnumerable<KeyValuePair<string, T>>
+    {
+        public BnfiTermConstant()
+            : base(typeof(T))
+        {
+        }
+
+        public void Add(string lexeme, T value)
+        {
+            base.Add(lexeme, value);
+        }
+
+        [Obsolete("Type of value does not match", error: true)]
+        public new void Add(string lexeme, object value)
+        {
+            base.Add(lexeme, value);
         }
 
         public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
@@ -37,23 +77,5 @@ namespace Sarcasm.GrammarAst
         {
             return GetEnumerator();
         }
-    }
-
-    public partial class BnfiTermConstant<T> : BnfiTermConstantBase<T>
-    {
-        public void Add(string lexeme, T value)
-        {
-            base.Add(lexeme, value);
-        }
-
-        [Obsolete("Type of value does not match", error: true)]
-        public new void Add(string lexeme, object value)
-        {
-            base.Add(lexeme, value);
-        }
-    }
-
-    public partial class BnfiTermConstant : BnfiTermConstantBase<object>
-    {
     }
 }
