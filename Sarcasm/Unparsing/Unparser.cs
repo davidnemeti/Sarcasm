@@ -73,7 +73,7 @@ namespace Sarcasm.Unparsing
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
         private ResourceCounter parallelTaskCounter;
-        private Dictionary<ConstantTerminal, Dictionary<object, string>> constantTerminalToInverseConstantTable;
+        private ConcurrentDictionary<ConstantTerminal, Dictionary<object, string>> constantTerminalToInverseConstantTable;
 
         #endregion
 
@@ -130,7 +130,7 @@ namespace Sarcasm.Unparsing
             this.EnablePartialInvalidation = enablePartialInvalidationDefault;
             this.EnableParallelProcessing = enableParallelProcessingDefault;
             this.DegreeOfParallelism = Environment.ProcessorCount;
-            this.constantTerminalToInverseConstantTable = new Dictionary<ConstantTerminal,Dictionary<object,string>>();
+            this.constantTerminalToInverseConstantTable = new ConcurrentDictionary<ConstantTerminal, Dictionary<object, string>>();
         }
 
         public Unparser(Grammar grammar)
@@ -618,58 +618,27 @@ namespace Sarcasm.Unparsing
         private string GetLexemeByValue(ConstantTerminal constantTerminal, object value)
         {
             value = ObjectToDictionaryKeySafe(value);
+            var inverseConstantTable = constantTerminalToInverseConstantTable.GetOrAdd(constantTerminal, CreateInverseConstantTable);
+            return inverseConstantTable[value];
+        }
 
-            Dictionary<object, string> constantTable;
+        private static Dictionary<object, string> CreateInverseConstantTable(ConstantTerminal constantTerminal)
+        {
+            /*
+             * NOTE: constantTerminal.Constants might not be bijective
+             * */
 
-            if (constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out constantTable))
-                return constantTable[value];
-            else
+            var inverseConstantTable = new Dictionary<object, string>();
+
+            foreach (var pair in constantTerminal.Constants)
             {
-                lock (constantTerminalToInverseConstantTable)
-                {
-                    /*
-                     * We don't want to lock on constantTerminalToInverseConstantTable at the beginning of this method,
-                     * because it would slow down parallel processing (note: parallel unparsers share this data member),
-                     * and it's not necessary since most of the time we only read this data member, not write.
-                     * 
-                     * However, after we found that we hadn't stored constantTerminal yet, and locked on constantTerminalToInverseConstantTable,
-                     * we have to check again for constantTerminal, to avoid the following scenario:
-                     * 
-                     * Task1: check
-                     * Task1: no constantTerminal found
-                     * Task2: check
-                     * Task2: no constantTerminal found
-                     * Task1: lock
-                     * Task1: store constantTerminal
-                     * Task2: lock
-                     * Task2: store constantTerminal (!!! STORED TWICE !!!)
-                     * 
-                     * */
+                object value = ObjectToDictionaryKeySafe(pair.Value);
 
-                    if (constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out constantTable))
-                        return constantTable[value];
-                    else
-                    {
-                        /*
-                         * NOTE: constantTerminal.Constants might not be bijective
-                         * */
-
-                        constantTable = new Dictionary<object, string>();
-
-                        foreach (var pair in constantTerminal.Constants)
-                        {
-                            object _value = ObjectToDictionaryKeySafe(pair.Value);
-
-                            if (!constantTable.ContainsKey(_value))
-                                constantTable.Add(_value, pair.Key);
-                        }
-
-                        constantTerminalToInverseConstantTable.Add(constantTerminal, constantTable);
-
-                        return constantTable[value];
-                    }
-                }
+                if (!inverseConstantTable.ContainsKey(value))
+                    inverseConstantTable.Add(value, pair.Key);
             }
+
+            return inverseConstantTable;
         }
 
         private static object ObjectToDictionaryKeySafe(object obj)
