@@ -104,7 +104,7 @@ namespace Sarcasm.UniversalGrammars
 
             B.Array.Rule =
                 B.ARRAY_BEGIN
-                + B.ArrayElements.ConvertValue(array => (IEnumerable)array, arrayObject => arrayObject.Cast<object>())
+                + B.ArrayElements.ConvertValue(array => (IEnumerable)array, arrayObject => (object)arrayObject)
                 + B.ARRAY_END;
 
             B.ArrayElements.Rule =
