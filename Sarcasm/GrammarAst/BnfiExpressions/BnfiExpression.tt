@@ -46,7 +46,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionRecordTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"Member", "BnfiTermCopyTL"},
+		bnfTermCoreTypeNames: new[]{"Member", "BnfiTermCopy"},
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
 		multiCore: true
 	);
@@ -86,7 +86,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionChoiceTL",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermRecord", "BnfiTermChoice", "BnfiTermCollectionTL"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermRecord", "BnfiTermChoice", "BnfiTermCollection"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionConversion,
 		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionKeyTermPunctuations,
 		multiCore: false
