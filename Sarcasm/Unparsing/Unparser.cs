@@ -140,7 +140,7 @@ namespace Sarcasm.Unparsing
 
         private Unparser(Unparser that)
         {
-            this.Grammar = that.Grammar;
+            this._grammar = that.Grammar;   // NOTE: we don't want to recalculate _language so we don't use the Grammar property setter
             this.unparseControl = that.unparseControl;
             this.EnablePartialInvalidation = that.EnablePartialInvalidation;
             this.EnableParallelProcessing = that.EnableParallelProcessing;
