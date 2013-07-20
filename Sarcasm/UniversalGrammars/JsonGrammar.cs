@@ -22,11 +22,11 @@ namespace Sarcasm.UniversalGrammars
     {
         public class BnfTerms
         {
-            public readonly BnfiTermChoice<object> Object = new BnfiTermChoice<object>();
+            public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object));
             public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string, object>>();
             public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
             public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
-            public readonly BnfiTermCollection<List<object>, object> ArrayElements = new BnfiTermCollection<List<object>, object>();
+            public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -34,10 +34,11 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
-            public readonly BnfiTermConversionTL NUMBER;
+            public readonly BnfiTermConversion<int> NUMBER;
+//            public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
             public readonly BnfiTermConstant<bool> BOOLEAN;
-            public readonly BnfiTermConstant NULL;
+            public readonly BnfiTermConstantTL NULL;
 
             internal BnfTerms(TerminalFactoryS TerminalFactoryS)
             {
@@ -47,7 +48,8 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
-                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
+//                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
+                this.NUMBER = TerminalFactoryS.CreateNumberLiteralInt32().MakeUncontractible();
                 this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 
                 this.BOOLEAN = new BnfiTermConstant<bool>()
@@ -56,7 +58,7 @@ namespace Sarcasm.UniversalGrammars
                     { "false", false }
                 };
 
-                this.NULL = new BnfiTermConstant()
+                this.NULL = new BnfiTermConstantTL()
                 {
                     { "null", (object)null }
                 };
@@ -76,19 +78,19 @@ namespace Sarcasm.UniversalGrammars
             this.Root = B.Object;
 
             B.Object.Rule =
-                B.NUMBER.ConvertValue<object>(numberLiteral => numberLiteral, numberObject => CheckNumber(numberObject))
+                B.NUMBER
                 |
-                B.STRING.ConvertValue(stringLiteral => (object)stringLiteral, stringObject => (string)stringObject)
+                B.STRING
                 |
-                B.BOOLEAN.ConvertValue(booleanLiteral => (object)booleanLiteral, booleanObject => (bool)booleanObject)
+                B.BOOLEAN
                 |
-                B.NULL.ConvertValue(nullLiteral => nullLiteral, nullObject => nullObject)
-                |
-                B.Array.ConvertValue(array => (object)array, arrayObject => (IEnumerable)arrayObject)
+                B.Array
                 |
                 B.OBJECT_BEGIN
                 + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
                 + B.OBJECT_END
+                |
+                B.NULL
                 ;
 
             B.KeyValuePairs.Rule =
@@ -106,7 +108,7 @@ namespace Sarcasm.UniversalGrammars
                 + B.ARRAY_END;
 
             B.ArrayElements.Rule =
-                B.Object.StarList(B.COMMA)
+                B.Object.StarListTL(B.COMMA)
                 ;
 
             B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
