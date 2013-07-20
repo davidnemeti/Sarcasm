@@ -570,22 +570,19 @@ namespace Sarcasm.Unparsing
             tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
             tsPriorities.Indent();
 
-            try
+            var childrenWithPriority = GetChildrenWithMaxPriority(self);
+
+            if (childrenWithPriority.Priority == null)
             {
-                return GetChildrenWithMaxPriority(self).Children;
-            }
-            catch (InvalidOperationException)
-            {
-                // MaxItem got an empty children list because no children remained after filtering the children list -> unparse error
                 throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
                     self.AstValue, self.AstValue.GetType().Name, self.BnfTerm.Name));
             }
-            finally
-            {
-                tsPriorities.Unindent();
-                tsPriorities.Debug("{0} END priorities", unparsable.AsNonTerminal());
-                tsPriorities.Debug("");
-            }
+
+            tsPriorities.Unindent();
+            tsPriorities.Debug("{0} END priorities", unparsable.AsNonTerminal());
+            tsPriorities.Debug("");
+
+            return childrenWithPriority.Children;
         }
 
         private ChildrenWithPriority GetChildrenWithMaxPriority(UnparsableAst self)
