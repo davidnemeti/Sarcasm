@@ -306,28 +306,28 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermCollectionTL StarListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(List<object>));   // could be "CreateMovable(typeof(List<>), typeof(object))" as well
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL PlusListTL(BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<object>));   // could be "CreateMovable(typeof(ICollection<>), typeof(object))" as well
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(List<object>));   // could be "CreateMovable(typeof(List<>), typeof(object))" as well
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL StarListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<>), elementType);
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(List<>), elementType);
             MakeStarRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
 
         public static BnfiTermCollectionTL PlusListTL(Type elementType, BnfTerm bnfTermElement, BnfTerm delimiter = null)
         {
-            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(ICollection<>), elementType);
+            var bnfiTermCollection = BnfiTermCollectionTL.CreateContractible(typeof(List<>), elementType);
             MakePlusRule(bnfiTermCollection, delimiter, bnfTermElement);
             return bnfiTermCollection;
         }
