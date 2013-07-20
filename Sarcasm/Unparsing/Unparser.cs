@@ -51,6 +51,7 @@ namespace Sarcasm.Unparsing
         private const bool enablePartialInvalidationDefault = false;
         private const bool enableParallelProcessingDefault = false;
         private static readonly bool multiCoreSystem = Environment.ProcessorCount > 1;
+        private static readonly object dictionaryKeySafe_null = new object();
 
         #endregion
 
@@ -616,6 +617,8 @@ namespace Sarcasm.Unparsing
 
         private string GetLexemeByValue(ConstantTerminal constantTerminal, object value)
         {
+            value = ObjectToDictionaryKeySafe(value);
+
             Dictionary<object, string> constantTable;
 
             if (constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out constantTable))
@@ -655,8 +658,10 @@ namespace Sarcasm.Unparsing
 
                         foreach (var pair in constantTerminal.Constants)
                         {
-                            if (!constantTable.ContainsKey(pair.Value))
-                                constantTable.Add(pair.Value, pair.Key);
+                            object _value = ObjectToDictionaryKeySafe(pair.Value);
+
+                            if (!constantTable.ContainsKey(_value))
+                                constantTable.Add(_value, pair.Key);
                         }
 
                         constantTerminalToInverseConstantTable.Add(constantTerminal, constantTable);
@@ -665,6 +670,11 @@ namespace Sarcasm.Unparsing
                     }
                 }
             }
+        }
+
+        private static object ObjectToDictionaryKeySafe(object obj)
+        {
+            return obj != null ? obj : dictionaryKeySafe_null;
         }
 
         #endregion
