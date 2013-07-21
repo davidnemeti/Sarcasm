@@ -70,6 +70,7 @@ namespace Sarcasm.UniversalGrammars
         public const string TYPE_KEYWORD = "$type";
         public const string COLLECTION_VALUES_KEYWORD = "$values";
         public const string ENUM_KEYWORD = "$enum";
+        public const string REFERENCE_KEYWORD = "$ref";
 
         public JsonGrammar()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
@@ -115,11 +116,11 @@ namespace Sarcasm.UniversalGrammars
                 ;
 
             B.Reference.Rule =
-                B.Object.ConvertValue(refObject => (Reference)refObject, reference => ((ICopyableReference)reference).CopyWithoutReference())
+                B.Object.ConvertValue(ObjectToReference, ReferenceToObject)
                 ;
 
-            B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
-            B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
+//            B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
+            B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText("\"" + Util.ToString(formatProvider, astValue) + "\"") };
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
@@ -206,25 +207,7 @@ namespace Sarcasm.UniversalGrammars
             return obj;
         }
 
-        private string ToString(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
-        {
-            StringWriter sw = new StringWriter();
-            foreach (var keyValuePair in keyValuePairs)
-                sw.WriteLine("{{ {0}, {1} }}", keyValuePair.Key, keyValuePair.Value);
-            return sw.ToString();
-        }
-
         private IEnumerable<KeyValuePair<string, object>> ObjectToKeyValuePairs(object obj)
-        {
-            if (IsNumber(obj) || obj is string || obj is bool || obj == null)
-                return null;
-
-            var foo = _ObjectToKeyValuePairs(obj).ToList();
-            string st = ToString(foo);
-            return foo;
-        }
-
-        private IEnumerable<KeyValuePair<string, object>> _ObjectToKeyValuePairs(object obj)
         {
             if (IsNumber(obj) || obj is string || obj is bool || obj == null)
                 yield break;
@@ -257,19 +240,33 @@ namespace Sarcasm.UniversalGrammars
             }
         }
 
+        private object ReferenceToObject(Reference reference)
+        {
+            return string.Format(
+                "{0}: {1} {{{2}}}{3}",
+                REFERENCE_KEYWORD,
+                reference.NameRef,
+                reference.Type.AssemblyQualifiedName,
+                reference.GuidRef != null ? " [" + reference.GuidRef + "]" : string.Empty
+                );
+        }
+
+        private Reference ObjectToReference(object refObject)
+        {
+            return (Reference)refObject;
+        }
+
         private static bool IsCollectionType(Type type)
         {
             return type is IList || type.IsGenericType && type.GetInterfaces().Any(interfaceType => interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
-        private object Identity(object o)
+        private string ToString(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
         {
-            return o;
-        }
-
-        private T Identity<T>(T t)
-        {
-            return t;
+            StringWriter sw = new StringWriter();
+            foreach (var keyValuePair in keyValuePairs)
+                sw.WriteLine("{{ {0}, {1} }}", keyValuePair.Key, keyValuePair.Value);
+            return sw.ToString();
         }
 
         public class KeyValuePair<TKey, TValue>
