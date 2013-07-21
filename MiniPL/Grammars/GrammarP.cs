@@ -259,12 +259,12 @@ namespace MiniPL.Grammars
 
             B.VariableReference.Rule =
                 B.NameRef
-                .ConvertValue(_nameRef => Reference.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                .ConvertValue(_nameRef => ReferenceFactory.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
                 .BindTo(B.VariableReference, t => t.Target)
                 ;
 
             B.FunctionReference.Rule =
-                B.NameRef.ConvertValue(_nameRef => Reference.Get<Function>(_nameRef), _variableReference => _variableReference.NameRef)
+                B.NameRef.ConvertValue(_nameRef => ReferenceFactory.Get<Function>(_nameRef), _variableReference => _variableReference.NameRef)
                 ;
 
             B.StatementList.Rule =

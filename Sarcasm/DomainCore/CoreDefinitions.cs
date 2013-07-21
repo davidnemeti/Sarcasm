@@ -36,17 +36,28 @@ namespace Sarcasm.DomainCore
         }
     }
 
-    public interface Reference<out T>
+    public interface Reference
     {
-        NameRef NameRef { get; }
-        T Target { get; }
+        NameRef NameRef { get; set; }
+        object Target { get; set; }
     }
 
-    internal class ReferenceImpl<T> : Reference<T>
+    public interface Reference<out T> : Reference
     {
-        public NameRef NameRef { get; private set; }
-        public Guid? GuidRef { get; private set; }
+        new T Target { get; }
+    }
+
+    internal interface ICopyableReference
+    {
+        Reference CopyWithoutReference();
+    }
+
+    internal class ReferenceImpl<T> : Reference<T>, ICopyableReference
+    {
+        public NameRef NameRef { get; set; }
+        public Guid? GuidRef { get; set; }
         public T Target { get; set; }
+        object Reference.Target { get { return Target; } set { Target = (T)value; } }
 
         public ReferenceImpl(NameRef nameRef)
         {
@@ -75,15 +86,15 @@ namespace Sarcasm.DomainCore
             else
                 return string.Format("[refByTarget: {0}]", Target.ToString());
         }
+
+        Reference ICopyableReference.CopyWithoutReference()
+        {
+            return new ReferenceImpl<T>(NameRef) { GuidRef = GuidRef };
+        }
     }
 
-    public static class Reference
+    public static class ReferenceFactory
     {
-        public static Reference<T> GetReference<T>(this T target)
-        {
-            return Get(target);
-        }
-
         public static Reference<T> Get<T>(T target)
         {
             return new ReferenceImpl<T>(target);
