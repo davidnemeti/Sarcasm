@@ -27,7 +27,6 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
             public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
             public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
-            public readonly BnfiTermConversion<DomainCore.Reference> Reference = new BnfiTermConversion<DomainCore.Reference>();
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -35,7 +34,8 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
-            public readonly BnfiTermConversion<int> NUMBER;
+            public readonly BnfiTermConversion<int> INTEGER;
+            public readonly BnfiTermConversion<double> DOUBLE;
 //            public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
             public readonly BnfiTermConstant<bool> BOOLEAN;
@@ -50,7 +50,8 @@ namespace Sarcasm.UniversalGrammars
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
 //                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
-                this.NUMBER = TerminalFactoryS.CreateNumberLiteralInt32().MakeUncontractible();
+                this.INTEGER = TerminalFactoryS.CreateNumberLiteralInt32().MakeUncontractible();
+                this.DOUBLE = TerminalFactoryS.CreateNumberLiteralDouble().MakeUncontractible();
                 this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 
                 this.BOOLEAN = new BnfiTermConstant<bool>()
@@ -69,8 +70,7 @@ namespace Sarcasm.UniversalGrammars
         public readonly BnfTerms B;
         public const string TYPE_KEYWORD = "$type";
         public const string COLLECTION_VALUES_KEYWORD = "$values";
-        public const string ENUM_KEYWORD = "$enum";
-        public const string REFERENCE_KEYWORD = "$ref";
+        public const string PRIMITIVE_VALUE_KEYWORD = "$value";
 
         public JsonGrammar()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
@@ -80,15 +80,15 @@ namespace Sarcasm.UniversalGrammars
             this.Root = B.Object;
 
             B.Object.Rule =
-                B.NUMBER
+                B.INTEGER
+                |
+                B.DOUBLE
                 |
                 B.STRING
                 |
                 B.BOOLEAN
                 |
                 B.Array
-                |
-                B.Reference
                 |
                 B.OBJECT_BEGIN
                 + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
@@ -113,10 +113,6 @@ namespace Sarcasm.UniversalGrammars
 
             B.ArrayElements.Rule =
                 B.Object.StarListTL(B.COMMA)
-                ;
-
-            B.Reference.Rule =
-                B.Object.ConvertValue(ObjectToReference, ReferenceToObject)
                 ;
 
 //            B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
@@ -166,9 +162,58 @@ namespace Sarcasm.UniversalGrammars
 
             var discriminatorKeyValue = keyValuePairs.ElementAtOrDefault(1);
 
-            if (discriminatorKeyValue.Key == ENUM_KEYWORD)
+            if (discriminatorKeyValue.Key == PRIMITIVE_VALUE_KEYWORD)
             {
-                obj = Enum.Parse(type, (string)discriminatorKeyValue.Value);
+                if (type.IsEnum)
+                    obj = Enum.Parse(type, (string)discriminatorKeyValue.Value);
+
+                else if (type == typeof(Boolean))
+                    obj = Boolean.Parse((string)discriminatorKeyValue.Value);
+
+                else if (type == typeof(Byte))
+                    obj = Byte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(SByte))
+                    obj = SByte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Int16))
+                    obj = Int16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Int32))
+                    obj = Int32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Int64))
+                    obj = Int64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(UInt16))
+                    obj = UInt16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(UInt32))
+                    obj = UInt32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(UInt64))
+                    obj = UInt64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Single))
+                    obj = Single.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Double))
+                    obj = Double.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Decimal))
+                    obj = Decimal.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else if (type == typeof(Char))
+                    obj = Char.Parse((string)discriminatorKeyValue.Value);
+
+                else if (type == typeof(String))
+                    obj = (String)discriminatorKeyValue.Value;
+
+                else if (type == typeof(DateTime))
+                    obj = DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+
+                else
+                    throw new ArgumentException(string.Format("Unsupported primitive type: {0}", type.FullName), "type");
             }
             else if (discriminatorKeyValue.Key == COLLECTION_VALUES_KEYWORD)
             {
@@ -216,22 +261,38 @@ namespace Sarcasm.UniversalGrammars
 
             yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
 
-            if (type.IsEnum)
-            {
-                yield return new KeyValuePair<string, object>(ENUM_KEYWORD, obj.ToString());
-            }
+            if (type.IsEnum ||
+                type == typeof(Boolean) ||
+                type == typeof(Byte) ||
+                type == typeof(SByte) ||
+                type == typeof(Int16) ||
+                type == typeof(Int32) ||
+                type == typeof(Int64) ||
+                type == typeof(UInt16) ||
+                type == typeof(UInt32) ||
+                type == typeof(UInt64) ||
+                type == typeof(Single) ||
+                type == typeof(Double) ||
+                type == typeof(Decimal) ||
+                type == typeof(Char) ||
+                type == typeof(String) ||
+                type == typeof(DateTime)
+                )
+                yield return new KeyValuePair<string, object>(PRIMITIVE_VALUE_KEYWORD, Convert.ToString(obj, this.DefaultCulture));
+
             else if (IsCollectionType(type))
-            {
                 yield return new KeyValuePair<string, object>(COLLECTION_VALUES_KEYWORD, obj);
-            }
+
             else
             {
                 var keyValuePairs =
-                    type.GetFields()
-                        .Select(field => KeyValuePair.Create(field.Name, field.GetValue(obj)))
-                    .Concat(
-                    type.GetProperties()
-                        .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj)))
+                    Enumerable.Concat(
+                        type.GetFields()
+                            .Select(field => KeyValuePair.Create(field.Name, field.GetValue(obj)))
+                        ,
+                        type.GetProperties()
+                            .Where(property => !IsNonSerializableMemberOfReferenceType(obj, property))
+                            .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj)))
                     )
                     .Where(keyValuePair => keyValuePair.Value != null);
 
@@ -240,25 +301,15 @@ namespace Sarcasm.UniversalGrammars
             }
         }
 
-        private object ReferenceToObject(Reference reference)
+        private static bool IsNonSerializableMemberOfReferenceType(object obj, MemberInfo member)
         {
-            return string.Format(
-                "{0}: {1} {{{2}}}{3}",
-                REFERENCE_KEYWORD,
-                reference.NameRef,
-                reference.Type.AssemblyQualifiedName,
-                reference.GuidRef != null ? " [" + reference.GuidRef + "]" : string.Empty
-                );
-        }
-
-        private Reference ObjectToReference(object refObject)
-        {
-            return (Reference)refObject;
+            return obj is Reference &&
+                (member.Name == Util.GetType<Reference>().GetMember(reference => reference.Target).Name || member.Name == Util.GetType<Reference>().GetMember(reference => reference.Type).Name);
         }
 
         private static bool IsCollectionType(Type type)
         {
-            return type is IList || type.IsGenericType && type.GetInterfaces().Any(interfaceType => interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
+            return type is IList || type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
         private string ToString(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
