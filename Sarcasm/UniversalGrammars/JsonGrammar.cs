@@ -27,6 +27,7 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
             public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
             public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
+            public readonly BnfiTermConversion<DomainCore.Reference> Reference = new BnfiTermConversion<DomainCore.Reference>();
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -86,6 +87,8 @@ namespace Sarcasm.UniversalGrammars
                 |
                 B.Array
                 |
+                B.Reference
+                |
                 B.OBJECT_BEGIN
                 + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
                 + B.OBJECT_END
@@ -109,6 +112,10 @@ namespace Sarcasm.UniversalGrammars
 
             B.ArrayElements.Rule =
                 B.Object.StarListTL(B.COMMA)
+                ;
+
+            B.Reference.Rule =
+                B.Object.ConvertValue(refObject => (Reference)refObject, reference => ((ICopyableReference)reference).CopyWithoutReference())
                 ;
 
             B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
@@ -305,46 +312,27 @@ namespace Sarcasm.UniversalGrammars
                 return Decoration.None;
             }
 
-            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
+            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
+                base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
+
                 if (target.BnfTerm == B.OBJECT_BEGIN)
-                    return UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.OBJECT_END)
-                    return UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.ARRAY_BEGIN)
-                    return UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.ARRAY_END)
-                    return UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.COMMA)
-                    return UtokenInsert.NoWhitespace;
-
-                else
-                    return base.GetUtokensLeft(target);
-            }
-
-            protected override InsertedUtokens GetUtokensRight(UnparsableAst target)
-            {
-                if (target.BnfTerm == B.OBJECT_BEGIN)
-                    return UtokenInsert.NewLine;
-
-                else if (target.BnfTerm == B.OBJECT_END)
-                    return UtokenInsert.NewLine;
-
-                else if (target.BnfTerm == B.ARRAY_BEGIN)
-                    return UtokenInsert.NewLine;
-
-                else if (target.BnfTerm == B.ARRAY_END)
-                    return UtokenInsert.NewLine;
-
-                else if (target.BnfTerm == B.COMMA)
-                    return UtokenInsert.NewLine;
-
-                else
-                    return base.GetUtokensRight(target);
+                {
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+                    rightInsertedUtokens = UtokenInsert.NewLine;
+                }
             }
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)

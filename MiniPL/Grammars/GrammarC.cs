@@ -444,48 +444,47 @@ namespace MiniPL.Grammars
                     return Decoration.None;
             }
 
-            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
+            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
-                if (target.BnfTerm == B.DOT)
-                    return UtokenInsert.NoWhitespace;
-                else if (target.BnfTerm == B.RIGHT_PAREN)
-                    return UtokenInsert.NoWhitespace;
-                else if (target.BnfTerm == B.SEMICOLON)
-                    return UtokenInsert.NoWhitespace;
-                else if (target.BnfTerm == B.COMMA)
-                    return UtokenInsert.NoWhitespace;
-                else if (target.BnfTerm == B.Statement)
-                    return UtokenInsert.NewLine;
-                else if (target.BnfTerm == B.BEGIN)
-                    return UtokenInsert.NewLine;
-                else if (target.BnfTerm == B.END)
-                    return UtokenInsert.NewLine;
-                else
-                    return base.GetUtokensLeft(target);
-            }
+                base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
-            protected override InsertedUtokens GetUtokensRight(UnparsableAst target)
-            {
                 if (target.BnfTerm == B.DOT)
-                    return UtokenInsert.NoWhitespace;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NoWhitespace;
+
+                else if (target.BnfTerm == B.RIGHT_PAREN)
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.LEFT_PAREN)
-                    return UtokenInsert.NoWhitespace;
-                else if (target.BnfTerm == B.UnaryOperator)
-                    return UtokenInsert.NoWhitespace;
+                    rightInsertedUtokens = UtokenInsert.NoWhitespace;
+
+                else if (target.BnfTerm == B.SEMICOLON)
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+
+                else if (target.BnfTerm == B.COMMA)
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+
                 else if (target.BnfTerm == B.Statement)
-                    return UtokenInsert.NewLine;
-                else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.AstValue is D.Program)
-                    return UtokenInsert.EmptyLine;
-                else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.AstValue is D.Program)
-                    return UtokenInsert.EmptyLine;
-                else if (target.BnfTerm == B.END && target.AstValue is D.Function)
-                    return UtokenInsert.EmptyLine.SetPriority(10);
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.BEGIN)
-                    return UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+
                 else if (target.BnfTerm == B.END)
-                    return UtokenInsert.NewLine;
-                else
-                    return base.GetUtokensRight(target);
+                {
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                
+                    if (target.AstValue is D.Function)
+                        rightInsertedUtokens = UtokenInsert.EmptyLine.SetPriority(10);
+                }
+
+                else if (target.BnfTerm == B.UnaryOperator)
+                    rightInsertedUtokens = UtokenInsert.NoWhitespace;
+
+                else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.AstValue is D.Program)
+                    rightInsertedUtokens = UtokenInsert.EmptyLine;
+
+                else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.AstValue is D.Program)
+                    rightInsertedUtokens = UtokenInsert.EmptyLine;
             }
 
             protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)

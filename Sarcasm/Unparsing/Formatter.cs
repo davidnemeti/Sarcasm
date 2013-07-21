@@ -218,16 +218,12 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        #region Virtuals
+        #region Overridables for derived formatter
 
-        protected virtual InsertedUtokens GetUtokensLeft(UnparsableAst target)
+        protected virtual void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
         {
-            return InsertedUtokens.None;
-        }
-
-        protected virtual InsertedUtokens GetUtokensRight(UnparsableAst target)
-        {
-            return InsertedUtokens.None;
+            leftInsertedUtokens = InsertedUtokens.None;
+            rightInsertedUtokens = InsertedUtokens.None;
         }
 
         protected virtual InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
@@ -618,14 +614,24 @@ namespace Sarcasm.Unparsing
 
         private InsertedUtokens _GetUtokensLeft(UnparsableAst target)
         {
-            return GetUtokensLeft(target)
+            InsertedUtokens leftInsertedUtokens;
+            InsertedUtokens rightInsertedUtokens;
+
+            GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
+
+            return leftInsertedUtokens
                 .SetKind(InsertedUtokens.Kind.Left)
                 .SetAffected(target);
         }
 
         private InsertedUtokens _GetUtokensRight(UnparsableAst target)
         {
-            return GetUtokensRight(target)
+            InsertedUtokens leftInsertedUtokens;
+            InsertedUtokens rightInsertedUtokens;
+
+            GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
+
+            return rightInsertedUtokens
                 .SetKind(InsertedUtokens.Kind.Right)
                 .SetAffected(target);
         }

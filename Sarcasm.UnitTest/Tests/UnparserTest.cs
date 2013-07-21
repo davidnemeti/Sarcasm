@@ -79,12 +79,12 @@ namespace Sarcasm.UnitTest
             {
             }
 
-            protected override InsertedUtokens GetUtokensLeft(UnparsableAst target)
+            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
+                base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
+
                 if (target.BnfTerm == B.Statement)
-                    return new[] { UtokenInsert.NewLine, UtokenInsert.NewLine };
-                else
-                    return base.GetUtokensLeft(target);
+                    leftInsertedUtokens = new[] { UtokenInsert.NewLine, UtokenInsert.NewLine };
             }
         }
     }
