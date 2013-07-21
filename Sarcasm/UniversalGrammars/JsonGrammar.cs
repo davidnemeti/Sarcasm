@@ -129,19 +129,6 @@ namespace Sarcasm.UniversalGrammars
             #endregion
         }
 
-        private static object CheckNumber(object numberObject)
-        {
-            if (IsNumber(numberObject))
-                return numberObject;
-            else
-                throw new InvalidCastException(string.Format("{0} is not a number", numberObject));
-        }
-
-        private static bool IsNumber(object numberObject)
-        {
-            return numberObject is int || numberObject is long || numberObject is float || numberObject is double || numberObject is decimal;
-        }
-
         private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
         {
             var typeKeyValue = keyValuePairs.First();
@@ -254,9 +241,6 @@ namespace Sarcasm.UniversalGrammars
 
         private IEnumerable<KeyValuePair<string, object>> ObjectToKeyValuePairs(object obj)
         {
-            if (IsNumber(obj) || obj is string || obj is bool || obj == null)
-                yield break;
-
             Type type = obj.GetType();
 
             yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
