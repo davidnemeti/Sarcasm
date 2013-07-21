@@ -511,16 +511,7 @@ namespace Sarcasm.GrammarAst
             else if (this.UtokenizerForUnparse != null)
                 return 1;
             else
-            {
-                //try
-                //{
-                    return unparser.GetPriority(GetMainChild(astValue, children));
-                //}
-                //catch (InvalidCastException)
-                //{
-                //    return null;
-                //}
-            }
+                return unparser.GetPriority(GetMainChild(astValue, children));
         }
 
         private static bool IsMainChild(BnfTerm bnfTerm)

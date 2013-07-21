@@ -13,6 +13,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
+using System.Diagnostics;
 
 namespace Sarcasm.GrammarAst
 {
@@ -57,9 +58,9 @@ namespace Sarcasm.GrammarAst
                         astValue, astValue.GetType().Name, mainChild.BnfTerm));
                 }
 
-                int? inheritancePriority = 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
-                int? childPriority = inheritancePriority != null && (mainChild.BnfTerm != this || mainChild.AstValue != astValue) ? unparser.GetPriority(mainChild) : null;
-                int? priority = inheritancePriority * 100 + childPriority;
+                int? priority = mainChildBnfTermWithType.Type == typeof(object)
+                    ? int.MinValue
+                    : 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
 
                 Unparser.tsPriorities.Indent();
                 priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);
