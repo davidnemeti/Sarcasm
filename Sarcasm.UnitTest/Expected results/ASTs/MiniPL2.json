@@ -47,7 +47,8 @@
                 "NameRef": {
                   "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "number"
-                }
+                },
+                "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
               }
             },
             {
@@ -61,7 +62,8 @@
                 "NameRef": {
                   "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "Fibonacci"
-                }
+                },
+                "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
               },
               "Arguments": {
                 "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
@@ -75,7 +77,8 @@
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "number"
-                        }
+                        },
+                        "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       }
                     }
                   }
@@ -124,7 +127,8 @@
                     "NameRef": {
                       "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                       "Value": "n"
-                    }
+                    },
+                    "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                   }
                 },
                 "Op": "Eq",
@@ -151,7 +155,8 @@
                       "NameRef": {
                         "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                         "Value": "n"
-                      }
+                      },
+                      "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                     }
                   },
                   "Op": "Eq",
@@ -178,7 +183,8 @@
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
-                        }
+                        },
+                        "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       },
                       "Arguments": {
                         "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
@@ -194,7 +200,8 @@
                                   "NameRef": {
                                     "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
-                                  }
+                                  },
+                                  "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                                 }
                               },
                               "Op": "Sub",
@@ -215,7 +222,8 @@
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
-                        }
+                        },
+                        "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       },
                       "Arguments": {
                         "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
@@ -231,7 +239,8 @@
                                   "NameRef": {
                                     "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
-                                  }
+                                  },
+                                  "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                                 }
                               },
                               "Op": "Sub",
