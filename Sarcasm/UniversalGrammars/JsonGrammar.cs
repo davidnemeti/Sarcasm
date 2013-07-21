@@ -347,12 +347,16 @@ namespace Sarcasm.UniversalGrammars
         [Formatter(typeof(JsonGrammar), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
+            public bool CompactFormat { get; set; }
+
             private readonly BnfTerms B;
 
             public Formatter(JsonGrammar grammar)
                 : base(grammar)
             {
                 this.B = grammar.B;
+
+                this.CompactFormat = true;
             }
 
             protected override IDecoration GetDecoration(UnparsableAst target)
@@ -365,13 +369,23 @@ namespace Sarcasm.UniversalGrammars
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
                 if (target.BnfTerm == B.OBJECT_BEGIN)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                {
+                    rightInsertedUtokens = UtokenInsert.NewLine;
+
+                    if (!CompactFormat && target.AstParent != null)
+                        leftInsertedUtokens = UtokenInsert.NewLine;
+                }
 
                 else if (target.BnfTerm == B.OBJECT_END)
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.ARRAY_BEGIN)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                {
+                    rightInsertedUtokens = UtokenInsert.NewLine;
+
+                    if (!CompactFormat && target.AstParent != null)
+                        leftInsertedUtokens = UtokenInsert.NewLine;
+                }
 
                 else if (target.BnfTerm == B.ARRAY_END)
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
