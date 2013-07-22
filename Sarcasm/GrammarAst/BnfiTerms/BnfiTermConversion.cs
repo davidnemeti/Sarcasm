@@ -150,7 +150,23 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversion<string> IntroStringLiteral(StringLiteral stringLiteral)
         {
-            return Intro<string>(stringLiteral, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
+            return Intro<string>(
+                stringLiteral,
+                (context, parseNode) =>
+                {
+                    string quotedStr = parseNode.FindTokenAndGetText();
+                    var subType = stringLiteral._subtypes.First(_subType => quotedStr.StartsWith(_subType.Start) && quotedStr.EndsWith(_subType.End));
+                    return quotedStr
+                        .Remove(quotedStr.Length - subType.End.Length)
+                        .Remove(0, subType.Start.Length);
+                },
+                str =>
+                {
+                    var subType = stringLiteral._subtypes.First();
+                    return subType.Start + str + subType.End;
+                },
+                astForChild: false
+                );
         }
 
         public static BnfiTermConversion<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)

@@ -115,9 +115,6 @@ namespace Sarcasm.UniversalGrammars
                 B.Object.StarListTL(B.COMMA)
                 ;
 
-//            B.NUMBER.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText(Util.ToString(formatProvider, astValue)) };
-            B.STRING.UtokenizerForUnparse = (formatProvider, astValue) => new UtokenValue[] { UtokenValue.CreateText("\"" + Util.ToString(formatProvider, astValue) + "\"") };
-
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
 

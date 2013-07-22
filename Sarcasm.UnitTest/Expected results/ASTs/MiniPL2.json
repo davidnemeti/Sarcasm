@@ -53,7 +53,7 @@
             },
             {
               "$type": "MiniPL.DomainModel.StringLiteral, MiniPL",
-              "Value": "\"th Fibonacci number: \""
+              "Value": "th Fibonacci number: "
             },
             {
               "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
