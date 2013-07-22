@@ -32,6 +32,22 @@ namespace Sarcasm.Utility
             return priority;
         }
 
+        internal static Unparser.Priority DebugWriteLinePriority(this Unparser.Priority priority, TraceSource ts, UnparsableAst unparsableAst, string messageBefore = "", string messageAfter = "", string messageInside = "")
+        {
+            ts.Debug(
+                "{0}{1}{2} obj: {3}; priority = {4}{5}{6}",
+                messageBefore,
+                unparsableAst.BnfTerm,
+                messageInside != "" ? " " + messageInside : messageInside,
+                unparsableAst.AstValue != null ? unparsableAst.AstValue.ToString() : "<<NULL>>",
+                priority.Kind,
+                priority.Value.HasValue ? priority.Value.ToString() : "NULL",
+                messageAfter
+                );
+
+            return priority;
+        }
+
         internal static ExpressionUnparser.BnfTermKind DebugWriteLineBnfTermKind(this ExpressionUnparser.BnfTermKind bnfTermKind, TraceSource ts, BnfTerm bnfTerm, string extraMessage = null)
         {
             ts.Debug(

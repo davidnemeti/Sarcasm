@@ -572,7 +572,7 @@ namespace Sarcasm.Unparsing
 
             var childrenWithPriority = GetChildrenWithMaxPriority(self);
 
-            if (childrenWithPriority.Priority == null)
+            if (childrenWithPriority.Priority.Value == null)
             {
                 throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' has no appropriate production rule.",
                     self.AstValue, self.AstValue.GetType().Name, self.BnfTerm.Name));
@@ -607,15 +607,15 @@ namespace Sarcasm.Unparsing
                 .MaxItem(childrenWithPriority => childrenWithPriority.Priority);
         }
 
-        private int? GetChildrenPriority(UnparsableAst self, IEnumerable<UnparsableAst> children, int childrenIndex)
+        private Priority GetChildrenPriority(UnparsableAst self, IEnumerable<UnparsableAst> children, int childrenIndex)
         {
             IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
             UnparseHint unparseHint = ((BnfiTermNonTerminal)self.BnfTerm).GetUnparseHint(childrenIndex);
 
             return unparseHint != null
-                ? unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue))
-                : unparsable.GetChildrenPriority(this, self.AstValue, children);
+                ? new Priority(PriorityKind.User, unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue)))
+                : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children));
         }
 
         internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
@@ -675,13 +675,13 @@ namespace Sarcasm.Unparsing
 
                 tsPriorities.Indent();
 
-                int? priority = GetChildrenWithMaxPriority(unparsableAst).Priority;
+                Priority priority = GetChildrenWithMaxPriority(unparsableAst).Priority;
 
                 tsPriorities.Unindent();
 
                 priority.DebugWriteLinePriority(tsPriorities, unparsableAst, messageAfter: " (MAX)");
 
-                return priority;
+                return priority.Value;
             }
             else
             {
@@ -724,7 +724,43 @@ namespace Sarcasm.Unparsing
         private class ChildrenWithPriority
         {
             public IEnumerable<UnparsableAst> Children;
-            public int? Priority;
+            public Priority Priority;
+        }
+
+        internal enum PriorityKind { System, User }
+
+        internal struct Priority : IComparable<Priority>
+        {
+            public readonly PriorityKind Kind;
+            public readonly int? Value;
+
+            public Priority(PriorityKind kind, int? value)
+            {
+                this.Kind = kind;
+                this.Value = value;
+            }
+
+            public int CompareTo(Priority that)
+            {
+                if (this.Kind == PriorityKind.User && that.Kind == PriorityKind.System)
+                    return this.Value != null ? 1 : Compare(this.Value, that.Value);
+                else if (this.Kind == PriorityKind.System && that.Kind == PriorityKind.User)
+                    return that.Value != null ? -1 : Compare(this.Value, that.Value);
+                else // this.Kind == that.Kind
+                    return Compare(this.Value, that.Value);
+            }
+
+            private static int Compare(int? priorityValue1, int? priorityValue2)
+            {
+                if (priorityValue1 == null && priorityValue2 == null)
+                    return 0;
+                else if (priorityValue1 != null && priorityValue2 == null)
+                    return 1;
+                else if (priorityValue1 == null && priorityValue2 != null)
+                    return -1;
+                else
+                    return priorityValue1.Value.CompareTo(priorityValue2.Value);
+            }
         }
 
         #endregion
