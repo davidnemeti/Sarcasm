@@ -48,7 +48,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public delegate IEnumerable<UtokenValue> ValueUtokenizer<T>(IFormatProvider formatProvider, T astValue);
+    public delegate IEnumerable<UtokenValue> ValueUtokenizer<in T>(IFormatProvider formatProvider, T astValue);
 
     public interface IUnparsableNonTerminal : INonTerminal
     {
