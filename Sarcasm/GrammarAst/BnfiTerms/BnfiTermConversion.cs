@@ -506,8 +506,18 @@ namespace Sarcasm.GrammarAst
                 utokens = this.UtokenizerForUnparse(unparser.FormatProvider, astValue);
                 return true;
             }
-            else if (this.inverseValueConverterForUnparse != null && this.inverseValueConverterForUnparse != NoUnparseByInverse())
+            else if (this.inverseValueConverterForUnparse != null)
             {
+                /*
+                 * NOTE that we *don't have to* check for "this.inverseValueConverterForUnparse != noUnparseByInverse" here because
+                 * IUnparsableNonTerminal.GetChildren will call this.inverseValueConverterForUnparse anyway and it will throw an
+                 * UnparseException if it equals to NoUnparseByInverse().
+                 * 
+                 * Moreover, we *cannot* check for "this.inverseValueConverterForUnparse != noUnparseByInverse" here properly because
+                 * of the usages of the generic versions of NoUnparseByInverse<...>() methods which wrap the original noUnparseByInverse
+                 * by calling CastValueConverter.
+                 * */
+
                 utokens = null;
                 return false;
             }
