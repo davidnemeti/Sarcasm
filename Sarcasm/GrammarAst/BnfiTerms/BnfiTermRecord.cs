@@ -274,8 +274,6 @@ namespace Sarcasm.GrammarAst
         {
             if (unparsableAst.AstValue != null)
                 return 1;
-            else if (unparsableAst.BnfTerm is BnfiTermCollection)
-                return unparser.GetPriority(unparsableAst);
             else
                 return null;
         }
