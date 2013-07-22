@@ -23,6 +23,9 @@ namespace Sarcasm.DomainCore
 
     public class NameRef
     {
+        // for parsers of universal grammars
+        internal NameRef() { }
+
         public NameRef(string value)
         {
             this.Value = value;
@@ -58,6 +61,7 @@ namespace Sarcasm.DomainCore
         object Reference.Target { get { return Target; } set { Target = (T)value; } }
         public Type Type { get { return typeof(T); } }
 
+        // for parsers of universal grammars
         internal ReferenceImpl() { }
 
         public ReferenceImpl(NameRef nameRef)
