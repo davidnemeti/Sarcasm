@@ -217,19 +217,28 @@ namespace Sarcasm.UniversalGrammars
             }
             else
             {
-                obj = Activator.CreateInstance(type);
-
-                foreach (var keyValuePair in keyValuePairs.Skip(1))
+                if (type == typeof(NameRef))
                 {
-                    string fieldName = keyValuePair.Key;
-                    object value = keyValuePair.Value;
+                    var keyValuePairForNameRefValueMember = keyValuePairs.First(keyValuePair => keyValuePair.Key == Util.GetType<NameRef>().GetMember(nameRef => nameRef.Value).Name);
+                    string nameRefValue = (string)keyValuePairForNameRefValueMember.Value;
+                    obj = new NameRef(nameRefValue);
+                }
+                else
+                {
+                    obj = Activator.CreateInstance(type);
 
-                    MemberInfo field = (MemberInfo)type.GetProperty(fieldName) ?? (MemberInfo)type.GetField(fieldName);
+                    foreach (var keyValuePair in keyValuePairs.Skip(1))
+                    {
+                        string fieldName = keyValuePair.Key;
+                        object value = keyValuePair.Value;
 
-                    if (field is PropertyInfo)
-                        ((PropertyInfo)field).SetValue(obj, value);
-                    else if (field is FieldInfo)
-                        ((FieldInfo)field).SetValue(obj, value);
+                        MemberInfo field = (MemberInfo)type.GetProperty(fieldName) ?? (MemberInfo)type.GetField(fieldName);
+
+                        if (field is PropertyInfo)
+                            ((PropertyInfo)field).SetValue(obj, value);
+                        else if (field is FieldInfo)
+                            ((FieldInfo)field).SetValue(obj, value);
+                    }
                 }
             }
 
