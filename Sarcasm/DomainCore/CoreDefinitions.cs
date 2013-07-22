@@ -58,6 +58,8 @@ namespace Sarcasm.DomainCore
         object Reference.Target { get { return Target; } set { Target = (T)value; } }
         public Type Type { get { return typeof(T); } }
 
+        internal ReferenceImpl() { }
+
         public ReferenceImpl(NameRef nameRef)
         {
             this.NameRef = nameRef;
@@ -94,14 +96,36 @@ namespace Sarcasm.DomainCore
             return new ReferenceImpl<T>(target);
         }
 
+        public static Reference Get(object target)
+        {
+            return CreateInstance(target.GetType(), target);
+        }
+
         public static Reference<T> Get<T>(NameRef nameRef)
         {
             return new ReferenceImpl<T>(nameRef);
         }
 
+        public static Reference Get(Type type, NameRef nameRef)
+        {
+            return CreateInstance(type, nameRef);
+        }
+
         public static Reference<T> Get<T>(Guid guidRef)
         {
             return new ReferenceImpl<T>(guidRef);
+        }
+
+        public static Reference Get(Type type, Guid guidRef)
+        {
+            return CreateInstance(type, guidRef);
+        }
+
+        private static Reference CreateInstance(Type typeArgument, params object[] args)
+        {
+            Type genericTypeDefinition = typeof(ReferenceImpl<>);
+            Type genericType = genericTypeDefinition.MakeGenericType(typeArgument);
+            return (Reference)Activator.CreateInstance(genericType, args);
         }
     }
 
