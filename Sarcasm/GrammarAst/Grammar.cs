@@ -296,6 +296,11 @@ namespace Sarcasm.GrammarAst
             return BnfiTermConversion.NoUnparseByInverse<TIn, TOut>();
         }
 
+        public static UnparseHint SetUnparsePriority(ChildrenPriorityGetter getChildrenPriority)
+        {
+            return new UnparseHint(getChildrenPriority);
+        }
+
         #endregion
     }
 

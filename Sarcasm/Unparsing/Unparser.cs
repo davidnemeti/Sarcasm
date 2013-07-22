@@ -590,19 +590,32 @@ namespace Sarcasm.Unparsing
             IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
             return GetChildBnfTermLists(unparsable.AsNonTerminal())
-                .Select(childBnfTerms =>
+                .Select(
+                    (childBnfTerms, childBnfTermsIndex) =>
                     {
                         var children = unparsable.GetChildren(childBnfTerms, self.AstValue, direction);
+
                         return new ChildrenWithPriority
                         {
                             Children = children,
-                            Priority = unparsable.GetChildrenPriority(this, self.AstValue, children)
+                            Priority = GetChildrenPriority(self, children, childBnfTermsIndex)
                                 .DebugWriteLinePriority(tsPriorities, self)
                         };
                     }
                 )
                 .Where(childrenWithPriority => !childrenWithPriority.Children.Contains(self))
                 .MaxItem(childrenWithPriority => childrenWithPriority.Priority);
+        }
+
+        private int? GetChildrenPriority(UnparsableAst self, IEnumerable<UnparsableAst> children, int childrenIndex)
+        {
+            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
+
+            UnparseHint unparseHint = ((BnfiTermNonTerminal)self.BnfTerm).GetUnparseHint(childrenIndex);
+
+            return unparseHint != null
+                ? unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue))
+                : unparsable.GetChildrenPriority(this, self.AstValue, children);
         }
 
         internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)

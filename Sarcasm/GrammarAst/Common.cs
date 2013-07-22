@@ -77,6 +77,7 @@ namespace Sarcasm.GrammarAst
     {
         protected readonly Type type;
         protected readonly bool hasExplicitName;
+        private readonly Dictionary<int, UnparseHint> childBnfTermListIndexToUnparseHint;
 
         protected BnfiTermNonTerminal(Type type, string name)
             : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
@@ -85,6 +86,7 @@ namespace Sarcasm.GrammarAst
             this.IsContractible = false;
             this.hasBeenContracted = false;
             this.hasExplicitName = name != null;
+            this.childBnfTermListIndexToUnparseHint = new Dictionary<int, UnparseHint>();
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
@@ -128,6 +130,7 @@ namespace Sarcasm.GrammarAst
             set
             {
                 base.Rule = value;
+                ProcessUnparseHints(value);
                 CheckAfterRuleHasBeenSetThatChildrenAreNotContracted();
             }
         }
@@ -148,6 +151,38 @@ namespace Sarcasm.GrammarAst
                         );
                 }
             }
+        }
+
+        private void ProcessUnparseHints(BnfExpression rule)
+        {
+            if (rule != null)
+            {
+                for (int childBnfTermListIndex = 0; childBnfTermListIndex < rule.Data.Count; childBnfTermListIndex++)
+                {
+                    BnfTermList bnfTermList = rule.Data[childBnfTermListIndex];
+
+                    try
+                    {
+                        UnparseHint unparseHint = (UnparseHint)bnfTermList.SingleOrDefault(bnfTerm => bnfTerm is UnparseHint);
+                        childBnfTermListIndexToUnparseHint.Add(childBnfTermListIndex, unparseHint);
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        GrammarHelper.ThrowGrammarErrorException(
+                            GrammarErrorLevel.Error,
+                            "NonTerminal '{0}' has more than one UnparseHint on its {1}. childrenlist. Only one UnparseHint is allowed per childrenlist.", this, childBnfTermListIndex + 1
+                            );
+                    }
+                }
+            }
+        }
+
+        internal UnparseHint GetUnparseHint(int childBnfTermListIndex)
+        {
+            UnparseHint unparseHint;
+            return childBnfTermListIndexToUnparseHint.TryGetValue(childBnfTermListIndex, out unparseHint)
+                ? unparseHint
+                : null;
         }
     }
 }

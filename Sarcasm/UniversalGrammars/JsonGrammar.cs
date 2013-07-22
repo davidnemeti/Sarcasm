@@ -34,9 +34,7 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
-            public readonly BnfiTermConversion<int> INTEGER;
-            public readonly BnfiTermConversion<double> DOUBLE;
-//            public readonly BnfiTermConversionTL NUMBER;
+            public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
             public readonly BnfiTermConstant<bool> BOOLEAN;
             public readonly BnfiTermConstantTL NULL;
@@ -49,9 +47,7 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
-//                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
-                this.INTEGER = TerminalFactoryS.CreateNumberLiteralInt32().MakeUncontractible();
-                this.DOUBLE = TerminalFactoryS.CreateNumberLiteralDouble().MakeUncontractible();
+                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
                 this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 
                 this.BOOLEAN = new BnfiTermConstant<bool>()
@@ -80,9 +76,7 @@ namespace Sarcasm.UniversalGrammars
             this.Root = B.Object;
 
             B.Object.Rule =
-                B.INTEGER
-                |
-                B.DOUBLE
+                B.NUMBER + SetUnparsePriority((astValue, childAstValues) => astValue is int || astValue is double ? (int?)1 : null)
                 |
                 B.STRING
                 |
@@ -90,11 +84,11 @@ namespace Sarcasm.UniversalGrammars
                 |
                 B.Array
                 |
+                B.NULL + SetUnparsePriority((astValue, childAstValues) => astValue == null ? (int?)1 : null)
+                |
                 B.OBJECT_BEGIN
                 + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
                 + B.OBJECT_END
-                |
-                B.NULL
                 ;
 
             B.KeyValuePairs.Rule =
