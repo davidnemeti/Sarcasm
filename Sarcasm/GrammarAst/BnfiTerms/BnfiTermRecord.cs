@@ -19,20 +19,43 @@ namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermRecord : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
-        private struct ParseIndexedBnfTerm
+        private struct IndexedBnfTerm : IEquatable<IndexedBnfTerm>
         {
             public readonly BnfTerm BnfTerm;
-            public readonly int ParseIndex;
+            public readonly IList<BnfTerm> ParseTreeBnfTerms;
+            public readonly int Index;
 
-            public ParseIndexedBnfTerm(BnfTerm bnfTerm, int parseIndex)
+            public IndexedBnfTerm(BnfTerm bnfTerm, IList<BnfTerm> parseTreeBnfTerms, int index)
             {
                 this.BnfTerm = bnfTerm;
-                this.ParseIndex = parseIndex;
+                this.ParseTreeBnfTerms = parseTreeBnfTerms;
+                this.Index = index;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is IndexedBnfTerm && Equals((IndexedBnfTerm)obj);
+            }
+
+            public bool Equals(IndexedBnfTerm that)
+            {
+                return object.ReferenceEquals(this, that)
+                    ||
+                    !object.ReferenceEquals(that, null) &&
+                    this.BnfTerm == that.BnfTerm &&
+                    this.Index == that.Index &&
+                    this.ParseTreeBnfTerms.Count == that.ParseTreeBnfTerms.Count &&
+                    this.ParseTreeBnfTerms.SequenceEqual(that.ParseTreeBnfTerms);
+            }
+
+            public override int GetHashCode()
+            {
+                return Util.GetHashCodeMulti(BnfTerm, Index, Util.GetHashCodeMulti(ParseTreeBnfTerms));
             }
         }
 
-        private IDictionary<ParseIndexedBnfTerm, Member> parseIndexedBnfTermToMember = new Dictionary<ParseIndexedBnfTerm, Member>();
-        private IDictionary<int, int> ruleIndexToParseIndex = new Dictionary<int, int>();
+        private IDictionary<IndexedBnfTerm, Member> parseIndexedBnfTermToMember = new Dictionary<IndexedBnfTerm, Member>();
+        private IDictionary<IndexedBnfTerm, Member> ruleIndexedBnfTermToMember = new Dictionary<IndexedBnfTerm, Member>();
 
         protected BnfiTermRecord(Type type, string name)
             : base(type, name)
@@ -44,25 +67,29 @@ namespace Sarcasm.GrammarAst
             {
                 object astValue = Activator.CreateInstance(type, nonPublic: true);
 
-                var parseIndexedChildValues = parseTreeNode.ChildNodes
+                var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
+
+                var childValues = parseTreeNode.ChildNodes
                     .Select(
                         (childNode, index) => new
                             {
-                                ChildBnfTerm = childNode.Term,
-                                ChildValue = GrammarHelper.AstNodeToValue(childNode.AstNode),
-                                ChildParseIndex = index
+                                BnfTerm = childNode.Term,
+                                Value = GrammarHelper.AstNodeToValue(childNode.AstNode),
+                                ParseIndex = index
                             }
                         )
-                    .Where(indexedChildValue => indexedChildValue.ChildValue != null)
+                    .Where(indexedChildValue => indexedChildValue.Value != null)
                     .ToList();
 
                 // 1. memberwise copy for BnfiTermCopy items
-                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => astValue.GetType().IsAssignableFrom(indexedChildValue.ChildValue.GetType())))
-                    MemberwiseCopyExceptNullValues(astValue, parseIndexedChildValue.ChildValue);
+                foreach (var childValue in childValues)
+                    if (astValue.GetType().IsAssignableFrom(childValue.Value.GetType()))
+                        MemberwiseCopyExceptNullValues(astValue, childValue.Value);
 
                 // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
-                foreach (var parseIndexedChildValue in parseIndexedChildValues.Where(indexedChildValue => IsMemberByParseIndex(indexedChildValue.ChildBnfTerm, indexedChildValue.ChildParseIndex)))
-                    SetValue(GetMemberByParseIndex(parseIndexedChildValue.ChildBnfTerm, parseIndexedChildValue.ChildParseIndex).MemberInfo, astValue, parseIndexedChildValue.ChildValue);
+                foreach (var childValue in childValues)
+                    if (IsMemberByParseIndex(childValue.BnfTerm, parseChildBnfTerms, childValue.ParseIndex))
+                        SetValue(GetMemberByParseIndex(childValue.BnfTerm, parseChildBnfTerms, childValue.ParseIndex).MemberInfo, astValue, childValue.Value);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
@@ -135,52 +162,53 @@ namespace Sarcasm.GrammarAst
 
         private void ConvertAndStoreMembers(BnfiExpression bnfiExpression)
         {
-            foreach (BnfTermList bnfterms in bnfiExpression.GetBnfTermsList())
+            foreach (BnfTermList bnfTerms in bnfiExpression.GetBnfTermsList())
             {
                 int parseIndex = 0;
 
-                for (int ruleIndex = 0; ruleIndex < bnfterms.Count; ruleIndex++)
+                for (int ruleIndex = 0; ruleIndex < bnfTerms.Count; ruleIndex++)
                 {
-                    if (bnfterms[ruleIndex] is Member)
+                    if (bnfTerms[ruleIndex] is Member)
                     {
-                        Member member = (Member)bnfterms[ruleIndex];
+                        Member member = (Member)bnfTerms[ruleIndex];
 
-                        RegisterMember(member.BnfTerm, parseIndex, ruleIndex, member);
-                        bnfterms[ruleIndex] = member.BnfTerm;
+                        RegisterMember(member.BnfTerm, bnfTerms, parseIndex, ruleIndex, member);
+                        bnfTerms[ruleIndex] = member.BnfTerm;
                     }
 
-                    if (!bnfterms[ruleIndex].IsPunctuation())
+                    if (!bnfTerms[ruleIndex].IsPunctuation())
                         parseIndex++;
                 }
             }
         }
 
-        private void RegisterMember(BnfTerm bnfTerm, int parseIndex, int ruleIndex, Member member)
+        private void RegisterMember(BnfTerm bnfTerm, IList<BnfTerm> bnfTerms, int parseIndex, int ruleIndex, Member member)
         {
-            this.parseIndexedBnfTermToMember.Add(new ParseIndexedBnfTerm(bnfTerm, parseIndex), member);
-            this.ruleIndexToParseIndex.Add(ruleIndex, parseIndex);
+            var ruleBnfTerms = bnfTerms.Where(_bnfTerm => !(_bnfTerm is GrammarHint)).Select(_bnfTerm => _bnfTerm is Member ? ((Member)_bnfTerm).BnfTerm : _bnfTerm).ToList();
+            var parseBnfTerms = ruleBnfTerms.Where(ruleBnfTerm => !ruleBnfTerm.IsPunctuation()).ToList();
+
+            this.ruleIndexedBnfTermToMember.Add(new IndexedBnfTerm(bnfTerm, ruleBnfTerms, ruleIndex), member);
+            this.parseIndexedBnfTermToMember.Add(new IndexedBnfTerm(bnfTerm, parseBnfTerms, parseIndex), member);
         }
 
-        private bool IsMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
+        private bool IsMemberByParseIndex(BnfTerm bnfTerm, IList<BnfTerm> parseBnfTerms, int parseIndex)
         {
-            return this.parseIndexedBnfTermToMember.ContainsKey(new ParseIndexedBnfTerm(bnfTerm, parseIndex));
+            return this.parseIndexedBnfTermToMember.ContainsKey(new IndexedBnfTerm(bnfTerm, parseBnfTerms, parseIndex));
         }
 
-        private bool IsMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
+        private bool IsMemberByRuleIndex(BnfTerm bnfTerm, IList<BnfTerm> ruleBnfTerms, int ruleIndex)
         {
-            int parseIndex;
-            return this.ruleIndexToParseIndex.TryGetValue(ruleIndex, out parseIndex) && IsMemberByParseIndex(bnfTerm, parseIndex);
+            return this.ruleIndexedBnfTermToMember.ContainsKey(new IndexedBnfTerm(bnfTerm, ruleBnfTerms, ruleIndex));
         }
 
-        private Member GetMemberByParseIndex(BnfTerm bnfTerm, int parseIndex)
+        private Member GetMemberByParseIndex(BnfTerm bnfTerm, IList<BnfTerm> parseBnfTerms, int parseIndex)
         {
-            return this.parseIndexedBnfTermToMember[new ParseIndexedBnfTerm(bnfTerm, parseIndex)];
+            return this.parseIndexedBnfTermToMember[new IndexedBnfTerm(bnfTerm, parseBnfTerms, parseIndex)];
         }
 
-        private Member GetMemberByRuleIndex(BnfTerm bnfTerm, int ruleIndex)
+        private Member GetMemberByRuleIndex(BnfTerm bnfTerm, IList<BnfTerm> ruleBnfTerms, int ruleIndex)
         {
-            int parseIndex = this.ruleIndexToParseIndex[ruleIndex];
-            return GetMemberByParseIndex(bnfTerm, parseIndex);
+            return this.ruleIndexedBnfTermToMember[new IndexedBnfTerm(bnfTerm, ruleBnfTerms, ruleIndex)];
         }
 
         #region Unparse
@@ -193,6 +221,10 @@ namespace Sarcasm.GrammarAst
 
         IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
         {
+            var childRuleBnfTerms = direction == Unparser.Direction.LeftToRight
+                ? childBnfTerms
+                : childBnfTerms.ReverseOptimized();
+
             foreach (var childRuleIndexedBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
                 new
                 {
@@ -204,9 +236,9 @@ namespace Sarcasm.GrammarAst
                 object childAstValue;
                 Member member;
 
-                if (IsMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex))
+                if (IsMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleBnfTerms, childRuleIndexedBnfTerm.RuleIndex))
                 {
-                    member = GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleIndexedBnfTerm.RuleIndex);
+                    member = GetMemberByRuleIndex(childRuleIndexedBnfTerm.BnfTerm, childRuleBnfTerms, childRuleIndexedBnfTerm.RuleIndex);
                     childAstValue = GetValue(member.MemberInfo, astValue);
                 }
                 else if (childRuleIndexedBnfTerm.BnfTerm is BnfiTermCopy)
@@ -224,11 +256,15 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
         {
+            var childRuleBnfTerms = direction == Unparser.Direction.LeftToRight
+                ? children.Select(child => child.BnfTerm).ToList()
+                : children.Select(child => child.BnfTerm).Reverse().ToList();
+
             return children
                 .SumIncludingNullValues(
-                    (child, ruleIndex) => IsMemberByRuleIndex(child.BnfTerm, ruleIndex)
+                    (child, ruleIndex) => IsMemberByRuleIndex(child.BnfTerm, childRuleBnfTerms, ruleIndex)
                         ? GetBnfTermPriorityForMember(unparser, child)
                         : unparser.GetPriority(child)
                     );

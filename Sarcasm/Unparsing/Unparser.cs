@@ -615,7 +615,7 @@ namespace Sarcasm.Unparsing
 
             return unparseHint != null
                 ? new Priority(PriorityKind.User, unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue)))
-                : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children));
+                : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children, direction));
         }
 
         internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
