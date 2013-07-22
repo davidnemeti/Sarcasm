@@ -1,32 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Text.RegularExpressions;
+using System.Reflection;
+using System.Collections;
 
 using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
-using System.Reflection;
-using Irony.Parsing;
-using System.Collections;
 using Sarcasm.Utility;
-using System.IO;
 
 namespace Sarcasm.UniversalGrammars
 {
     [Grammar(typeof(object), "JSON")]
     public class JsonGrammar : Sarcasm.GrammarAst.Grammar
     {
+        #region BnfTerms
+
         public class BnfTerms
         {
             public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object));
-            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string, object>>();
-            public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
-            public readonly BnfiTermConversion<IEnumerable> Array = new BnfiTermConversion<IEnumerable>();
-            public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
+            public readonly BnfiTermRecord<MetaObject> MetaObject = new BnfiTermRecord<MetaObject>();
+            public readonly BnfiTermRecord<MetaArray> MetaArray = new BnfiTermRecord<MetaArray>();
+            public readonly BnfiTermConversion<Type> Type = new BnfiTermConversion<Type>();
+            public readonly BnfiTermRecord<MemberValue> MemberValue = new BnfiTermRecord<MemberValue>();
+            public readonly BnfiTermConversion<string> Key = new BnfiTermConversion<string>();
+            public readonly BnfiTermConversionTL Value = new BnfiTermConversionTL();
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -34,8 +33,14 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
+
+            public readonly BnfiTermKeyTerm TYPE_KEYWORD;
+            public readonly BnfiTermKeyTerm COLLECTION_VALUES_KEYWORD;
+            public readonly BnfiTermKeyTerm PRIMITIVE_VALUE_KEYWORD;
+
             public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
+
             public readonly BnfiTermConstant<bool> BOOLEAN;
             public readonly BnfiTermConstantTL NULL;
 
@@ -47,6 +52,11 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
+
+                this.TYPE_KEYWORD = TerminalFactoryS.CreateKeyTerm("$type");
+                this.COLLECTION_VALUES_KEYWORD = TerminalFactoryS.CreateKeyTerm("$values");
+                this.PRIMITIVE_VALUE_KEYWORD = TerminalFactoryS.CreateKeyTerm("$value");
+
                 this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
                 this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 
@@ -63,10 +73,9 @@ namespace Sarcasm.UniversalGrammars
             }
         }
 
+        #endregion
+
         public readonly BnfTerms B;
-        public const string TYPE_KEYWORD = "$type";
-        public const string COLLECTION_VALUES_KEYWORD = "$values";
-        public const string PRIMITIVE_VALUE_KEYWORD = "$value";
 
         public JsonGrammar()
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
@@ -82,32 +91,63 @@ namespace Sarcasm.UniversalGrammars
                 |
                 B.BOOLEAN
                 |
-                B.Array
+                B.MetaArray.ConvertValue(MetaArrayToArray, ArrayToMetaArray)
                 |
                 B.NULL + SetUnparsePriority((astValue, childAstValues) => astValue == null ? (int?)1 : null)
                 |
+                B.MetaObject.ConvertValue(MetaObjectToObject, ObjectToMetaObject)
+                ;
+
+            B.MetaObject.Rule =
                 B.OBJECT_BEGIN
-                + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
+                + B.TYPE_KEYWORD
+                + B.COLON
+                + B.Type.BindTo(B.MetaObject, metaObject => metaObject.Type)
+                + B.COMMA
+                + B.PRIMITIVE_VALUE_KEYWORD
+                + B.COLON
+                + B.STRING.BindTo(B.MetaObject, metaObject => metaObject.PrimitiveValueStr)
+                + B.OBJECT_END
+                |
+                B.OBJECT_BEGIN
+                + B.TYPE_KEYWORD
+                + B.COLON
+                + B.Type.BindTo(B.MetaObject, metaObject => metaObject.Type)
+                + B.COMMA
+                + B.MemberValue.StarList(B.COMMA).BindTo(B.MetaObject, metaObject => metaObject.MemberValues)
                 + B.OBJECT_END
                 ;
 
-            B.KeyValuePairs.Rule =
-                B.KeyValuePair.StarList(B.COMMA)
+            B.Type.Rule =
+                B.STRING.ConvertValue(typeNameWithAssembly => Type.GetType(typeNameWithAssembly), type => type.AssemblyQualifiedName)
                 ;
 
-            B.KeyValuePair.Rule =
-                B.STRING.BindTo(B.KeyValuePair, fv => fv.Key)
+            B.MemberValue.Rule =
+                B.Key.BindTo(B.MemberValue, memberValue => memberValue.Name)
                 + B.COLON
-                + B.Object.BindTo(B.KeyValuePair, fv => fv.Value);
-
-            B.Array.Rule =
-                B.ARRAY_BEGIN
-                + B.ArrayElements.ConvertValue(array => (IEnumerable)array, arrayObject => (object)arrayObject)
-                + B.ARRAY_END;
-
-            B.ArrayElements.Rule =
-                B.Object.StarListTL(B.COMMA)
+                + B.Value.BindTo_(B.MemberValue, memberValue => memberValue.Value)
                 ;
+
+            B.Key.Rule =
+                B.STRING
+                ;
+
+            B.Value.Rule =
+                B.Object.ConvertValue(obj => obj, value => value)
+                ;
+
+            B.MetaArray.Rule =
+                B.OBJECT_BEGIN
+                + B.TYPE_KEYWORD
+                + B.COLON
+                + B.Type.BindTo(B.MetaArray, metaArray => metaArray.Type)
+                + B.COMMA
+                + B.COLLECTION_VALUES_KEYWORD
+                + B.COLON
+                + B.ARRAY_BEGIN
+                + B.Object.StarList<object>(B.COMMA).BindTo(B.MetaArray, metaArray => metaArray.Elements)
+                + B.ARRAY_END
+                + B.OBJECT_END;
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
@@ -120,121 +160,106 @@ namespace Sarcasm.UniversalGrammars
             #endregion
         }
 
-        private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        #region Helpers
+
+        private IEnumerable MetaArrayToArray(MetaArray metaArray)
         {
-            var typeKeyValue = keyValuePairs.First();
+            return metaArray.Elements;
+        }
 
-            if (typeKeyValue.Key != TYPE_KEYWORD)
-                throw new InvalidOperationException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
-
-            //Match match = Regex.Match((string)typeKeyValue.Value, @"([^,]+), ([^,]+)");
-
-            //string typeName = match.Groups[1].Value;
-            //string assemblyName = match.Groups[2].Value;
-
-            //object obj = Activator.CreateInstance(assemblyName, typeName);
-
-            string typeNameWithAssembly = (string)typeKeyValue.Value;
-            Type type = Type.GetType(typeNameWithAssembly);
-            object obj;
-
-            var discriminatorKeyValue = keyValuePairs.ElementAtOrDefault(1);
-
-            if (discriminatorKeyValue.Key == PRIMITIVE_VALUE_KEYWORD)
+        private MetaArray ArrayToMetaArray(IEnumerable array)
+        {
+            return new MetaArray()
             {
+                Type = array.GetType(),
+                Elements = array
+            };
+        }
+
+        private object MetaObjectToObject(MetaObject metaObject)
+        {
+            Type type = metaObject.Type;
+            string primitiveValueStr = metaObject.PrimitiveValueStr;
+
+            if (primitiveValueStr != null)
+            {
+                #region Primitive
+
                 if (type.IsEnum)
-                    obj = Enum.Parse(type, (string)discriminatorKeyValue.Value);
+                    return Enum.Parse(type, primitiveValueStr);
 
                 else if (type == typeof(Boolean))
-                    obj = Boolean.Parse((string)discriminatorKeyValue.Value);
+                    return Boolean.Parse(primitiveValueStr);
 
                 else if (type == typeof(Byte))
-                    obj = Byte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Byte.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(SByte))
-                    obj = SByte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return SByte.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Int16))
-                    obj = Int16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Int16.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Int32))
-                    obj = Int32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Int32.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Int64))
-                    obj = Int64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Int64.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(UInt16))
-                    obj = UInt16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return UInt16.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(UInt32))
-                    obj = UInt32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return UInt32.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(UInt64))
-                    obj = UInt64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return UInt64.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Single))
-                    obj = Single.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Single.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Double))
-                    obj = Double.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Double.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Decimal))
-                    obj = Decimal.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return Decimal.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else if (type == typeof(Char))
-                    obj = Char.Parse((string)discriminatorKeyValue.Value);
+                    return Char.Parse(primitiveValueStr);
 
                 else if (type == typeof(String))
-                    obj = (String)discriminatorKeyValue.Value;
+                    return primitiveValueStr;
 
                 else if (type == typeof(DateTime))
-                    obj = DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    return DateTime.Parse(primitiveValueStr, this.DefaultCulture);
 
                 else
                     throw new ArgumentException(string.Format("Unsupported primitive type: {0}", type.FullName), "type");
-            }
-            else if (discriminatorKeyValue.Key == COLLECTION_VALUES_KEYWORD)
-            {
-                obj = Activator.CreateInstance(type);
 
-                if (!IsCollectionType(type))
-                    throw new InvalidOperationException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
-
-                if (keyValuePairs.Count() != 2)
-                    throw new InvalidOperationException(string.Format("For collection style there can be only {0} and {1} specified", TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD));
-
-                dynamic collection = obj;
-                IEnumerable elements = (IEnumerable)discriminatorKeyValue.Value;
-
-                foreach (object element in elements)
-                    collection.Add(element);
+                #endregion
             }
             else
             {
-                obj = Activator.CreateInstance(type, nonPublic: true);
+                object obj = Activator.CreateInstance(type, nonPublic: true);
 
-                foreach (var keyValuePair in keyValuePairs.Skip(1))
+                foreach (MemberValue memberValue in metaObject.MemberValues)
                 {
-                    string fieldName = keyValuePair.Key;
-                    object value = keyValuePair.Value;
-
-                    MemberInfo field = (MemberInfo)type.GetProperty(fieldName) ?? (MemberInfo)type.GetField(fieldName);
+                    MemberInfo field = (MemberInfo)type.GetProperty(memberValue.Name) ?? (MemberInfo)type.GetField(memberValue.Name);
 
                     if (field is PropertyInfo)
-                        ((PropertyInfo)field).SetValue(obj, value);
+                        ((PropertyInfo)field).SetValue(obj, memberValue.Value);
                     else if (field is FieldInfo)
-                        ((FieldInfo)field).SetValue(obj, value);
+                        ((FieldInfo)field).SetValue(obj, memberValue.Value);
                 }
+                return obj;
             }
-
-            return obj;
         }
 
-        private IEnumerable<KeyValuePair<string, object>> ObjectToKeyValuePairs(object obj)
+        private MetaObject ObjectToMetaObject(object obj)
         {
             Type type = obj.GetType();
 
-            yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
+            var metaObject = new MetaObject() { Type = type };
 
             if (type.IsEnum ||
                 type == typeof(Boolean) ||
@@ -253,27 +278,24 @@ namespace Sarcasm.UniversalGrammars
                 type == typeof(String) ||
                 type == typeof(DateTime)
                 )
-                yield return new KeyValuePair<string, object>(PRIMITIVE_VALUE_KEYWORD, Convert.ToString(obj, this.DefaultCulture));
-
-            else if (IsCollectionType(type))
-                yield return new KeyValuePair<string, object>(COLLECTION_VALUES_KEYWORD, obj);
-
+            {
+                metaObject.PrimitiveValueStr = Convert.ToString(obj, this.DefaultCulture);
+            }
             else
             {
-                var keyValuePairs =
+                metaObject.MemberValues =
                     Enumerable.Concat(
                         type.GetFields()
-                            .Select(field => KeyValuePair.Create(field.Name, field.GetValue(obj)))
+                            .Select(field => new MemberValue() { Name = field.Name, Value = field.GetValue(obj) })
                         ,
                         type.GetProperties()
                             .Where(property => !IsNonSerializableMemberOfReferenceType(obj, property))
-                            .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj)))
+                            .Select(property => new MemberValue() { Name = property.Name, Value = property.GetValue(obj) })
                     )
-                    .Where(keyValuePair => keyValuePair.Value != null);
-
-                foreach (var keyValuePair in keyValuePairs)
-                    yield return keyValuePair;
+                    .Where(memberValue => memberValue.Value != null);
             }
+
+            return metaObject;
         }
 
         private static bool IsNonSerializableMemberOfReferenceType(object obj, MemberInfo member)
@@ -282,40 +304,30 @@ namespace Sarcasm.UniversalGrammars
                 (member.Name == Util.GetType<Reference>().GetMember(reference => reference.Target).Name || member.Name == Util.GetType<Reference>().GetMember(reference => reference.Type).Name);
         }
 
-        private static bool IsCollectionType(Type type)
+        #endregion
+
+        #region Types
+
+        public class MetaObject
         {
-            return type is IList || type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
+            public Type Type { get; set; }
+            public IEnumerable<MemberValue> MemberValues { get; set; }
+            public string PrimitiveValueStr { get; set; }
         }
 
-        private string ToString(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
+        public class MetaArray
         {
-            StringWriter sw = new StringWriter();
-            foreach (var keyValuePair in keyValuePairs)
-                sw.WriteLine("{{ {0}, {1} }}", keyValuePair.Key, keyValuePair.Value);
-            return sw.ToString();
+            public Type Type { get; set; }
+            public IEnumerable Elements { get; set; }
         }
 
-        public class KeyValuePair<TKey, TValue>
+        public class MemberValue
         {
-            public KeyValuePair() { }
-
-            public KeyValuePair(TKey key, TValue value)
-            {
-                this.Key = key;
-                this.Value = value;
-            }
-
-            public TKey Key { get; set; }
-            public TValue Value { get; set; }
+            public string Name { get; set; }
+            public object Value { get; set; }
         }
 
-        public static class KeyValuePair
-        {
-            public static KeyValuePair<TKey, TValue> Create<TKey, TValue>(TKey key, TValue value)
-            {
-                return new KeyValuePair<TKey, TValue>(key, value);
-            }
-        }
+        #endregion
 
         #region Formatter
 
@@ -374,10 +386,10 @@ namespace Sarcasm.UniversalGrammars
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.BnfTerm == B.KeyValuePairs)
+                if (target.AstValue is MetaObject && target.BnfTerm != B.OBJECT_BEGIN && target.BnfTerm != B.OBJECT_END)
                     return BlockIndentation.Indent;
 
-                else if (target.BnfTerm == B.ArrayElements)
+                else if (target.AstValue is MetaArray && target.BnfTerm != B.ARRAY_BEGIN && target.BnfTerm != B.ARRAY_END)
                     return BlockIndentation.Indent;
 
                 else
