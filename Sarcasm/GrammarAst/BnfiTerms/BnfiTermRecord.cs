@@ -77,27 +77,26 @@ namespace Sarcasm.GrammarAst
 
                 var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
 
-                var childValues = parseTreeNode.ChildNodes
+                var parseChildValues = parseTreeNode.ChildNodes
                     .Select(
-                        (childNode, index) => new
+                        (parseChildNode, parseChildNodeIndex) => new
                             {
-                                BnfTerm = childNode.Term,
-                                Value = GrammarHelper.AstNodeToValue(childNode.AstNode),
-                                ParseIndex = index
+                                ReferredBnfTerm = new ReferredBnfTerm(parseChildBnfTerms, parseChildNode.Term, parseChildNodeIndex),
+                                Value = GrammarHelper.AstNodeToValue(parseChildNode.AstNode)
                             }
                         )
-                    .Where(indexedChildValue => indexedChildValue.Value != null)
+                    .Where(parseChildValue => parseChildValue.Value != null)
                     .ToList();
 
                 // 1. memberwise copy for BnfiTermCopy items
-                foreach (var childValue in childValues)
-                    if (astValue.GetType().IsAssignableFrom(childValue.Value.GetType()))
-                        MemberwiseCopyExceptNullValues(astValue, childValue.Value);
+                foreach (var parseChildValue in parseChildValues)
+                    if (astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
+                        MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
 
                 // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
-                foreach (var childValue in childValues)
-                    if (IsMemberByParseIndex(childValue.BnfTerm, parseChildBnfTerms, childValue.ParseIndex))
-                        SetValue(GetMemberByParseIndex(childValue.BnfTerm, parseChildBnfTerms, childValue.ParseIndex).MemberInfo, astValue, childValue.Value);
+                foreach (var parseChildValue in parseChildValues)
+                    if (IsMemberByParseIndex(parseChildValue.ReferredBnfTerm.BnfTerm, parseChildBnfTerms, parseChildValue.ReferredBnfTerm.BnfTermIndex))
+                        SetValue(GetMemberByParseIndex(parseChildValue.ReferredBnfTerm.BnfTerm, parseChildBnfTerms, parseChildValue.ReferredBnfTerm.BnfTermIndex).MemberInfo, astValue, parseChildValue.Value);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
