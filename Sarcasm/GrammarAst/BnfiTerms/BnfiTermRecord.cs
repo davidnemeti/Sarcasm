@@ -95,8 +95,8 @@ namespace Sarcasm.GrammarAst
 
                 // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
                 foreach (var parseChildValue in parseChildValues)
-                    if (IsMemberByParseIndex(parseChildValue.ReferredBnfTerm.BnfTerm, parseChildBnfTerms, parseChildValue.ReferredBnfTerm.BnfTermIndex))
-                        SetValue(GetMemberByParseIndex(parseChildValue.ReferredBnfTerm.BnfTerm, parseChildBnfTerms, parseChildValue.ReferredBnfTerm.BnfTermIndex).MemberInfo, astValue, parseChildValue.Value);
+                    if (IsMemberAtParse(parseChildValue.ReferredBnfTerm))
+                        SetValue(GetMemberAtParse(parseChildValue.ReferredBnfTerm).MemberInfo, astValue, parseChildValue.Value);
 
                 parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
             };
@@ -198,24 +198,24 @@ namespace Sarcasm.GrammarAst
             this.parseReferredBnfTermToMember.Add(new ReferredBnfTerm(parseBnfTerms, bnfTerm, parseIndex), member);
         }
 
-        private bool IsMemberByParseIndex(BnfTerm bnfTerm, IList<BnfTerm> parseBnfTerms, int parseIndex)
+        private bool IsMemberAtParse(ReferredBnfTerm referredBnfTerm)
         {
-            return this.parseReferredBnfTermToMember.ContainsKey(new ReferredBnfTerm(parseBnfTerms, bnfTerm, parseIndex));
+            return this.parseReferredBnfTermToMember.ContainsKey(referredBnfTerm);
         }
 
-        private bool IsMemberByRuleIndex(BnfTerm bnfTerm, IList<BnfTerm> ruleBnfTerms, int ruleIndex)
+        private bool IsMemberAtRule(ReferredBnfTerm referredBnfTerm)
         {
-            return this.ruleReferredBnfTermToMember.ContainsKey(new ReferredBnfTerm(ruleBnfTerms, bnfTerm, ruleIndex));
+            return this.ruleReferredBnfTermToMember.ContainsKey(referredBnfTerm);
         }
 
-        private Member GetMemberByParseIndex(BnfTerm bnfTerm, IList<BnfTerm> parseBnfTerms, int parseIndex)
+        private Member GetMemberAtParse(ReferredBnfTerm referredBnfTerm)
         {
-            return this.parseReferredBnfTermToMember[new ReferredBnfTerm(parseBnfTerms, bnfTerm, parseIndex)];
+            return this.parseReferredBnfTermToMember[referredBnfTerm];
         }
 
-        private Member GetMemberByRuleIndex(BnfTerm bnfTerm, IList<BnfTerm> ruleBnfTerms, int ruleIndex)
+        private Member GetMemberByAtRule(ReferredBnfTerm referredBnfTerm)
         {
-            return this.ruleReferredBnfTermToMember[new ReferredBnfTerm(ruleBnfTerms, bnfTerm, ruleIndex)];
+            return this.ruleReferredBnfTermToMember[referredBnfTerm];
         }
 
         #region Unparse
@@ -239,9 +239,9 @@ namespace Sarcasm.GrammarAst
                 object childAstValue;
                 Member member;
 
-                if (IsMemberByRuleIndex(childRuleReferredBnfTerm.BnfTerm, childRuleBnfTerms, childRuleReferredBnfTerm.BnfTermIndex))
+                if (IsMemberAtRule(childRuleReferredBnfTerm))
                 {
-                    member = GetMemberByRuleIndex(childRuleReferredBnfTerm.BnfTerm, childRuleBnfTerms, childRuleReferredBnfTerm.BnfTermIndex);
+                    member = GetMemberByAtRule(childRuleReferredBnfTerm);
                     childAstValue = GetValue(member.MemberInfo, astValue);
                 }
                 else if (childRuleReferredBnfTerm.BnfTerm is BnfiTermCopy)
@@ -259,17 +259,17 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> ruleChildren, Unparser.Direction direction)
         {
-            var childRuleBnfTerms = direction == Unparser.Direction.LeftToRight
-                ? children.Select(child => child.BnfTerm).ToList()
-                : children.Select(child => child.BnfTerm).Reverse().ToList();
+            var ruleChildBnfTerms = direction == Unparser.Direction.LeftToRight
+                ? ruleChildren.Select(ruleChild => ruleChild.BnfTerm).ToList()
+                : ruleChildren.Select(ruleChild => ruleChild.BnfTerm).Reverse().ToList();
 
-            return children
+            return ruleChildren
                 .SumIncludingNullValues(
-                    (child, ruleIndex) => IsMemberByRuleIndex(child.BnfTerm, childRuleBnfTerms, ruleIndex)
-                        ? GetBnfTermPriorityForMember(unparser, child)
-                        : unparser.GetPriority(child)
+                    (ruleChild, ruleChildIndex) => IsMemberAtRule(new ReferredBnfTerm(ruleChildBnfTerms, ruleChild.BnfTerm, ruleChildIndex))
+                        ? GetBnfTermPriorityForMember(unparser, ruleChild)
+                        : unparser.GetPriority(ruleChild)
                     );
         }
 
