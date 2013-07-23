@@ -1,4 +1,6 @@
-﻿namespace Sarcasm.Unparsing.Styles
+﻿// GENERATED FILE
+
+namespace Sarcasm.Unparsing.Styles
 {
     public enum FontWeight { Normal, Bold, Thin }
 
