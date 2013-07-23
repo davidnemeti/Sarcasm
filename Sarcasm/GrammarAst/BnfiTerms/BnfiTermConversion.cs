@@ -386,19 +386,17 @@ namespace Sarcasm.GrammarAst
         {
             return (context, parseTreeNode) =>
             {
+                Func<IEnumerable<ParseTreeNode>, Func<ParseTreeNode, bool>, ParseTreeNode> chooser;
+                if (isOptionalValue)
+                    chooser = Enumerable.SingleOrDefault<ParseTreeNode>;
+                else
+                    chooser = Enumerable.Single<ParseTreeNode>;
+
+                ParseTreeNode parseTreeChild;
+
                 try
                 {
-                    Func<IEnumerable<ParseTreeNode>, Func<ParseTreeNode, bool>, ParseTreeNode> chooser;
-                    if (isOptionalValue)
-                        chooser = Enumerable.SingleOrDefault<ParseTreeNode>;
-                    else
-                        chooser = Enumerable.Single<ParseTreeNode>;
-
-                    ParseTreeNode parseTreeChild = chooser(parseTreeNode.ChildNodes, childNode => childNode.AstNode != null);
-
-                    return parseTreeChild != null
-                        ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
-                        : defaultValue;
+                    parseTreeChild = chooser(parseTreeNode.ChildNodes, childNode => childNode.AstNode != null);
                 }
                 catch (InvalidOperationException)
                 {
@@ -407,6 +405,10 @@ namespace Sarcasm.GrammarAst
                     else
                         throw new ArgumentException("Exactly one child with ast node is allowed for a non-optional BnfiTermConversion term: {0}", parseTreeNode.Term.Name);
                 }
+
+                return parseTreeChild != null
+                    ? valueConverter(GrammarHelper.AstNodeToValue<TIn>(parseTreeChild.AstNode))
+                    : defaultValue;
             };
         }
 

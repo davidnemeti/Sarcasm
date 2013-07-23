@@ -9,6 +9,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
 using Sarcasm.Utility;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace Sarcasm.UniversalGrammars
 {
@@ -164,15 +165,23 @@ namespace Sarcasm.UniversalGrammars
 
         private IEnumerable MetaArrayToArray(MetaArray metaArray)
         {
-            dynamic array = (IEnumerable)Activator.CreateInstance(metaArray.Type);
+            try
+            {
+                dynamic array = (IEnumerable)Activator.CreateInstance(metaArray.Type);
 
-            if (!IsCollectionType(metaArray.Type))
-                throw new InvalidOperationException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", B.COLLECTION_VALUES_KEYWORD.Text));
+                foreach (dynamic element in metaArray.Elements)
+                    array.Add(element);
 
-            foreach (dynamic element in metaArray.Elements)
-                array.Add(element);
-
-            return array;
+                return array;
+            }
+            catch (RuntimeBinderException)
+            {
+                throw new InvalidOperationException(GetErrorMessageFor_COLLECTION_VALUES_KEYWORD());
+            }
+            catch (InvalidCastException)
+            {
+                throw new InvalidOperationException(GetErrorMessageFor_COLLECTION_VALUES_KEYWORD());
+            }
         }
 
         private MetaArray ArrayToMetaArray(IEnumerable array)
@@ -312,9 +321,9 @@ namespace Sarcasm.UniversalGrammars
                 (member.Name == Util.GetType<Reference>().GetMember(reference => reference.Target).Name || member.Name == Util.GetType<Reference>().GetMember(reference => reference.Type).Name);
         }
 
-        private static bool IsCollectionType(Type type)
+        private string GetErrorMessageFor_COLLECTION_VALUES_KEYWORD()
         {
-            return type is IList || type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
+            return string.Format("{0} for collection style is only possible for types that implements IEnumerable and have an Add method", B.COLLECTION_VALUES_KEYWORD.Text);
         }
 
         #endregion
