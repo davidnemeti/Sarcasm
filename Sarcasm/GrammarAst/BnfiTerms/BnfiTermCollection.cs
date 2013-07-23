@@ -462,7 +462,7 @@ namespace Sarcasm.GrammarAst
             return false;
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
             System.Collections.IEnumerable astCollection = (System.Collections.IEnumerable)astValue;
 
@@ -485,7 +485,7 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
             System.Collections.IEnumerable collection = (System.Collections.IEnumerable)astValue;
 

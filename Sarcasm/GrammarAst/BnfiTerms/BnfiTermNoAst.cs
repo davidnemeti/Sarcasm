@@ -46,12 +46,12 @@ namespace Sarcasm.GrammarAst
             return false;
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
             return 0;
         }

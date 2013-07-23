@@ -53,8 +53,8 @@ namespace Sarcasm.Unparsing
     public interface IUnparsableNonTerminal : INonTerminal
     {
         bool TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableAst> GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction);
-        int? GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> children, Unparser.Direction direction);
+        IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction);
+        int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction);
     }
 
     public interface IUnparser

@@ -593,21 +593,22 @@ namespace Sarcasm.Unparsing
                 .Select(
                     (childBnfTerms, childBnfTermsIndex) =>
                     {
-                        var children = unparsable.GetChildren(childBnfTerms, self.AstValue, direction);
+                        Children children = new Children(
+                            unparsable.GetChildren(new ChildBnfTerms(childBnfTerms, childBnfTermsIndex), self.AstValue, direction),
+                            childBnfTermsIndex);
 
-                        return new ChildrenWithPriority
-                        {
-                            Children = children,
-                            Priority = GetChildrenPriority(self, children, childBnfTermsIndex)
+                        return new ChildrenWithPriority(
+                            children,
+                            GetChildrenPriority(self, children, childBnfTermsIndex)
                                 .DebugWriteLinePriority(tsPriorities, self)
-                        };
+                        );
                     }
                 )
                 .Where(childrenWithPriority => !childrenWithPriority.Children.Contains(self))
                 .MaxItem(childrenWithPriority => childrenWithPriority.Priority);
         }
 
-        private Priority GetChildrenPriority(UnparsableAst self, IEnumerable<UnparsableAst> children, int childrenIndex)
+        private Priority GetChildrenPriority(UnparsableAst self, Unparser.Children children, int childrenIndex)
         {
             IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
@@ -618,12 +619,12 @@ namespace Sarcasm.Unparsing
                 : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children, direction));
         }
 
-        internal static IEnumerable<IList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
+        internal static IEnumerable<IReadOnlyList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
         {
             return nonTerminal.Productions.Select(production => production.RValues);
         }
 
-        internal IEnumerable<IList<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
+        internal IEnumerable<IReadOnlyList<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
         {
             return GetChildBnfTermListsLeftToRight(nonTerminal)
                 .Select(bnfTerms => direction == Direction.LeftToRight ? bnfTerms : bnfTerms.ReverseOptimized());
@@ -721,10 +722,70 @@ namespace Sarcasm.Unparsing
 
         public enum Direction { LeftToRight, RightToLeft }
 
+        public class ChildBnfTerms : IReadOnlyList<BnfTerm>
+        {
+            public IReadOnlyList<BnfTerm> Content { get; private set; }
+            public int ContentIndex { get; private set; }
+
+            public ChildBnfTerms(IReadOnlyList<BnfTerm> content, int contentIndex)
+            {
+                this.Content = content;
+                this.ContentIndex = contentIndex;
+            }
+
+            public BnfTerm this[int index]
+            {
+                get { return Content[index]; }
+            }
+
+            public int Count
+            {
+                get { return Content.Count; }
+            }
+
+            public IEnumerator<BnfTerm> GetEnumerator()
+            {
+                return Content.GetEnumerator();
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
+        public class Children : IEnumerable<UnparsableAst>
+        {
+            public IEnumerable<UnparsableAst> Content { get; private set; }
+            public int ContentIndex { get; private set; }
+
+            public Children(IEnumerable<UnparsableAst> content, int contentIndex)
+            {
+                this.Content = content;
+                this.ContentIndex = contentIndex;
+            }
+
+            public IEnumerator<UnparsableAst> GetEnumerator()
+            {
+                return Content.GetEnumerator();
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return GetEnumerator();
+            }
+        }
+
         private class ChildrenWithPriority
         {
-            public IEnumerable<UnparsableAst> Children;
-            public Priority Priority;
+            public readonly Children Children;
+            public readonly Priority Priority;
+
+            public ChildrenWithPriority(Children children, Priority priority)
+            {
+                this.Children = children;
+                this.Priority = priority;
+            }
         }
 
         internal enum PriorityKind { System, User }

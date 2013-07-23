@@ -21,16 +21,14 @@ namespace Sarcasm.GrammarAst
     {
         #region Types
 
-        private struct ReferredBnfTerm : IEquatable<ReferredBnfTerm>
+        private abstract class ReferredBnfTerm : IEquatable<ReferredBnfTerm>
         {
-            public readonly IList<BnfTerm> EncloserBnfTerms;
             public readonly BnfTerm BnfTerm;
             public readonly int BnfTermIndex;
 
-            public ReferredBnfTerm(IList<BnfTerm> encloserBnfTerms, BnfTerm bnfTerm, int bnfTermIndex)
+            protected ReferredBnfTerm(BnfTerm bnfTerm, int bnfTermIndex)
             {
                 this.BnfTerm = bnfTerm;
-                this.EncloserBnfTerms = encloserBnfTerms;
                 this.BnfTermIndex = bnfTermIndex;
             }
 
@@ -45,14 +43,67 @@ namespace Sarcasm.GrammarAst
                     ||
                     !object.ReferenceEquals(that, null) &&
                     this.BnfTerm == that.BnfTerm &&
-                    this.BnfTermIndex == that.BnfTermIndex &&
+                    this.BnfTermIndex == that.BnfTermIndex;
+            }
+
+            public override int GetHashCode()
+            {
+                return Util.GetHashCodeMulti(BnfTerm, BnfTermIndex);
+            }
+        }
+
+        private class ReferredBnfTermEI : ReferredBnfTerm, IEquatable<ReferredBnfTermEI>
+        {
+            public readonly int EncloserBnfTermsIndex;
+
+            public ReferredBnfTermEI(int encloserBnfTermsIndex, BnfTerm bnfTerm, int bnfTermIndex)
+                : base(bnfTerm, bnfTermIndex)
+            {
+                this.EncloserBnfTermsIndex = encloserBnfTermsIndex;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ReferredBnfTermEI && Equals((ReferredBnfTermEI)obj);
+            }
+
+            public bool Equals(ReferredBnfTermEI that)
+            {
+                return base.Equals(that) &&
+                    this.EncloserBnfTermsIndex == that.EncloserBnfTermsIndex;
+            }
+
+            public override int GetHashCode()
+            {
+                return Util.GetHashCodeMulti(base.GetHashCode(), EncloserBnfTermsIndex);
+            }
+        }
+
+        private class ReferredBnfTermEL : ReferredBnfTerm, IEquatable<ReferredBnfTermEL>
+        {
+            public readonly IList<BnfTerm> EncloserBnfTerms;
+
+            public ReferredBnfTermEL(IList<BnfTerm> encloserBnfTerms, BnfTerm bnfTerm, int bnfTermIndex)
+                : base(bnfTerm, bnfTermIndex)
+            {
+                this.EncloserBnfTerms = encloserBnfTerms;
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is ReferredBnfTermEL && Equals((ReferredBnfTermEL)obj);
+            }
+
+            public bool Equals(ReferredBnfTermEL that)
+            {
+                return base.Equals(that) &&
                     this.EncloserBnfTerms.Count == that.EncloserBnfTerms.Count &&
                     this.EncloserBnfTerms.SequenceEqual(that.EncloserBnfTerms);
             }
 
             public override int GetHashCode()
             {
-                return Util.GetHashCodeMulti(BnfTerm, BnfTermIndex, Util.GetHashCodeMulti(EncloserBnfTerms));
+                return Util.GetHashCodeMulti(base.GetHashCode(), Util.GetHashCodeMulti(EncloserBnfTerms));
             }
         }
 
@@ -60,8 +111,8 @@ namespace Sarcasm.GrammarAst
 
         #region State
 
-        private IDictionary<ReferredBnfTerm, Member> referredBnfTermAtParseToMember = new Dictionary<ReferredBnfTerm, Member>();
-        private IDictionary<ReferredBnfTerm, Member> referredBnfTermAtRuleToMember = new Dictionary<ReferredBnfTerm, Member>();
+        private IDictionary<ReferredBnfTermEL, Member> referredBnfTermAtParseToMember = new Dictionary<ReferredBnfTermEL, Member>();
+        private IDictionary<ReferredBnfTermEI, Member> referredBnfTermAtRuleToMember = new Dictionary<ReferredBnfTermEI, Member>();
 
         #endregion
 
@@ -81,7 +132,7 @@ namespace Sarcasm.GrammarAst
                     .Select(
                         (parseChildNode, parseChildNodeIndex) => new
                             {
-                                ReferredBnfTerm = new ReferredBnfTerm(parseChildBnfTerms, parseChildNode.Term, parseChildNodeIndex),
+                                ReferredBnfTerm = new ReferredBnfTermEL(parseChildBnfTerms, parseChildNode.Term, parseChildNodeIndex),
                                 Value = GrammarHelper.AstNodeToValue(parseChildNode.AstNode)
                             }
                         )
@@ -169,6 +220,8 @@ namespace Sarcasm.GrammarAst
 
         private void ConvertAndStoreMembers(BnfiExpression bnfiExpression)
         {
+            int bnfTermsIndex = 0;
+
             foreach (BnfTermList bnfTerms in bnfiExpression.GetBnfTermsList())
             {
                 int bnfTermIndexAtParse = 0;
@@ -179,19 +232,21 @@ namespace Sarcasm.GrammarAst
                     {
                         Member member = (Member)bnfTerms[bnfTermIndexAtRule];
 
-                        RegisterMember(member.BnfTerm, bnfTerms, bnfTermIndexAtParse, bnfTermIndexAtRule, member);
+                        RegisterMember(member.BnfTerm, bnfTerms, bnfTermsIndex, bnfTermIndexAtParse, bnfTermIndexAtRule, member);
                         bnfTerms[bnfTermIndexAtRule] = member.BnfTerm;
                     }
 
                     if (!bnfTerms[bnfTermIndexAtRule].IsPunctuation())
                         bnfTermIndexAtParse++;
                 }
+
+                bnfTermsIndex++;
             }
         }
 
-        private void RegisterMember(BnfTerm bnfTerm, IList<BnfTerm> encloserBnfTermsRaw, int bnfTermIndexAtParse, int bnfTermIndexAtRule, Member member)
+        private void RegisterMember(BnfTerm bnfTerm, IList<BnfTerm> rawEncloserBnfTerms, int rawEncloserBnfTermsIndex, int bnfTermIndexAtParse, int bnfTermIndexAtRule, Member member)
         {
-            var encloserBnfTermsAtRule = encloserBnfTermsRaw
+            var encloserBnfTermsAtRule = rawEncloserBnfTerms
                 .Where(_bnfTerm => !(_bnfTerm is GrammarHint))
                 .Select(_bnfTerm => _bnfTerm is Member ? ((Member)_bnfTerm).BnfTerm : _bnfTerm)
                 .ToList();
@@ -200,26 +255,26 @@ namespace Sarcasm.GrammarAst
                 .Where(encloserBnfTermAtRule => !encloserBnfTermAtRule.IsPunctuation())
                 .ToList();
 
-            this.referredBnfTermAtRuleToMember.Add(new ReferredBnfTerm(encloserBnfTermsAtRule, bnfTerm, bnfTermIndexAtRule), member);
-            this.referredBnfTermAtParseToMember.Add(new ReferredBnfTerm(encloserBnfTermsAtParse, bnfTerm, bnfTermIndexAtParse), member);
+            this.referredBnfTermAtRuleToMember.Add(new ReferredBnfTermEI(rawEncloserBnfTermsIndex, bnfTerm, bnfTermIndexAtRule), member);
+            this.referredBnfTermAtParseToMember.Add(new ReferredBnfTermEL(encloserBnfTermsAtParse, bnfTerm, bnfTermIndexAtParse), member);
         }
 
-        private bool IsMemberAtParse(ReferredBnfTerm referredBnfTerm)
+        private bool IsMemberAtParse(ReferredBnfTermEL referredBnfTerm)
         {
             return this.referredBnfTermAtParseToMember.ContainsKey(referredBnfTerm);
         }
 
-        private bool IsMemberAtRule(ReferredBnfTerm referredBnfTerm)
-        {
-            return this.referredBnfTermAtRuleToMember.ContainsKey(referredBnfTerm);
-        }
-
-        private Member GetMemberAtParse(ReferredBnfTerm referredBnfTerm)
+        private Member GetMemberAtParse(ReferredBnfTermEL referredBnfTerm)
         {
             return this.referredBnfTermAtParseToMember[referredBnfTerm];
         }
 
-        private Member GetMemberByAtRule(ReferredBnfTerm referredBnfTerm)
+        private bool IsMemberAtRule(ReferredBnfTermEI referredBnfTerm)
+        {
+            return this.referredBnfTermAtRuleToMember.ContainsKey(referredBnfTerm);
+        }
+
+        private Member GetMemberByAtRule(ReferredBnfTermEI referredBnfTerm)
         {
             return this.referredBnfTermAtRuleToMember[referredBnfTerm];
         }
@@ -232,14 +287,10 @@ namespace Sarcasm.GrammarAst
             return false;
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(IList<BnfTerm> childBnfTerms, object astValue, Unparser.Direction direction)
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            var childRuleBnfTerms = direction == Unparser.Direction.LeftToRight
-                ? childBnfTerms
-                : childBnfTerms.ReverseOptimized();
-
             foreach (var childRuleReferredBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
-                new ReferredBnfTerm(childRuleBnfTerms, childBnfTerm, direction == Unparser.Direction.LeftToRight ? index : childBnfTerms.Count - 1 - index)
+                new ReferredBnfTermEI(childBnfTerms.ContentIndex, childBnfTerm, direction == Unparser.Direction.LeftToRight ? index : childBnfTerms.Count - 1 - index)
                 ))
             {
                 object childAstValue;
@@ -265,17 +316,13 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, IEnumerable<UnparsableAst> ruleChildren, Unparser.Direction direction)
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children childrenAtRule, Unparser.Direction direction)
         {
-            var ruleChildBnfTerms = direction == Unparser.Direction.LeftToRight
-                ? ruleChildren.Select(ruleChild => ruleChild.BnfTerm).ToList()
-                : ruleChildren.Select(ruleChild => ruleChild.BnfTerm).Reverse().ToList();
-
-            return ruleChildren
+            return childrenAtRule
                 .SumIncludingNullValues(
-                    (ruleChild, ruleChildIndex) => IsMemberAtRule(new ReferredBnfTerm(ruleChildBnfTerms, ruleChild.BnfTerm, ruleChildIndex))
-                        ? GetBnfTermPriorityForMember(unparser, ruleChild)
-                        : unparser.GetPriority(ruleChild)
+                    (childAtRule, childIndexAtRule) => IsMemberAtRule(new ReferredBnfTermEI(childrenAtRule.ContentIndex, childAtRule.BnfTerm, childIndexAtRule))
+                        ? GetBnfTermPriorityForMember(unparser, childAtRule)
+                        : unparser.GetPriority(childAtRule)
                     );
         }
 

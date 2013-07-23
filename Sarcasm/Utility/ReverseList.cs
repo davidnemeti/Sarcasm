@@ -5,7 +5,60 @@ using System.Linq;
 
 namespace Sarcasm.Utility
 {
-    public class ReverseList<T> : IList<T>
+    public abstract class ReverseListBase<T> : IReadOnlyCollection<T>
+    {
+        public abstract int Count { get; }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            for (int reverseIndex = 0; reverseIndex < Count; reverseIndex++)
+                yield return GetItem(reverseIndex);
+        }
+
+        protected abstract T GetItem(int reverseIndex);
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        protected int IndexToReverseIndex(int index)
+        {
+            return this.Count - 1 - index;
+        }
+
+        protected int ReverseIndexToIndex(int reverseIndex)
+        {
+            return this.Count - 1 - reverseIndex;
+        }
+    }
+
+    public class ReverseReadOnlyList<T> : ReverseListBase<T>, IReadOnlyList<T>
+    {
+        private readonly IReadOnlyList<T> items;
+
+        public ReverseReadOnlyList(IReadOnlyList<T> items)
+        {
+            this.items = items;
+        }
+
+        public T this[int reverseIndex]
+        {
+            get { return items[ReverseIndexToIndex(reverseIndex)]; }
+        }
+
+        public override int Count
+        {
+            get { return items.Count; }
+        }
+
+        protected override T GetItem(int reverseIndex)
+        {
+            return this[reverseIndex];
+        }
+    }
+
+    public class ReverseList<T> : ReverseListBase<T>, IList<T>
     {
         private readonly IList<T> items;
 
@@ -42,14 +95,8 @@ namespace Sarcasm.Utility
 
         public T this[int reverseIndex]
         {
-            get
-            {
-                return items[ReverseIndexToIndex(reverseIndex)];
-            }
-            set
-            {
-                items[ReverseIndexToIndex(reverseIndex)] = value;
-            }
+            get { return items[ReverseIndexToIndex(reverseIndex)]; }
+            set { items[ReverseIndexToIndex(reverseIndex)] = value; }
         }
 
         public void Add(T item)
@@ -73,7 +120,7 @@ namespace Sarcasm.Utility
                 array[arrayIndex++] = item;
         }
 
-        public int Count
+        public override int Count
         {
             get { return items.Count; }
         }
@@ -97,25 +144,9 @@ namespace Sarcasm.Utility
             return false;
         }
 
-        public IEnumerator<T> GetEnumerator()
+        protected override T GetItem(int reverseIndex)
         {
-            for (int index = items.Count - 1; index >= 0; index--)
-                yield return items[index];
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        private int IndexToReverseIndex(int index)
-        {
-            return items.Count - 1 - index;
-        }
-
-        private int ReverseIndexToIndex(int reverseIndex)
-        {
-            return items.Count - 1 - reverseIndex;
+            return this[reverseIndex];
         }
     }
 }
