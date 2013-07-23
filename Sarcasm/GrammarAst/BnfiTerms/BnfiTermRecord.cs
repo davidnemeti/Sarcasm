@@ -60,8 +60,8 @@ namespace Sarcasm.GrammarAst
 
         #region State
 
-        private IDictionary<ReferredBnfTerm, Member> parseReferredBnfTermToMember = new Dictionary<ReferredBnfTerm, Member>();
-        private IDictionary<ReferredBnfTerm, Member> ruleReferredBnfTermToMember = new Dictionary<ReferredBnfTerm, Member>();
+        private IDictionary<ReferredBnfTerm, Member> referredBnfTermAtParseToMember = new Dictionary<ReferredBnfTerm, Member>();
+        private IDictionary<ReferredBnfTerm, Member> referredBnfTermAtRuleToMember = new Dictionary<ReferredBnfTerm, Member>();
 
         #endregion
 
@@ -171,51 +171,57 @@ namespace Sarcasm.GrammarAst
         {
             foreach (BnfTermList bnfTerms in bnfiExpression.GetBnfTermsList())
             {
-                int parseIndex = 0;
+                int bnfTermIndexAtParse = 0;
 
-                for (int ruleIndex = 0; ruleIndex < bnfTerms.Count; ruleIndex++)
+                for (int bnfTermIndexAtRule = 0; bnfTermIndexAtRule < bnfTerms.Count; bnfTermIndexAtRule++)
                 {
-                    if (bnfTerms[ruleIndex] is Member)
+                    if (bnfTerms[bnfTermIndexAtRule] is Member)
                     {
-                        Member member = (Member)bnfTerms[ruleIndex];
+                        Member member = (Member)bnfTerms[bnfTermIndexAtRule];
 
-                        RegisterMember(member.BnfTerm, bnfTerms, parseIndex, ruleIndex, member);
-                        bnfTerms[ruleIndex] = member.BnfTerm;
+                        RegisterMember(member.BnfTerm, bnfTerms, bnfTermIndexAtParse, bnfTermIndexAtRule, member);
+                        bnfTerms[bnfTermIndexAtRule] = member.BnfTerm;
                     }
 
-                    if (!bnfTerms[ruleIndex].IsPunctuation())
-                        parseIndex++;
+                    if (!bnfTerms[bnfTermIndexAtRule].IsPunctuation())
+                        bnfTermIndexAtParse++;
                 }
             }
         }
 
-        private void RegisterMember(BnfTerm bnfTerm, IList<BnfTerm> bnfTerms, int parseIndex, int ruleIndex, Member member)
+        private void RegisterMember(BnfTerm bnfTerm, IList<BnfTerm> encloserBnfTermsRaw, int bnfTermIndexAtParse, int bnfTermIndexAtRule, Member member)
         {
-            var ruleBnfTerms = bnfTerms.Where(_bnfTerm => !(_bnfTerm is GrammarHint)).Select(_bnfTerm => _bnfTerm is Member ? ((Member)_bnfTerm).BnfTerm : _bnfTerm).ToList();
-            var parseBnfTerms = ruleBnfTerms.Where(ruleBnfTerm => !ruleBnfTerm.IsPunctuation()).ToList();
+            var encloserBnfTermsAtRule = encloserBnfTermsRaw
+                .Where(_bnfTerm => !(_bnfTerm is GrammarHint))
+                .Select(_bnfTerm => _bnfTerm is Member ? ((Member)_bnfTerm).BnfTerm : _bnfTerm)
+                .ToList();
 
-            this.ruleReferredBnfTermToMember.Add(new ReferredBnfTerm(ruleBnfTerms, bnfTerm, ruleIndex), member);
-            this.parseReferredBnfTermToMember.Add(new ReferredBnfTerm(parseBnfTerms, bnfTerm, parseIndex), member);
+            var encloserBnfTermsAtParse = encloserBnfTermsAtRule
+                .Where(encloserBnfTermAtRule => !encloserBnfTermAtRule.IsPunctuation())
+                .ToList();
+
+            this.referredBnfTermAtRuleToMember.Add(new ReferredBnfTerm(encloserBnfTermsAtRule, bnfTerm, bnfTermIndexAtRule), member);
+            this.referredBnfTermAtParseToMember.Add(new ReferredBnfTerm(encloserBnfTermsAtParse, bnfTerm, bnfTermIndexAtParse), member);
         }
 
         private bool IsMemberAtParse(ReferredBnfTerm referredBnfTerm)
         {
-            return this.parseReferredBnfTermToMember.ContainsKey(referredBnfTerm);
+            return this.referredBnfTermAtParseToMember.ContainsKey(referredBnfTerm);
         }
 
         private bool IsMemberAtRule(ReferredBnfTerm referredBnfTerm)
         {
-            return this.ruleReferredBnfTermToMember.ContainsKey(referredBnfTerm);
+            return this.referredBnfTermAtRuleToMember.ContainsKey(referredBnfTerm);
         }
 
         private Member GetMemberAtParse(ReferredBnfTerm referredBnfTerm)
         {
-            return this.parseReferredBnfTermToMember[referredBnfTerm];
+            return this.referredBnfTermAtParseToMember[referredBnfTerm];
         }
 
         private Member GetMemberByAtRule(ReferredBnfTerm referredBnfTerm)
         {
-            return this.ruleReferredBnfTermToMember[referredBnfTerm];
+            return this.referredBnfTermAtRuleToMember[referredBnfTerm];
         }
 
         #region Unparse
