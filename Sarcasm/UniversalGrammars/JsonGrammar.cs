@@ -164,7 +164,15 @@ namespace Sarcasm.UniversalGrammars
 
         private IEnumerable MetaArrayToArray(MetaArray metaArray)
         {
-            return metaArray.Elements;
+            dynamic array = (IEnumerable)Activator.CreateInstance(metaArray.Type);
+
+            if (!IsCollectionType(metaArray.Type))
+                throw new InvalidOperationException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", B.COLLECTION_VALUES_KEYWORD.Text));
+
+            foreach (dynamic element in metaArray.Elements)
+                array.Add(element);
+
+            return array;
         }
 
         private MetaArray ArrayToMetaArray(IEnumerable array)
@@ -302,6 +310,11 @@ namespace Sarcasm.UniversalGrammars
         {
             return obj is Reference &&
                 (member.Name == Util.GetType<Reference>().GetMember(reference => reference.Target).Name || member.Name == Util.GetType<Reference>().GetMember(reference => reference.Type).Name);
+        }
+
+        private static bool IsCollectionType(Type type)
+        {
+            return type is IList || type.GetInterfaces().Any(interfaceType => interfaceType.IsGenericType && interfaceType.GetGenericTypeDefinition() == typeof(ICollection<>));
         }
 
         #endregion

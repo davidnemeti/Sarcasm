@@ -12,6 +12,7 @@ using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.GrammarAst;
+using Sarcasm.UniversalGrammars;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
@@ -41,6 +42,19 @@ namespace Playground
             ShowTimeAndRestart(stopwatch, "Parsing");
 
             var astRootValue = parseTree.RootAstValue;
+
+#if false
+            var universalGrammar = new JsonGrammar();
+
+            Unparser universalUnparser = new Unparser(universalGrammar);
+            string text = universalUnparser.Unparse(astRootValue).AsText(universalUnparser);
+
+            var universalParser = MultiParser.Create(universalGrammar);
+            var parseTree2 = universalParser.Parse(text);
+            var astRootValue2 = parseTree2.RootAstValue;
+
+            string text2 = universalUnparser.Unparse(astRootValue2).AsText(universalUnparser);
+#endif
 
             Unparser unparser = new Unparser(grammar);
             ShowTimeAndRestart(stopwatch, "Creation of unparser");
