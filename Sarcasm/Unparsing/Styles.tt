@@ -1,0 +1,82 @@
+﻿<#@ template debug="true" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="PresentationCore" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.Windows.Media" #>
+<#@ output extension=".cs" #>
+
+namespace Sarcasm.Unparsing.Styles
+{
+    public enum FontWeight { Normal, Bold, Thin }
+
+    public enum TextDecoration { Baseline, OverLine, Strikethrough, Underline }
+
+    public enum FontStyle { Normal, Italic }
+
+    // Summary:
+    //     Describes how the baseline for a text-based element is positioned on the
+    //     vertical axis, relative to the established baseline for text.
+    public enum BaselineAlignment
+    {
+        // A baseline that is aligned to the upper edge of the containing box.
+        Top,
+        // A baseline that is aligned to the center of the containing box.
+        Center,
+        // A baseline that is aligned at the lower edge of the containing box.
+        Bottom,
+        // A baseline that is aligned at the actual baseline of the containing box.
+        Baseline,
+        // A baseline that is aligned at the upper edge of the text baseline.
+        TextTop,
+        // A baseline that is aligned at the lower edge of the text baseline.
+        TextBottom,
+        // A baseline that is aligned at the subscript position of the containing box.
+        Subscript,
+        // A baseline that is aligned at the superscript position of the containing box.
+        Superscript
+    }
+
+    public enum FontStretch { Normal, Condensed, Expanded }
+
+    public class FontFamily
+    {
+        static FontFamily(string name)
+        {
+            GenericMonospace = new FontFamily("GenericMonospace");
+            GenericSansSerif = new FontFamily("GenericSansSerif");
+            GenericSerif = new FontFamily("GenericSerif");
+        }
+
+        public FontFamily(string name)
+        {
+            this.Name = name;
+        }
+
+        public string Name { get; private set; }
+
+        public static FontFamily GenericMonospace { get; private set; }
+        public static FontFamily GenericSansSerif { get; private set; }
+        public static FontFamily GenericSerif { get; private set; }
+    }
+
+    public struct Color
+    {
+        public byte A { get; set; }
+        public byte R { get; set; }
+        public byte G { get; set; }
+        public byte B { get; set; }
+
+<# 
+foreach (PropertyInfo property in typeof(Colors).GetProperties())
+{
+    Color color = (Color)property.GetValue(null);
+#>
+        public static Color <#= string.Format("{0,-20}", property.Name) #> { get { return new Color() { A = <#= color.A #>, R = <#= color.R #>, G = <#= color.G #>, B = <#= color.B #>} ; } }
+<# 
+}
+#>
+    }
+}
