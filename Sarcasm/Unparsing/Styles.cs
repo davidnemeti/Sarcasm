@@ -7,9 +7,10 @@ namespace Sarcasm.Unparsing.Styles
 
     public enum FontStyle { Normal, Italic }
 
-    // Summary:
-    //     Describes how the baseline for a text-based element is positioned on the
-    //     vertical axis, relative to the established baseline for text.
+    /// <summary>
+    /// Describes how the baseline for a text-based element is positioned on the
+    /// vertical axis, relative to the established baseline for text.
+    /// </summary>
     public enum BaselineAlignment
     {
         // A baseline that is aligned to the upper edge of the containing box.
