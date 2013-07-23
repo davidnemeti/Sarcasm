@@ -44,12 +44,12 @@ namespace Playground
             var astRootValue = parseTree.RootAstValue;
 
 #if false
-            var universalGrammar = new JsonGrammar();
+            var jsonGrammar = new JsonGrammar();
 
-            Unparser universalUnparser = new Unparser(universalGrammar);
+            Unparser universalUnparser = new Unparser(jsonGrammar);
             string text = universalUnparser.Unparse(astRootValue).AsText(universalUnparser);
 
-            var universalParser = MultiParser.Create(universalGrammar);
+            var universalParser = MultiParser.Create(jsonGrammar);
             var parseTree2 = universalParser.Parse(text);
             var astRootValue2 = parseTree2.RootAstValue;
 
