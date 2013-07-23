@@ -20,13 +20,14 @@ namespace Sarcasm.UniversalGrammars
 
         public class BnfTerms
         {
-            public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object));
+            public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object), "Object");
             public readonly BnfiTermRecord<MetaObject> MetaObject = new BnfiTermRecord<MetaObject>();
             public readonly BnfiTermRecord<MetaArray> MetaArray = new BnfiTermRecord<MetaArray>();
+            public readonly BnfiTermCopyTL Array = new BnfiTermCopyTL(typeof(IEnumerable), "Array");
             public readonly BnfiTermConversion<Type> Type = new BnfiTermConversion<Type>();
             public readonly BnfiTermRecord<MemberValue> MemberValue = new BnfiTermRecord<MemberValue>();
             public readonly BnfiTermConversion<string> Key = new BnfiTermConversion<string>();
-            public readonly BnfiTermConversionTL Value = new BnfiTermConversionTL();
+            public readonly BnfiTermConversionTL Value = new BnfiTermConversionTL("Value");
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -145,10 +146,15 @@ namespace Sarcasm.UniversalGrammars
                 + B.COMMA
                 + B.COLLECTION_VALUES_KEYWORD
                 + B.COLON
-                + B.ARRAY_BEGIN
-                + B.Object.StarList<object>(B.COMMA).BindTo(B.MetaArray, metaArray => metaArray.Elements)
+                + B.Array.BindTo(B.MetaArray, metaArray => metaArray.Elements)
+                + B.OBJECT_END
+                ;
+
+            B.Array.Rule =
+                B.ARRAY_BEGIN
+                + B.Object.StarListTL(B.COMMA)
                 + B.ARRAY_END
-                + B.OBJECT_END;
+                ;
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
@@ -378,23 +384,13 @@ namespace Sarcasm.UniversalGrammars
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
                 if (target.BnfTerm == B.OBJECT_BEGIN)
-                {
                     rightInsertedUtokens = UtokenInsert.NewLine;
-
-                    if (!CompactFormat && target.AstParent != null)
-                        leftInsertedUtokens = UtokenInsert.NewLine;
-                }
 
                 else if (target.BnfTerm == B.OBJECT_END)
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
 
                 else if (target.BnfTerm == B.ARRAY_BEGIN)
-                {
                     rightInsertedUtokens = UtokenInsert.NewLine;
-
-                    if (!CompactFormat && target.AstParent != null)
-                        leftInsertedUtokens = UtokenInsert.NewLine;
-                }
 
                 else if (target.BnfTerm == B.ARRAY_END)
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
@@ -404,14 +400,26 @@ namespace Sarcasm.UniversalGrammars
                     leftInsertedUtokens = UtokenInsert.NoWhitespace;
                     rightInsertedUtokens = UtokenInsert.NewLine;
                 }
+
+                else if (target.BnfTerm == B.COLON && !CompactFormat)
+                    rightInsertedUtokens = UtokenInsert.NewLine;
             }
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.AstValue is MetaObject && target.BnfTerm != B.OBJECT_BEGIN && target.BnfTerm != B.OBJECT_END)
+                if (target.BnfTerm == B.OBJECT_BEGIN || target.BnfTerm == B.OBJECT_END)
+                    return BlockIndentation.Unindent;
+
+                else if (target.BnfTerm == B.MetaObject)
                     return BlockIndentation.Indent;
 
-                else if (target.AstValue is MetaArray && target.BnfTerm != B.ARRAY_BEGIN && target.BnfTerm != B.ARRAY_END)
+                else if (target.BnfTerm == B.MetaArray)
+                    return BlockIndentation.Indent;
+
+                else if (target.BnfTerm == B.ARRAY_BEGIN || target.BnfTerm == B.ARRAY_END)
+                    return BlockIndentation.Unindent;
+
+                else if (target.BnfTerm == B.Array)
                     return BlockIndentation.Indent;
 
                 else

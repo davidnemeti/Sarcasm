@@ -14,18 +14,25 @@ namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermCopy : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
-        private readonly BnfTerm childBnfTerm;
-
-        protected BnfiTermCopy(Type type, BnfTerm bnfTerm)
-            : base(type, name: null)
+        protected BnfiTermCopy(Type type, BnfTerm bnfTerm, string name)
+            : base(type, name: name ?? GetName(type, bnfTerm))
         {
-            this.IsContractible = true;
-            this.childBnfTerm = bnfTerm;
-            this.Rule = bnfTerm.ToBnfExpression();
+            if (bnfTerm != null)
+            {
+                // "this" BnfiTermCopy is not an independent bnfTerm, just a syntax magic for BnfiTermRecord<TType> (we were called by the Copy method)
+                this.IsContractible = true;
+                this.RuleRaw = bnfTerm.ToBnfExpression();
+            }
+            else
+            {
+                // "this" BnfiTermCopy is an independent bnfTerm
+                this.IsContractible = false;
+            }
+
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermCopyable will contain the BnfiTerm... which actually does something)
         }
 
-        public static BnfiTermCopyTL Copy(IBnfiTermCopyable bnfiTerm)
+        public static BnfiTermCopyTL Copy(IBnfiTermCopyableTL bnfiTerm)
         {
             return new BnfiTermCopyTL(bnfiTerm.Type, bnfiTerm.AsBnfTerm());
         }
@@ -33,6 +40,18 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermCopy<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
         {
             return new BnfiTermCopy<T>(bnfiTerm.AsBnfTerm());
+        }
+
+        private static string GetName(Type type, BnfTerm bnfTerm)
+        {
+            string name = string.Empty;
+
+            if (bnfTerm != null)
+                name += bnfTerm.Name + "_";
+
+            name += "copyAs_" + type.Name.ToLower();
+
+            return name;
         }
 
         #region Unparse
@@ -54,22 +73,46 @@ namespace Sarcasm.GrammarAst
         }
 
         #endregion
+
+        protected new BnfiExpression Rule { set { base.Rule = value; } }
+
+        public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }
     }
 
     public partial class BnfiTermCopyTL : BnfiTermCopy, IBnfiTermTL
     {
-        internal BnfiTermCopyTL(Type type, BnfTerm bnfTerm)
-            : base(type, bnfTerm)
+        public BnfiTermCopyTL(Type type, string name = null)
+            : base(type, bnfTerm: null, name: name)
         {
         }
+
+        internal BnfiTermCopyTL(Type type, BnfTerm bnfTerm)
+            : base(type, bnfTerm: bnfTerm, name: null)
+        {
+            if (bnfTerm == null)
+                throw new ArgumentNullException("bnfTerm");
+        }
+
+        public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
     }
 
     // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
     public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>, IBnfiTermPlusAbleForType<T>, INonTerminal<T>
     {
-        internal BnfiTermCopy(BnfTerm bnfTerm)
-            : base(typeof(T), bnfTerm)
+        public BnfiTermCopy(Type type, string name = null)
+            : base(type, bnfTerm: null, name: name)
         {
         }
+
+        internal BnfiTermCopy(BnfTerm bnfTerm)
+            : base(typeof(T), bnfTerm: bnfTerm, name: null)
+        {
+            if (bnfTerm == null)
+                throw new ArgumentNullException("bnfTerm");
+        }
+
+        public BnfiExpressionChoiceTL RuleTypeless { set { base.Rule = value; } }
+
+        public new BnfiExpressionChoice<T> Rule { set { base.Rule = value; } }
     }
 }

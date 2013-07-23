@@ -328,7 +328,7 @@ namespace Sarcasm.GrammarAst
 
         #region Copy
 
-        public static BnfiTermCopy Copy(this IBnfiTermCopyable bnfiTerm)
+        public static BnfiTermCopyTL Copy(this IBnfiTermCopyableTL bnfiTerm)
         {
             return BnfiTermCopy.Copy(bnfiTerm);
         }

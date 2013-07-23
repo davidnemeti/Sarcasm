@@ -82,6 +82,9 @@ namespace Sarcasm.GrammarAst
         protected BnfiTermNonTerminal(Type type, string name)
             : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
+            if (type == null)
+                throw new ArgumentNullException("type");
+
             this.type = type;
             this.IsContractible = false;
             this.hasBeenContracted = false;
