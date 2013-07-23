@@ -10,16 +10,26 @@ namespace Sarcasm.Unparsing
 {
     public interface IReadOnlyDecoration
     {
-        bool ContainsKey<T>(DecorationKey<T> key);
-        bool TryGetValue<T>(DecorationKey<T> key, out T value);
+        bool ContainsKey(IDecorationKey key);
+        bool TryGetValueTypeless(IDecorationKey key, out object value);
+        bool TryGetValue<T>(IDecorationKey<T> key, out T value);
     }
 
     public interface IDecoration : IReadOnlyDecoration
     {
-        IDecoration Add<T>(DecorationKey<T> key, T value);
+        IDecoration Add<T>(IDecorationKey<T> key, T value);
     }
 
-    public class DecorationKey<T>
+    public interface IDecorationKey
+    {
+    }
+
+    public interface IDecorationKey<T> : IDecorationKey
+    {
+        string Name { get; }
+    }
+
+    public class DecorationKey<T> : IDecorationKey<T>
     {
         public string Name { get; private set; }
 
@@ -31,6 +41,49 @@ namespace Sarcasm.Unparsing
         public DecorationKey(string name)
         {
             this.Name = name;
+        }
+    }
+
+    public interface IDecorationKeyConnector : IDecorationKey
+    {
+        IDecorationKey DecorationKeyFrom { get; }
+        object Convert(object from);
+    }
+
+    public class DecorationKeyConnector<TFrom, TTo> : IDecorationKeyConnector, IDecorationKey<TTo>
+    {
+        public IDecorationKey<TFrom> DecorationKeyFrom { get; private set; }
+        private Func<TFrom, TTo> convert;
+
+        public DecorationKeyConnector(IDecorationKey<TFrom> decorationKeyFrom, Func<TFrom, TTo> convert)
+        {
+            this.DecorationKeyFrom = decorationKeyFrom;
+            this.convert = convert;
+        }
+
+        public string Name { get { return DecorationKeyFrom.Name; } }
+
+        object IDecorationKeyConnector.Convert(object from)
+        {
+            return Convert((TFrom)from);
+        }
+
+        public TTo Convert(TFrom from)
+        {
+            return convert(from);
+        }
+
+        IDecorationKey IDecorationKeyConnector.DecorationKeyFrom
+        {
+            get { return DecorationKeyFrom; }
+        }
+    }
+
+    public static class DecorationKeyConnector
+    {
+        public static DecorationKeyConnector<TFrom, TTo> ConnectTo<TFrom, TTo>(IDecorationKey<TFrom> decorationKeyFrom, Func<TFrom, TTo> convert)
+        {
+            return new DecorationKeyConnector<TFrom, TTo>(decorationKeyFrom, convert);
         }
     }
 
@@ -46,7 +99,7 @@ namespace Sarcasm.Unparsing
             FontSize = new DecorationKey<double>("FontSize");
             FontSizeRelativePercent = new DecorationKey<double>("FontSizeRelativePercent");
 
-            TextDecorations = new DecorationKey<IEnumerable<TextDecoration>>("TextDecorations");
+            TextDecoration = new DecorationKey<TextDecoration>("TextDecorations");
             BaselineAlignment = new DecorationKey<BaselineAlignment>("BaselineAlignment");
 
             Foreground = new DecorationKey<Color>("Foreground");
@@ -61,7 +114,7 @@ namespace Sarcasm.Unparsing
         public static DecorationKey<double> FontSize { get; private set; }
         public static DecorationKey<double> FontSizeRelativePercent { get; private set; }
 
-        public static DecorationKey<IEnumerable<TextDecoration>> TextDecorations { get; private set; }
+        public static DecorationKey<TextDecoration> TextDecoration { get; private set; }
         public static DecorationKey<BaselineAlignment> BaselineAlignment { get; private set; }
 
         public static DecorationKey<Color> Foreground { get; private set; }
@@ -70,7 +123,7 @@ namespace Sarcasm.Unparsing
 
     public static class DecorationExtensions
     {
-        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration, DecorationKey<T> key)
+        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration, IDecorationKey<T> key)
         {
             T value;
 
@@ -80,7 +133,7 @@ namespace Sarcasm.Unparsing
                 return default(T);
         }
 
-        public static T GetValue<T>(this IReadOnlyDecoration decoration, DecorationKey<T> key)
+        public static T GetValue<T>(this IReadOnlyDecoration decoration, IDecorationKey<T> key)
         {
             T value;
 
@@ -95,7 +148,7 @@ namespace Sarcasm.Unparsing
     {
         private Dictionary<object, object> keyToValue = new Dictionary<object, object>();
 
-        public IDecoration Add<T>(DecorationKey<T> key, T value)
+        public IDecoration Add<T>(IDecorationKey<T> key, T value)
         {
             keyToValue.Add(key, value);
             return this;
@@ -103,17 +156,22 @@ namespace Sarcasm.Unparsing
 
         public const IDecoration None = null;
 
-        public bool TryGetValue<T>(DecorationKey<T> key, out T value)
+        public bool ContainsKey(IDecorationKey key)
+        {
+            return keyToValue.ContainsKey(key);
+        }
+
+        public bool TryGetValue<T>(IDecorationKey<T> key, out T value)
         {
             object _value;
-            bool found = keyToValue.TryGetValue(key, out _value);
+            bool found = TryGetValueTypeless(key, out _value);
             value = (T)_value;
             return found;
         }
 
-        public bool ContainsKey<T>(DecorationKey<T> key)
+        public bool TryGetValueTypeless(IDecorationKey key, out object value)
         {
-            return keyToValue.ContainsKey(key);
+            return keyToValue.TryGetValue(key, out value);
         }
     }
 
@@ -128,14 +186,19 @@ namespace Sarcasm.Unparsing
             this.secondaryDecoration = secondaryDecoration;
         }
 
-        public bool TryGetValue<T>(DecorationKey<T> key, out T value)
+        public bool ContainsKey(IDecorationKey key)
+        {
+            return primaryDecoration.ContainsKey(key) || secondaryDecoration.ContainsKey(key);
+        }
+
+        public bool TryGetValue<T>(IDecorationKey<T> key, out T value)
         {
             return primaryDecoration.TryGetValue(key, out value) || secondaryDecoration.TryGetValue(key, out value);
         }
 
-        public bool ContainsKey<T>(DecorationKey<T> key)
+        public bool TryGetValueTypeless(IDecorationKey key, out object value)
         {
-            return primaryDecoration.ContainsKey(key) || secondaryDecoration.ContainsKey(key);
+            return primaryDecoration.TryGetValueTypeless(key, out value) || secondaryDecoration.TryGetValueTypeless(key, out value);
         }
     }
 }

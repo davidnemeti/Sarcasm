@@ -440,7 +440,7 @@ namespace MiniPL.Grammars
                     {
                         return new Decoration()
                             .Add(DecorationKey.FontWeight, FontWeight.Bold)
-                            .Add(DecorationKey.TextDecorations, new[] { TextDecoration.Underline })
+                            .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
                             ;
                     }
                 }
