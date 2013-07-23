@@ -10,7 +10,9 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
+using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
+using Sarcasm.Utility;
 
 using MiniPL.DomainModel;
 using D = MiniPL.DomainModel;
@@ -18,9 +20,6 @@ using DC = Sarcasm.DomainCore;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
-using System.Windows;
-using System.Windows.Media;
-using Sarcasm.Utility;
 
 namespace MiniPL.Grammars
 {
@@ -432,26 +431,26 @@ namespace MiniPL.Grammars
                     if (target.BnfTerm == B.LEFT_PAREN)
                     {
                         return new Decoration()
-                            .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                            .Add(DecorationKey.FontSizeRelativePercent, 2.0)
-                            .Add(DecorationKey.Foreground, Colors.Blue)
+                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                            .Add(DecorationKey.FontSizeRelativePercent, 2)
+                            .Add(DecorationKey.Foreground, Color.Blue)
                             ;
                     }
                     else
                     {
                         return new Decoration()
-                            .Add(DecorationKey.FontWeight, FontWeights.ExtraBold)
-                            .Add(DecorationKey.TextDecorations, TextDecorations.Underline)
+                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                            .Add(DecorationKey.TextDecorations, new[] { TextDecoration.Underline })
                             ;
                     }
                 }
                 else if (target.BnfTerm == B.PROGRAM)
                 {
                     return new Decoration()
-                        .Add(DecorationKey.FontStyle, FontStyles.Italic)
-                        .Add(DecorationKey.Foreground, Colors.White)
-                        .Add(DecorationKey.Background, Colors.Red)
-                        .Add(DecorationKey.FontSize, 30.0);
+                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
+                        .Add(DecorationKey.Foreground, Color.White)
+                        .Add(DecorationKey.Background, Color.Red)
+                        .Add(DecorationKey.FontSize, 30);
                 }
                 else if (target.AstValue is D.Type)
                 {
@@ -464,8 +463,8 @@ namespace MiniPL.Grammars
                     int number = (int)target.AstValue;
 
                     return number % 2 == 0
-                        ? new Decoration().Add(DecorationKey.Foreground, Colors.Red)
-                        : new Decoration().Add(DecorationKey.Background, Colors.Yellow);
+                        ? new Decoration().Add(DecorationKey.Foreground, Color.Red)
+                        : new Decoration().Add(DecorationKey.Background, Color.Yellow);
                 }
                 else
                     return Decoration.None;

@@ -4,97 +4,90 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using Sarcasm.Unparsing.Styles;
+
 namespace Sarcasm.Unparsing
 {
     public interface IReadOnlyDecoration
     {
-        bool ContainsKey(object key);
-        bool TryGetValue(object key, out object value);
+        bool ContainsKey<T>(DecorationKey<T> key);
+        bool TryGetValue<T>(DecorationKey<T> key, out T value);
     }
 
     public interface IDecoration : IReadOnlyDecoration
     {
-        IDecoration Add(object key, object value);
+        IDecoration Add<T>(DecorationKey<T> key, T value);
     }
 
-    public enum DecorationKey
+    public class DecorationKey<T>
     {
-        Font,
-        FontFamily,
-        FontStretch,
-        FontStyle,
-        FontWeight,
-        FontSize,
-        FontSizeRelativePercent,
-        TextDecorations,
-        BaselineAlignment,
-        Foreground,
-        Background
+        public string Name { get; private set; }
+
+        public DecorationKey()
+            : this(name: null)
+        {
+        }
+
+        public DecorationKey(string name)
+        {
+            this.Name = name;
+        }
+    }
+
+    public static class DecorationKey
+    {
+        static DecorationKey()
+        {
+            FontFamily = new DecorationKey<FontFamily>("FontFamily");
+            FontStretch = new DecorationKey<FontStretch>("FontStretch");
+            FontStyle = new DecorationKey<FontStyle>("FontStyle");
+            FontWeight = new DecorationKey<FontWeight>("FontWeight");
+
+            FontSize = new DecorationKey<double>("FontSize");
+            FontSizeRelativePercent = new DecorationKey<double>("FontSizeRelativePercent");
+
+            TextDecorations = new DecorationKey<IEnumerable<TextDecoration>>("TextDecorations");
+            BaselineAlignment = new DecorationKey<BaselineAlignment>("BaselineAlignment");
+
+            Foreground = new DecorationKey<Color>("Foreground");
+            Background = new DecorationKey<Color>("Background");
+        }
+
+        public static DecorationKey<FontFamily> FontFamily { get; private set; }
+        public static DecorationKey<FontStretch> FontStretch { get; private set; }
+        public static DecorationKey<FontStyle> FontStyle { get; private set; }
+        public static DecorationKey<FontWeight> FontWeight { get; private set; }
+
+        public static DecorationKey<double> FontSize { get; private set; }
+        public static DecorationKey<double> FontSizeRelativePercent { get; private set; }
+
+        public static DecorationKey<IEnumerable<TextDecoration>> TextDecorations { get; private set; }
+        public static DecorationKey<BaselineAlignment> BaselineAlignment { get; private set; }
+
+        public static DecorationKey<Color> Foreground { get; private set; }
+        public static DecorationKey<Color> Background { get; private set; }
     }
 
     public static class DecorationExtensions
     {
-        public static bool ContainsKey<T>(this IReadOnlyDecoration decoration)
+        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration, DecorationKey<T> key)
         {
-            return decoration.ContainsKey(typeof(T));
-        }
+            T value;
 
-        public static T GetValueOrDefault<T>(this IReadOnlyDecoration decoration)
-        {
-            return GetValueOrDefault<T>(decoration, typeof(T));
-        }
-
-        public static TValue GetValueOrDefault<TValue>(this IReadOnlyDecoration decoration, object key)
-        {
-            TValue value;
-
-            if (decoration.TryGetValue<TValue>(key, out value))
+            if (decoration.TryGetValue(key, out value))
                 return value;
             else
-                return default(TValue);
+                return default(T);
         }
 
-        public static object GetValueOrNull(this IReadOnlyDecoration decoration, object key)
+        public static T GetValue<T>(this IReadOnlyDecoration decoration, DecorationKey<T> key)
         {
-            return decoration.GetValueOrDefault<object>(key);
-        }
-
-        public static T GetValue<T>(this IReadOnlyDecoration decoration)
-        {
-            return GetValue<T>(decoration, typeof(T));
-        }
-
-        public static TValue GetValue<TValue>(this IReadOnlyDecoration decoration, object key)
-        {
-            TValue value;
+            T value;
 
             if (decoration.TryGetValue(key, out value))
                 return value;
             else
                 throw new KeyNotFoundException();
-        }
-
-        public static object GetValue(this IReadOnlyDecoration decoration, object key)
-        {
-            return decoration.GetValue<object>(key);
-        }
-
-        public static bool TryGetValue<T>(this IReadOnlyDecoration decoration, out T value)
-        {
-            return decoration.TryGetValue<T>(typeof(T), out value);
-        }
-
-        public static bool TryGetValue<TValue>(this IReadOnlyDecoration decoration, object key, out TValue value)
-        {
-            object _value;
-            bool success = decoration.TryGetValue(key, out _value);
-            value = _value != null ? (TValue)_value : default(TValue);
-            return success;
-        }
-
-        public static IDecoration Add<T>(this IDecoration decoration, T value)
-        {
-            return decoration.Add(typeof(T), value);
         }
     }
 
@@ -102,7 +95,7 @@ namespace Sarcasm.Unparsing
     {
         private Dictionary<object, object> keyToValue = new Dictionary<object, object>();
 
-        public IDecoration Add(object key, object value)
+        public IDecoration Add<T>(DecorationKey<T> key, T value)
         {
             keyToValue.Add(key, value);
             return this;
@@ -110,12 +103,15 @@ namespace Sarcasm.Unparsing
 
         public const IDecoration None = null;
 
-        public bool TryGetValue(object key, out object value)
+        public bool TryGetValue<T>(DecorationKey<T> key, out T value)
         {
-            return keyToValue.TryGetValue(key, out value);
+            object _value;
+            bool found = keyToValue.TryGetValue(key, out _value);
+            value = (T)_value;
+            return found;
         }
 
-        public bool ContainsKey(object key)
+        public bool ContainsKey<T>(DecorationKey<T> key)
         {
             return keyToValue.ContainsKey(key);
         }
@@ -132,12 +128,12 @@ namespace Sarcasm.Unparsing
             this.secondaryDecoration = secondaryDecoration;
         }
 
-        public bool TryGetValue(object key, out object value)
+        public bool TryGetValue<T>(DecorationKey<T> key, out T value)
         {
             return primaryDecoration.TryGetValue(key, out value) || secondaryDecoration.TryGetValue(key, out value);
         }
 
-        public bool ContainsKey(object key)
+        public bool ContainsKey<T>(DecorationKey<T> key)
         {
             return primaryDecoration.ContainsKey(key) || secondaryDecoration.ContainsKey(key);
         }

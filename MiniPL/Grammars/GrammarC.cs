@@ -10,6 +10,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
+using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
 
 using MiniPL.DomainModel;
@@ -18,8 +19,6 @@ using DC = Sarcasm.DomainCore;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
-using System.Windows;
-using System.Windows.Media;
 
 namespace MiniPL.Grammars
 {
@@ -419,25 +418,25 @@ namespace MiniPL.Grammars
                 if (target.BnfTerm is KeyTerm)
                 {
                     return new Decoration()
-                        .Add(DecorationKey.Foreground, Colors.Blue)
+                        .Add(DecorationKey.Foreground, Color.Blue)
                         ;
                 }
                 else if (target.BnfTerm.IsOperator())
                 {
                     return new Decoration()
-                        .Add(DecorationKey.Foreground, Colors.Purple)
+                        .Add(DecorationKey.Foreground, Color.Purple)
                         ;
                 }
                 else if (target.AstValue is D.Type)
                 {
                     return new Decoration()
-                        .Add(DecorationKey.Foreground, Colors.Cyan)
+                        .Add(DecorationKey.Foreground, Color.Cyan)
                         ;
                 }
                 else if (target.BnfTerm.IsLiteral())
                 {
                     return new Decoration()
-                        .Add(DecorationKey.Foreground, Colors.Red)
+                        .Add(DecorationKey.Foreground, Color.Red)
                         ;
                 }
                 else
