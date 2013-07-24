@@ -19,20 +19,14 @@ namespace Sarcasm.Reflection
         public MetaRepository()
         {
             Domains = Util.CreateAndGetReadonlyCollection(out domains);
+            UniversalMetaGrammars = Util.CreateAndGetReadonlyCollection(out universalMetaGrammars);
         }
 
         private ObservableCollection<Domain> domains;
         public ReadOnlyObservableCollection<Domain> Domains { get; private set; }
 
-        public void RegisterDomain(Type domainRoot)
-        {
-            RegisterDomain(new Domain(domainRoot));
-        }
-
-        public void RegisterDomain(Domain domain)
-        {
-            domains.Add(domain);
-        }
+        private ObservableCollection<MetaGrammar> universalMetaGrammars;
+        public ReadOnlyObservableCollection<MetaGrammar> UniversalMetaGrammars { get; private set; }
 
         public Domain DomainRootToDomain(Type domainRoot)
         {
@@ -43,6 +37,7 @@ namespace Sarcasm.Reflection
         {
             return Domains
                 .SelectMany(domain => domain.MetaGrammars)
+                .Concat(UniversalMetaGrammars)
                 .First(metaGrammar => metaGrammar.GrammarType == grammarType);
         }
 
@@ -53,7 +48,7 @@ namespace Sarcasm.Reflection
             RegisterFormatters(assembly);
         }
 
-        private void RegisterDomains(Assembly assembly)
+        public void RegisterDomains(Assembly assembly)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -68,7 +63,12 @@ namespace Sarcasm.Reflection
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
         }
 
-        private void RegisterGrammars(Assembly assembly)
+        public void RegisterDomain(Domain domain)
+        {
+            domains.Add(domain);
+        }
+
+        public void RegisterGrammars(Assembly assembly)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -78,12 +78,28 @@ namespace Sarcasm.Reflection
                 .Select(grammarType => new MetaGrammar(grammarType));
 
             foreach (MetaGrammar newMetaGrammar in newMetaGrammars)
-                DomainRootToDomain(newMetaGrammar.DomainRoot).RegisterGrammar(newMetaGrammar);
+                RegisterGrammar(newMetaGrammar);
 
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
         }
 
-        private void RegisterFormatters(Assembly assembly)
+        public void RegisterGrammar(MetaGrammar metaGrammar)
+        {
+            if (metaGrammar.IsUniversalGrammar())
+                RegisterUniversalGrammar(metaGrammar);
+            else
+                DomainRootToDomain(metaGrammar.DomainRoot).RegisterGrammar(metaGrammar);
+        }
+
+        private void RegisterUniversalGrammar(MetaGrammar metaGrammar)
+        {
+            if (universalMetaGrammars.Any(_metaGrammar => _metaGrammar.GrammarType == metaGrammar.GrammarType))
+                throw new ArgumentException("Grammar already registered", "metaGrammar");
+
+            universalMetaGrammars.Add(metaGrammar);
+        }
+
+        public void RegisterFormatters(Assembly assembly)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
@@ -93,9 +109,14 @@ namespace Sarcasm.Reflection
                 .Select(formatterType => new MetaFormatter(formatterType));
 
             foreach (MetaFormatter newMetaFormatter in newMetaFormatters)
-                GrammarTypeToMetaGrammar(newMetaFormatter.GrammarType).RegisterFormatter(newMetaFormatter);
+                RegisterFormatter(newMetaFormatter);
 
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+        }
+
+        public void RegisterFormatter(MetaFormatter metaFormatter)
+        {
+            GrammarTypeToMetaGrammar(metaFormatter.GrammarType).RegisterFormatter(metaFormatter);
         }
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
@@ -115,111 +136,6 @@ namespace Sarcasm.Reflection
         private static string GetAssemblyNameWithMainVersionNumbers(string fullName)
         {
             return Regex.Match(fullName, @"(.*, Version=\d*\.\d*)").Groups[1].Value;
-        }
-    }
-
-    public class Domain
-    {
-        public Type DomainRoot { get; private set; }
-        public DomainRootAttribute DomainRootAttribute { get; private set; }
-
-        private ObservableCollection<MetaGrammar> metaGrammars;
-        public ReadOnlyObservableCollection<MetaGrammar> MetaGrammars { get; private set; }
-
-        public string Name { get { return DomainRootAttribute.Name; } }
-
-        public Domain(Type domainRoot)
-        {
-            var domainRootAttribute = domainRoot.GetCustomAttribute<DomainRootAttribute>();
-
-            if (!IsDomainRoot(domainRoot))
-                throw new ArgumentException("Type should be a domain root, i.e. a type with DomainRootAttribute", "type");
-
-            this.DomainRoot = domainRoot;
-            this.DomainRootAttribute = domainRootAttribute;
-
-            MetaGrammars = Util.CreateAndGetReadonlyCollection(out metaGrammars);
-        }
-
-        public static bool IsDomainRoot(Type type)
-        {
-            return type.GetCustomAttribute<DomainRootAttribute>() != null;
-        }
-
-        public void RegisterGrammar(MetaGrammar metaGrammar)
-        {
-            if (metaGrammars.Any(_metaGrammar => _metaGrammar.GrammarType == metaGrammar.GrammarType))
-                throw new ArgumentException("Grammar already registered", "metaGrammar");
-
-            metaGrammars.Add(metaGrammar);
-        }
-    }
-
-    public class MetaGrammar
-    {
-        public Type GrammarType { get; private set; }
-        public GrammarAttribute GrammarAttribute { get; private set; }
-        public Grammar Grammar { get; private set; }
-        public Type DomainRoot { get; private set; }
-
-        private ObservableCollection<MetaFormatter> metaFormatters;
-        public ReadOnlyObservableCollection<MetaFormatter> MetaFormatters { get; private set; }
-
-        public string Name { get { return GrammarAttribute.Name; } }
-
-        public MetaGrammar(Type grammarType)
-        {
-            var grammarAttribute = grammarType.GetCustomAttribute<GrammarAttribute>();
-
-            if (!IsGrammarType(grammarType))
-                throw new ArgumentException("Type should be a grammar type, i.e. a subclass of Grammar with GrammarAttribute", "type");
-
-            this.GrammarType = grammarType;
-            this.GrammarAttribute = grammarAttribute;
-            this.Grammar = (Grammar)Activator.CreateInstance(grammarType);
-            this.DomainRoot = grammarAttribute.DomainRoot;
-
-            MetaFormatters = Util.CreateAndGetReadonlyCollection(out metaFormatters);
-        }
-
-        public static bool IsGrammarType(Type type)
-        {
-            return type.IsSubclassOf(typeof(Grammar)) && type.GetCustomAttribute<GrammarAttribute>() != null;
-        }
-
-        public void RegisterFormatter(MetaFormatter metaFormatter)
-        {
-            if (metaFormatters.Any(_metaFormatter => _metaFormatter.FormatterType == metaFormatter.FormatterType))
-                throw new ArgumentException("Formatter already registered", "metaFormatter");
-
-            metaFormatters.Add(metaFormatter);
-        }
-    }
-
-    public class MetaFormatter
-    {
-        public Type FormatterType { get; private set; }
-        public FormatterAttribute FormatterAttribute { get; private set; }
-        public Formatter Formatter { get; private set; }
-        public Type GrammarType { get; private set; }
-
-        public string Name { get { return FormatterAttribute.Name; } }
-
-        public MetaFormatter(Type formatterType)
-        {
-            var formatterAttribute = formatterType.GetCustomAttribute<FormatterAttribute>();
-
-            if (!IsFormatterType(formatterType))
-                throw new ArgumentException("Type should be a formatter type, i.e. a subclass of Formatter with FormatterAttribute", "type");
-
-            this.FormatterType = formatterType;
-            this.FormatterAttribute = formatterAttribute;
-            this.GrammarType = formatterAttribute.GrammarType;
-        }
-
-        public static bool IsFormatterType(Type type)
-        {
-            return type.IsSubclassOf(typeof(Formatter)) && type.GetCustomAttribute<FormatterAttribute>() != null;
         }
     }
 }
