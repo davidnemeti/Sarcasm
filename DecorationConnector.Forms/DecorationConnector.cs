@@ -39,7 +39,7 @@ namespace DecorationConnector.Forms
 
     public static class DecorConnectorExtensions
     {
-        public static DecorConnector ToWPF(this IReadOnlyDecoration decoration)
+        public static DecorConnector ToForms(this IReadOnlyDecoration decoration)
         {
             return new DecorConnector(decoration);
         }
