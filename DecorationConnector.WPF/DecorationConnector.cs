@@ -63,7 +63,22 @@ namespace DecorationConnector.WPF
 
         static DecorKeyConnector()
         {
-            FontFamily = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontFamily, fontFamily => new Media.FontFamily(fontFamily.Name));
+            FontFamily = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontFamily,
+                fontFamily =>
+                {
+                    if (fontFamily == Styles.FontFamily.GenericMonospace)
+                        return new Media.FontFamily("Courier New");
+
+                    else if (fontFamily == Styles.FontFamily.GenericSansSerif)
+                        return new Media.FontFamily("Arial");
+
+                    else if (fontFamily == Styles.FontFamily.GenericSerif)
+                        return new Media.FontFamily("Times New Roman");
+
+                    else
+                        return new Media.FontFamily(fontFamily.Name);
+                }
+                );
 
             FontStretch = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontStretch,
                 fontStretch =>
@@ -184,9 +199,9 @@ namespace DecorationConnector.WPF
                 }
                 );
 
-            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => new Media.Color() { A = color.A, R = color.R, G = color.G, B = color.B });
+            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Media.Color.FromArgb(color.A, color.R, color.G, color.B));
 
-            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => new Media.Color() { A = color.A, R = color.R, G = color.G, B = color.B });
+            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Media.Color.FromArgb(color.A, color.R, color.G, color.B));
         }
     }
 }
