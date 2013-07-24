@@ -18,7 +18,6 @@ namespace Sarcasm.Unparsing
     public interface IReadOnlyDecorationConnector
     {
         bool ContainsKey(IDecorationKeyConnector key);
-        bool TryGetValueTypeless(IDecorationKeyConnector key, out object value);
         bool TryGetValue<T>(IDecorationKeyConnector<T> key, out T value);
     }
 
@@ -54,7 +53,7 @@ namespace Sarcasm.Unparsing
     public interface IDecorationKeyConnector
     {
         IDecorationKey DecorationKeyFrom { get; }
-        object Convert(object from);
+        object Convert(object valueFrom);
     }
 
     public interface IDecorationKeyConnector<TTo> : IDecorationKeyConnector

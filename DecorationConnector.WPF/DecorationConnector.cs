@@ -30,16 +30,10 @@ namespace DecorationConnector.WPF
 
         public bool TryGetValue<T>(IDecorationKeyConnector<T> key, out T value)
         {
-            object connectedValue;
-            bool found = TryGetValueTypeless(key, out connectedValue);
-            value = (T)key.Convert(connectedValue);
+            object valueFrom;
+            bool found = decoration.TryGetValueTypeless(key.DecorationKeyFrom, out valueFrom);
+            value = (T)key.Convert(valueFrom);
             return found;
-        }
-
-        public bool TryGetValueTypeless(IDecorationKeyConnector key, out object value)
-        {
-            var connectedKey = key.DecorationKeyFrom;
-            return decoration.TryGetValueTypeless(connectedKey, out value);
         }
     }
 
