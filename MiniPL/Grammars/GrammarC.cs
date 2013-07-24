@@ -12,6 +12,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
+using Sarcasm.Reflection;
 
 using MiniPL.DomainModel;
 using D = MiniPL.DomainModel;

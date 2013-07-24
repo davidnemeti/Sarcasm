@@ -109,6 +109,7 @@
     <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="GrammarAst\TerminalFactoryS.cs" />
+    <Compile Include="Reflection\Attributes.cs" />
     <Compile Include="Reflection\MetaRepository.cs" />
     <Compile Include="UniversalGrammars\JsonGrammar.cs" />
     <Compile Include="Unparsing\Styles.cs" />

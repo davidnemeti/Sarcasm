@@ -17,19 +17,6 @@ namespace Sarcasm.GrammarAst
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
     public enum ErrorHandling { ThrowException, ErrorMessage }
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class GrammarAttribute : Attribute
-    {
-        public Type DomainRoot { get; private set; }
-        public string Name { get; private set; }
-
-        public GrammarAttribute(Type domainRoot, string name)
-        {
-            this.DomainRoot = domainRoot;
-            this.Name = name;
-        }
-    }
-
     public partial class Grammar : Irony.Parsing.Grammar
     {
         #region Construction

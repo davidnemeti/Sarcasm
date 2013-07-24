@@ -9,6 +9,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
 using Sarcasm.Utility;
+using Sarcasm.Reflection;
 using Microsoft.CSharp.RuntimeBinder;
 
 namespace Sarcasm.UniversalGrammars

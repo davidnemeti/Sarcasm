@@ -19,19 +19,6 @@ using System.Globalization;
 
 namespace Sarcasm.Unparsing
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class FormatterAttribute : Attribute
-    {
-        public Type GrammarType { get; private set; }
-        public string Name { get; private set; }
-
-        public FormatterAttribute(Type grammarType, string name)
-        {
-            this.GrammarType = grammarType;
-            this.Name = name;
-        }
-    }
-
     public class Formatter
     {
         #region Tracing

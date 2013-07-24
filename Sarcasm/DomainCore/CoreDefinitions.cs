@@ -164,15 +164,4 @@ namespace Sarcasm.DomainCore
             this.Types = types;
         }
     }
-
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class DomainRootAttribute : Attribute
-    {
-        public string Name { get; private set; }
-
-        public DomainRootAttribute(string name)
-        {
-            this.Name = name;
-        }
-    }
 }

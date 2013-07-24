@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Sarcasm.DomainCore;
+using Sarcasm.Reflection;
 
 namespace MiniPL.DomainModel
 {
