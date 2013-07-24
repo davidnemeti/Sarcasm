@@ -22,11 +22,11 @@ namespace Sarcasm.Unparsing
 
     public interface IDecorationKey
     {
+        string Name { get; }
     }
 
     public interface IDecorationKey<T> : IDecorationKey
     {
-        string Name { get; }
     }
 
     public class DecorationKey<T> : IDecorationKey<T>
