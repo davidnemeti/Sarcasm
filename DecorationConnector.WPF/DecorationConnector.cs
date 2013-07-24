@@ -13,53 +13,41 @@ using Unparsing = Sarcasm.Unparsing;
 
 namespace DecorationConnector.WPF
 {
-    public class Decoration : IReadOnlyDecoration
+    public class DecorConnector : IReadOnlyDecorationConnector
     {
         private readonly IReadOnlyDecoration decoration;
 
-        public Decoration(IReadOnlyDecoration decoration)
+        public DecorConnector(IReadOnlyDecoration decoration)
         {
             this.decoration = decoration;
         }
 
-        public bool ContainsKey(IDecorationKey key)
+        public bool ContainsKey(IDecorationKeyConnector key)
         {
-            var connectorKey = key as IDecorationKeyConnector;
-            if (connectorKey != null)
-            {
-                var connectedKey = connectorKey.DecorationKeyFrom;
-                return decoration.ContainsKey(connectedKey);
-            }
-            else
-                return decoration.ContainsKey(key);
+            var connectedKey = key.DecorationKeyFrom;
+            return decoration.ContainsKey(connectedKey);
         }
 
-        public bool TryGetValue<T>(IDecorationKey<T> key, out T value)
+        public bool TryGetValue<T>(IDecorationKeyConnector<T> key, out T value)
         {
-            var connectorKey = key as IDecorationKeyConnector;
-            if (connectorKey != null)
-            {
-                IDecorationKey connectedKey = connectorKey.DecorationKeyFrom;
-                object connectedValue;
-                bool found = TryGetValueTypeless(connectedKey, out connectedValue);
-                value = (T)connectorKey.Convert(connectedValue);
-                return found;
-            }
-            else
-                return decoration.TryGetValue(key, out value);
+            object connectedValue;
+            bool found = TryGetValueTypeless(key, out connectedValue);
+            value = (T)key.Convert(connectedValue);
+            return found;
         }
 
-        public bool TryGetValueTypeless(IDecorationKey key, out object value)
+        public bool TryGetValueTypeless(IDecorationKeyConnector key, out object value)
         {
-            return decoration.TryGetValueTypeless(key, out value);
+            var connectedKey = key.DecorationKeyFrom;
+            return decoration.TryGetValueTypeless(connectedKey, out value);
         }
     }
 
-    public static class DecorationConnectorExtensions
+    public static class DecorConnectorExtensions
     {
-        public static Decoration ToWPF(this IReadOnlyDecoration decoration)
+        public static DecorConnector ToWPF(this IReadOnlyDecoration decoration)
         {
-            return new Decoration(decoration);
+            return new DecorConnector(decoration);
         }
     }
 

@@ -15,6 +15,13 @@ namespace Sarcasm.Unparsing
         bool TryGetValue<T>(IDecorationKey<T> key, out T value);
     }
 
+    public interface IReadOnlyDecorationConnector
+    {
+        bool ContainsKey(IDecorationKeyConnector key);
+        bool TryGetValueTypeless(IDecorationKeyConnector key, out object value);
+        bool TryGetValue<T>(IDecorationKeyConnector<T> key, out T value);
+    }
+
     public interface IDecoration : IReadOnlyDecoration
     {
         IDecoration Add<T>(IDecorationKey<T> key, T value);
@@ -44,13 +51,17 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public interface IDecorationKeyConnector : IDecorationKey
+    public interface IDecorationKeyConnector
     {
         IDecorationKey DecorationKeyFrom { get; }
         object Convert(object from);
     }
 
-    public class DecorationKeyConnector<TFrom, TTo> : IDecorationKeyConnector, IDecorationKey<TTo>
+    public interface IDecorationKeyConnector<TTo> : IDecorationKeyConnector
+    {
+    }
+
+    public class DecorationKeyConnector<TFrom, TTo> : IDecorationKeyConnector<TTo>
     {
         public IDecorationKey<TFrom> DecorationKeyFrom { get; private set; }
         private Func<TFrom, TTo> convert;
@@ -134,6 +145,26 @@ namespace Sarcasm.Unparsing
         }
 
         public static T GetValue<T>(this IReadOnlyDecoration decoration, IDecorationKey<T> key)
+        {
+            T value;
+
+            if (decoration.TryGetValue(key, out value))
+                return value;
+            else
+                throw new KeyNotFoundException();
+        }
+
+        public static T GetValueOrDefault<T>(this IReadOnlyDecorationConnector decoration, IDecorationKeyConnector<T> key)
+        {
+            T value;
+
+            if (decoration.TryGetValue(key, out value))
+                return value;
+            else
+                return default(T);
+        }
+
+        public static T GetValue<T>(this IReadOnlyDecorationConnector decoration, IDecorationKeyConnector<T> key)
         {
             T value;
 
