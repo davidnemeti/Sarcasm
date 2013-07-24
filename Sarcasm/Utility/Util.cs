@@ -6,11 +6,24 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Collections.ObjectModel;
 
 namespace Sarcasm.Utility
 {
     public static class Util
     {
+        public static ReadOnlyObservableCollection<T> CreateAndGetReadonlyCollection<T>(out ObservableCollection<T> source)
+        {
+            source = new ObservableCollection<T>();
+            return new ReadOnlyObservableCollection<T>(source);
+        }
+
+        public static ReadOnlyDictionary<TKey, TValue> CreateAndGetReadonlyDictionary<TKey, TValue>(out Dictionary<TKey, TValue> source)
+        {
+            source = new Dictionary<TKey, TValue>();
+            return new ReadOnlyDictionary<TKey, TValue>(source);
+        }
+
         #region GetType/GetMember
 
         public static T GetType<T>()
