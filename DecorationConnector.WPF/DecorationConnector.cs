@@ -51,7 +51,7 @@ namespace DecorationConnector.WPF
         }
     }
 
-    public static class DecorationKey
+    public static class DecorKeyConnector
     {
         public static DecorationKeyConnector<Styles.FontFamily, Media.FontFamily> FontFamily { get; private set; }
         public static DecorationKeyConnector<Styles.FontStretch, Windows.FontStretch> FontStretch { get; private set; }
@@ -67,7 +67,7 @@ namespace DecorationConnector.WPF
         public static DecorationKeyConnector<Styles.Color, Media.Color> Foreground { get; private set; }
         public static DecorationKeyConnector<Styles.Color, Media.Color> Background { get; private set; }
 
-        static DecorationKey()
+        static DecorKeyConnector()
         {
             FontFamily = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontFamily, fontFamily => new Media.FontFamily(fontFamily.Name));
 
