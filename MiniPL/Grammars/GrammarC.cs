@@ -416,32 +416,34 @@ namespace MiniPL.Grammars
 
             protected override IDecoration GetDecoration(UnparsableAst target)
             {
+                var decoration = base.GetDecoration(target);
+
                 if (target.BnfTerm is KeyTerm)
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.Foreground, Color.Blue)
                         ;
                 }
                 else if (target.BnfTerm.IsOperator())
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.Foreground, Color.Purple)
                         ;
                 }
                 else if (target.AstValue is D.Type)
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.Foreground, Color.Cyan)
                         ;
                 }
                 else if (target.BnfTerm.IsLiteral())
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.Foreground, Color.Red)
                         ;
                 }
-                else
-                    return Decoration.None;
+
+                return decoration;
             }
 
             protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)

@@ -93,14 +93,14 @@ namespace Sarcasm.GrammarAst
                 throw new ArgumentNullException("bnfTerm");
         }
 
-        public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
+        public new BnfiExpression Rule { set { base.Rule = value; } }
     }
 
     // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
     public partial class BnfiTermCopy<T> : BnfiTermCopy, IBnfiTerm<T>, IBnfiTermPlusAbleForType<T>, INonTerminal<T>
     {
-        public BnfiTermCopy(Type type, string name = null)
-            : base(type, bnfTerm: null, name: name)
+        public BnfiTermCopy(string name = null)
+            : base(typeof(T), bnfTerm: null, name: name)
         {
         }
 
@@ -111,8 +111,8 @@ namespace Sarcasm.GrammarAst
                 throw new ArgumentNullException("bnfTerm");
         }
 
-        public BnfiExpressionChoiceTL RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpression RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionChoice<T> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionGeneral<T> Rule { set { base.Rule = value; } }
     }
 }

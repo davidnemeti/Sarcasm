@@ -184,7 +184,7 @@ namespace Sarcasm.Unparsing
             return this;
         }
 
-        public const IDecoration None = null;
+        public static IDecoration None { get { return new Decoration(); } }
 
         public bool ContainsKey(IDecorationKey key)
         {

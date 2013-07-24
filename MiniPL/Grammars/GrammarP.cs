@@ -427,11 +427,13 @@ namespace MiniPL.Grammars
 
             protected override IDecoration GetDecoration(UnparsableAst target)
             {
+                var decoration = base.GetDecoration(target);
+
                 if (target.AstValue is D.If)
                 {
                     if (target.BnfTerm == B.LEFT_PAREN)
                     {
-                        return new Decoration()
+                        decoration
                             .Add(DecorationKey.FontWeight, FontWeight.Bold)
                             .Add(DecorationKey.FontSizeRelativePercent, 2)
                             .Add(DecorationKey.Foreground, Color.Blue)
@@ -439,7 +441,7 @@ namespace MiniPL.Grammars
                     }
                     else
                     {
-                        return new Decoration()
+                        decoration
                             .Add(DecorationKey.FontWeight, FontWeight.Bold)
                             .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
                             ;
@@ -447,7 +449,7 @@ namespace MiniPL.Grammars
                 }
                 else if (target.BnfTerm == B.PROGRAM)
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.FontStyle, FontStyle.Italic)
                         .Add(DecorationKey.Foreground, Color.White)
                         .Add(DecorationKey.Background, Color.Red)
@@ -455,7 +457,7 @@ namespace MiniPL.Grammars
                 }
                 else if (target.AstValue is D.Type)
                 {
-                    return new Decoration()
+                    decoration
                         .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
                         .Add(DecorationKey.FontSizeRelativePercent, 0.75);
                 }
@@ -463,12 +465,13 @@ namespace MiniPL.Grammars
                 {
                     int number = (int)target.AstValue;
 
-                    return number % 2 == 0
-                        ? new Decoration().Add(DecorationKey.Foreground, Color.Red)
-                        : new Decoration().Add(DecorationKey.Background, Color.Yellow);
+                    if (number % 2 == 0)
+                        decoration.Add(DecorationKey.Foreground, Color.Red);
+                    else
+                        decoration.Add(DecorationKey.Background, Color.Yellow);
                 }
-                else
-                    return Decoration.None;
+
+                return decoration;
             }
 
             protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)

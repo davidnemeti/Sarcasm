@@ -612,7 +612,9 @@ namespace Sarcasm.Unparsing
         {
             IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
-            UnparseHint unparseHint = ((BnfiTermNonTerminal)self.BnfTerm).GetUnparseHint(childrenIndex);
+            UnparseHint unparseHint = self.BnfTerm is BnfiTermNonTerminal
+                ? ((BnfiTermNonTerminal)self.BnfTerm).GetUnparseHint(childrenIndex)
+                : null;
 
             return unparseHint != null
                 ? new Priority(PriorityKind.User, unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue)))
