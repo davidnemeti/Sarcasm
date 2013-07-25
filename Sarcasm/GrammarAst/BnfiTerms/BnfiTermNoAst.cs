@@ -50,7 +50,7 @@ namespace Sarcasm.GrammarAst
 
         IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
-            return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue));
+            return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue: null));
         }
 
         int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
