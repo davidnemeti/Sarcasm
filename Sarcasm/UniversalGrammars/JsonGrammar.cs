@@ -7,6 +7,7 @@ using System.Collections;
 using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
+using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
 using Sarcasm.Utility;
 using Sarcasm.Reflection;
@@ -36,10 +37,15 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermKeyTermPunctuation ARRAY_END;
             public readonly BnfiTermKeyTermPunctuation COMMA;
             public readonly BnfiTermKeyTermPunctuation COLON;
+            public readonly BnfiTermKeyTermPunctuation KEYWORD_QUOTE_MARK;
 
             public readonly BnfiTermKeyTerm TYPE_KEYWORD;
             public readonly BnfiTermKeyTerm COLLECTION_VALUES_KEYWORD;
             public readonly BnfiTermKeyTerm PRIMITIVE_VALUE_KEYWORD;
+
+            public readonly BnfiTermNoAst Type_Key = new BnfiTermNoAst("Type_Key");
+            public readonly BnfiTermNoAst CollectionValues_Key = new BnfiTermNoAst("CollectionValues_Key");
+            public readonly BnfiTermNoAst PrimitiveValue_Key = new BnfiTermNoAst("PrimitiveValue_Key");
 
             public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
@@ -55,6 +61,7 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
                 this.COMMA = TerminalFactoryS.CreatePunctuation(",");
                 this.COLON = TerminalFactoryS.CreatePunctuation(":");
+                this.KEYWORD_QUOTE_MARK = TerminalFactoryS.CreatePunctuation("\"");
 
                 this.TYPE_KEYWORD = TerminalFactoryS.CreateKeyTerm("$type");
                 this.COLLECTION_VALUES_KEYWORD = TerminalFactoryS.CreateKeyTerm("$values");
@@ -103,17 +110,17 @@ namespace Sarcasm.UniversalGrammars
 
             B.MetaObject.Rule =
                 B.OBJECT_BEGIN
-                + B.TYPE_KEYWORD
+                + B.Type_Key
                 + B.COLON
                 + B.Type.BindTo(B.MetaObject, metaObject => metaObject.Type)
                 + B.COMMA
-                + B.PRIMITIVE_VALUE_KEYWORD
+                + B.PrimitiveValue_Key
                 + B.COLON
                 + B.STRING.BindTo(B.MetaObject, metaObject => metaObject.PrimitiveValueStr)
                 + B.OBJECT_END
                 |
                 B.OBJECT_BEGIN
-                + B.TYPE_KEYWORD
+                + B.Type_Key
                 + B.COLON
                 + B.Type.BindTo(B.MetaObject, metaObject => metaObject.Type)
                 + B.COMMA
@@ -141,11 +148,11 @@ namespace Sarcasm.UniversalGrammars
 
             B.MetaArray.Rule =
                 B.OBJECT_BEGIN
-                + B.TYPE_KEYWORD
+                + B.Type_Key
                 + B.COLON
                 + B.Type.BindTo(B.MetaArray, metaArray => metaArray.Type)
                 + B.COMMA
-                + B.COLLECTION_VALUES_KEYWORD
+                + B.CollectionValues_Key
                 + B.COLON
                 + B.Array.BindTo(B.MetaArray, metaArray => metaArray.Elements)
                 + B.OBJECT_END
@@ -155,6 +162,24 @@ namespace Sarcasm.UniversalGrammars
                 B.ARRAY_BEGIN
                 + B.Object.StarListTL(B.COMMA)
                 + B.ARRAY_END
+                ;
+
+            B.Type_Key.Rule =
+                B.KEYWORD_QUOTE_MARK
+                + B.TYPE_KEYWORD
+                + B.KEYWORD_QUOTE_MARK
+                ;
+
+            B.CollectionValues_Key.Rule =
+                B.KEYWORD_QUOTE_MARK
+                + B.COLLECTION_VALUES_KEYWORD
+                + B.KEYWORD_QUOTE_MARK
+                ;
+
+            B.PrimitiveValue_Key.Rule =
+                B.KEYWORD_QUOTE_MARK
+                + B.PRIMITIVE_VALUE_KEYWORD
+                + B.KEYWORD_QUOTE_MARK
                 ;
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
@@ -377,7 +402,20 @@ namespace Sarcasm.UniversalGrammars
 
             protected override IDecoration GetDecoration(UnparsableAst target)
             {
-                return Decoration.None;
+                var decoration = base.GetDecoration(target);
+
+                decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
+
+                if (target.BnfTerm.EqualToAny(B.TYPE_KEYWORD, B.COLLECTION_VALUES_KEYWORD, B.PRIMITIVE_VALUE_KEYWORD))
+                    decoration.Add(DecorationKey.Foreground, Color.Pink);
+                else if (target.BnfTerm == B.Type)
+                    decoration.Add(DecorationKey.Foreground, Color.Gray);
+                else if (target.BnfTerm == B.Key)
+                    decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
+                else if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL, B.NUMBER, B.STRING))
+                    decoration.Add(DecorationKey.Foreground, Color.Blue);
+
+                return decoration;
             }
 
             protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
@@ -404,6 +442,9 @@ namespace Sarcasm.UniversalGrammars
 
                 else if (target.BnfTerm == B.COLON && !CompactFormat)
                     rightInsertedUtokens = UtokenInsert.NewLine;
+
+                else if (target.BnfTerm.EqualToAny(B.TYPE_KEYWORD, B.COLLECTION_VALUES_KEYWORD, B.PRIMITIVE_VALUE_KEYWORD))
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NoWhitespace;
             }
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
