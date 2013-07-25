@@ -98,9 +98,7 @@ namespace Sarcasm.GrammarAst
             this.hasExplicitName = name != null;
         }
 
-        internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";
-        internal const string typelessMemberBoundErrorMessage = "Typeless MemberBoundToBnfTerm should not mix with typesafe MemberBoundToBnfTerm<TDeclaringType>";
-        internal const string invalidUseOfNonExistingTypesafePipeOperatorErrorMessage = "There is no typesafe pipe operator for different types. Use 'SetRuleOr' or 'Or' method instead.";
+        internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with IntroValue or ConvertValue extension methods instead";
 
         public bool IsContractible { get; protected set; }
         protected bool hasBeenContracted;
