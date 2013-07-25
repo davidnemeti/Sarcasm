@@ -225,19 +225,25 @@ namespace Sarcasm.GrammarAst
             foreach (BnfTermList bnfTerms in bnfiExpression.GetBnfTermsList())
             {
                 int bnfTermIndexAtParse = 0;
+                int bnfTermIndexAtRule = 0;
 
-                for (int bnfTermIndexAtRule = 0; bnfTermIndexAtRule < bnfTerms.Count; bnfTermIndexAtRule++)
+                for (int bnfTermIndex = 0; bnfTermIndex < bnfTerms.Count; bnfTermIndex++)
                 {
-                    if (bnfTerms[bnfTermIndexAtRule] is Member)
+                    if (bnfTerms[bnfTermIndex] is Member)
                     {
-                        Member member = (Member)bnfTerms[bnfTermIndexAtRule];
+                        Member member = (Member)bnfTerms[bnfTermIndex];
 
                         RegisterMember(member.BnfTerm, bnfTerms, bnfTermsIndex, bnfTermIndexAtParse, bnfTermIndexAtRule, member);
-                        bnfTerms[bnfTermIndexAtRule] = member.BnfTerm;
+                        bnfTerms[bnfTermIndex] = member.BnfTerm;
                     }
 
-                    if (!bnfTerms[bnfTermIndexAtRule].IsPunctuation())
-                        bnfTermIndexAtParse++;
+                    if (!(bnfTerms[bnfTermIndex] is GrammarHint))
+                    {
+                        bnfTermIndexAtRule++;
+
+                        if (!bnfTerms[bnfTermIndex].IsPunctuation())
+                            bnfTermIndexAtParse++;
+                    }
                 }
 
                 bnfTermsIndex++;
