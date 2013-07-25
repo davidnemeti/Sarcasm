@@ -210,7 +210,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermNoAst NoAst(this BnfTerm bnfTerm)
         {
-            return BnfiTermNoAst.Create(bnfTerm);
+            return BnfiTermNoAst.For(bnfTerm);
         }
 
         #endregion

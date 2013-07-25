@@ -79,17 +79,23 @@ namespace Sarcasm.GrammarAst
         protected readonly bool hasExplicitName;
         private readonly Dictionary<int, UnparseHint> childBnfTermListIndexToUnparseHint;
 
+        protected BnfiTermNonTerminal(string name)
+            : base(name)
+        {
+            this.IsContractible = false;
+            this.hasBeenContracted = false;
+            this.hasExplicitName = name != null;
+            this.childBnfTermListIndexToUnparseHint = new Dictionary<int, UnparseHint>();
+        }
+
         protected BnfiTermNonTerminal(Type type, string name)
-            : base(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
+            : this(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
         {
             if (type == null)
                 throw new ArgumentNullException("type");
 
             this.type = type;
-            this.IsContractible = false;
-            this.hasBeenContracted = false;
             this.hasExplicitName = name != null;
-            this.childBnfTermListIndexToUnparseHint = new Dictionary<int, UnparseHint>();
         }
 
         internal const string typelessQErrorMessage = "Use the typesafe QVal or QRef extension methods combined with CreateValue or ConvertValue extension methods instead";

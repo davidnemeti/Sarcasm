@@ -11,19 +11,21 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public partial class BnfiTermNoAst : NonTerminal, IBnfiTerm, IUnparsableNonTerminal
+    public partial class BnfiTermNoAst : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
-        private readonly BnfTerm childBnfTerm;
-
-        protected BnfiTermNoAst(BnfTerm bnfTerm)
-            : base(string.Format("{0}->no_ast", bnfTerm.Name))
+        public BnfiTermNoAst(string name = null)
+            : base(name)
         {
-            this.childBnfTerm = bnfTerm;
-            this.Rule = bnfTerm.ToBnfExpression();
             this.SetFlag(TermFlags.NoAstNode);
         }
 
-        public static BnfiTermNoAst Create(BnfTerm bnfTerm)
+        protected BnfiTermNoAst(BnfTerm bnfTerm)
+            : this(string.Format("{0}->no_ast", bnfTerm.Name))
+        {
+            base.Rule = bnfTerm.ToBnfExpression();
+        }
+
+        public static BnfiTermNoAst For(BnfTerm bnfTerm)
         {
             return new BnfiTermNoAst(bnfTerm);
         }
@@ -57,5 +59,7 @@ namespace Sarcasm.GrammarAst
         }
 
         #endregion
+
+        public new BnfiExpressionTerminals Rule { set { base.Rule = value; } }
     }
 }
