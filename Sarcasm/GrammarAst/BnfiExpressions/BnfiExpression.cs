@@ -86,7 +86,7 @@ namespace Sarcasm.GrammarAst
 
     #endregion
 
-    #region BnfiExpression
+    #region BnfiExpressionConversion
 
     public abstract class BnfiExpressionConversion : BnfiExpression
     {

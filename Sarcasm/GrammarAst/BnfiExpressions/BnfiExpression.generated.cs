@@ -51,7 +51,7 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
-	#region [BnfiTermNoAst, BnfiTermKeyTerm]: implicit conversions from BnfiExpressionTerminals
+	#region [BnfiTermNoAst, BnfiTermKeyTerm, BnfiTermKeyTermPunctuation]: implicit conversions from BnfiExpressionTerminals
 
 	public partial class BnfiTermNoAst
 	{
@@ -64,6 +64,14 @@ namespace Sarcasm.GrammarAst
 	public partial class BnfiTermKeyTerm
 	{
 		public static implicit operator BnfiExpressionTerminals(BnfiTermKeyTerm term)
+		{
+			return new BnfiExpressionTerminals((BnfTerm)term);
+		}
+	}
+
+	public partial class BnfiTermKeyTermPunctuation
+	{
+		public static implicit operator BnfiExpressionTerminals(BnfiTermKeyTermPunctuation term)
 		{
 			return new BnfiExpressionTerminals((BnfTerm)term);
 		}
@@ -106,6 +114,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTerminals operator +(BnfiTermNoAst term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionTerminals operator +(BnfiTermNoAst term1, Terminal term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -139,6 +157,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTerm term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionTerminals operator +(BnfiTermKeyTerm term1, Terminal term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -155,6 +183,39 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionTerminals operator +(GrammarHint term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermKeyTermPunctuation '+' operators for BnfExpression
+
+	public partial class BnfiTermKeyTermPunctuation
+	{
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, Terminal term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(Terminal term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, GrammarHint term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(GrammarHint term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -202,6 +263,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTerminals operator |(BnfiTermNoAst term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionTerminals operator |(BnfiTermNoAst term1, BnfiExpressionTerminals term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
@@ -245,12 +316,65 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTerm term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionTerminals operator |(BnfiTermKeyTerm term1, BnfiExpressionTerminals term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
         public static BnfiExpressionTerminals operator |(BnfiExpressionTerminals term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+	}
+
+	#endregion
+
+	#region BnfiTermKeyTermPunctuation '|' operators for BnfExpression
+
+	public partial class BnfiTermKeyTermPunctuation
+	{
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, Terminal term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(Terminal term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, GrammarHint term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(GrammarHint term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiTermKeyTermPunctuation term1, BnfiExpressionTerminals term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator |(BnfiExpressionTerminals term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -279,6 +403,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionTerminals operator +(BnfiTermKeyTerm term1, BnfiExpressionTerminals term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiExpressionTerminals term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionTerminals operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionTerminals term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -339,180 +473,6 @@ namespace Sarcasm.GrammarAst
         public static BnfiExpressionTerminals operator |(BnfiExpressionTerminals term1, BnfiExpressionTerminals term2)
         {
             return (BnfiExpressionTerminals)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#endregion
-
-	#region BnfiExpressionKeyTermPunctuations definition and operators
-
-	#region BnfiExpressionKeyTermPunctuations definition
-
-	public partial class BnfiExpressionKeyTermPunctuations : BnfiExpression, IBnfiExpressionTL
-	{
-		#region Construction
-
-		public BnfiExpressionKeyTermPunctuations()
-		{
-		}
-
-		public BnfiExpressionKeyTermPunctuations(BnfExpression bnfExpression)
-			: base(bnfExpression)
-		{
-		}
-
-        public BnfiExpressionKeyTermPunctuations(BnfTerm bnfTerm)
-			: base(bnfTerm)
-        {
-        }
-
-		#endregion
-
-		#region Cast operators
-
-		public static explicit operator BnfiExpressionKeyTermPunctuations(BnfExpression bnfExpression)
-		{
-			return new BnfiExpressionKeyTermPunctuations(bnfExpression);
-		}
-
-		#endregion
-	}
-
-	#endregion
-
-	#region [BnfiTermKeyTermPunctuation]: implicit conversions from BnfiExpressionKeyTermPunctuations
-
-	public partial class BnfiTermKeyTermPunctuation
-	{
-		public static implicit operator BnfiExpressionKeyTermPunctuations(BnfiTermKeyTermPunctuation term)
-		{
-			return new BnfiExpressionKeyTermPunctuations((BnfTerm)term);
-		}
-	}
-
-	#endregion
-
-	#region BnfiExpressionKeyTermPunctuations: implicit conversions from [GrammarHint]
-
-	public partial class BnfiExpressionKeyTermPunctuations
-	{
-		public static implicit operator BnfiExpressionKeyTermPunctuations(GrammarHint term)
-		{
-			return new BnfiExpressionKeyTermPunctuations((BnfTerm)term);
-		}
-	}
-
-	#endregion
-
-	#region BnfiTermKeyTermPunctuation '+' operators for BnfExpression
-
-	public partial class BnfiTermKeyTermPunctuation
-	{
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiTermKeyTermPunctuation term1, GrammarHint term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(GrammarHint term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiTermKeyTermPunctuation '|' operators for BnfExpression
-
-	public partial class BnfiTermKeyTermPunctuation
-	{
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiTermKeyTermPunctuation term1, GrammarHint term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(GrammarHint term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiTermKeyTermPunctuation term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiTermKeyTermPunctuation term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiExpressionKeyTermPunctuations term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiExpressionKeyTermPunctuations '+' operators for BnfExpression
-
-	public partial class BnfiExpressionKeyTermPunctuations
-	{
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermKeyTermPunctuation term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiExpressionKeyTermPunctuations term1, GrammarHint term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(GrammarHint term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator +(BnfiExpressionKeyTermPunctuations term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-	}
-
-	#endregion
-
-	#region BnfiExpressionKeyTermPunctuations '|' operators for BnfExpression
-
-	public partial class BnfiExpressionKeyTermPunctuations
-	{
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiExpressionKeyTermPunctuations term1, GrammarHint term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(GrammarHint term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionKeyTermPunctuations operator |(BnfiExpressionKeyTermPunctuations term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionKeyTermPunctuations)BnfiExpression.Op_Pipe((BnfTerm)term1, (BnfTerm)term2);
         }
 
 	}
@@ -601,6 +561,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionRecordTL operator +(Member term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTermPunctuation term1, Member term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionRecordTL operator +(Member term1, Terminal term2)
         {
             return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -670,6 +640,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionRecordTL operator +(BnfiTermKeyTerm term1, BnfiTermCopy term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecordTL operator +(BnfiTermCopy term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTermPunctuation term1, BnfiTermCopy term2)
         {
             return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -789,6 +769,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionRecordTL operator +(BnfiTermKeyTerm term1, BnfiExpressionRecordTL term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecordTL operator +(BnfiExpressionRecordTL term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecordTL operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionRecordTL term2)
         {
             return (BnfiExpressionRecordTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -947,6 +937,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<TDeclaringType> operator +(BnfiTermKeyTermPunctuation term1, Member<TDeclaringType> term2)
+        {
+            return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionRecord<TDeclaringType> operator +(Member<TDeclaringType> term1, Terminal term2)
         {
             return (BnfiExpressionRecord<TDeclaringType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1016,6 +1016,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTerm term1, BnfiTermCopy<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermCopy<T> term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTermPunctuation term1, BnfiTermCopy<T> term2)
         {
             return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1135,6 +1145,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionRecord<T> term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiExpressionRecord<T> term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionRecord<T> operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionRecord<T> term2)
         {
             return (BnfiExpressionRecord<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1285,6 +1305,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionConversionTL operator +(BnfiTermConversion term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversionTL operator +(BnfiTermKeyTermPunctuation term1, BnfiTermConversion term2)
+        {
+            return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionConversionTL operator +(BnfiTermConversion term1, Terminal term2)
         {
             return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1362,6 +1392,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionConversionTL operator +(BnfiTermKeyTerm term1, BnfiExpressionConversionTL term2)
+        {
+            return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversionTL operator +(BnfiExpressionConversionTL term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversionTL operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionConversionTL term2)
         {
             return (BnfiExpressionConversionTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1487,6 +1527,16 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
+        public static BnfiExpressionConversion<T> operator +(BnfiTermConversion<T> term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversion<T> operator +(BnfiTermKeyTermPunctuation term1, BnfiTermConversion<T> term2)
+        {
+            return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionConversion<T> operator +(BnfiTermConversion<T> term1, Terminal term2)
         {
             return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1564,6 +1614,16 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionConversion<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionConversion<T> term2)
+        {
+            return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversion<T> operator +(BnfiExpressionConversion<T> term1, BnfiTermKeyTermPunctuation term2)
+        {
+            return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionConversion<T> operator +(BnfiTermKeyTermPunctuation term1, BnfiExpressionConversion<T> term2)
         {
             return (BnfiExpressionConversion<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -1713,6 +1773,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermRecord
 	{
+        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermNoAst term1, BnfiTermRecord term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTerm term1, BnfiTermRecord term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1733,16 +1813,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermRecord term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermRecord term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -1751,6 +1821,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermConstant
 	{
+        public static BnfiExpressionChoiceTL operator +(BnfiTermConstant term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermNoAst term1, BnfiTermConstant term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermConstant term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTerm term1, BnfiTermConstant term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoiceTL operator +(BnfiTermConstant term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1771,16 +1861,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermConstant term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermConstant term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -1789,6 +1869,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermChoice
 	{
+        public static BnfiExpressionChoiceTL operator +(BnfiTermChoice term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermNoAst term1, BnfiTermChoice term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermChoice term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTerm term1, BnfiTermChoice term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoiceTL operator +(BnfiTermChoice term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1809,16 +1909,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoiceTL operator +(BnfiTermChoice term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermChoice term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -1827,6 +1917,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCollection
 	{
+        public static BnfiExpressionChoiceTL operator +(BnfiTermCollection term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermNoAst term1, BnfiTermCollection term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermCollection term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTerm term1, BnfiTermCollection term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoiceTL operator +(BnfiTermCollection term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -1843,16 +1953,6 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionChoiceTL operator +(GrammarHint term1, BnfiTermCollection term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiTermCollection term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermCollection term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2137,6 +2237,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiExpressionChoiceTL
 	{
+        public static BnfiExpressionChoiceTL operator +(BnfiExpressionChoiceTL term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermNoAst term1, BnfiExpressionChoiceTL term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiExpressionChoiceTL term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoiceTL operator +(BnfiTermKeyTerm term1, BnfiExpressionChoiceTL term2)
+        {
+            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoiceTL operator +(BnfiExpressionChoiceTL term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2153,16 +2273,6 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionChoiceTL operator +(GrammarHint term1, BnfiExpressionChoiceTL term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionChoiceTL term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoiceTL operator +(BnfiExpressionKeyTermPunctuations term1, BnfiExpressionChoiceTL term2)
         {
             return (BnfiExpressionChoiceTL)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2308,6 +2418,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermRecord<TType>
 	{
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermNoAst term1, BnfiTermRecord<TType> term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermKeyTerm term1, BnfiTermRecord<TType> term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2328,16 +2458,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermRecord<TType> term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<TType> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermRecord<TType> term2)
-        {
-            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -2346,6 +2466,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermConstant<T>
 	{
+        public static BnfiExpressionChoice<T> operator +(BnfiTermConstant<T> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiTermNoAst term1, BnfiTermConstant<T> term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiTermConstant<T> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiTermKeyTerm term1, BnfiTermConstant<T> term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoice<T> operator +(BnfiTermConstant<T> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2366,16 +2506,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<T> operator +(BnfiTermConstant<T> term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<T> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermConstant<T> term2)
-        {
-            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -2384,6 +2514,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermChoice<TType>
 	{
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermNoAst term1, BnfiTermChoice<TType> term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TType> operator +(BnfiTermKeyTerm term1, BnfiTermChoice<TType> term2)
+        {
+            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoice<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2404,16 +2554,6 @@ namespace Sarcasm.GrammarAst
             return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
 
-        public static BnfiExpressionChoice<TType> operator +(BnfiTermChoice<TType> term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<TType> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermChoice<TType> term2)
-        {
-            return (BnfiExpressionChoice<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
 	}
 
 	#endregion
@@ -2422,6 +2562,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCollectionWithCollectionType<TCollectionType>
 	{
+        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermNoAst term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
+        {
+            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermKeyTerm term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
+        {
+            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2438,16 +2598,6 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionChoice<TCollectionType> operator +(GrammarHint term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
-        {
-            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<TCollectionType> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
         {
             return (BnfiExpressionChoice<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2692,6 +2842,26 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiExpressionChoice<T>
 	{
+        public static BnfiExpressionChoice<T> operator +(BnfiExpressionChoice<T> term1, BnfiTermNoAst term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiTermNoAst term1, BnfiExpressionChoice<T> term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiExpressionChoice<T> term1, BnfiTermKeyTerm term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
+        public static BnfiExpressionChoice<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionChoice<T> term2)
+        {
+            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
+        }
+
         public static BnfiExpressionChoice<T> operator +(BnfiExpressionChoice<T> term1, BnfiTermKeyTermPunctuation term2)
         {
             return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2708,16 +2878,6 @@ namespace Sarcasm.GrammarAst
         }
 
         public static BnfiExpressionChoice<T> operator +(GrammarHint term1, BnfiExpressionChoice<T> term2)
-        {
-            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<T> operator +(BnfiExpressionChoice<T> term1, BnfiExpressionKeyTermPunctuations term2)
-        {
-            return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionChoice<T> operator +(BnfiExpressionKeyTermPunctuations term1, BnfiExpressionChoice<T> term2)
         {
             return (BnfiExpressionChoice<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
         }
@@ -2837,26 +2997,6 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermRecord<TType>
 	{
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermRecord<TType> term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermRecord<TType> term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionGeneral<TType> operator +(BnfiTermRecord<TType> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2885,26 +3025,6 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermConstant<T>
 	{
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermConstant<T> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermNoAst term1, BnfiTermConstant<T> term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermConstant<T> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermKeyTerm term1, BnfiTermConstant<T> term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionGeneral<T> operator +(BnfiTermConstant<T> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2933,26 +3053,6 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermChoice<TType>
 	{
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermNoAst term1, BnfiTermChoice<TType> term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermChoice<TType> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TType> operator +(BnfiTermKeyTerm term1, BnfiTermChoice<TType> term2)
-        {
-            return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionGeneral<TType> operator +(BnfiTermChoice<TType> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<TType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -2981,26 +3081,6 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiTermCollectionWithCollectionType<TCollectionType>
 	{
-        public static BnfiExpressionGeneral<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionGeneral<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TCollectionType> operator +(BnfiTermNoAst term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
-        {
-            return (BnfiExpressionGeneral<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionGeneral<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<TCollectionType> operator +(BnfiTermKeyTerm term1, BnfiTermCollectionWithCollectionType<TCollectionType> term2)
-        {
-            return (BnfiExpressionGeneral<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionGeneral<TCollectionType> operator +(BnfiTermCollectionWithCollectionType<TCollectionType> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<TCollectionType>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
@@ -3029,26 +3109,6 @@ namespace Sarcasm.GrammarAst
 
 	public partial class BnfiExpressionGeneral<T>
 	{
-        public static BnfiExpressionGeneral<T> operator +(BnfiExpressionGeneral<T> term1, BnfiTermNoAst term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermNoAst term1, BnfiExpressionGeneral<T> term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiExpressionGeneral<T> term1, BnfiTermKeyTerm term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
-        public static BnfiExpressionGeneral<T> operator +(BnfiTermKeyTerm term1, BnfiExpressionGeneral<T> term2)
-        {
-            return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);
-        }
-
         public static BnfiExpressionGeneral<T> operator +(BnfiExpressionGeneral<T> term1, Terminal term2)
         {
             return (BnfiExpressionGeneral<T>)BnfiExpression.Op_Plus((BnfTerm)term1, (BnfTerm)term2);

@@ -51,7 +51,7 @@ namespace Sarcasm.UnitTest
         [TestCategory(category)]
         public void TypesafetyCheck_NonPunctuationForChoice_SetRuleOr()
         {
-            string sourceCodeFail = @"
+            string sourceCodeSuccess = @"
                 B.Expression.SetRuleOr(
                     B.BinaryExpression,
                     B.UnaryExpression,
@@ -60,16 +60,6 @@ namespace Sarcasm.UnitTest
                     );
             ";
 
-            string sourceCodeSuccess = @"
-                B.Expression.RuleRaw = 
-                    (BnfTerm)B.BinaryExpression
-                    | (BnfTerm)B.UnaryExpression
-                    | (BnfTerm)B.ConditionalTernaryExpression
-                    | B.FOR + (BnfTerm)B.Expression + B.IF
-                    ;
-            ";
-
-            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -83,7 +73,46 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail_Rule(sourceCodeWithRule, "CS0029");
+            CompileShouldSucceed(sourceCodeWithRule);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_NonBnfiTermKeyTermForChoice_SetRuleOr()
+        {
+            string sourceCodeFail = @"
+                B.Expression.SetRuleOr(
+                    B.BinaryExpression,
+                    B.UnaryExpression,
+                    B.ConditionalTernaryExpression,
+                    B.BinaryExpression + B.Expression + B.IF
+                    );
+            ";
+
+            string sourceCodeSuccess = @"
+                B.Expression.RuleRaw = 
+                    (BnfTerm)B.BinaryExpression
+                    | (BnfTerm)B.UnaryExpression
+                    | (BnfTerm)B.ConditionalTernaryExpression
+                    | (BnfTerm)B.BinaryExpression + (BnfTerm)B.Expression + B.IF
+                    ;
+            ";
+
+            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
+            CompileShouldSucceed(sourceCodeSuccess);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void TypesafetyCheck_NonBnfiTermKeyTermForChoice_Rule()
+        {
+            string sourceCodeWithRule = @"
+                B.Expression.Rule =
+                    B.BinaryExpression + B.Expression + B.IF
+                    ;
+            ";
+
+            CompileShouldFail_Rule(sourceCodeWithRule, "CS0266");
             CompileShouldSucceed_RuleRaw(sourceCodeWithRule);
         }
 

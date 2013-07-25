@@ -93,7 +93,7 @@ namespace Sarcasm.GrammarAst
                 throw new ArgumentNullException("bnfTerm");
         }
 
-        public new BnfiExpression Rule { set { base.Rule = value; } }
+        public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
     }
 
     // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
@@ -111,8 +111,8 @@ namespace Sarcasm.GrammarAst
                 throw new ArgumentNullException("bnfTerm");
         }
 
-        public BnfiExpression RuleTypeless { set { base.Rule = value; } }
+        public BnfiExpressionChoiceTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionGeneral<T> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionChoice<T> Rule { set { base.Rule = value; } }
     }
 }
