@@ -23,13 +23,13 @@ namespace Sarcasm.UniversalGrammars
     {
         public class BnfTerms
         {
-            public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object));
-            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string, object>>();
-            public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
-            public readonly BnfiTermRecord<Array> Array = new BnfiTermRecord<Array>();
-            public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
-            public readonly BnfiTermCopy<string> Key = new BnfiTermCopy<string>();
-            public readonly BnfiTermCopyTL Value = new BnfiTermCopyTL(typeof(object));
+            public readonly BnfiTermChoiceTL Object = new BnfiTermChoiceTL(typeof(object), "Object");
+            public readonly BnfiTermRecord<KeyValuePair<string, object>> KeyValuePair = new BnfiTermRecord<KeyValuePair<string, object>>("KeyValuePair");
+            public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>("KeyValuePairs");
+            public readonly BnfiTermRecord<Array> Array = new BnfiTermRecord<Array>("Array");
+            public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>), "ArrayElements");
+            public readonly BnfiTermCopy<string> Key = new BnfiTermCopy<string>("Key");
+            public readonly BnfiTermCopyTL Value = new BnfiTermCopyTL(typeof(object), "Value");
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -348,12 +348,15 @@ namespace Sarcasm.UniversalGrammars
 
                 if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL, B.NUMBER, B.STRING))
                     decoration.Add(DecorationKey.Foreground, Color.Blue);
-                else if (target.BnfTerm == B.Key && ((string)target.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
-                    decoration.Add(DecorationKey.Foreground, Color.Pink);
-                //else if (target.BnfTerm == B.Type)
+                else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Key)
+                {
+                    if (((string)target.AstParent.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
+                        decoration.Add(DecorationKey.Foreground, Color.Pink);
+                    else
+                        decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
+                }
+                //else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value)
                 //    decoration.Add(DecorationKey.Foreground, Color.Gray);
-                else if (target.BnfTerm == B.Key)
-                    decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
 
                 return decoration;
             }
