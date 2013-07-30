@@ -15,10 +15,18 @@ namespace Sarcasm.GrammarAst
         public BnfiTermKeyTerm(string text, string name)
             : base(text, name)
         {
+            // base class KeyTerm will set TermFlags.NoAstNode
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()
         {
+            return this;
+        }
+
+        public BnfiTermKeyTerm ToPunctuation()
+        {
+            this.SetFlag(TermFlags.IsPunctuation);
+
             return this;
         }
     }

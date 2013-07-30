@@ -141,9 +141,9 @@ namespace Sarcasm.GrammarAst
             return ToTerm(text).IntroValue(value);
         }
 
-        public static BnfiTermKeyTermPunctuation ToPunctuation(string text)
+        public static BnfiTermKeyTerm ToPunctuation(string text)
         {
-            return new BnfiTermKeyTermPunctuation(text);
+            return new BnfiTermKeyTerm(text, text).ToPunctuation();
         }
 
         public static void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)

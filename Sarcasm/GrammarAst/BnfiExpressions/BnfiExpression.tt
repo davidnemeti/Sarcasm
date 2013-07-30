@@ -27,7 +27,7 @@ namespace Sarcasm.GrammarAst
 		"BnfiExpressionTerminals",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
-		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm", "BnfiTermKeyTermPunctuation"},
+		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
 		bnfTermCoreExternTypeNames: new[]{"GrammarHint"},
 		multiCore: true
 	);
@@ -70,7 +70,7 @@ namespace Sarcasm.GrammarAst
 		multiCore: false
 	);
 
-	// multiCore is false for BnfiExpressionChoice to achieve that only one non-(BnfiTermKeyTermPunctuation or GrammarHint) term would appear in a "Plus" expression
+	// multiCore is false for BnfiExpressionChoice to achieve that only one non-(BnfiTermKeyTerm or GrammarHint) term would appear in a "Plus" expression
 
 	GenerateBnfExpressionClassAndOperators(
 		"BnfiExpressionChoiceTL",
@@ -97,7 +97,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"GrammarHint", "BnfiTermNoAst", "BnfiTermKeyTerm", "BnfiTermKeyTermPunctuation"}),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"GrammarHint", "BnfiTermNoAst", "BnfiTermKeyTerm"}),
 		multiCore: false,
 		pipeable: false
 	);

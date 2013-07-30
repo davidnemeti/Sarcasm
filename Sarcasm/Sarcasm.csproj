@@ -99,7 +99,6 @@
     </Compile>
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermCopy.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTerm.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTermPunctuation.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermNoAst.cs" />
     <Compile Include="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.generated.cs">
       <AutoGen>True</AutoGen>

@@ -144,14 +144,14 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
             public readonly BnfiTermKeyTerm VAR;
-            public readonly BnfiTermKeyTermPunctuation DOT;
-            public readonly BnfiTermKeyTermPunctuation LET;
-            public readonly BnfiTermKeyTermPunctuation SEMICOLON;
-            public readonly BnfiTermKeyTermPunctuation COLON;
-            public readonly BnfiTermKeyTermPunctuation COMMA;
-            public readonly BnfiTermKeyTermPunctuation LEFT_PAREN;
-            public readonly BnfiTermKeyTermPunctuation RIGHT_PAREN;
-            public readonly BnfiTermKeyTermPunctuation QUESTION_MARK;
+            public readonly BnfiTermKeyTerm DOT;
+            public readonly BnfiTermKeyTerm LET;
+            public readonly BnfiTermKeyTerm SEMICOLON;
+            public readonly BnfiTermKeyTerm COLON;
+            public readonly BnfiTermKeyTerm COMMA;
+            public readonly BnfiTermKeyTerm LEFT_PAREN;
+            public readonly BnfiTermKeyTerm RIGHT_PAREN;
+            public readonly BnfiTermKeyTerm QUESTION_MARK;
 
             public readonly BnfiTermConversion<BinaryOperator> ADD_OP;
             public readonly BnfiTermConversion<BinaryOperator> SUB_OP;

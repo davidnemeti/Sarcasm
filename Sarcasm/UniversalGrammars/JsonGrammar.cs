@@ -32,12 +32,12 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermCopy<string> Key = new BnfiTermCopy<string>("Key");
             public readonly BnfiTermCopyTL Value = new BnfiTermCopyTL(typeof(object), "Value");
 
-            public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
-            public readonly BnfiTermKeyTermPunctuation OBJECT_END;
-            public readonly BnfiTermKeyTermPunctuation ARRAY_BEGIN;
-            public readonly BnfiTermKeyTermPunctuation ARRAY_END;
-            public readonly BnfiTermKeyTermPunctuation COMMA;
-            public readonly BnfiTermKeyTermPunctuation COLON;
+            public readonly BnfiTermKeyTerm OBJECT_BEGIN;
+            public readonly BnfiTermKeyTerm OBJECT_END;
+            public readonly BnfiTermKeyTerm ARRAY_BEGIN;
+            public readonly BnfiTermKeyTerm ARRAY_END;
+            public readonly BnfiTermKeyTerm COMMA;
+            public readonly BnfiTermKeyTerm COLON;
             public readonly BnfiTermConversionTL NUMBER;
             public readonly BnfiTermConversion<string> STRING;
             public readonly BnfiTermConstant<bool> BOOLEAN;
