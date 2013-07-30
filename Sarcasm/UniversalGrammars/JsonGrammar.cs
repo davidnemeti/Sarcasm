@@ -15,6 +15,7 @@ using Sarcasm.DomainCore;
 using Sarcasm.Utility;
 using Sarcasm.Reflection;
 using Sarcasm.Unparsing.Styles;
+using Irony.Parsing;
 
 namespace Sarcasm.UniversalGrammars
 {
@@ -235,7 +236,7 @@ namespace Sarcasm.UniversalGrammars
         {
             Type type = obj.GetType();
 
-            yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName);
+            yield return new KeyValuePair<string, object>(TYPE_KEYWORD, type.AssemblyQualifiedName) { IsTypeInfo = true };
 
             if (type.IsEnum ||
                 type == typeof(Boolean) ||
@@ -313,6 +314,7 @@ namespace Sarcasm.UniversalGrammars
 
             public TKey Key { get; set; }
             public TValue Value { get; set; }
+            public bool IsTypeInfo { get; set; }
         }
 
         public static class KeyValuePair
@@ -346,17 +348,20 @@ namespace Sarcasm.UniversalGrammars
 
                 decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
 
-                if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL, B.NUMBER, B.STRING))
-                    decoration.Add(DecorationKey.Foreground, Color.Blue);
+                if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL) || target.BnfTerm is NumberLiteral)
+                    decoration.Add(DecorationKey.Foreground, Color.Violet);
                 else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Key)
                 {
                     if (((string)target.AstParent.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
-                        decoration.Add(DecorationKey.Foreground, Color.Pink);
+                        decoration.Add(DecorationKey.Foreground, Color.Red);
                     else
-                        decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
+                        decoration.Add(DecorationKey.Foreground, Color.Blue);
                 }
-                //else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value)
-                //    decoration.Add(DecorationKey.Foreground, Color.Gray);
+                else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value && target.AstParent.AstParent != null &&
+                    target.AstParent.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstParent.AstValue).IsTypeInfo)
+                {
+                    decoration.Add(DecorationKey.Foreground, Color.ForestGreen);
+                }
 
                 return decoration;
             }
