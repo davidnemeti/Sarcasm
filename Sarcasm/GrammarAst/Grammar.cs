@@ -164,7 +164,7 @@ namespace Sarcasm.GrammarAst
             get
             {
                 if (empty == null)
-                    empty = base.Empty.NoAst();
+                    empty = base.Empty.NoAst(valueCreatorFromNoAst: null);
 
                 return empty;
             }

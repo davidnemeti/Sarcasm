@@ -208,9 +208,24 @@ namespace Sarcasm.GrammarAst
             return Member.Bind(fieldInfo, bnfTerm);
         }
 
-        public static BnfiTermNoAst NoAst(this BnfTerm bnfTerm)
+        public static BnfiTermNoAst NoAst(this KeyTerm keyTerm)
         {
-            return BnfiTermNoAst.For(bnfTerm);
+            return BnfiTermNoAst.For(keyTerm);
+        }
+
+        public static BnfiTermNoAst NoAst(this BnfTerm bnfTerm, ValueCreatorFromNoAst<object> valueCreatorFromNoAst)
+        {
+            return BnfiTermNoAst.For(bnfTerm, valueCreatorFromNoAst);
+        }
+
+        public static BnfiTermNoAst NoAst(this BnfiTermKeyTerm bnfiTermKeyTerm)
+        {
+            return BnfiTermNoAst.For(bnfiTermKeyTerm);
+        }
+
+        public static BnfiTermNoAst NoAst<T>(this IBnfiTerm<T> bnfTerm, ValueCreatorFromNoAst<T> valueCreatorFromNoAst)
+        {
+            return BnfiTermNoAst.For(bnfTerm, valueCreatorFromNoAst);
         }
 
         #endregion
