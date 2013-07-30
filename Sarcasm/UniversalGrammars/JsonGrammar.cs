@@ -28,6 +28,8 @@ namespace Sarcasm.UniversalGrammars
             public readonly BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>> KeyValuePairs = new BnfiTermCollection<List<KeyValuePair<string, object>>, KeyValuePair<string, object>>();
             public readonly BnfiTermRecord<Array> Array = new BnfiTermRecord<Array>();
             public readonly BnfiTermCollectionTL ArrayElements = new BnfiTermCollectionTL(typeof(List<object>));
+            public readonly BnfiTermCopy<string> Key = new BnfiTermCopy<string>();
+            public readonly BnfiTermCopyTL Value = new BnfiTermCopyTL(typeof(object));
 
             public readonly BnfiTermKeyTermPunctuation OBJECT_BEGIN;
             public readonly BnfiTermKeyTermPunctuation OBJECT_END;
@@ -98,9 +100,17 @@ namespace Sarcasm.UniversalGrammars
                 ;
 
             B.KeyValuePair.Rule =
-                B.STRING.BindTo(B.KeyValuePair, fv => fv.Key)
+                B.Key.BindTo(B.KeyValuePair, fv => fv.Key)
                 + B.COLON
-                + B.Object.BindTo(B.KeyValuePair, fv => fv.Value);
+                + B.Value.BindTo(B.KeyValuePair, fv => fv.Value);
+
+            B.Key.Rule =
+                B.STRING
+                ;
+
+            B.Value.Rule =
+                B.Object
+                ;
 
             B.Array.Rule =
                 B.ARRAY_BEGIN
@@ -338,12 +348,12 @@ namespace Sarcasm.UniversalGrammars
 
                 if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL, B.NUMBER, B.STRING))
                     decoration.Add(DecorationKey.Foreground, Color.Blue);
-                //else if (target.BnfTerm.EqualToAny(B.TYPE_KEYWORD, B.COLLECTION_VALUES_KEYWORD, B.PRIMITIVE_VALUE_KEYWORD))
-                //    decoration.Add(DecorationKey.Foreground, Color.Pink);
+                else if (target.BnfTerm == B.Key && ((string)target.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
+                    decoration.Add(DecorationKey.Foreground, Color.Pink);
                 //else if (target.BnfTerm == B.Type)
                 //    decoration.Add(DecorationKey.Foreground, Color.Gray);
-                //else if (target.BnfTerm == B.Key)
-                //    decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
+                else if (target.BnfTerm == B.Key)
+                    decoration.Add(DecorationKey.Foreground, Color.OrangeRed);
 
                 return decoration;
             }
@@ -376,17 +386,11 @@ namespace Sarcasm.UniversalGrammars
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.BnfTerm == B.OBJECT_BEGIN || target.BnfTerm == B.OBJECT_END)
-                    return BlockIndentation.Unindent;
-
-                else if (target.BnfTerm == B.Object)
+                if (target.BnfTerm == B.KeyValuePairs)
                     return BlockIndentation.Indent;
 
-                else if (target.BnfTerm == B.Array)
+                else if (target.BnfTerm == B.ArrayElements)
                     return BlockIndentation.Indent;
-
-                else if (target.BnfTerm == B.ARRAY_BEGIN || target.BnfTerm == B.ARRAY_END)
-                    return BlockIndentation.Unindent;
 
                 else
                     return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);
