@@ -47,13 +47,17 @@ namespace Playground
             var jsonGrammar = new JsonGrammar();
 
             Unparser universalUnparser = new Unparser(jsonGrammar);
+            var universalParser = MultiParser.Create(jsonGrammar);
             string text = universalUnparser.Unparse(astRootValue).AsText(universalUnparser);
 
-            var universalParser = MultiParser.Create(jsonGrammar);
+            var foo = universalUnparser.Unparse(astRootValue).Select(utoken => utoken.GetDecoration()).ToList();
+
             var parseTree2 = universalParser.Parse(text);
             var astRootValue2 = parseTree2.RootAstValue;
 
             string text2 = universalUnparser.Unparse(astRootValue2).AsText(universalUnparser);
+
+            bool eq = text == text2;
 #endif
 
             Unparser unparser = new Unparser(grammar);
