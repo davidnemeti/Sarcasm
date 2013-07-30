@@ -60,6 +60,6 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        public new BnfiExpressionTerminals Rule { set { base.Rule = value; } }
+        public new BnfiExpressionNoAst Rule { set { base.Rule = value; } }
     }
 }

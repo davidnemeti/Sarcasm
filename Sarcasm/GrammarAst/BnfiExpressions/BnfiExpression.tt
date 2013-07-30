@@ -22,9 +22,9 @@ using Irony.Parsing;
 namespace Sarcasm.GrammarAst
 {
 <#
-	var bnfTermCoreTypeNamesForBnfiExpressionTerminals =
+	var bnfTermCoreTypeNamesForBnfiExpressionNoAst =
 	GenerateBnfExpressionClassAndOperators(
-		"BnfiExpressionTerminals",
+		"BnfiExpressionNoAst",
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermNoAst", "BnfiTermKeyTerm"},
@@ -37,7 +37,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"Member", "BnfiTermCopy"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst,
 		multiCore: true
 	);
 
@@ -46,7 +46,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermPlusAbleForType<T>"},
 		bnfTermCoreTypeNames: new[]{"Member<TDeclaringType>", "BnfiTermCopy<T>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst,
 		multiCore: true
 	);
 
@@ -56,7 +56,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpressionConversion",
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermConversion"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst,
 		multiCore: false
 	);
 
@@ -66,7 +66,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpressionConversion",
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermConversion<T>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals,
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst,
 		multiCore: false
 	);
 
@@ -78,7 +78,7 @@ namespace Sarcasm.GrammarAst
 		implementInterfaces: new[]{"IBnfiExpressionTL"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord", "BnfiTermConstant", "BnfiTermChoice", "BnfiTermCollection"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionConversion.Concat(new[]{"BnfiExpressionConversion"}),
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"BnfiExpressionTerminals"}),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst.Except(new[]{"BnfiExpressionNoAst"}),
 		multiCore: false
 	);
 
@@ -88,7 +88,7 @@ namespace Sarcasm.GrammarAst
 		implementInterfaces: new[]{"IBnfiExpression<T>", "IBnfiTermOrAbleForChoice<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
 		bnfTermCoreExternTypeNames: bnfTermCoreTypeNamesForBnfiExpressionConversionGeneric,
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"BnfiExpressionTerminals"}),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst.Except(new[]{"BnfiExpressionNoAst"}),
 		multiCore: false
 	);
 
@@ -97,7 +97,7 @@ namespace Sarcasm.GrammarAst
 		inheritFromBase: "BnfiExpression",
 		implementInterfaces: new[]{"IBnfiExpression<T>"},
 		bnfTermCoreTypeNames: new[]{"BnfiTermRecord<TType>", "BnfiTermConstant<T>", "BnfiTermChoice<TType>", "BnfiTermCollectionWithCollectionType<TCollectionType>"},
-		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionTerminals.Except(new[]{"GrammarHint", "BnfiTermNoAst", "BnfiTermKeyTerm"}),
+		bnfTermSideTypeNames: bnfTermCoreTypeNamesForBnfiExpressionNoAst.Except(new[]{"GrammarHint", "BnfiTermNoAst", "BnfiTermKeyTerm"}),
 		multiCore: false,
 		pipeable: false
 	);
