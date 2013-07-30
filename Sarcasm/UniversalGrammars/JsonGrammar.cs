@@ -91,7 +91,6 @@ namespace Sarcasm.UniversalGrammars
                 B.OBJECT_BEGIN
                 + B.KeyValuePairs.ConvertValue(KeyValuePairsToObject, ObjectToKeyValuePairs)
                 + B.OBJECT_END
-                + ReduceHere()
                 ;
 
             B.KeyValuePairs.Rule =
