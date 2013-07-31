@@ -32,34 +32,34 @@ namespace MiniPL.Grammars
         {
             internal BnfTerms(TerminalFactoryS TerminalFactoryS, CultureInfo cultureInfo)
             {
-                if (cultureInfo == CultureInfo.GetCultureInfo("hu"))
+                if (cultureInfo.Name == "hu")
                 {
                     this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
-                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("névtér");
+                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("nevter");
                     this.BEGIN = TerminalFactoryS.CreateKeyTerm("eleje");
-                    this.END = TerminalFactoryS.CreateKeyTerm("vége");
-                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("függvény");
-                    this.WHILE = TerminalFactoryS.CreateKeyTerm("amíg");
+                    this.END = TerminalFactoryS.CreateKeyTerm("vege");
+                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("fuggveny");
+                    this.WHILE = TerminalFactoryS.CreateKeyTerm("amig");
                     this.FOR = TerminalFactoryS.CreateKeyTerm("ciklus");
                     this.IF = TerminalFactoryS.CreateKeyTerm("ha");
                     this.THEN = TerminalFactoryS.CreateKeyTerm("akkor");
-                    this.ELSE = TerminalFactoryS.CreateKeyTerm("egyébként");
-                    this.DO = TerminalFactoryS.CreateKeyTerm("csináld");
-                    this.RETURN = TerminalFactoryS.CreateKeyTerm("visszatér");
-                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiír");
-                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírÚjsor");
-                    this.VAR = TerminalFactoryS.CreateKeyTerm("változó");
+                    this.ELSE = TerminalFactoryS.CreateKeyTerm("egyebkent");
+                    this.DO = TerminalFactoryS.CreateKeyTerm("csinald");
+                    this.RETURN = TerminalFactoryS.CreateKeyTerm("visszater");
+                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiir");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiirUjsor");
+                    this.VAR = TerminalFactoryS.CreateKeyTerm("valtozo");
 
-                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("és", DomainModel.BinaryOperator.And);
+                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("es", DomainModel.BinaryOperator.And);
                     this.OR_OP = TerminalFactoryS.CreateKeyTerm("vagy", DomainModel.BinaryOperator.Or);
 
                     this.NOT_OP = TerminalFactoryS.CreateKeyTerm("nem", DomainModel.UnaryOperator.Not);
 
-                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("egész", DomainModel.Type.Integer);
-                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valós", DomainModel.Type.Real);
-                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", DomainModel.Type.String);
+                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("egesz", DomainModel.Type.Integer);
+                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valos", DomainModel.Type.Real);
+                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlanc", DomainModel.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", DomainModel.Type.Char);
-                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_érték", DomainModel.Type.Bool);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_ertek", DomainModel.Type.Bool);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
