@@ -418,6 +418,8 @@ namespace MiniPL.Grammars
             {
                 var decoration = base.GetDecoration(target);
 
+                decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
+
                 if (target.BnfTerm is KeyTerm)
                 {
                     decoration

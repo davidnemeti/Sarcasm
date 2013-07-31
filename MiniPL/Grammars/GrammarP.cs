@@ -429,6 +429,8 @@ namespace MiniPL.Grammars
             {
                 var decoration = base.GetDecoration(target);
 
+                decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
+
                 if (target.AstValue is D.If)
                 {
                     if (target.BnfTerm == B.LEFT_PAREN)
