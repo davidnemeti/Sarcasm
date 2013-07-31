@@ -329,7 +329,7 @@ namespace Sarcasm.Unparsing
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && utoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
-                        yield return UtokenWhitespace.WhiteSpaceBetweenUtokens;
+                        yield return new UtokenWhitespace(UtokenWhitespace.Kind.WhiteSpaceBetweenUtokens);
 
                     if (utoken != null)
                         yield return utoken;
@@ -342,7 +342,7 @@ namespace Sarcasm.Unparsing
 
         private static bool IsLineSeparator(UtokenBase utoken)
         {
-            return utoken == UtokenWhitespace.NewLine || utoken == UtokenWhitespace.EmptyLine || utoken == null;
+            return utoken.IsNewLine() || utoken.IsEmptyLine() || utoken == null;
         }
 
         private static bool IsWhitespace(UtokenBase utoken)

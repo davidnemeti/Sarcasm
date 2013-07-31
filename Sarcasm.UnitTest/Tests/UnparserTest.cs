@@ -84,7 +84,7 @@ namespace Sarcasm.UnitTest
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
                 if (target.BnfTerm == B.Statement)
-                    leftInsertedUtokens = new[] { UtokenInsert.NewLine, UtokenInsert.NewLine };
+                    leftInsertedUtokens = new[] { UtokenInsert.NewLine(), UtokenInsert.NewLine() };
             }
         }
     }

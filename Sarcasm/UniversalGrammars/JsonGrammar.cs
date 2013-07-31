@@ -371,25 +371,25 @@ namespace Sarcasm.UniversalGrammars
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
                 if (target.BnfTerm == B.OBJECT_BEGIN)
-                    rightInsertedUtokens = UtokenInsert.NewLine;
+                    rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.OBJECT_END)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.ARRAY_BEGIN)
-                    rightInsertedUtokens = UtokenInsert.NewLine;
+                    rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.ARRAY_END)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.COMMA)
                 {
-                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
-                    rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace();
+                    rightInsertedUtokens = UtokenInsert.NewLine();
                 }
 
                 else if (target.BnfTerm == B.COLON && !CompactFormat)
-                    rightInsertedUtokens = UtokenInsert.NewLine;
+                    rightInsertedUtokens = UtokenInsert.NewLine();
             }
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)

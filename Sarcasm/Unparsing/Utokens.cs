@@ -135,12 +135,30 @@ namespace Sarcasm.Unparsing
 
     public abstract class UtokenInsert : UtokenBase
     {
-        public static UtokenInsert NewLine { get { return UtokenWhitespace.NewLine; } }
-        public static UtokenInsert EmptyLine { get { return UtokenWhitespace.EmptyLine; } }
-        public static UtokenInsert Space { get { return UtokenWhitespace.Space; } }
-        public static UtokenInsert Tab { get { return UtokenWhitespace.Tab; } }
+        public static UtokenInsert NewLine()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.NewLine);
+        }
 
-        public static UtokenInsert NoWhitespace { get { return UtokenControl.NoWhitespace; } }
+        public static UtokenInsert EmptyLine()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.EmptyLine);
+        }
+
+        public static UtokenInsert Space()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.Space);
+        }
+
+        public static UtokenInsert Tab()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.Tab);
+        }
+
+        public static UtokenInsert NoWhitespace()
+        {
+            return UtokenControl.NoWhitespace;
+        }
     }
 
     public class UtokenWhitespace : UtokenInsert, Utoken
@@ -149,18 +167,10 @@ namespace Sarcasm.Unparsing
 
         internal readonly Kind kind;
 
-        private UtokenWhitespace(Kind kind)
+        internal UtokenWhitespace(Kind kind)
         {
             this.kind = kind;
         }
-
-        internal static new readonly UtokenWhitespace NewLine = new UtokenWhitespace(Kind.NewLine);
-        internal static new readonly UtokenWhitespace EmptyLine = new UtokenWhitespace(Kind.EmptyLine);
-        internal static new readonly UtokenWhitespace Space = new UtokenWhitespace(Kind.Space);
-        internal static new readonly UtokenWhitespace Tab = new UtokenWhitespace(Kind.Tab);
-
-        // for internal use only
-        internal static readonly UtokenWhitespace WhiteSpaceBetweenUtokens = new UtokenWhitespace(Kind.WhiteSpaceBetweenUtokens);
 
         public string ToText(Formatter formatter)
         {
@@ -443,6 +453,59 @@ namespace Sarcasm.Unparsing
                 return (calculatedUtokens != null ? " calculated" : " non-calculated") + " object: {" + helpCalculatedObject + "}";
             else
                 return string.Empty;
+        }
+    }
+
+    public static class UtokenExtensions
+    {
+        public static bool IsIndent(this Utoken utoken)
+        {
+            return utoken is UtokenIndent;
+        }
+
+        public static bool IsIndent(this UtokenBase utoken)
+        {
+            return utoken is UtokenIndent;
+        }
+
+        public static bool IsNewLine(this Utoken utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.NewLine;
+        }
+
+        public static bool IsNewLine(this UtokenBase utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.NewLine;
+        }
+
+        public static bool IsEmptyLine(this Utoken utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.EmptyLine;
+        }
+
+        public static bool IsEmptyLine(this UtokenBase utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.EmptyLine;
+        }
+
+        public static bool IsSpace(this Utoken utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.Space;
+        }
+
+        public static bool IsSpace(this UtokenBase utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.Space;
+        }
+
+        public static bool IsTab(this Utoken utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.Tab;
+        }
+
+        public static bool IsTab(this UtokenBase utoken)
+        {
+            return utoken is UtokenWhitespace && ((UtokenWhitespace)utoken).kind == UtokenWhitespace.Kind.Tab;
         }
     }
 }

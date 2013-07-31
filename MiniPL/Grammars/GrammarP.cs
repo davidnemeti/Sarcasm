@@ -494,68 +494,68 @@ namespace MiniPL.Grammars
 #endif
 
                 if (target.BnfTerm == B.DOT)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NoWhitespace;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.RIGHT_PAREN)
-                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.LEFT_PAREN)
-                    rightInsertedUtokens = UtokenInsert.NoWhitespace;
+                    rightInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.SEMICOLON)
-                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.COMMA)
-                    leftInsertedUtokens = UtokenInsert.NoWhitespace;
+                    leftInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.Statement)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.BEGIN)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.END)
                 {
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine;
+                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                     if (target.AstValue is D.Function)
-                        rightInsertedUtokens = UtokenInsert.EmptyLine.SetPriority(10);
+                        rightInsertedUtokens = UtokenInsert.EmptyLine().SetPriority(10);
                 }
 
                 else if (target.BnfTerm == B.UnaryOperator)
-                    rightInsertedUtokens = UtokenInsert.NoWhitespace;
+                    rightInsertedUtokens = UtokenInsert.NoWhitespace();
 
                 else if (target.BnfTerm == B.Name && target.AstParent != null && target.AstParent.AstValue is D.Program)
-                    rightInsertedUtokens = UtokenInsert.EmptyLine;
+                    rightInsertedUtokens = UtokenInsert.EmptyLine();
 
                 else if (target.BnfTerm == B.NamespaceName && target.AstParent != null && target.AstParent.AstValue is D.Program)
-                    rightInsertedUtokens = UtokenInsert.EmptyLine;
+                    rightInsertedUtokens = UtokenInsert.EmptyLine();
             }
 
             protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
                 if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
-                    return UtokenInsert.NoWhitespace;
+                    return UtokenInsert.NoWhitespace();
 
                 else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
-                    return UtokenInsert.NoWhitespace;
+                    return UtokenInsert.NoWhitespace();
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
-                    return UtokenInsert.NoWhitespace;
+                    return UtokenInsert.NoWhitespace();
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
-                    return UtokenInsert.NoWhitespace;
+                    return UtokenInsert.NoWhitespace();
 
                 // alternative ways to handle "else if" spacing
                 else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
-                    return UtokenInsert.Space.SetPriority(10);
+                    return UtokenInsert.Space().SetPriority(10);
                 //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.IF)
                 //    return UtokenInsert.Space.SetPriority(10);
                 //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.AstValue is D.If)
                 //    return UtokenInsert.Space.SetPriority(10);
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
-                    return UtokenInsert.NoWhitespace.SetPriority(10);
+                    return UtokenInsert.NoWhitespace().SetPriority(10);
 
                 else
                     return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
