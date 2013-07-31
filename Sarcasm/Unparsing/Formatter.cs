@@ -64,6 +64,7 @@ namespace Sarcasm.Unparsing
         internal class Params
         {
             public readonly BlockIndentation blockIndentation;
+            public InsertedUtokens insertedUtokensAfter;
 
             public Params(BlockIndentation blockIndentation)
             {
@@ -274,11 +275,23 @@ namespace Sarcasm.Unparsing
 
             @params = new Params(blockIndentation);
 
-            GetUtokensBeforeAfter getUtokensBefore = direction == Unparser.Direction.LeftToRight
-                ? (GetUtokensBeforeAfter)_GetUtokensLeft
-                : (GetUtokensBeforeAfter)_GetUtokensRight;
+            InsertedUtokens leftInsertedUtokens;
+            InsertedUtokens rightInsertedUtokens;
 
-            InsertedUtokens insertedUtokensBefore = getUtokensBefore(self);
+            _GetUtokensAround(self, out leftInsertedUtokens, out rightInsertedUtokens);
+
+            InsertedUtokens insertedUtokensBefore;
+
+            if (direction == Unparser.Direction.LeftToRight)
+            {
+                insertedUtokensBefore = leftInsertedUtokens;
+                @params.insertedUtokensAfter = rightInsertedUtokens;
+            }
+            else
+            {
+                insertedUtokensBefore = rightInsertedUtokens;
+                @params.insertedUtokensAfter = leftInsertedUtokens;
+            }
 
             if (insertedUtokensBefore != InsertedUtokens.None)
             {
@@ -293,11 +306,7 @@ namespace Sarcasm.Unparsing
         {
             Unparser.tsUnparse.Debug("YieldAfter");
 
-            GetUtokensBeforeAfter getUtokensAfter = direction == Unparser.Direction.LeftToRight
-                ? (GetUtokensBeforeAfter)_GetUtokensRight
-                : (GetUtokensBeforeAfter)_GetUtokensLeft;
-
-            InsertedUtokens insertedUtokensAfter = getUtokensAfter(self);
+            InsertedUtokens insertedUtokensAfter = @params.insertedUtokensAfter;
 
             if (insertedUtokensAfter != InsertedUtokens.None)
             {
@@ -598,26 +607,15 @@ namespace Sarcasm.Unparsing
 
         #region Helpers
 
-        private InsertedUtokens _GetUtokensLeft(UnparsableAst target)
+        private void _GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
         {
-            InsertedUtokens leftInsertedUtokens;
-            InsertedUtokens rightInsertedUtokens;
-
             GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
-            return leftInsertedUtokens
+            leftInsertedUtokens
                 .SetKind(InsertedUtokens.Kind.Left)
                 .SetAffected(target);
-        }
 
-        private InsertedUtokens _GetUtokensRight(UnparsableAst target)
-        {
-            InsertedUtokens leftInsertedUtokens;
-            InsertedUtokens rightInsertedUtokens;
-
-            GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
-
-            return rightInsertedUtokens
+            rightInsertedUtokens
                 .SetKind(InsertedUtokens.Kind.Right)
                 .SetAffected(target);
         }
