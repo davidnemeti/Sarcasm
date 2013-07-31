@@ -329,7 +329,7 @@ namespace Sarcasm.Unparsing
                         yield return new UtokenIndent(indentLevelForCurrentLine);
 
                     if (allowWhitespaceBetweenUtokens && prevNotControlUtoken != null && utoken != null && !IsWhitespace(prevNotControlUtoken) && !IsWhitespace(utoken))
-                        yield return new UtokenWhitespace(UtokenWhitespace.Kind.WhiteSpaceBetweenUtokens);
+                        yield return UtokenWhitespace.WhiteSpaceBetweenUtokens();
 
                     if (utoken != null)
                         yield return (Utoken)utoken;

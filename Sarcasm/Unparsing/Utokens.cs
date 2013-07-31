@@ -138,22 +138,22 @@ namespace Sarcasm.Unparsing
     {
         public static UtokenInsert NewLine()
         {
-            return new UtokenWhitespace(UtokenWhitespace.Kind.NewLine);
+            return UtokenWhitespace.NewLine();
         }
 
         public static UtokenInsert EmptyLine()
         {
-            return new UtokenWhitespace(UtokenWhitespace.Kind.EmptyLine);
+            return UtokenWhitespace.EmptyLine();
         }
 
         public static UtokenInsert Space()
         {
-            return new UtokenWhitespace(UtokenWhitespace.Kind.Space);
+            return UtokenWhitespace.Space();
         }
 
         public static UtokenInsert Tab()
         {
-            return new UtokenWhitespace(UtokenWhitespace.Kind.Tab);
+            return UtokenWhitespace.Tab();
         }
 
         public static UtokenInsert NoWhitespace()
@@ -168,9 +168,34 @@ namespace Sarcasm.Unparsing
 
         internal readonly Kind kind;
 
-        internal UtokenWhitespace(Kind kind)
+        private UtokenWhitespace(Kind kind)
         {
             this.kind = kind;
+        }
+
+        public static new UtokenWhitespace NewLine()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.NewLine);
+        }
+
+        public static new UtokenWhitespace EmptyLine()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.EmptyLine);
+        }
+
+        public static new UtokenWhitespace Space()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.Space);
+        }
+
+        public static new UtokenWhitespace Tab()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.Tab);
+        }
+
+        internal static UtokenWhitespace WhiteSpaceBetweenUtokens()
+        {
+            return new UtokenWhitespace(UtokenWhitespace.Kind.WhiteSpaceBetweenUtokens);
         }
 
         public string ToText(Formatter formatter)
