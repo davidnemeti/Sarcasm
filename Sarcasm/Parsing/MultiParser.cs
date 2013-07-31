@@ -139,6 +139,16 @@ namespace Sarcasm.Parsing
             return GetParser(root).Context;
         }
 
+        public IEnumerable<Parser> GetParsers()
+        {
+            return Util.Concat(mainParser, rootToParser.Values);
+        }
+
+        public Parser GetMainParser()
+        {
+            return mainParser;
+        }
+
         #endregion
 
         /*

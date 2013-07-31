@@ -16,6 +16,7 @@ using Sarcasm.Utility;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using System.Globalization;
+using Sarcasm.Parsing;
 
 namespace Sarcasm.Unparsing
 {
@@ -100,6 +101,7 @@ namespace Sarcasm.Unparsing
         public string WhiteSpaceBetweenUtokens { get; set; }
         public bool IndentEmptyLines { get; set; }
         public IFormatProvider FormatProvider { get; private set; }
+        private List<Parser> attachedParsers;
 
         #endregion
 
@@ -118,11 +120,21 @@ namespace Sarcasm.Unparsing
         public Formatter(Grammar grammar)
             : this(grammar.DefaultCulture)
         {
+            this.attachedParsers = new List<Parser>();
         }
 
-        public Formatter(Parser parser)
-            : this(parser.Context.Culture)
+        public Formatter(Parser parserToAttach)
+            : this(parserToAttach.Context.Culture)
         {
+            this.attachedParsers = new List<Parser>();
+            AttachParser(parserToAttach);
+        }
+
+        public Formatter(MultiParser multiParserToAttach)
+            : this(multiParserToAttach.GetMainParser().Context.Culture)
+        {
+            this.attachedParsers = new List<Parser>();
+            AttachParser(multiParserToAttach);
         }
 
         protected Formatter(IFormatProvider formatProvider)
@@ -146,6 +158,7 @@ namespace Sarcasm.Unparsing
             this.WhiteSpaceBetweenUtokens = that.WhiteSpaceBetweenUtokens;
             this.IndentEmptyLines = that.IndentEmptyLines;
             this.FormatProvider = that.FormatProvider;
+            this.attachedParsers = that.attachedParsers;
 
             this.direction = that.direction;
         }
@@ -186,23 +199,33 @@ namespace Sarcasm.Unparsing
 
         #region Interface to grammar
 
-        public CultureInfo CultureInfo { get { return FormatProvider as CultureInfo; } }
+        public CultureInfo CultureInfo
+        {
+            get { return (CultureInfo)FormatProvider; }
 
-        public void SetFormatProviderIndependentlyFromParser(IFormatProvider formatProvider)
+            set
+            {
+                FormatProvider = value;
+
+                foreach (Parser parser in attachedParsers)
+                    parser.Context.Culture = value;
+            }
+        }
+
+        public void AttachParser(MultiParser multiParserToAttach)
+        {
+            foreach (Parser parser in multiParserToAttach.GetParsers())
+                AttachParser(parser);
+        }
+
+        public void AttachParser(Parser parserToAttach)
+        {
+            attachedParsers.Add(parserToAttach);
+        }
+
+        public void SetFormatProviderIndependentlyFromAttachedParsers(IFormatProvider formatProvider)
         {
             this.FormatProvider = formatProvider;
-
-        }
-
-        public void SetCultureInfoIndependentlyFromParser(CultureInfo cultureInfo)
-        {
-            SetFormatProviderIndependentlyFromParser(cultureInfo);
-        }
-
-        public void SetCultureInfo(CultureInfo cultureInfo, Parser parser)
-        {
-            SetCultureInfoIndependentlyFromParser(cultureInfo);
-            parser.Context.Culture = cultureInfo;
         }
 
         #endregion
