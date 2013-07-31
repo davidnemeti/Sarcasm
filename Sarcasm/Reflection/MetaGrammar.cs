@@ -64,7 +64,14 @@ namespace Sarcasm.Reflection
 
         public Grammar CreateGrammar(CultureInfo cultureInfo)
         {
-            return (Grammar)Activator.CreateInstance(GrammarType, cultureInfo);
+            try
+            {
+                return (Grammar)Activator.CreateInstance(GrammarType, cultureInfo);
+            }
+            catch (MissingMethodException)
+            {
+                return CreateGrammar();
+            }
         }
     }
 }
