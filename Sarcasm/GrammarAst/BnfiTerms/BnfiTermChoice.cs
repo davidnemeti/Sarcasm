@@ -31,7 +31,7 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;

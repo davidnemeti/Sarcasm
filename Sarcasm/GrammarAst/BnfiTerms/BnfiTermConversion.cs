@@ -150,7 +150,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversion<string> IntroStringLiteral(StringLiteral stringLiteral)
         {
-            return Intro<string>(
+            var bnfiTermConversion = Intro<string>(
                 stringLiteral,
                 (context, parseNode) =>
                 {
@@ -160,6 +160,7 @@ namespace Sarcasm.GrammarAst
                         .Remove(quotedStr.Length - subType.End.Length)
                         .Remove(0, subType.Start.Length);
                 },
+//                NoUnparseByInverse<string>(),
                 str =>
                 {
                     var subType = stringLiteral._subtypes.First();
@@ -167,6 +168,15 @@ namespace Sarcasm.GrammarAst
                 },
                 astForChild: false
                 );
+
+            //bnfiTermConversion.UtokenizerForUnparse =
+            //    (formatProvider, reference, astValue) =>
+            //    {
+            //        var subType = stringLiteral._subtypes.First();
+            //        return new UtokenValue[] { UtokenValue.CreateText(subType.Start), UtokenValue.CreateText(reference), UtokenValue.CreateText(subType.End) };
+            //    };
+
+            return bnfiTermConversion;
         }
 
         public static BnfiTermConversion<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)
@@ -501,11 +511,11 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens)
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
         {
             if (this.UtokenizerForUnparse != null)
             {
-                utokens = this.UtokenizerForUnparse(unparser.FormatProvider, astValue);
+                utokens = this.UtokenizerForUnparse(unparser.FormatProvider, self, self.AstValue);
                 return true;
             }
             else if (this.inverseValueConverterForUnparse != null)
@@ -608,7 +618,7 @@ namespace Sarcasm.GrammarAst
 
         protected static ValueUtokenizer<object> CastUtokenizerToObject<T>(ValueUtokenizer<T> utokenizer)
         {
-            return (formatProvider, obj) => utokenizer(formatProvider, (T)obj);
+            return (formatProvider, reference, obj) => utokenizer(formatProvider, reference, (T)obj);
         }
     }
 

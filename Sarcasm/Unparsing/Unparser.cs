@@ -257,7 +257,7 @@ namespace Sarcasm.Unparsing
 
                     IEnumerable<UtokenValue> directUtokens;
 
-                    if (unparsableSelf.TryGetUtokensDirectly(this, self.AstValue, out directUtokens))
+                    if (unparsableSelf.TryGetUtokensDirectly(this, self, out directUtokens))
                     {
                         tsUnparse.Debug("SetAsLeave: {0}", self);
                         self.SetAsLeave();

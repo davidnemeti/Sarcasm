@@ -48,11 +48,11 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public delegate IEnumerable<UtokenValue> ValueUtokenizer<in T>(IFormatProvider formatProvider, T astValue);
+    public delegate IEnumerable<UtokenValue> ValueUtokenizer<in T>(IFormatProvider formatProvider, UnparsableAst reference, T astValue);
 
     public interface IUnparsableNonTerminal : INonTerminal
     {
-        bool TryGetUtokensDirectly(IUnparser unparser, object astValue, out IEnumerable<UtokenValue> utokens);
+        bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens);
         IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction);
         int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction);
     }
