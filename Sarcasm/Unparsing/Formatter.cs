@@ -64,11 +64,12 @@ namespace Sarcasm.Unparsing
         internal class Params
         {
             public readonly BlockIndentation blockIndentation;
-            public InsertedUtokens insertedUtokensAfter;
+            public readonly InsertedUtokens insertedUtokensAfter;
 
-            public Params(BlockIndentation blockIndentation)
+            public Params(BlockIndentation blockIndentation, InsertedUtokens insertedUtokensAfter)
             {
                 this.blockIndentation = blockIndentation;
+                this.insertedUtokensAfter = insertedUtokensAfter;
             }
         }
 
@@ -273,24 +274,23 @@ namespace Sarcasm.Unparsing
                 utokens.AddRange(YieldIndentationRight(self, ref blockIndentation));
             }
 
-            @params = new Params(blockIndentation);
-
             InsertedUtokens leftInsertedUtokens;
             InsertedUtokens rightInsertedUtokens;
 
             _GetUtokensAround(self, out leftInsertedUtokens, out rightInsertedUtokens);
 
             InsertedUtokens insertedUtokensBefore;
+            InsertedUtokens insertedUtokensAfter;
 
             if (direction == Unparser.Direction.LeftToRight)
             {
                 insertedUtokensBefore = leftInsertedUtokens;
-                @params.insertedUtokensAfter = rightInsertedUtokens;
+                insertedUtokensAfter = rightInsertedUtokens;
             }
             else
             {
                 insertedUtokensBefore = rightInsertedUtokens;
-                @params.insertedUtokensAfter = leftInsertedUtokens;
+                insertedUtokensAfter = leftInsertedUtokens;
             }
 
             if (insertedUtokensBefore != InsertedUtokens.None)
@@ -298,6 +298,8 @@ namespace Sarcasm.Unparsing
                 Unparser.tsUnparse.Debug("inserted utokens: {0}", insertedUtokensBefore);
                 utokens.Add(insertedUtokensBefore);
             }
+
+            @params = new Params(blockIndentation, insertedUtokensAfter);
 
             return utokens;
         }
