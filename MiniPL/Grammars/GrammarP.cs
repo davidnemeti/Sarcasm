@@ -414,15 +414,27 @@ namespace MiniPL.Grammars
 
         #region Formatter
 
+        public enum SyntaxHighlight { Color, BlackAndWhite, Crazy }
+
         [Formatter(typeof(GrammarP), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
+            #region Settings
+
+            public SyntaxHighlight SyntaxHighlight { get; set; }
+            public bool FlattenIfHierarchy { get; set; }
+
+            #endregion
+
             private readonly BnfTerms B;
 
             public Formatter(GrammarP grammar)
                 : base(grammar)
             {
                 this.B = grammar.B;
+
+                SyntaxHighlight = GrammarP.SyntaxHighlight.Color;
+                FlattenIfHierarchy = true;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -433,50 +445,86 @@ namespace MiniPL.Grammars
 
                 if (target != null)
                 {
-                    if (target.AstValue is D.If)
-                    {
-                        if (target.BnfTerm == B.LEFT_PAREN)
-                        {
-                            decoration
-                                .Add(DecorationKey.FontWeight, FontWeight.Bold)
-                                .Add(DecorationKey.FontSizeRelativePercent, 2)
-                                .Add(DecorationKey.Foreground, Color.Blue)
-                                ;
-                        }
-                        else
-                        {
-                            decoration
-                                .Add(DecorationKey.FontWeight, FontWeight.Bold)
-                                .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
-                                ;
-                        }
-                    }
-                    else if (target.BnfTerm == B.PROGRAM)
-                    {
-                        decoration
-                            .Add(DecorationKey.FontStyle, FontStyle.Italic)
-                            .Add(DecorationKey.Foreground, Color.White)
-                            .Add(DecorationKey.Background, Color.Red)
-                            .Add(DecorationKey.FontSize, 30);
-                    }
-                    else if (target.AstValue is D.Type)
-                    {
-                        decoration
-                            .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
-                            .Add(DecorationKey.FontSizeRelativePercent, 0.75);
-                    }
-                    else if (target.AstValue is int)
-                    {
-                        int number = (int)target.AstValue;
-
-                        if (number % 2 == 0)
-                            decoration.Add(DecorationKey.Foreground, Color.Red);
-                        else
-                            decoration.Add(DecorationKey.Background, Color.Yellow);
-                    }
+                    if (SyntaxHighlight == GrammarP.SyntaxHighlight.Color)
+                        NormalSyntaxHighlight(target, decoration);
+                    else if (SyntaxHighlight == GrammarP.SyntaxHighlight.Crazy)
+                        CrazySyntaxHighlight(target, decoration);
                 }
 
                 return decoration;
+            }
+
+            private void NormalSyntaxHighlight(UnparsableAst target, IDecoration decoration)
+            {
+                if (target.BnfTerm is KeyTerm)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Blue)
+                        ;
+                }
+                else if (target.BnfTerm.IsOperator())
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Purple)
+                        ;
+                }
+                else if (target.AstValue is D.Type)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Cyan)
+                        ;
+                }
+                else if (target.BnfTerm.IsLiteral())
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Red)
+                        ;
+                }
+            }
+
+            private void CrazySyntaxHighlight(UnparsableAst target, IDecoration decoration)
+            {
+                if (target.AstValue is D.If)
+                {
+                    if (target.BnfTerm == B.LEFT_PAREN)
+                    {
+                        decoration
+                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                            .Add(DecorationKey.FontSizeRelativePercent, 2)
+                            .Add(DecorationKey.Foreground, Color.Blue)
+                            ;
+                    }
+                    else
+                    {
+                        decoration
+                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                            .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
+                            ;
+                    }
+                }
+                else if (target.BnfTerm == B.PROGRAM)
+                {
+                    decoration
+                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
+                        .Add(DecorationKey.Foreground, Color.White)
+                        .Add(DecorationKey.Background, Color.Red)
+                        .Add(DecorationKey.FontSize, 30);
+                }
+                else if (target.AstValue is D.Type)
+                {
+                    decoration
+                        .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
+                        .Add(DecorationKey.FontSizeRelativePercent, 0.75);
+                }
+                else if (target.AstValue is int)
+                {
+                    int number = (int)target.AstValue;
+
+                    if (number % 2 == 0)
+                        decoration.Add(DecorationKey.Foreground, Color.Red);
+                    else
+                        decoration.Add(DecorationKey.Background, Color.Yellow);
+                }
             }
 
             protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
@@ -550,11 +598,11 @@ namespace MiniPL.Grammars
                     return UtokenInsert.NoWhitespace();
 
                 // alternative ways to handle "else if" spacing
-                else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
+                else if (FlattenIfHierarchy && leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
                     return UtokenInsert.Space().SetPriority(10);
-                //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.IF)
+                //else if (FlattenIfHierarchy && leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.IF)
                 //    return UtokenInsert.Space.SetPriority(10);
-                //else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.AstValue is D.If)
+                //else if (FlattenIfHierarchy && leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.AstValue is D.If)
                 //    return UtokenInsert.Space.SetPriority(10);
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
@@ -570,9 +618,9 @@ namespace MiniPL.Grammars
                     return BlockIndentation.Indent;
 
                 // alternative ways to handle "else if" indentation
-                else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
+                else if (FlattenIfHierarchy && leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
                     return BlockIndentation.Unindent;
-                //else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.AstValue is D.If)
+                //else if (FlattenIfHierarchy && leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.AstValue is D.If)
                 //    return BlockIndentation.Unindent;
 
                 else

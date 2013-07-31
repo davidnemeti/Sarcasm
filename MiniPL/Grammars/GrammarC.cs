@@ -13,6 +13,7 @@ using Sarcasm.Unparsing;
 using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
 using Sarcasm.Reflection;
+using Sarcasm.Utility;
 
 using MiniPL.DomainModel;
 using D = MiniPL.DomainModel;
@@ -403,15 +404,30 @@ namespace MiniPL.Grammars
 
         #region Formatter
 
+        public enum SyntaxHighlight { Color, BlackAndWhite }
+        public enum IndentStyle { Allman, Whitesmiths, Stroustrup, KernighanAndRitchie }
+
         [Formatter(typeof(GrammarC), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
+            #region Settings
+
+            public SyntaxHighlight SyntaxHighlight { get; set; }
+            public bool FlattenIfHierarchy { get; set; }
+            public IndentStyle IndentStyle { get; set; }
+
+            #endregion
+
             private readonly BnfTerms B;
 
             public Formatter(GrammarC grammar)
                 : base(grammar)
             {
                 this.B = grammar.B;
+
+                SyntaxHighlight = GrammarC.SyntaxHighlight.Color;
+                FlattenIfHierarchy = true;
+                IndentStyle = GrammarC.IndentStyle.Allman;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -422,33 +438,39 @@ namespace MiniPL.Grammars
 
                 if (target != null)
                 {
-                    if (target.BnfTerm is KeyTerm)
-                    {
-                        decoration
-                            .Add(DecorationKey.Foreground, Color.Blue)
-                            ;
-                    }
-                    else if (target.BnfTerm.IsOperator())
-                    {
-                        decoration
-                            .Add(DecorationKey.Foreground, Color.Purple)
-                            ;
-                    }
-                    else if (target.AstValue is D.Type)
-                    {
-                        decoration
-                            .Add(DecorationKey.Foreground, Color.Cyan)
-                            ;
-                    }
-                    else if (target.BnfTerm.IsLiteral())
-                    {
-                        decoration
-                            .Add(DecorationKey.Foreground, Color.Red)
-                            ;
-                    }
+                    if (SyntaxHighlight == GrammarC.SyntaxHighlight.Color)
+                        NormalSyntaxHighlight(target, decoration);
                 }
 
                 return decoration;
+            }
+
+            private void NormalSyntaxHighlight(UnparsableAst target, IDecoration decoration)
+            {
+                if (target.BnfTerm is KeyTerm)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Blue)
+                        ;
+                }
+                else if (target.BnfTerm.IsOperator())
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Purple)
+                        ;
+                }
+                else if (target.AstValue is D.Type)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Cyan)
+                        ;
+                }
+                else if (target.BnfTerm.IsLiteral())
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Red)
+                        ;
+                }
             }
 
             protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
@@ -474,12 +496,19 @@ namespace MiniPL.Grammars
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
 
                 else if (target.BnfTerm == B.BEGIN)
-                    leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
+                {
+                    rightInsertedUtokens = UtokenInsert.NewLine();
+
+                    if (IndentStyle.EqualToAny(GrammarC.IndentStyle.Allman, GrammarC.IndentStyle.Whitesmiths))
+                        leftInsertedUtokens = UtokenInsert.NewLine();
+                    else if (IndentStyle.EqualToAny(GrammarC.IndentStyle.Stroustrup, GrammarC.IndentStyle.KernighanAndRitchie))
+                        leftInsertedUtokens = UtokenInsert.Space();
+                }
 
                 else if (target.BnfTerm == B.END)
                 {
                     leftInsertedUtokens = rightInsertedUtokens = UtokenInsert.NewLine();
-                
+
                     if (target.AstValue is D.Function)
                         rightInsertedUtokens = UtokenInsert.EmptyLine().SetPriority(10);
                 }
@@ -498,25 +527,36 @@ namespace MiniPL.Grammars
             {
                 if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
+
                 else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITELN && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
-                else if (leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
+
+                else if (FlattenIfHierarchy && leftTerminalLeaveTarget.BnfTerm == B.ELSE && rightTarget.BnfTerm == B.If)
                     return UtokenInsert.Space().SetPriority(10);
+
+                else if (rightTarget.BnfTerm == B.ELSE && leftTerminalLeaveTarget.BnfTerm == B.END && IndentStyle == GrammarC.IndentStyle.KernighanAndRitchie)
+                    return UtokenInsert.Space().SetPriority(10);
+
                 else if (leftTerminalLeaveTarget.BnfTerm == B.END && rightTarget.BnfTerm == B.DOT)
                     return UtokenInsert.NoWhitespace().SetPriority(10);
+
                 else
                     return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
             }
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.BnfTerm == B.Statement)
+                if (target.BnfTerm == B.Statement /*&& (IndentStyle != GrammarC.IndentStyle.Whitesmiths || leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm != B.BEGIN)*/)
                     return BlockIndentation.Indent;
-                else if (leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
+                else if (IndentStyle == GrammarC.IndentStyle.Whitesmiths && target.BnfTerm.EqualToAny(B.BEGIN, B.END))
+                    return BlockIndentation.Indent;
+                else if (FlattenIfHierarchy && leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
                     return BlockIndentation.Unindent;
                 else
                     return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);

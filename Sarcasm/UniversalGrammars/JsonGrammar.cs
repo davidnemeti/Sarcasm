@@ -330,7 +330,11 @@ namespace Sarcasm.UniversalGrammars
         [Formatter(typeof(JsonGrammar), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
+            #region Settings
+
             public bool CompactFormat { get; set; }
+
+            #endregion
 
             private readonly BnfTerms B;
 
