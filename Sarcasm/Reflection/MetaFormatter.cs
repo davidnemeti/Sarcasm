@@ -18,7 +18,6 @@ namespace Sarcasm.Reflection
     {
         public Type FormatterType { get; private set; }
         public FormatterAttribute FormatterAttribute { get; private set; }
-        public Formatter Formatter { get; private set; }
         public Type GrammarType { get; private set; }
 
         public string Name { get { return FormatterAttribute.Name; } }
@@ -38,6 +37,11 @@ namespace Sarcasm.Reflection
         public static bool IsFormatterType(Type type)
         {
             return type.IsSubclassOf(typeof(Formatter)) && type.GetCustomAttribute<FormatterAttribute>() != null;
+        }
+
+        public Formatter CreateFormatter()
+        {
+            return (Formatter)Activator.CreateInstance(FormatterType);
         }
     }
 }

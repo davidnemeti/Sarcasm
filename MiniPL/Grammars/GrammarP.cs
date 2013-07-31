@@ -21,6 +21,7 @@ using DC = Sarcasm.DomainCore;
 using Type = MiniPL.DomainModel.Type;
 using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
 using StringLiteral = MiniPL.DomainModel.StringLiteral;
+using System.Globalization;
 
 namespace MiniPL.Grammars
 {
@@ -29,23 +30,78 @@ namespace MiniPL.Grammars
     {
         public class BnfTerms
         {
-            internal BnfTerms(TerminalFactoryS TerminalFactoryS)
+            internal BnfTerms(TerminalFactoryS TerminalFactoryS, CultureInfo cultureInfo)
             {
-                this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
-                this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("namespace");
-                this.BEGIN = TerminalFactoryS.CreateKeyTerm("begin");
-                this.END = TerminalFactoryS.CreateKeyTerm("end");
-                this.FUNCTION = TerminalFactoryS.CreateKeyTerm("function");
-                this.WHILE = TerminalFactoryS.CreateKeyTerm("while");
-                this.FOR = TerminalFactoryS.CreateKeyTerm("for");
-                this.IF = TerminalFactoryS.CreateKeyTerm("if");
-                this.THEN = TerminalFactoryS.CreateKeyTerm("then");
-                this.ELSE = TerminalFactoryS.CreateKeyTerm("else");
-                this.DO = TerminalFactoryS.CreateKeyTerm("do");
-                this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
-                this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
-                this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
-                this.VAR = TerminalFactoryS.CreateKeyTerm("var");
+                if (cultureInfo == CultureInfo.GetCultureInfo("hu"))
+                {
+                    this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
+                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("névtér");
+                    this.BEGIN = TerminalFactoryS.CreateKeyTerm("eleje");
+                    this.END = TerminalFactoryS.CreateKeyTerm("vége");
+                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("függvény");
+                    this.WHILE = TerminalFactoryS.CreateKeyTerm("amíg");
+                    this.FOR = TerminalFactoryS.CreateKeyTerm("ciklus");
+                    this.IF = TerminalFactoryS.CreateKeyTerm("ha");
+                    this.THEN = TerminalFactoryS.CreateKeyTerm("akkor");
+                    this.ELSE = TerminalFactoryS.CreateKeyTerm("egyébként");
+                    this.DO = TerminalFactoryS.CreateKeyTerm("csináld");
+                    this.RETURN = TerminalFactoryS.CreateKeyTerm("visszatér");
+                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiír");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírÚjsor");
+                    this.VAR = TerminalFactoryS.CreateKeyTerm("változó");
+
+                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("és", DomainModel.BinaryOperator.And);
+                    this.OR_OP = TerminalFactoryS.CreateKeyTerm("vagy", DomainModel.BinaryOperator.Or);
+
+                    this.NOT_OP = TerminalFactoryS.CreateKeyTerm("nem", DomainModel.UnaryOperator.Not);
+
+                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("egész", DomainModel.Type.Integer);
+                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valós", DomainModel.Type.Real);
+                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", DomainModel.Type.String);
+                    this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", DomainModel.Type.Char);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_érték", DomainModel.Type.Bool);
+
+                    this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
+                    {
+                        { "Igaz", true },
+                        { "Hamis", false }
+                    };
+                }
+                else
+                {
+                    this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
+                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("namespace");
+                    this.BEGIN = TerminalFactoryS.CreateKeyTerm("begin");
+                    this.END = TerminalFactoryS.CreateKeyTerm("end");
+                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("function");
+                    this.WHILE = TerminalFactoryS.CreateKeyTerm("while");
+                    this.FOR = TerminalFactoryS.CreateKeyTerm("for");
+                    this.IF = TerminalFactoryS.CreateKeyTerm("if");
+                    this.THEN = TerminalFactoryS.CreateKeyTerm("then");
+                    this.ELSE = TerminalFactoryS.CreateKeyTerm("else");
+                    this.DO = TerminalFactoryS.CreateKeyTerm("do");
+                    this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
+                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
+                    this.VAR = TerminalFactoryS.CreateKeyTerm("var");
+
+                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("and", DomainModel.BinaryOperator.And);
+                    this.OR_OP = TerminalFactoryS.CreateKeyTerm("or", DomainModel.BinaryOperator.Or);
+
+                    this.NOT_OP = TerminalFactoryS.CreateKeyTerm("not", DomainModel.UnaryOperator.Not);
+
+                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("integer", DomainModel.Type.Integer);
+                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("real", DomainModel.Type.Real);
+                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainModel.Type.String);
+                    this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainModel.Type.Char);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", DomainModel.Type.Bool);
+
+                    this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
+                    {
+                        { "True", true },
+                        { "False", false }
+                    };
+                }
 
                 this.DOT = TerminalFactoryS.CreatePunctuation(".");
                 this.LET = TerminalFactoryS.CreatePunctuation(":=");
@@ -72,23 +128,6 @@ namespace MiniPL.Grammars
                 this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainModel.BinaryOperator.Lte);
                 this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainModel.BinaryOperator.Gt);
                 this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainModel.BinaryOperator.Gte);
-
-                this.AND_OP = TerminalFactoryS.CreateKeyTerm("and", DomainModel.BinaryOperator.And);
-                this.OR_OP = TerminalFactoryS.CreateKeyTerm("or", DomainModel.BinaryOperator.Or);
-
-                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("not", DomainModel.UnaryOperator.Not);
-
-                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("integer", DomainModel.Type.Integer);
-                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("real", DomainModel.Type.Real);
-                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainModel.Type.String);
-                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainModel.Type.Char);
-                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", DomainModel.Type.Bool);
-
-                this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
-                {
-                    { "True", true },
-                    { "False", false }
-                };
 
                 this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
             }
@@ -189,9 +228,16 @@ namespace MiniPL.Grammars
         public readonly BnfTerms B;
 
         public GrammarP()
+            : this(CultureInfo.InvariantCulture)
+        {
+        }
+
+        public GrammarP(CultureInfo cultureInfo)
             : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
         {
-            B = new BnfTerms(new TerminalFactoryS(this));
+            B = new BnfTerms(new TerminalFactoryS(this), cultureInfo);
+
+            this.DefaultCulture = cultureInfo;
 
             this.Root = B.Program;
 

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using Sarcasm.DomainCore;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
@@ -18,7 +18,6 @@ namespace Sarcasm.Reflection
     {
         public Type GrammarType { get; private set; }
         public GrammarAttribute GrammarAttribute { get; private set; }
-        public Grammar Grammar { get; private set; }
         public Type DomainRoot { get; private set; }
 
         private ObservableCollection<MetaFormatter> metaFormatters;
@@ -35,7 +34,6 @@ namespace Sarcasm.Reflection
 
             this.GrammarType = grammarType;
             this.GrammarAttribute = grammarAttribute;
-            this.Grammar = (Grammar)Activator.CreateInstance(grammarType);
             this.DomainRoot = grammarAttribute.DomainRoot;
 
             MetaFormatters = Util.CreateAndGetReadonlyCollection(out metaFormatters);
@@ -57,6 +55,16 @@ namespace Sarcasm.Reflection
         public bool IsUniversalGrammar()
         {
             return DomainRoot == null || DomainRoot == typeof(object);
+        }
+
+        public Grammar CreateGrammar()
+        {
+            return (Grammar)Activator.CreateInstance(GrammarType);
+        }
+
+        public Grammar CreateGrammar(CultureInfo cultureInfo)
+        {
+            return (Grammar)Activator.CreateInstance(GrammarType, cultureInfo);
         }
     }
 }
