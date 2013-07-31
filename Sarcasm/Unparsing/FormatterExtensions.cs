@@ -267,7 +267,7 @@ namespace Sarcasm.Unparsing
             return utokens.SelectMany(utoken => utoken.Flatten());
         }
 
-        public static IEnumerable<UtokenBase> ProcessControls(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
+        public static IEnumerable<Utoken> ProcessControls(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
             var formatter = postProcessHelper.Formatter;
 
@@ -332,7 +332,7 @@ namespace Sarcasm.Unparsing
                         yield return new UtokenWhitespace(UtokenWhitespace.Kind.WhiteSpaceBetweenUtokens);
 
                     if (utoken != null)
-                        yield return utoken;
+                        yield return (Utoken)utoken;
 
                     allowWhitespaceBetweenUtokens = true;
                     prevNotControlUtoken = utoken;
@@ -355,19 +355,13 @@ namespace Sarcasm.Unparsing
             return utoken is UtokenControl;
         }
 
-        public static IEnumerable<UtokenBase> Decorate(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
+        public static IEnumerable<Utoken> Decorate(this IEnumerable<Utoken> utokens, IPostProcessHelper postProcessHelper)
         {
             var formatter = postProcessHelper.Formatter;
 
-            foreach (UtokenBase utoken in utokens)
+            foreach (Utoken utoken in utokens)
             {
-                if (utoken is UtokenText)
-                {
-                    UtokenText utokenText = (UtokenText)utoken;
-
-                    utokenText.Decoration = formatter._GetDecoration(utokenText.Reference);
-                }
-
+                ((UtokenBase)utoken).Decoration = formatter._GetDecoration(utoken);
                 yield return utoken;
             }
         }

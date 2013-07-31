@@ -425,52 +425,55 @@ namespace MiniPL.Grammars
                 this.B = grammar.B;
             }
 
-            protected override IDecoration GetDecoration(UnparsableAst target)
+            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
-                var decoration = base.GetDecoration(target);
+                var decoration = base.GetDecoration(utoken, target);
 
                 decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
 
-                if (target.AstValue is D.If)
+                if (target != null)
                 {
-                    if (target.BnfTerm == B.LEFT_PAREN)
+                    if (target.AstValue is D.If)
+                    {
+                        if (target.BnfTerm == B.LEFT_PAREN)
+                        {
+                            decoration
+                                .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                                .Add(DecorationKey.FontSizeRelativePercent, 2)
+                                .Add(DecorationKey.Foreground, Color.Blue)
+                                ;
+                        }
+                        else
+                        {
+                            decoration
+                                .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                                .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
+                                ;
+                        }
+                    }
+                    else if (target.BnfTerm == B.PROGRAM)
                     {
                         decoration
-                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
-                            .Add(DecorationKey.FontSizeRelativePercent, 2)
-                            .Add(DecorationKey.Foreground, Color.Blue)
-                            ;
+                            .Add(DecorationKey.FontStyle, FontStyle.Italic)
+                            .Add(DecorationKey.Foreground, Color.White)
+                            .Add(DecorationKey.Background, Color.Red)
+                            .Add(DecorationKey.FontSize, 30);
                     }
-                    else
+                    else if (target.AstValue is D.Type)
                     {
                         decoration
-                            .Add(DecorationKey.FontWeight, FontWeight.Bold)
-                            .Add(DecorationKey.TextDecoration, TextDecoration.Underline)
-                            ;
+                            .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
+                            .Add(DecorationKey.FontSizeRelativePercent, 0.75);
                     }
-                }
-                else if (target.BnfTerm == B.PROGRAM)
-                {
-                    decoration
-                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
-                        .Add(DecorationKey.Foreground, Color.White)
-                        .Add(DecorationKey.Background, Color.Red)
-                        .Add(DecorationKey.FontSize, 30);
-                }
-                else if (target.AstValue is D.Type)
-                {
-                    decoration
-                        .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
-                        .Add(DecorationKey.FontSizeRelativePercent, 0.75);
-                }
-                else if (target.AstValue is int)
-                {
-                    int number = (int)target.AstValue;
+                    else if (target.AstValue is int)
+                    {
+                        int number = (int)target.AstValue;
 
-                    if (number % 2 == 0)
-                        decoration.Add(DecorationKey.Foreground, Color.Red);
-                    else
-                        decoration.Add(DecorationKey.Background, Color.Yellow);
+                        if (number % 2 == 0)
+                            decoration.Add(DecorationKey.Foreground, Color.Red);
+                        else
+                            decoration.Add(DecorationKey.Background, Color.Yellow);
+                    }
                 }
 
                 return decoration;

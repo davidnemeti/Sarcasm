@@ -43,12 +43,19 @@ namespace Sarcasm.Unparsing
         }
 
         #endregion
+
+        private IReadOnlyDecoration _decoration;
+        public IReadOnlyDecoration Decoration
+        {
+            get { return _decoration ?? Unparsing.Decoration.None; }
+            internal set { _decoration = value; }
+        }
     }
 
     public interface Utoken
     {
         string ToText(Formatter formatter);
-        IReadOnlyDecoration GetDecoration();
+        IReadOnlyDecoration Decoration { get; }
     }
 
     public abstract class UtokenValue : UtokenBase
@@ -83,7 +90,6 @@ namespace Sarcasm.Unparsing
     {
         public string Text { get; private set; }
         public UnparsableAst Reference { get; private set; }
-        public IReadOnlyDecoration Decoration { get; internal set; }
 
         internal UtokenText(UnparsableAst reference)
             : this(text: null, reference: reference)
@@ -104,11 +110,6 @@ namespace Sarcasm.Unparsing
         public string ToText(Formatter formatter)
         {
             return this.Text ?? Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
-        }
-
-        IReadOnlyDecoration Utoken.GetDecoration()
-        {
-            return this.Decoration;
         }
 
         public override string ToString()
@@ -196,11 +197,6 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        IReadOnlyDecoration Utoken.GetDecoration()
-        {
-            return Decoration.None;
-        }
-
         public override string ToString()
         {
             return ToString("." + kind);
@@ -267,11 +263,6 @@ namespace Sarcasm.Unparsing
         public string ToText(Formatter formatter)
         {
             return string.Concat(Enumerable.Repeat(formatter.IndentUnit, IndentLevel));
-        }
-
-        IReadOnlyDecoration Utoken.GetDecoration()
-        {
-            return Decoration.None;
         }
 
         public override string ToString()

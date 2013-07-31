@@ -414,35 +414,38 @@ namespace MiniPL.Grammars
                 this.B = grammar.B;
             }
 
-            protected override IDecoration GetDecoration(UnparsableAst target)
+            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
-                var decoration = base.GetDecoration(target);
+                var decoration = base.GetDecoration(utoken, target);
 
                 decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
 
-                if (target.BnfTerm is KeyTerm)
+                if (target != null)
                 {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Blue)
-                        ;
-                }
-                else if (target.BnfTerm.IsOperator())
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Purple)
-                        ;
-                }
-                else if (target.AstValue is D.Type)
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Cyan)
-                        ;
-                }
-                else if (target.BnfTerm.IsLiteral())
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Red)
-                        ;
+                    if (target.BnfTerm is KeyTerm)
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, Color.Blue)
+                            ;
+                    }
+                    else if (target.BnfTerm.IsOperator())
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, Color.Purple)
+                            ;
+                    }
+                    else if (target.AstValue is D.Type)
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, Color.Cyan)
+                            ;
+                    }
+                    else if (target.BnfTerm.IsLiteral())
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, Color.Red)
+                            ;
+                    }
                 }
 
                 return decoration;

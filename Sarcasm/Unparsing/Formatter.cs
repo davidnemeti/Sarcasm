@@ -223,7 +223,7 @@ namespace Sarcasm.Unparsing
             return BlockIndentation.IndentNotNeeded;
         }
 
-        protected virtual IDecoration GetDecoration(UnparsableAst target)
+        protected virtual IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
         {
             return Decoration.None;
         }
@@ -332,7 +332,6 @@ namespace Sarcasm.Unparsing
                 .Flatten()                                      .DebugWriteLines(tsFlattened)
                 .ProcessControls(postProcessHelper)             .DebugWriteLines(tsProcessedControls)
                 .Decorate(postProcessHelper)
-                .Cast<Utoken>()
                 ;
         }
 
@@ -635,9 +634,13 @@ namespace Sarcasm.Unparsing
             return GetBlockIndentation(leftIfAny, target);
         }
 
-        internal IDecoration _GetDecoration(UnparsableAst target)
+        internal IDecoration _GetDecoration(Utoken utoken)
         {
-            return GetDecoration(target);
+            UnparsableAst target = utoken is UtokenText
+                ? ((UtokenText)utoken).Reference
+                : null;
+
+            return GetDecoration(utoken, target);
         }
 
         private static IEnumerable<UnparsableAst> GetSelfAndAncestors(UnparsableAst self)

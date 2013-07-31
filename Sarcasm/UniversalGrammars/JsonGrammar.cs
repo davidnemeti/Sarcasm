@@ -342,25 +342,28 @@ namespace Sarcasm.UniversalGrammars
                 this.CompactFormat = true;
             }
 
-            protected override IDecoration GetDecoration(UnparsableAst target)
+            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
-                var decoration = base.GetDecoration(target);
+                var decoration = base.GetDecoration(utoken, target);
 
                 decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
 
-                if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL) || target.BnfTerm is NumberLiteral)
-                    decoration.Add(DecorationKey.Foreground, Color.Violet);
-                else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Key)
+                if (target != null)
                 {
-                    if (((string)target.AstParent.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
-                        decoration.Add(DecorationKey.Foreground, Color.Red);
-                    else
-                        decoration.Add(DecorationKey.Foreground, Color.Blue);
-                }
-                else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value && target.AstParent.AstParent != null &&
-                    target.AstParent.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstParent.AstValue).IsTypeInfo)
-                {
-                    decoration.Add(DecorationKey.Foreground, Color.ForestGreen);
+                    if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL) || target.BnfTerm is NumberLiteral)
+                        decoration.Add(DecorationKey.Foreground, Color.Violet);
+                    else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Key)
+                    {
+                        if (((string)target.AstParent.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
+                            decoration.Add(DecorationKey.Foreground, Color.Red);
+                        else
+                            decoration.Add(DecorationKey.Foreground, Color.Blue);
+                    }
+                    else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value && target.AstParent.AstParent != null &&
+                        target.AstParent.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstParent.AstValue).IsTypeInfo)
+                    {
+                        decoration.Add(DecorationKey.Foreground, Color.ForestGreen);
+                    }
                 }
 
                 return decoration;
