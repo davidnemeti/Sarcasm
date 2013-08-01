@@ -43,14 +43,14 @@ namespace Sarcasm.Parsing
         /// </param>
         internal MultiParser(Grammar grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
         {
+            grammar.SetDecimalSeparatorOnNumberLiterals();
+
+            // NOTE: grammar.SnippetRoots should be extended before creating LanguageData
             if (makeParsableEveryNonTerminal)
             {
-                // NOTE: grammar.SnippetRoots should be extended before creating LanguageData
-                foreach (NonTerminal nonTerminal in GetDescendantNonTerminalsExcludingSelf(grammar.Root))
-                {
+                foreach (NonTerminal nonTerminal in GrammarHelper.GetDescendantBnfTermsExcludingSelf(grammar.Root).OfType<NonTerminal>())
                     if (!grammar.SnippetRoots.Contains(nonTerminal))
                         grammar.SnippetRoots.Add(nonTerminal);
-                }
             }
 
             this.grammar = grammar;
@@ -176,22 +176,6 @@ namespace Sarcasm.Parsing
                     return parser;
                 }
             }
-        }
-
-        private static IEnumerable<NonTerminal> GetDescendantNonTerminalsExcludingSelf(NonTerminal nonTerminal)
-        {
-            return GetDescendantNonTerminalsExcludingSelf(nonTerminal, new HashSet<NonTerminal>());
-        }
-
-        private static IEnumerable<NonTerminal> GetDescendantNonTerminalsExcludingSelf(NonTerminal nonTerminal, ISet<NonTerminal> visitedNonTerminals)
-        {
-            visitedNonTerminals.Add(nonTerminal);
-
-            return nonTerminal.Rule.Data
-                .SelectMany(children => children)
-                .OfType<NonTerminal>()
-                .Where(child => !visitedNonTerminals.Contains(child))
-                .SelectMany(child => Util.Concat(child, GetDescendantNonTerminalsExcludingSelf(child, visitedNonTerminals)));
         }
 
         #endregion

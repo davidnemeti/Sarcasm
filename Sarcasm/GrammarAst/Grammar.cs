@@ -256,6 +256,37 @@ namespace Sarcasm.GrammarAst
 
         #region Misc
 
+        public new CultureInfo DefaultCulture
+        {
+            get { return base.DefaultCulture; }
+
+            set
+            {
+                base.DefaultCulture = value;
+
+                /*
+                 * NOTE: If DefaultCulture is being set inside the Grammar's constructor then it might be set before any bnfTerms
+                 * has been added to grammar, so this SetDecimalSeparator will be called in MultiParser too.
+                 * 
+                 * If DefaultCulture is being set outside the Grammar's constructor then it would be okay to call SetDecimalSeparator
+                 * only once, but we cannot know it, so we call SetDecimalSeparator in MultiParser anyway.
+                 * */
+                SetDecimalSeparatorOnNumberLiterals();
+            }
+        }
+
+        internal void SetDecimalSeparatorOnNumberLiterals()
+        {
+            // see DefaultCulture's setter for more information
+            if (Root == null)
+                return;
+
+            char numberDecimalSeparator = DefaultCulture.NumberFormat.NumberDecimalSeparator[0];    // NOTE: Irony handles numberDecimalSeparator only as character
+
+            foreach (NumberLiteral numberLiteral in GrammarHelper.GetDescendantBnfTermsExcludingSelf(Root).OfType<NumberLiteral>())
+                numberLiteral.DecimalSeparator = numberDecimalSeparator;    // it seems this is the only way in Irony to set the DecimalSeparator which corresponds to DefaultCulture
+        }
+
         public static new Grammar CurrentGrammar
         {
             get { return (Grammar)Irony.Parsing.Grammar.CurrentGrammar; }

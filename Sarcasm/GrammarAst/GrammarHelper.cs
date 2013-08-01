@@ -11,6 +11,7 @@ using System.Diagnostics;
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Sarcasm.Utility;
 
 namespace Sarcasm.GrammarAst
 {
@@ -583,6 +584,34 @@ namespace Sarcasm.GrammarAst
                 typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), typeName);
 
             return typeName;
+        }
+
+        internal static IEnumerable<BnfTerm> GetDescendantBnfTermsExcludingSelf(NonTerminal nonTerminal)
+        {
+            return GetDescendantBnfTermsExcludingSelf(nonTerminal, new HashSet<BnfTerm>());
+        }
+
+        internal static IEnumerable<BnfTerm> GetDescendantBnfTermsExcludingSelf(NonTerminal nonTerminal, ISet<BnfTerm> visitedBnfTerms)
+        {
+            visitedBnfTerms.Add(nonTerminal);
+
+            return nonTerminal.Rule.Data
+                .SelectMany(children => children)
+                .Where(child => !visitedBnfTerms.Contains(child))
+                .SelectMany(
+                    child =>
+                    {
+                        if (child is Terminal)
+                        {
+                            visitedBnfTerms.Add(child);
+                            return new[] { child };
+                        }
+                        else if (child is NonTerminal)
+                            return Util.Concat(child, GetDescendantBnfTermsExcludingSelf((NonTerminal)child, visitedBnfTerms));
+                        else
+                            return Enumerable.Empty<BnfTerm>();
+                    }
+                    );
         }
 
         #endregion
