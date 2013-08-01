@@ -44,6 +44,7 @@ namespace Sarcasm.Reflection
         public void RegisterAll(Assembly assembly)
         {
             RegisterDomains(assembly);
+            RegisterCodeGenerators(assembly);
             RegisterGrammars(assembly);
             RegisterFormatters(assembly);
         }
@@ -94,9 +95,29 @@ namespace Sarcasm.Reflection
         private void RegisterUniversalGrammar(MetaGrammar metaGrammar)
         {
             if (universalMetaGrammars.Any(_metaGrammar => _metaGrammar.GrammarType == metaGrammar.GrammarType))
-                throw new ArgumentException("Grammar already registered", "metaGrammar");
+                throw new ArgumentException("Grammar already registered " + metaGrammar.Name, "metaGrammar");
 
             universalMetaGrammars.Add(metaGrammar);
+        }
+
+        public void RegisterCodeGenerators(Assembly assembly)
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+
+            var newMetaCodeGenerators = assembly
+                .GetTypes()
+                .Where(type => MetaCodeGenerator.IsCodeGeneratorType(type))
+                .Select(codeGeneratorType => new MetaCodeGenerator(codeGeneratorType));
+
+            foreach (MetaCodeGenerator metaCodeGenerator in newMetaCodeGenerators)
+                RegisterCodeGenerator(metaCodeGenerator);
+
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+        }
+
+        public void RegisterCodeGenerator(MetaCodeGenerator metaCodeGenerator)
+        {
+            DomainRootToDomain(metaCodeGenerator.DomainRoot).RegisterCodeGenerator(metaCodeGenerator);
         }
 
         public void RegisterFormatters(Assembly assembly)

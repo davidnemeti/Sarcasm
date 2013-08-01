@@ -47,7 +47,7 @@ namespace Sarcasm.Reflection
         public void RegisterFormatter(MetaFormatter metaFormatter)
         {
             if (metaFormatters.Any(_metaFormatter => _metaFormatter.FormatterType == metaFormatter.FormatterType))
-                throw new ArgumentException("Formatter already registered", "metaFormatter");
+                throw new ArgumentException("Formatter already registered " + metaFormatter.Name, "metaFormatter");
 
             metaFormatters.Add(metaFormatter);
         }

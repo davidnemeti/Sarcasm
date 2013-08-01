@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGeneration\CodeGenerator.cs" />
     <Compile Include="GrammarAst\AstBuilder.cs" />
     <Compile Include="GrammarAst\AstNodeWrapper.cs" />
     <Compile Include="GrammarAst\BnfiExpressions\BnfiExpression.cs" />
@@ -109,6 +110,7 @@
     <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="GrammarAst\TerminalFactoryS.cs" />
     <Compile Include="Reflection\Attributes.cs" />
+    <Compile Include="Reflection\MetaCodeGenerator.cs" />
     <Compile Include="Reflection\MetaFormatter.cs" />
     <Compile Include="Reflection\MetaGrammar.cs" />
     <Compile Include="Reflection\Domain.cs" />

@@ -42,6 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGenerators\CSharpGenerator.cs" />
+    <Compile Include="CodeGenerators\CSharpGeneratorTemplate.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CSharpGeneratorTemplate.tt</DependentUpon>
+    </Compile>
     <Compile Include="DomainModel.cs" />
     <Compile Include="Grammars\GrammarC.cs" />
     <Compile Include="Grammars\GrammarP.cs" />
@@ -52,6 +58,15 @@
       <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
       <Name>Sarcasm</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="CodeGenerators\CSharpGeneratorTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

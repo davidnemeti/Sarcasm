@@ -22,6 +22,9 @@ namespace Sarcasm.Reflection
         private ObservableCollection<MetaGrammar> metaGrammars;
         public ReadOnlyObservableCollection<MetaGrammar> MetaGrammars { get; private set; }
 
+        private ObservableCollection<MetaCodeGenerator> metaCodeGenerators;
+        public ReadOnlyObservableCollection<MetaCodeGenerator> MetaCodeGenerators { get; private set; }
+
         public string Name { get { return DomainRootAttribute.Name; } }
 
         public Domain(Type domainRoot)
@@ -35,6 +38,7 @@ namespace Sarcasm.Reflection
             this.DomainRootAttribute = domainRootAttribute;
 
             MetaGrammars = Util.CreateAndGetReadonlyCollection(out metaGrammars);
+            MetaCodeGenerators = Util.CreateAndGetReadonlyCollection(out metaCodeGenerators);
         }
 
         public static bool IsDomainRoot(Type type)
@@ -45,9 +49,17 @@ namespace Sarcasm.Reflection
         public void RegisterGrammar(MetaGrammar metaGrammar)
         {
             if (metaGrammars.Any(_metaGrammar => _metaGrammar.GrammarType == metaGrammar.GrammarType))
-                throw new ArgumentException("Grammar already registered", "metaGrammar");
+                throw new ArgumentException("Grammar already registered " + metaGrammar.Name, "metaGrammar");
 
             metaGrammars.Add(metaGrammar);
+        }
+
+        public void RegisterCodeGenerator(MetaCodeGenerator metaCodeGenerator)
+        {
+            if (metaCodeGenerators.Any(_metaCodeGenerator => _metaCodeGenerator.CodeGeneratorType == metaCodeGenerator.CodeGeneratorType))
+                throw new ArgumentException("CodeGenerator already registered " + metaCodeGenerator.Name, "metaCodeGenerator");
+
+            metaCodeGenerators.Add(metaCodeGenerator);
         }
     }
 }

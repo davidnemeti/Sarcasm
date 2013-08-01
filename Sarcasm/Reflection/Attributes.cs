@@ -26,6 +26,19 @@ namespace Sarcasm.Reflection
     }
 
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
+    public class CodeGeneratorAttribute : Attribute
+    {
+        public Type DomainRoot { get; private set; }
+        public string Name { get; private set; }
+
+        public CodeGeneratorAttribute(Type domainRoot, string name)
+        {
+            this.DomainRoot = domainRoot;
+            this.Name = name;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class GrammarAttribute : Attribute
     {
         public Type DomainRoot { get; private set; }
