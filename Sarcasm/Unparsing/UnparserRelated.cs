@@ -14,6 +14,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Utility;
+using System.Threading;
 
 namespace Sarcasm.Unparsing
 {
@@ -29,6 +30,23 @@ namespace Sarcasm.Unparsing
             return await Task.Run(() => utokens.AsText(unparser));
         }
 
+        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
+        {
+            return await Task.Run(
+                () =>
+                    string.Concat(
+                        utokens.Select(
+                            utoken =>
+                                {
+                                    cancellationToken.ThrowIfCancellationRequested();
+                                    return utoken.ToText(unparser.Formatter);
+                                }
+                        )
+                    ),
+                cancellationToken
+            );
+        }
+
         public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
             using (StreamWriter sw = new StreamWriter(stream))
@@ -40,10 +58,18 @@ namespace Sarcasm.Unparsing
 
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
+            await utokens.WriteToStreamAsync(stream, unparser, CancellationToken.None);
+        }
+
+        public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser, CancellationToken cancellationToken)
+        {
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
                     await sw.WriteAsync(utoken.ToText(unparser.Formatter));
+                }
             }
         }
 
