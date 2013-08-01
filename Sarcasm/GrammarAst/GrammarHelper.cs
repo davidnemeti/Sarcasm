@@ -412,6 +412,11 @@ namespace Sarcasm.GrammarAst
             return bnfTerm.Flags.IsSet(TermFlags.IsOperator);
         }
 
+        public static bool IsConstant(this BnfTerm bnfTerm)
+        {
+            return bnfTerm.Flags.IsSet(TermFlags.IsConstant);
+        }
+
         public static bool IsBrace(this BnfTerm bnfTerm)
         {
             return bnfTerm.Flags.IsSet(TermFlags.IsBrace);

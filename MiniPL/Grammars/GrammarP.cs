@@ -488,9 +488,9 @@ namespace MiniPL.Grammars
                 FlattenIfHierarchy = true;
 
                 KeyTermForeColor = Color.Blue;
-                OperatorForeColor = Color.Purple;
+                OperatorForeColor = Color.Red;
                 TypeForeColor = Color.Cyan;
-                LiteralForeColor = Color.Red;
+                LiteralForeColor = Color.ForestGreen;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -514,15 +514,18 @@ namespace MiniPL.Grammars
             {
                 if (target.BnfTerm is KeyTerm)
                 {
-                    decoration
-                        .Add(DecorationKey.Foreground, KeyTermForeColor)
-                        ;
-                }
-                else if (target.BnfTerm.IsOperator())
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, OperatorForeColor)
-                        ;
+                    if (target.BnfTerm.IsOperator() || target.BnfTerm.IsBrace())
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, OperatorForeColor)
+                            ;
+                    }
+                    else
+                    {
+                        decoration
+                            .Add(DecorationKey.Foreground, KeyTermForeColor)
+                            ;
+                    }
                 }
                 else if (target.AstValue is D.Type)
                 {
@@ -530,7 +533,7 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Foreground, TypeForeColor)
                         ;
                 }
-                else if (target.BnfTerm.IsLiteral())
+                else if (target.BnfTerm.IsLiteral() || target.BnfTerm.IsConstant())
                 {
                     decoration
                         .Add(DecorationKey.Foreground, LiteralForeColor)
