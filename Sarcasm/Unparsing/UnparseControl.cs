@@ -30,9 +30,9 @@ namespace Sarcasm.Unparsing
             return new UnparseControl(grammar) { ExpressionToParenthesesHasBeenSet = false };
         }
 
-        public static UnparseControl Create(Grammar grammar, params ParenthesizedExpression[] parenthesizedExpressions)
+        public static UnparseControl Create(Grammar grammar, params ParenthesizedExpression[] parenthesizedExpressionsForPrecedenceBasedUnparse)
         {
-            return Create(grammar, new Formatter(grammar), parenthesizedExpressions);
+            return Create(grammar, new Formatter(grammar), parenthesizedExpressionsForPrecedenceBasedUnparse);
         }
 
         public static UnparseControl Create(Grammar grammar, Formatter defaultFormatter, params ParenthesizedExpression[] parenthesizedExpressionsForPrecedenceBasedUnparse)
