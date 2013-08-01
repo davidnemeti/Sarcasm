@@ -70,7 +70,9 @@ namespace Sarcasm.Reflection
             }
             catch (MissingMethodException)
             {
-                return CreateGrammar();
+                Grammar grammar = CreateGrammar();
+                grammar.DefaultCulture = cultureInfo;
+                return grammar;
             }
         }
     }
