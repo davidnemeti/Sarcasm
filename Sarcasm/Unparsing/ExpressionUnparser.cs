@@ -120,7 +120,7 @@ namespace Sarcasm.Unparsing
             tsParentheses.Debug("");
 
             foreach (var pair in expressionThatMayNeedParenthesesToParentheses)
-                tsParentheses.Debug("{0}; left parenthesis: '{1}', right parenthesis: '{2}'", pair.Key, pair.Value.Left, pair.Value.Right);
+                tsParentheses.Debug("{0}; left parenthesis: '{1}', right parenthesis: '{2}'", pair.Key, pair.Value.LeftParenthesis, pair.Value.RightParenthesis);
 #endif
         }
 
