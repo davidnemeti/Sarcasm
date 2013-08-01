@@ -18,6 +18,7 @@ using Sarcasm.Unparsing;
 using Sarcasm.Utility;
 
 using MiniPLG = MiniPL.Grammars;
+using MiniPLC = MiniPL.CodeGenerators;
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Playground
@@ -42,6 +43,8 @@ namespace Playground
             ShowTimeAndRestart(stopwatch, "Parsing");
 
             var astRootValue = parseTree.RootAstValue;
+
+//            string generatedCode = new MiniPLC.CSharpGenerator().Generate(astRootValue);
 
 #if false
             var jsonGrammar = new JsonGrammar();
