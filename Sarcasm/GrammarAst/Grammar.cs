@@ -17,7 +17,7 @@ namespace Sarcasm.GrammarAst
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
     public enum ErrorHandling { ThrowException, ErrorMessage }
 
-    public partial class Grammar : Irony.Parsing.Grammar
+    public abstract partial class Grammar : Irony.Parsing.Grammar
     {
         #region Construction
 
@@ -42,7 +42,6 @@ namespace Sarcasm.GrammarAst
             this.AstCreation = astCreation;
             this.EmptyCollectionHandling = emptyCollectionHandling;
             this.ErrorHandling = errorHandling;
-            this.UnparseControl = new UnparseControl(this);
         }
 
         #endregion
@@ -266,7 +265,19 @@ namespace Sarcasm.GrammarAst
 
         #region Unparsing
 
-        public UnparseControl UnparseControl { get; private set; }
+        private UnparseControl _unparseControl;
+        public UnparseControl UnparseControl
+        {
+            get
+            {
+                if (_unparseControl == null)
+                    _unparseControl = GetUnparseControl();
+
+                return _unparseControl;
+            }
+        }
+
+        protected abstract UnparseControl GetUnparseControl();
 
         public static ValueConverter<object, object> NoUnparseByInverse()
         {
@@ -291,7 +302,7 @@ namespace Sarcasm.GrammarAst
         #endregion
     }
 
-    public class Grammar<TRoot> : Grammar
+    public abstract class Grammar<TRoot> : Grammar
     {
         #region Construction
 

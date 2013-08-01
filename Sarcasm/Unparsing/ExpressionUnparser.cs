@@ -41,7 +41,7 @@ namespace Sarcasm.Unparsing
 
         #region Used only during initialization
 
-        private IDictionary<BnfTerm, Parentheses> _expressionToParentheses;
+        private IDictionary<BnfTerm, ParenthesizedExpression> _expressionToParentheses;
         private IDictionary<BnfTerm, MultiOperatorInfo> _flaggedOrDerivedOperatorToMultiOperatorInfo;
         private Bag<BnfTerm> _examinedBnfTermsInCurrentPath;
 
@@ -50,7 +50,7 @@ namespace Sarcasm.Unparsing
         private readonly Unparser unparser;
 
         private ISet<BnfTerm> expressionsThatCanCauseOthersBeingParenthesized;
-        private Dictionary<BnfTerm, Parentheses> expressionThatMayNeedParenthesesToParentheses;
+        private Dictionary<BnfTerm, ParenthesizedExpression> expressionThatMayNeedParenthesesToParentheses;
         private Dictionary<BnfTerm, BnfTermKind> bnfTermToBnfTermKind;
 
         #endregion
@@ -58,7 +58,7 @@ namespace Sarcasm.Unparsing
         #region Mutable
 
         private Stack<SurroundingOperators> surroundingOperators = new Stack<SurroundingOperators>();
-        private Stack<Parentheses> surroundingParentheses = new Stack<Parentheses>();
+        private Stack<ParenthesizedExpression> surroundingParentheses = new Stack<ParenthesizedExpression>();
         private OperatorInfo _operatorInfo = null;
         private AutoCleanupCounter ongoingExpressionUnparseLevel = new AutoCleanupCounter(0);
         private AutoCleanupCounter ongoingOperatorUnparseLevel = new AutoCleanupCounter(0);
@@ -127,7 +127,7 @@ namespace Sarcasm.Unparsing
         private void DetermineOperatorsParenthesesExpressions()
         {
             this.bnfTermToBnfTermKind = new Dictionary<BnfTerm, BnfTermKind>();
-            this._expressionToParentheses = new Dictionary<BnfTerm, Parentheses>();
+            this._expressionToParentheses = new Dictionary<BnfTerm, ParenthesizedExpression>();
             this._flaggedOrDerivedOperatorToMultiOperatorInfo = new Dictionary<BnfTerm, MultiOperatorInfo>();
 
             CalculateBnfTermKind(unparser.Grammar.Root);
@@ -206,7 +206,7 @@ namespace Sarcasm.Unparsing
                  * */
                 BnfTerm prevChild = null;
                 BnfTermKind? prevChildKind = null;
-                Parentheses parentheses = null;
+                ParenthesizedExpression parentheses = null;
                 BnfTerm childExpression = null;
 
                 if (children.Count == 0)
@@ -233,7 +233,7 @@ namespace Sarcasm.Unparsing
 
                         case BnfTermKind.LeftParenthesis:
                             leftParenthesisCount++;
-                            parentheses = new Parentheses() { Left = child };
+                            parentheses = new ParenthesizedExpression() { LeftParenthesis = child };
                             childExpression = null;
                             break;
 
@@ -241,11 +241,11 @@ namespace Sarcasm.Unparsing
                             rightParenthesisCount++;
                             if (prevChildKind == BnfTermKind.Other && childExpression == prevChild)
                             {
-                                Debug.Assert(parentheses != null && parentheses.Left != null && parentheses.Expression != null);
+                                Debug.Assert(parentheses != null && parentheses.LeftParenthesis != null && parentheses.Expression != null);
 
-                                parentheses.Right = child;
+                                parentheses.RightParenthesis = child;
 
-                                Parentheses registeredParentheses;
+                                ParenthesizedExpression registeredParentheses;
                                 if (_expressionToParentheses.TryGetValue(childExpression, out registeredParentheses))
                                 {
                                     if (parentheses != registeredParentheses)
@@ -262,7 +262,7 @@ namespace Sarcasm.Unparsing
                             otherCount++;
                             if (prevChildKind == BnfTermKind.LeftParenthesis)
                             {
-                                Debug.Assert(parentheses != null && parentheses.Left != null);
+                                Debug.Assert(parentheses != null && parentheses.LeftParenthesis != null);
                                 childExpression = child;
                                 parentheses.Expression = childExpression;
                             }
@@ -352,7 +352,7 @@ namespace Sarcasm.Unparsing
             else
             {
                 this.expressionsThatCanCauseOthersBeingParenthesized = new HashSet<BnfTerm>();
-                this.expressionThatMayNeedParenthesesToParentheses = new Dictionary<BnfTerm, Parentheses>();
+                this.expressionThatMayNeedParenthesesToParentheses = new Dictionary<BnfTerm, ParenthesizedExpression>();
                 this._examinedBnfTermsInCurrentPath = new Bag<BnfTerm>();
 
                 RegisteringExpressionsThatNeedParentheses(unparser.Grammar.Root);
@@ -521,8 +521,8 @@ namespace Sarcasm.Unparsing
 
         private void RegisterSurroundingParenthesesDuringInitialization()
         {
-            Parentheses parentheses = GetSurroundingParentheses();
-            Parentheses registeredParentheses;
+            ParenthesizedExpression parentheses = GetSurroundingParentheses();
+            ParenthesizedExpression registeredParentheses;
             bool alreadyRegistered;
 
             if (parentheses != null &&
@@ -605,8 +605,8 @@ namespace Sarcasm.Unparsing
         private UnparsableAst GetParenthesis(ParenthesisKind parenthesisKind, UnparsableAst unparsableExpression)
         {
             BnfTerm parenthesis = parenthesisKind == ParenthesisKind.Left
-                ? GetSurroundingParentheses().Left
-                : GetSurroundingParentheses().Right;
+                ? GetSurroundingParentheses().LeftParenthesis
+                : GetSurroundingParentheses().RightParenthesis;
 
             return new UnparsableAst(parenthesis, unparsableExpression.AstValue);
         }
@@ -705,7 +705,7 @@ namespace Sarcasm.Unparsing
             return flaggedOperator.Associativity;
         }
 
-        private Parentheses GetSurroundingParentheses()
+        private ParenthesizedExpression GetSurroundingParentheses()
         {
             if (surroundingParentheses.Count == 0)
                 throw new UnparseException("Parenthesis needed but not found");
@@ -715,7 +715,7 @@ namespace Sarcasm.Unparsing
 
         private void BeginParenthesesContext(BnfTerm expression, bool initialization)
         {
-            Parentheses parentheses;
+            ParenthesizedExpression parentheses;
             if (GetMappingForParenthesesContext(initialization).TryGetValue(expression, out parentheses))
                 surroundingParentheses.Push(parentheses);
         }
@@ -726,7 +726,7 @@ namespace Sarcasm.Unparsing
                 surroundingParentheses.Pop();
         }
 
-        private IDictionary<BnfTerm, Parentheses> GetMappingForParenthesesContext(bool initialization)
+        private IDictionary<BnfTerm, ParenthesizedExpression> GetMappingForParenthesesContext(bool initialization)
         {
             return initialization ? _expressionToParentheses : expressionThatMayNeedParenthesesToParentheses;
         }
@@ -829,43 +829,6 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        internal class Parentheses : IEquatable<Parentheses>
-        {
-            public BnfTerm Expression;
-            public BnfTerm Left;
-            public BnfTerm Right;
-
-            public override bool Equals(object obj)
-            {
-                return obj is Parentheses && Equals((Parentheses)obj);
-            }
-
-            public bool Equals(Parentheses that)
-            {
-                return object.ReferenceEquals(this, that)
-                    ||
-                    !object.ReferenceEquals(that, null) &&
-                    this.Expression == that.Expression &&
-                    this.Left == that.Left &&
-                    this.Right == that.Right;
-            }
-
-            public override int GetHashCode()
-            {
-                return Util.GetHashCodeMulti(Expression, Left, Right);
-            }
-
-            public static bool operator ==(Parentheses parentheses1, Parentheses parentheses2)
-            {
-                return object.ReferenceEquals(parentheses1, parentheses2) || !object.ReferenceEquals(parentheses1, null) && parentheses1.Equals(parentheses2);
-            }
-
-            public static bool operator !=(Parentheses parentheses1, Parentheses parentheses2)
-            {
-                return !(parentheses1 == parentheses2);
-            }
-        }
-
         private class MultiOperatorInfo
         {
             public readonly BnfTerm StrongestFlaggedOperator;
@@ -884,4 +847,54 @@ namespace Sarcasm.Unparsing
 
         #endregion
     }
+
+    #region ParenthesizedExpression
+
+    public class ParenthesizedExpression : IEquatable<ParenthesizedExpression>
+    {
+        public BnfTerm Expression { get; internal set; }
+        public BnfTerm LeftParenthesis { get; internal set; }
+        public BnfTerm RightParenthesis { get; internal set; }
+
+        internal ParenthesizedExpression() { }
+
+        public ParenthesizedExpression(BnfTerm expression, BnfTerm leftParenthesis, BnfTerm rightParenthesis)
+        {
+            this.Expression = expression;
+            this.LeftParenthesis = leftParenthesis;
+            this.RightParenthesis = rightParenthesis;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ParenthesizedExpression && Equals((ParenthesizedExpression)obj);
+        }
+
+        public bool Equals(ParenthesizedExpression that)
+        {
+            return object.ReferenceEquals(this, that)
+                ||
+                !object.ReferenceEquals(that, null) &&
+                this.Expression == that.Expression &&
+                this.LeftParenthesis == that.LeftParenthesis &&
+                this.RightParenthesis == that.RightParenthesis;
+        }
+
+        public override int GetHashCode()
+        {
+            return Util.GetHashCodeMulti(Expression, LeftParenthesis, RightParenthesis);
+        }
+
+        public static bool operator ==(ParenthesizedExpression parentheses1, ParenthesizedExpression parentheses2)
+        {
+            return object.ReferenceEquals(parentheses1, parentheses2) || !object.ReferenceEquals(parentheses1, null) && parentheses1.Equals(parentheses2);
+        }
+
+        public static bool operator !=(ParenthesizedExpression parentheses1, ParenthesizedExpression parentheses2)
+        {
+            return !(parentheses1 == parentheses2);
+        }
+    }
+
+    #endregion
 }

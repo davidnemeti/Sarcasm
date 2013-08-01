@@ -397,14 +397,16 @@ namespace MiniPL.Grammars
             // NOTE: we must not recurse, since NEG_OP and POS_OP has the same terminals as SUB_OP and ADD_OP, respectively ('-' and '+').
 
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
-
-            #region Unparse
-
-            UnparseControl.DefaultFormatter = new Formatter(this);
-            UnparseControl.SetPrecedenceBasedParenthesesForExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN);
-
-            #endregion
         }
+
+        #region Unparse
+
+        protected override UnparseControl GetUnparseControl()
+        {
+            return UnparseControl.Create(this, new Formatter(this), new ParenthesizedExpression(B.Expression, B.LEFT_PAREN, B.RIGHT_PAREN));
+        }
+
+        #endregion
 
         #region Formatter
 

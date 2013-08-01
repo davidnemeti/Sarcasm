@@ -17,52 +17,46 @@ namespace Sarcasm.Unparsing
     public class UnparseControl
     {
         private readonly Grammar grammar;
-        private Dictionary<BnfTerm, ExpressionUnparser.Parentheses> expressionToParentheses = new Dictionary<BnfTerm, ExpressionUnparser.Parentheses>();
+        private Dictionary<BnfTerm, ParenthesizedExpression> expressionToParentheses;
         internal bool ExpressionToParenthesesHasBeenSet { get; private set; }
 
-        public UnparseControl(Grammar grammar)
+        private UnparseControl(Grammar grammar)
         {
             this.grammar = grammar;
-            this.ExpressionToParenthesesHasBeenSet = false;
         }
 
-        internal IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> GetExpressionToParentheses()
+        public static UnparseControl Create_NoUnparse(Grammar grammar)
+        {
+            return new UnparseControl(grammar) { ExpressionToParenthesesHasBeenSet = false };
+        }
+
+        public static UnparseControl Create(Grammar grammar, params ParenthesizedExpression[] parenthesizedExpressions)
+        {
+            return Create(grammar, new Formatter(grammar), parenthesizedExpressions);
+        }
+
+        public static UnparseControl Create(Grammar grammar, Formatter defaultFormatter, params ParenthesizedExpression[] parenthesizedExpressionsForPrecedenceBasedUnparse)
+        {
+            return new UnparseControl(grammar)
+            {
+                ExpressionToParenthesesHasBeenSet = true,
+                DefaultFormatter = defaultFormatter,
+                expressionToParentheses = parenthesizedExpressionsForPrecedenceBasedUnparse.ToDictionary(parenthesizedExpression => parenthesizedExpression.Expression)
+            };
+        }
+
+        internal IReadOnlyDictionary<BnfTerm, ParenthesizedExpression> GetExpressionToParentheses()
         {
             return expressionToParentheses;
         }
 
-        internal void SetExpressionToParentheses(IReadOnlyDictionary<BnfTerm, ExpressionUnparser.Parentheses> expressionToParentheses)
+        internal void SetExpressionToParentheses(IReadOnlyDictionary<BnfTerm, ParenthesizedExpression> expressionToParentheses)
         {
             this.expressionToParentheses = expressionToParentheses.ToDictionary(pair => pair.Key, pair => pair.Value);
             this.ExpressionToParenthesesHasBeenSet = true;
         }
 
-        private Formatter _defaultFormatter;
-        public Formatter DefaultFormatter
-        {
-            get
-            {
-                if (_defaultFormatter == null)
-                    _defaultFormatter = new Formatter(grammar);
-
-                return _defaultFormatter;
-            }
-            set
-            {
-                _defaultFormatter = value;
-            }
-        }
-
-        public void SetPrecedenceBasedParenthesesForExpression(BnfTerm expression, BnfTerm leftParenthesis, BnfTerm rightParenthesis)
-        {
-            expressionToParentheses.Add(expression, new ExpressionUnparser.Parentheses() { Expression = expression, Left = leftParenthesis, Right = rightParenthesis });
-            ExpressionToParenthesesHasBeenSet = true;
-        }
-
-        public void NoPrecedenceBasedParenthesesNeededForExpressions()
-        {
-            ExpressionToParenthesesHasBeenSet = true;
-        }
+        public Formatter DefaultFormatter { get; set; }
 
         public void ClearPrecedenceBasedParenthesesForExpressions()
         {

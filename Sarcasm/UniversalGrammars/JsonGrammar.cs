@@ -125,14 +125,9 @@ namespace Sarcasm.UniversalGrammars
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
-
-            #region Unparse
-
-            UnparseControl.DefaultFormatter = new Formatter(this);
-            UnparseControl.NoPrecedenceBasedParenthesesNeededForExpressions();
-
-            #endregion
         }
+
+        #region Helpers
 
         private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
         {
@@ -297,6 +292,10 @@ namespace Sarcasm.UniversalGrammars
             return sw.ToString();
         }
 
+        #endregion
+
+        #region Helpers types
+
         public class Array
         {
             public IEnumerable Elements { get; set; }
@@ -324,6 +323,17 @@ namespace Sarcasm.UniversalGrammars
                 return new KeyValuePair<TKey, TValue>(key, value);
             }
         }
+
+        #endregion
+
+        #region Unparse
+
+        protected override UnparseControl GetUnparseControl()
+        {
+            return UnparseControl.Create(this, new Formatter(this));
+        }
+
+        #endregion
 
         #region Formatter
 
