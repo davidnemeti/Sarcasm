@@ -27,6 +27,8 @@ namespace MiniPL.Grammars
     [Grammar(typeof(Program), "C-like")]
     public class GrammarC : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
     {
+        #region BnfTerms
+
         public class BnfTerms
         {
             internal BnfTerms(TerminalFactoryS TerminalFactoryS)
@@ -181,6 +183,8 @@ namespace MiniPL.Grammars
 
             public readonly BnfiTermConversion<string> IDENTIFIER;
         }
+
+        #endregion
 
         public readonly BnfTerms B;
 
