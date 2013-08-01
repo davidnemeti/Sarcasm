@@ -9,6 +9,9 @@
 <#@ output extension=".cs" #>
 
 // GENERATED FILE
+// NOTE: we store the resulted C# file in a separate file detached from the tt file since using the PresentationCore assembly during generation somehow causing problems for MSBuild
+
+using System;
 
 namespace Sarcasm.Unparsing.Styles
 {
@@ -65,21 +68,44 @@ namespace Sarcasm.Unparsing.Styles
         public static FontFamily GenericSerif { get; private set; }
     }
 
-    public struct Color
+    public enum Color : uint
     {
-        public byte A { get; set; }
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
-
 <# 
 foreach (PropertyInfo property in typeof(Colors).GetProperties())
 {
     Color color = (Color)property.GetValue(null);
 #>
-        public static Color <#= string.Format("{0,-20}", property.Name) #> { get { return new Color() { A = <#= color.A #>, R = <#= color.R #>, G = <#= color.G #>, B = <#= color.B #>} ; } }
+        <#= string.Format("{0,-20}", property.Name) #> = (<#= color.A #>u << 24 | <#= color.R #>u << 16 | <#= color.G #>u << 8 | <#= color.B #>u),
 <# 
 }
 #>
+    }
+
+    public static class ColorFactory
+    {
+        public static Color CreateColor(byte A, byte R, byte G, byte B)
+        {
+            return (Color) (((uint)A) << 24 | ((uint)R) << 16 | ((uint)G) << 8 | ((uint)B));
+        }
+
+        public static byte A(this Color color)
+        {
+            return (byte) ((((uint)color) & 0xFF000000) >> 24);
+        }
+
+        public static byte R(this Color color)
+        {
+            return (byte) ((((uint)color) & 0x00FF0000) >> 16);
+        }
+
+        public static byte G(this Color color)
+        {
+            return (byte) ((((uint)color) & 0x0000FF00) >> 8);
+        }
+
+        public static byte B(this Color color)
+        {
+            return (byte) ((((uint)color) & 0x000000FF) >> 0);
+        }
     }
 }

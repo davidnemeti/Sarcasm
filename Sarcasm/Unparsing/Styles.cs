@@ -1,4 +1,8 @@
-﻿// GENERATED FILE
+﻿
+// GENERATED FILE
+// NOTE: we store the resulted C# file in a separate file detached from the tt file since using the PresentationCore assembly during generation somehow causing problems for MSBuild
+
+using System;
 
 namespace Sarcasm.Unparsing.Styles
 {
@@ -55,153 +59,176 @@ namespace Sarcasm.Unparsing.Styles
         public static FontFamily GenericSerif { get; private set; }
     }
 
-    public struct Color
+    public enum Color : uint
     {
-        public byte A { get; set; }
-        public byte R { get; set; }
-        public byte G { get; set; }
-        public byte B { get; set; }
+        AliceBlue = (255u << 24 | 240u << 16 | 248u << 8 | 255u),
+        AntiqueWhite = (255u << 24 | 250u << 16 | 235u << 8 | 215u),
+        Aqua = (255u << 24 | 0u << 16 | 255u << 8 | 255u),
+        Aquamarine = (255u << 24 | 127u << 16 | 255u << 8 | 212u),
+        Azure = (255u << 24 | 240u << 16 | 255u << 8 | 255u),
+        Beige = (255u << 24 | 245u << 16 | 245u << 8 | 220u),
+        Bisque = (255u << 24 | 255u << 16 | 228u << 8 | 196u),
+        Black = (255u << 24 | 0u << 16 | 0u << 8 | 0u),
+        BlanchedAlmond = (255u << 24 | 255u << 16 | 235u << 8 | 205u),
+        Blue = (255u << 24 | 0u << 16 | 0u << 8 | 255u),
+        BlueViolet = (255u << 24 | 138u << 16 | 43u << 8 | 226u),
+        Brown = (255u << 24 | 165u << 16 | 42u << 8 | 42u),
+        BurlyWood = (255u << 24 | 222u << 16 | 184u << 8 | 135u),
+        CadetBlue = (255u << 24 | 95u << 16 | 158u << 8 | 160u),
+        Chartreuse = (255u << 24 | 127u << 16 | 255u << 8 | 0u),
+        Chocolate = (255u << 24 | 210u << 16 | 105u << 8 | 30u),
+        Coral = (255u << 24 | 255u << 16 | 127u << 8 | 80u),
+        CornflowerBlue = (255u << 24 | 100u << 16 | 149u << 8 | 237u),
+        Cornsilk = (255u << 24 | 255u << 16 | 248u << 8 | 220u),
+        Crimson = (255u << 24 | 220u << 16 | 20u << 8 | 60u),
+        Cyan = (255u << 24 | 0u << 16 | 255u << 8 | 255u),
+        DarkBlue = (255u << 24 | 0u << 16 | 0u << 8 | 139u),
+        DarkCyan = (255u << 24 | 0u << 16 | 139u << 8 | 139u),
+        DarkGoldenrod = (255u << 24 | 184u << 16 | 134u << 8 | 11u),
+        DarkGray = (255u << 24 | 169u << 16 | 169u << 8 | 169u),
+        DarkGreen = (255u << 24 | 0u << 16 | 100u << 8 | 0u),
+        DarkKhaki = (255u << 24 | 189u << 16 | 183u << 8 | 107u),
+        DarkMagenta = (255u << 24 | 139u << 16 | 0u << 8 | 139u),
+        DarkOliveGreen = (255u << 24 | 85u << 16 | 107u << 8 | 47u),
+        DarkOrange = (255u << 24 | 255u << 16 | 140u << 8 | 0u),
+        DarkOrchid = (255u << 24 | 153u << 16 | 50u << 8 | 204u),
+        DarkRed = (255u << 24 | 139u << 16 | 0u << 8 | 0u),
+        DarkSalmon = (255u << 24 | 233u << 16 | 150u << 8 | 122u),
+        DarkSeaGreen = (255u << 24 | 143u << 16 | 188u << 8 | 143u),
+        DarkSlateBlue = (255u << 24 | 72u << 16 | 61u << 8 | 139u),
+        DarkSlateGray = (255u << 24 | 47u << 16 | 79u << 8 | 79u),
+        DarkTurquoise = (255u << 24 | 0u << 16 | 206u << 8 | 209u),
+        DarkViolet = (255u << 24 | 148u << 16 | 0u << 8 | 211u),
+        DeepPink = (255u << 24 | 255u << 16 | 20u << 8 | 147u),
+        DeepSkyBlue = (255u << 24 | 0u << 16 | 191u << 8 | 255u),
+        DimGray = (255u << 24 | 105u << 16 | 105u << 8 | 105u),
+        DodgerBlue = (255u << 24 | 30u << 16 | 144u << 8 | 255u),
+        Firebrick = (255u << 24 | 178u << 16 | 34u << 8 | 34u),
+        FloralWhite = (255u << 24 | 255u << 16 | 250u << 8 | 240u),
+        ForestGreen = (255u << 24 | 34u << 16 | 139u << 8 | 34u),
+        Fuchsia = (255u << 24 | 255u << 16 | 0u << 8 | 255u),
+        Gainsboro = (255u << 24 | 220u << 16 | 220u << 8 | 220u),
+        GhostWhite = (255u << 24 | 248u << 16 | 248u << 8 | 255u),
+        Gold = (255u << 24 | 255u << 16 | 215u << 8 | 0u),
+        Goldenrod = (255u << 24 | 218u << 16 | 165u << 8 | 32u),
+        Gray = (255u << 24 | 128u << 16 | 128u << 8 | 128u),
+        Green = (255u << 24 | 0u << 16 | 128u << 8 | 0u),
+        GreenYellow = (255u << 24 | 173u << 16 | 255u << 8 | 47u),
+        Honeydew = (255u << 24 | 240u << 16 | 255u << 8 | 240u),
+        HotPink = (255u << 24 | 255u << 16 | 105u << 8 | 180u),
+        IndianRed = (255u << 24 | 205u << 16 | 92u << 8 | 92u),
+        Indigo = (255u << 24 | 75u << 16 | 0u << 8 | 130u),
+        Ivory = (255u << 24 | 255u << 16 | 255u << 8 | 240u),
+        Khaki = (255u << 24 | 240u << 16 | 230u << 8 | 140u),
+        Lavender = (255u << 24 | 230u << 16 | 230u << 8 | 250u),
+        LavenderBlush = (255u << 24 | 255u << 16 | 240u << 8 | 245u),
+        LawnGreen = (255u << 24 | 124u << 16 | 252u << 8 | 0u),
+        LemonChiffon = (255u << 24 | 255u << 16 | 250u << 8 | 205u),
+        LightBlue = (255u << 24 | 173u << 16 | 216u << 8 | 230u),
+        LightCoral = (255u << 24 | 240u << 16 | 128u << 8 | 128u),
+        LightCyan = (255u << 24 | 224u << 16 | 255u << 8 | 255u),
+        LightGoldenrodYellow = (255u << 24 | 250u << 16 | 250u << 8 | 210u),
+        LightGray = (255u << 24 | 211u << 16 | 211u << 8 | 211u),
+        LightGreen = (255u << 24 | 144u << 16 | 238u << 8 | 144u),
+        LightPink = (255u << 24 | 255u << 16 | 182u << 8 | 193u),
+        LightSalmon = (255u << 24 | 255u << 16 | 160u << 8 | 122u),
+        LightSeaGreen = (255u << 24 | 32u << 16 | 178u << 8 | 170u),
+        LightSkyBlue = (255u << 24 | 135u << 16 | 206u << 8 | 250u),
+        LightSlateGray = (255u << 24 | 119u << 16 | 136u << 8 | 153u),
+        LightSteelBlue = (255u << 24 | 176u << 16 | 196u << 8 | 222u),
+        LightYellow = (255u << 24 | 255u << 16 | 255u << 8 | 224u),
+        Lime = (255u << 24 | 0u << 16 | 255u << 8 | 0u),
+        LimeGreen = (255u << 24 | 50u << 16 | 205u << 8 | 50u),
+        Linen = (255u << 24 | 250u << 16 | 240u << 8 | 230u),
+        Magenta = (255u << 24 | 255u << 16 | 0u << 8 | 255u),
+        Maroon = (255u << 24 | 128u << 16 | 0u << 8 | 0u),
+        MediumAquamarine = (255u << 24 | 102u << 16 | 205u << 8 | 170u),
+        MediumBlue = (255u << 24 | 0u << 16 | 0u << 8 | 205u),
+        MediumOrchid = (255u << 24 | 186u << 16 | 85u << 8 | 211u),
+        MediumPurple = (255u << 24 | 147u << 16 | 112u << 8 | 219u),
+        MediumSeaGreen = (255u << 24 | 60u << 16 | 179u << 8 | 113u),
+        MediumSlateBlue = (255u << 24 | 123u << 16 | 104u << 8 | 238u),
+        MediumSpringGreen = (255u << 24 | 0u << 16 | 250u << 8 | 154u),
+        MediumTurquoise = (255u << 24 | 72u << 16 | 209u << 8 | 204u),
+        MediumVioletRed = (255u << 24 | 199u << 16 | 21u << 8 | 133u),
+        MidnightBlue = (255u << 24 | 25u << 16 | 25u << 8 | 112u),
+        MintCream = (255u << 24 | 245u << 16 | 255u << 8 | 250u),
+        MistyRose = (255u << 24 | 255u << 16 | 228u << 8 | 225u),
+        Moccasin = (255u << 24 | 255u << 16 | 228u << 8 | 181u),
+        NavajoWhite = (255u << 24 | 255u << 16 | 222u << 8 | 173u),
+        Navy = (255u << 24 | 0u << 16 | 0u << 8 | 128u),
+        OldLace = (255u << 24 | 253u << 16 | 245u << 8 | 230u),
+        Olive = (255u << 24 | 128u << 16 | 128u << 8 | 0u),
+        OliveDrab = (255u << 24 | 107u << 16 | 142u << 8 | 35u),
+        Orange = (255u << 24 | 255u << 16 | 165u << 8 | 0u),
+        OrangeRed = (255u << 24 | 255u << 16 | 69u << 8 | 0u),
+        Orchid = (255u << 24 | 218u << 16 | 112u << 8 | 214u),
+        PaleGoldenrod = (255u << 24 | 238u << 16 | 232u << 8 | 170u),
+        PaleGreen = (255u << 24 | 152u << 16 | 251u << 8 | 152u),
+        PaleTurquoise = (255u << 24 | 175u << 16 | 238u << 8 | 238u),
+        PaleVioletRed = (255u << 24 | 219u << 16 | 112u << 8 | 147u),
+        PapayaWhip = (255u << 24 | 255u << 16 | 239u << 8 | 213u),
+        PeachPuff = (255u << 24 | 255u << 16 | 218u << 8 | 185u),
+        Peru = (255u << 24 | 205u << 16 | 133u << 8 | 63u),
+        Pink = (255u << 24 | 255u << 16 | 192u << 8 | 203u),
+        Plum = (255u << 24 | 221u << 16 | 160u << 8 | 221u),
+        PowderBlue = (255u << 24 | 176u << 16 | 224u << 8 | 230u),
+        Purple = (255u << 24 | 128u << 16 | 0u << 8 | 128u),
+        Red = (255u << 24 | 255u << 16 | 0u << 8 | 0u),
+        RosyBrown = (255u << 24 | 188u << 16 | 143u << 8 | 143u),
+        RoyalBlue = (255u << 24 | 65u << 16 | 105u << 8 | 225u),
+        SaddleBrown = (255u << 24 | 139u << 16 | 69u << 8 | 19u),
+        Salmon = (255u << 24 | 250u << 16 | 128u << 8 | 114u),
+        SandyBrown = (255u << 24 | 244u << 16 | 164u << 8 | 96u),
+        SeaGreen = (255u << 24 | 46u << 16 | 139u << 8 | 87u),
+        SeaShell = (255u << 24 | 255u << 16 | 245u << 8 | 238u),
+        Sienna = (255u << 24 | 160u << 16 | 82u << 8 | 45u),
+        Silver = (255u << 24 | 192u << 16 | 192u << 8 | 192u),
+        SkyBlue = (255u << 24 | 135u << 16 | 206u << 8 | 235u),
+        SlateBlue = (255u << 24 | 106u << 16 | 90u << 8 | 205u),
+        SlateGray = (255u << 24 | 112u << 16 | 128u << 8 | 144u),
+        Snow = (255u << 24 | 255u << 16 | 250u << 8 | 250u),
+        SpringGreen = (255u << 24 | 0u << 16 | 255u << 8 | 127u),
+        SteelBlue = (255u << 24 | 70u << 16 | 130u << 8 | 180u),
+        Tan = (255u << 24 | 210u << 16 | 180u << 8 | 140u),
+        Teal = (255u << 24 | 0u << 16 | 128u << 8 | 128u),
+        Thistle = (255u << 24 | 216u << 16 | 191u << 8 | 216u),
+        Tomato = (255u << 24 | 255u << 16 | 99u << 8 | 71u),
+        Transparent = (0u << 24 | 255u << 16 | 255u << 8 | 255u),
+        Turquoise = (255u << 24 | 64u << 16 | 224u << 8 | 208u),
+        Violet = (255u << 24 | 238u << 16 | 130u << 8 | 238u),
+        Wheat = (255u << 24 | 245u << 16 | 222u << 8 | 179u),
+        White = (255u << 24 | 255u << 16 | 255u << 8 | 255u),
+        WhiteSmoke = (255u << 24 | 245u << 16 | 245u << 8 | 245u),
+        Yellow = (255u << 24 | 255u << 16 | 255u << 8 | 0u),
+        YellowGreen = (255u << 24 | 154u << 16 | 205u << 8 | 50u),
+    }
 
-        public static Color AliceBlue            { get { return new Color() { A = 255, R = 240, G = 248, B = 255} ; } }
-        public static Color AntiqueWhite         { get { return new Color() { A = 255, R = 250, G = 235, B = 215} ; } }
-        public static Color Aqua                 { get { return new Color() { A = 255, R = 0, G = 255, B = 255} ; } }
-        public static Color Aquamarine           { get { return new Color() { A = 255, R = 127, G = 255, B = 212} ; } }
-        public static Color Azure                { get { return new Color() { A = 255, R = 240, G = 255, B = 255} ; } }
-        public static Color Beige                { get { return new Color() { A = 255, R = 245, G = 245, B = 220} ; } }
-        public static Color Bisque               { get { return new Color() { A = 255, R = 255, G = 228, B = 196} ; } }
-        public static Color Black                { get { return new Color() { A = 255, R = 0, G = 0, B = 0} ; } }
-        public static Color BlanchedAlmond       { get { return new Color() { A = 255, R = 255, G = 235, B = 205} ; } }
-        public static Color Blue                 { get { return new Color() { A = 255, R = 0, G = 0, B = 255} ; } }
-        public static Color BlueViolet           { get { return new Color() { A = 255, R = 138, G = 43, B = 226} ; } }
-        public static Color Brown                { get { return new Color() { A = 255, R = 165, G = 42, B = 42} ; } }
-        public static Color BurlyWood            { get { return new Color() { A = 255, R = 222, G = 184, B = 135} ; } }
-        public static Color CadetBlue            { get { return new Color() { A = 255, R = 95, G = 158, B = 160} ; } }
-        public static Color Chartreuse           { get { return new Color() { A = 255, R = 127, G = 255, B = 0} ; } }
-        public static Color Chocolate            { get { return new Color() { A = 255, R = 210, G = 105, B = 30} ; } }
-        public static Color Coral                { get { return new Color() { A = 255, R = 255, G = 127, B = 80} ; } }
-        public static Color CornflowerBlue       { get { return new Color() { A = 255, R = 100, G = 149, B = 237} ; } }
-        public static Color Cornsilk             { get { return new Color() { A = 255, R = 255, G = 248, B = 220} ; } }
-        public static Color Crimson              { get { return new Color() { A = 255, R = 220, G = 20, B = 60} ; } }
-        public static Color Cyan                 { get { return new Color() { A = 255, R = 0, G = 255, B = 255} ; } }
-        public static Color DarkBlue             { get { return new Color() { A = 255, R = 0, G = 0, B = 139} ; } }
-        public static Color DarkCyan             { get { return new Color() { A = 255, R = 0, G = 139, B = 139} ; } }
-        public static Color DarkGoldenrod        { get { return new Color() { A = 255, R = 184, G = 134, B = 11} ; } }
-        public static Color DarkGray             { get { return new Color() { A = 255, R = 169, G = 169, B = 169} ; } }
-        public static Color DarkGreen            { get { return new Color() { A = 255, R = 0, G = 100, B = 0} ; } }
-        public static Color DarkKhaki            { get { return new Color() { A = 255, R = 189, G = 183, B = 107} ; } }
-        public static Color DarkMagenta          { get { return new Color() { A = 255, R = 139, G = 0, B = 139} ; } }
-        public static Color DarkOliveGreen       { get { return new Color() { A = 255, R = 85, G = 107, B = 47} ; } }
-        public static Color DarkOrange           { get { return new Color() { A = 255, R = 255, G = 140, B = 0} ; } }
-        public static Color DarkOrchid           { get { return new Color() { A = 255, R = 153, G = 50, B = 204} ; } }
-        public static Color DarkRed              { get { return new Color() { A = 255, R = 139, G = 0, B = 0} ; } }
-        public static Color DarkSalmon           { get { return new Color() { A = 255, R = 233, G = 150, B = 122} ; } }
-        public static Color DarkSeaGreen         { get { return new Color() { A = 255, R = 143, G = 188, B = 143} ; } }
-        public static Color DarkSlateBlue        { get { return new Color() { A = 255, R = 72, G = 61, B = 139} ; } }
-        public static Color DarkSlateGray        { get { return new Color() { A = 255, R = 47, G = 79, B = 79} ; } }
-        public static Color DarkTurquoise        { get { return new Color() { A = 255, R = 0, G = 206, B = 209} ; } }
-        public static Color DarkViolet           { get { return new Color() { A = 255, R = 148, G = 0, B = 211} ; } }
-        public static Color DeepPink             { get { return new Color() { A = 255, R = 255, G = 20, B = 147} ; } }
-        public static Color DeepSkyBlue          { get { return new Color() { A = 255, R = 0, G = 191, B = 255} ; } }
-        public static Color DimGray              { get { return new Color() { A = 255, R = 105, G = 105, B = 105} ; } }
-        public static Color DodgerBlue           { get { return new Color() { A = 255, R = 30, G = 144, B = 255} ; } }
-        public static Color Firebrick            { get { return new Color() { A = 255, R = 178, G = 34, B = 34} ; } }
-        public static Color FloralWhite          { get { return new Color() { A = 255, R = 255, G = 250, B = 240} ; } }
-        public static Color ForestGreen          { get { return new Color() { A = 255, R = 34, G = 139, B = 34} ; } }
-        public static Color Fuchsia              { get { return new Color() { A = 255, R = 255, G = 0, B = 255} ; } }
-        public static Color Gainsboro            { get { return new Color() { A = 255, R = 220, G = 220, B = 220} ; } }
-        public static Color GhostWhite           { get { return new Color() { A = 255, R = 248, G = 248, B = 255} ; } }
-        public static Color Gold                 { get { return new Color() { A = 255, R = 255, G = 215, B = 0} ; } }
-        public static Color Goldenrod            { get { return new Color() { A = 255, R = 218, G = 165, B = 32} ; } }
-        public static Color Gray                 { get { return new Color() { A = 255, R = 128, G = 128, B = 128} ; } }
-        public static Color Green                { get { return new Color() { A = 255, R = 0, G = 128, B = 0} ; } }
-        public static Color GreenYellow          { get { return new Color() { A = 255, R = 173, G = 255, B = 47} ; } }
-        public static Color Honeydew             { get { return new Color() { A = 255, R = 240, G = 255, B = 240} ; } }
-        public static Color HotPink              { get { return new Color() { A = 255, R = 255, G = 105, B = 180} ; } }
-        public static Color IndianRed            { get { return new Color() { A = 255, R = 205, G = 92, B = 92} ; } }
-        public static Color Indigo               { get { return new Color() { A = 255, R = 75, G = 0, B = 130} ; } }
-        public static Color Ivory                { get { return new Color() { A = 255, R = 255, G = 255, B = 240} ; } }
-        public static Color Khaki                { get { return new Color() { A = 255, R = 240, G = 230, B = 140} ; } }
-        public static Color Lavender             { get { return new Color() { A = 255, R = 230, G = 230, B = 250} ; } }
-        public static Color LavenderBlush        { get { return new Color() { A = 255, R = 255, G = 240, B = 245} ; } }
-        public static Color LawnGreen            { get { return new Color() { A = 255, R = 124, G = 252, B = 0} ; } }
-        public static Color LemonChiffon         { get { return new Color() { A = 255, R = 255, G = 250, B = 205} ; } }
-        public static Color LightBlue            { get { return new Color() { A = 255, R = 173, G = 216, B = 230} ; } }
-        public static Color LightCoral           { get { return new Color() { A = 255, R = 240, G = 128, B = 128} ; } }
-        public static Color LightCyan            { get { return new Color() { A = 255, R = 224, G = 255, B = 255} ; } }
-        public static Color LightGoldenrodYellow { get { return new Color() { A = 255, R = 250, G = 250, B = 210} ; } }
-        public static Color LightGray            { get { return new Color() { A = 255, R = 211, G = 211, B = 211} ; } }
-        public static Color LightGreen           { get { return new Color() { A = 255, R = 144, G = 238, B = 144} ; } }
-        public static Color LightPink            { get { return new Color() { A = 255, R = 255, G = 182, B = 193} ; } }
-        public static Color LightSalmon          { get { return new Color() { A = 255, R = 255, G = 160, B = 122} ; } }
-        public static Color LightSeaGreen        { get { return new Color() { A = 255, R = 32, G = 178, B = 170} ; } }
-        public static Color LightSkyBlue         { get { return new Color() { A = 255, R = 135, G = 206, B = 250} ; } }
-        public static Color LightSlateGray       { get { return new Color() { A = 255, R = 119, G = 136, B = 153} ; } }
-        public static Color LightSteelBlue       { get { return new Color() { A = 255, R = 176, G = 196, B = 222} ; } }
-        public static Color LightYellow          { get { return new Color() { A = 255, R = 255, G = 255, B = 224} ; } }
-        public static Color Lime                 { get { return new Color() { A = 255, R = 0, G = 255, B = 0} ; } }
-        public static Color LimeGreen            { get { return new Color() { A = 255, R = 50, G = 205, B = 50} ; } }
-        public static Color Linen                { get { return new Color() { A = 255, R = 250, G = 240, B = 230} ; } }
-        public static Color Magenta              { get { return new Color() { A = 255, R = 255, G = 0, B = 255} ; } }
-        public static Color Maroon               { get { return new Color() { A = 255, R = 128, G = 0, B = 0} ; } }
-        public static Color MediumAquamarine     { get { return new Color() { A = 255, R = 102, G = 205, B = 170} ; } }
-        public static Color MediumBlue           { get { return new Color() { A = 255, R = 0, G = 0, B = 205} ; } }
-        public static Color MediumOrchid         { get { return new Color() { A = 255, R = 186, G = 85, B = 211} ; } }
-        public static Color MediumPurple         { get { return new Color() { A = 255, R = 147, G = 112, B = 219} ; } }
-        public static Color MediumSeaGreen       { get { return new Color() { A = 255, R = 60, G = 179, B = 113} ; } }
-        public static Color MediumSlateBlue      { get { return new Color() { A = 255, R = 123, G = 104, B = 238} ; } }
-        public static Color MediumSpringGreen    { get { return new Color() { A = 255, R = 0, G = 250, B = 154} ; } }
-        public static Color MediumTurquoise      { get { return new Color() { A = 255, R = 72, G = 209, B = 204} ; } }
-        public static Color MediumVioletRed      { get { return new Color() { A = 255, R = 199, G = 21, B = 133} ; } }
-        public static Color MidnightBlue         { get { return new Color() { A = 255, R = 25, G = 25, B = 112} ; } }
-        public static Color MintCream            { get { return new Color() { A = 255, R = 245, G = 255, B = 250} ; } }
-        public static Color MistyRose            { get { return new Color() { A = 255, R = 255, G = 228, B = 225} ; } }
-        public static Color Moccasin             { get { return new Color() { A = 255, R = 255, G = 228, B = 181} ; } }
-        public static Color NavajoWhite          { get { return new Color() { A = 255, R = 255, G = 222, B = 173} ; } }
-        public static Color Navy                 { get { return new Color() { A = 255, R = 0, G = 0, B = 128} ; } }
-        public static Color OldLace              { get { return new Color() { A = 255, R = 253, G = 245, B = 230} ; } }
-        public static Color Olive                { get { return new Color() { A = 255, R = 128, G = 128, B = 0} ; } }
-        public static Color OliveDrab            { get { return new Color() { A = 255, R = 107, G = 142, B = 35} ; } }
-        public static Color Orange               { get { return new Color() { A = 255, R = 255, G = 165, B = 0} ; } }
-        public static Color OrangeRed            { get { return new Color() { A = 255, R = 255, G = 69, B = 0} ; } }
-        public static Color Orchid               { get { return new Color() { A = 255, R = 218, G = 112, B = 214} ; } }
-        public static Color PaleGoldenrod        { get { return new Color() { A = 255, R = 238, G = 232, B = 170} ; } }
-        public static Color PaleGreen            { get { return new Color() { A = 255, R = 152, G = 251, B = 152} ; } }
-        public static Color PaleTurquoise        { get { return new Color() { A = 255, R = 175, G = 238, B = 238} ; } }
-        public static Color PaleVioletRed        { get { return new Color() { A = 255, R = 219, G = 112, B = 147} ; } }
-        public static Color PapayaWhip           { get { return new Color() { A = 255, R = 255, G = 239, B = 213} ; } }
-        public static Color PeachPuff            { get { return new Color() { A = 255, R = 255, G = 218, B = 185} ; } }
-        public static Color Peru                 { get { return new Color() { A = 255, R = 205, G = 133, B = 63} ; } }
-        public static Color Pink                 { get { return new Color() { A = 255, R = 255, G = 192, B = 203} ; } }
-        public static Color Plum                 { get { return new Color() { A = 255, R = 221, G = 160, B = 221} ; } }
-        public static Color PowderBlue           { get { return new Color() { A = 255, R = 176, G = 224, B = 230} ; } }
-        public static Color Purple               { get { return new Color() { A = 255, R = 128, G = 0, B = 128} ; } }
-        public static Color Red                  { get { return new Color() { A = 255, R = 255, G = 0, B = 0} ; } }
-        public static Color RosyBrown            { get { return new Color() { A = 255, R = 188, G = 143, B = 143} ; } }
-        public static Color RoyalBlue            { get { return new Color() { A = 255, R = 65, G = 105, B = 225} ; } }
-        public static Color SaddleBrown          { get { return new Color() { A = 255, R = 139, G = 69, B = 19} ; } }
-        public static Color Salmon               { get { return new Color() { A = 255, R = 250, G = 128, B = 114} ; } }
-        public static Color SandyBrown           { get { return new Color() { A = 255, R = 244, G = 164, B = 96} ; } }
-        public static Color SeaGreen             { get { return new Color() { A = 255, R = 46, G = 139, B = 87} ; } }
-        public static Color SeaShell             { get { return new Color() { A = 255, R = 255, G = 245, B = 238} ; } }
-        public static Color Sienna               { get { return new Color() { A = 255, R = 160, G = 82, B = 45} ; } }
-        public static Color Silver               { get { return new Color() { A = 255, R = 192, G = 192, B = 192} ; } }
-        public static Color SkyBlue              { get { return new Color() { A = 255, R = 135, G = 206, B = 235} ; } }
-        public static Color SlateBlue            { get { return new Color() { A = 255, R = 106, G = 90, B = 205} ; } }
-        public static Color SlateGray            { get { return new Color() { A = 255, R = 112, G = 128, B = 144} ; } }
-        public static Color Snow                 { get { return new Color() { A = 255, R = 255, G = 250, B = 250} ; } }
-        public static Color SpringGreen          { get { return new Color() { A = 255, R = 0, G = 255, B = 127} ; } }
-        public static Color SteelBlue            { get { return new Color() { A = 255, R = 70, G = 130, B = 180} ; } }
-        public static Color Tan                  { get { return new Color() { A = 255, R = 210, G = 180, B = 140} ; } }
-        public static Color Teal                 { get { return new Color() { A = 255, R = 0, G = 128, B = 128} ; } }
-        public static Color Thistle              { get { return new Color() { A = 255, R = 216, G = 191, B = 216} ; } }
-        public static Color Tomato               { get { return new Color() { A = 255, R = 255, G = 99, B = 71} ; } }
-        public static Color Transparent          { get { return new Color() { A = 0, R = 255, G = 255, B = 255} ; } }
-        public static Color Turquoise            { get { return new Color() { A = 255, R = 64, G = 224, B = 208} ; } }
-        public static Color Violet               { get { return new Color() { A = 255, R = 238, G = 130, B = 238} ; } }
-        public static Color Wheat                { get { return new Color() { A = 255, R = 245, G = 222, B = 179} ; } }
-        public static Color White                { get { return new Color() { A = 255, R = 255, G = 255, B = 255} ; } }
-        public static Color WhiteSmoke           { get { return new Color() { A = 255, R = 245, G = 245, B = 245} ; } }
-        public static Color Yellow               { get { return new Color() { A = 255, R = 255, G = 255, B = 0} ; } }
-        public static Color YellowGreen          { get { return new Color() { A = 255, R = 154, G = 205, B = 50} ; } }
+    public static class ColorFactory
+    {
+        public static Color CreateColor(byte A, byte R, byte G, byte B)
+        {
+            return (Color)(((uint)A) << 24 | ((uint)R) << 16 | ((uint)G) << 8 | ((uint)B));
+        }
+
+        public static byte A(this Color color)
+        {
+            return (byte)((((uint)color) & 0xFF000000) >> 24);
+        }
+
+        public static byte R(this Color color)
+        {
+            return (byte)((((uint)color) & 0x00FF0000) >> 16);
+        }
+
+        public static byte G(this Color color)
+        {
+            return (byte)((((uint)color) & 0x0000FF00) >> 8);
+        }
+
+        public static byte B(this Color color)
+        {
+            return (byte)((((uint)color) & 0x000000FF) >> 0);
+        }
     }
 }

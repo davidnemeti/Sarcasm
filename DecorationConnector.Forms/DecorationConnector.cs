@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Sarcasm.Unparsing;
+using Sarcasm.Unparsing.Styles;
 
 using Drawing = System.Drawing;
 using Windows = System.Windows;
@@ -147,9 +148,9 @@ namespace DecorationConnector.Forms
                 }
                 );
 
-            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Drawing.Color.FromArgb(color.A, color.R, color.G, color.B));
+            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Drawing.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
 
-            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Drawing.Color.FromArgb(color.A, color.R, color.G, color.B));
+            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Drawing.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
         }
     }
 }

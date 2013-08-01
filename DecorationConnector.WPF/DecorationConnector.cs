@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Sarcasm.Unparsing;
+using Sarcasm.Unparsing.Styles;
 
 using Media = System.Windows.Media;
 using Windows = System.Windows;
@@ -199,9 +200,9 @@ namespace DecorationConnector.WPF
                 }
                 );
 
-            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Media.Color.FromArgb(color.A, color.R, color.G, color.B));
+            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Media.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
 
-            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Media.Color.FromArgb(color.A, color.R, color.G, color.B));
+            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Media.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
         }
     }
 }
