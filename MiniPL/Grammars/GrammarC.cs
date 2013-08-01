@@ -421,6 +421,9 @@ namespace MiniPL.Grammars
             public Color TypeForeColor { get; set; }
             public Color LiteralForeColor { get; set; }
 
+            public bool ShowNamesInBold { get; set; }
+            public bool ShowNameRefsInItalic { get; set; }
+
             #endregion
 
             private readonly BnfTerms B;
@@ -438,6 +441,9 @@ namespace MiniPL.Grammars
                 OperatorForeColor = Color.Red;
                 TypeForeColor = Color.Cyan;
                 LiteralForeColor = Color.ForestGreen;
+
+                ShowNamesInBold = true;
+                ShowNameRefsInItalic = false;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -482,6 +488,18 @@ namespace MiniPL.Grammars
                 {
                     decoration
                         .Add(DecorationKey.Foreground, LiteralForeColor)
+                        ;
+                }
+                else if (ShowNamesInBold && target.AstParent != null && target.AstParent.AstValue is Name)
+                {
+                    decoration
+                        .Add(DecorationKey.FontWeight, FontWeight.Bold)
+                        ;
+                }
+                else if (ShowNameRefsInItalic && target.AstParent != null && target.AstParent.AstValue is NameRef)
+                {
+                    decoration
+                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
                         ;
                 }
             }
