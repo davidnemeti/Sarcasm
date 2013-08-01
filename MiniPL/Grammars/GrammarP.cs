@@ -470,6 +470,11 @@ namespace MiniPL.Grammars
             public SyntaxHighlight SyntaxHighlight { get; set; }
             public bool FlattenIfHierarchy { get; set; }
 
+            public Color KeyTermForeColor { get; set; }
+            public Color OperatorForeColor { get; set; }
+            public Color TypeForeColor { get; set; }
+            public Color LiteralForeColor { get; set; }
+
             #endregion
 
             private readonly BnfTerms B;
@@ -481,6 +486,11 @@ namespace MiniPL.Grammars
 
                 SyntaxHighlight = GrammarP.SyntaxHighlight.Color;
                 FlattenIfHierarchy = true;
+
+                KeyTermForeColor = Color.Blue;
+                OperatorForeColor = Color.Purple;
+                TypeForeColor = Color.Cyan;
+                LiteralForeColor = Color.Red;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -505,25 +515,25 @@ namespace MiniPL.Grammars
                 if (target.BnfTerm is KeyTerm)
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, Color.Blue)
+                        .Add(DecorationKey.Foreground, KeyTermForeColor)
                         ;
                 }
                 else if (target.BnfTerm.IsOperator())
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, Color.Purple)
+                        .Add(DecorationKey.Foreground, OperatorForeColor)
                         ;
                 }
                 else if (target.AstValue is D.Type)
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, Color.Cyan)
+                        .Add(DecorationKey.Foreground, TypeForeColor)
                         ;
                 }
                 else if (target.BnfTerm.IsLiteral())
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, Color.Red)
+                        .Add(DecorationKey.Foreground, LiteralForeColor)
                         ;
                 }
             }
