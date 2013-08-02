@@ -13,16 +13,9 @@ namespace MiniPL.CodeGenerators
     [CodeGenerator(typeof(Program), "C#")]
     public class CSharpGenerator : ICodeGenerator
     {
-        private readonly CSharpGeneratorTemplate csharpGeneratorTemplate;
-
-        public CSharpGenerator()
-        {
-            csharpGeneratorTemplate = new CSharpGeneratorTemplate();
-        }
-
         public string Generate(Program program)
         {
-            csharpGeneratorTemplate.Program = program;
+            var csharpGeneratorTemplate = new CSharpGeneratorTemplate() { Program = program };
             return csharpGeneratorTemplate.TransformText();
         }
 
