@@ -37,7 +37,7 @@ namespace Sarcasm.Reflection
 
         public static bool IsCodeGeneratorType(Type type)
         {
-            return type.IsSubclassOf(typeof(Grammar)) && type.GetCustomAttribute<GrammarAttribute>() != null;
+            return type.GetInterface(typeof(ICodeGenerator).Name) != null && type.GetCustomAttribute<CodeGeneratorAttribute>() != null;
         }
 
         public ICodeGenerator CreateCodeGenerator()

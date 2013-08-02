@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 using MiniPL.DomainModel;
 using Sarcasm.CodeGeneration;
+using Sarcasm.Reflection;
 
 namespace MiniPL.CodeGenerators
 {
+    [CodeGenerator(typeof(Program), "C#")]
     public class CSharpGenerator : ICodeGenerator
     {
         private readonly CSharpGeneratorTemplate csharpGeneratorTemplate;
