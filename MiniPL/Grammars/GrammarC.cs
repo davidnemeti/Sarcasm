@@ -589,12 +589,15 @@ namespace MiniPL.Grammars
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.BnfTerm == B.Statement /*&& (IndentStyle != GrammarC.IndentStyle.Whitesmiths || leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm != B.BEGIN)*/)
+                if (target.BnfTerm == B.Statement && !(target.AstValue is D.StatementList))
                     return BlockIndentation.Indent;
+
                 else if (IndentStyle == GrammarC.IndentStyle.Whitesmiths && target.BnfTerm.EqualToAny(B.BEGIN, B.END))
                     return BlockIndentation.Indent;
+
                 else if (FlattenIfHierarchy && leftTerminalLeaveIfAny != null && leftTerminalLeaveIfAny.BnfTerm == B.ELSE && target.BnfTerm == B.If)
                     return BlockIndentation.Unindent;
+
                 else
                     return base.GetBlockIndentation(leftTerminalLeaveIfAny, target);
             }

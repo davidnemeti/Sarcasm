@@ -679,7 +679,7 @@ namespace MiniPL.Grammars
 
             protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
-                if (target.BnfTerm == B.Statement)
+                if (target.BnfTerm == B.Statement && !(target.AstValue is D.StatementList))
                     return BlockIndentation.Indent;
 
                 // alternative ways to handle "else if" indentation
