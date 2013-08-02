@@ -40,9 +40,7 @@ namespace MiniPL.Grammars
                 this.WHILE = TerminalFactoryS.CreateKeyTerm("while");
                 this.FOR = TerminalFactoryS.CreateKeyTerm("for");
                 this.IF = TerminalFactoryS.CreateKeyTerm("if");
-                this.THEN = TerminalFactoryS.CreateKeyTerm("then");
                 this.ELSE = TerminalFactoryS.CreateKeyTerm("else");
-                this.DO = TerminalFactoryS.CreateKeyTerm("do");
                 this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
                 this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                 this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
@@ -136,9 +134,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm WHILE;
             public readonly BnfiTermKeyTerm FOR;
             public readonly BnfiTermKeyTerm IF;
-            public readonly BnfiTermKeyTerm THEN;
             public readonly BnfiTermKeyTerm ELSE;
-            public readonly BnfiTermKeyTerm DO;
             public readonly BnfiTermKeyTerm RETURN;
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
@@ -272,7 +268,6 @@ namespace MiniPL.Grammars
                 + B.LEFT_PAREN
                 + B.Expression.BindTo(B.While, t => t.Condition)
                 + B.RIGHT_PAREN
-                + B.DO
                 + B.Statement.BindTo(B.While, t => t.Body)
                 ;
 
@@ -285,7 +280,6 @@ namespace MiniPL.Grammars
                 + B.SEMICOLON
                 + B.Assignment.StarList(B.COMMA).BindTo(B.For, t => t.Update)
                 + B.RIGHT_PAREN
-                + B.DO
                 + B.Statement.BindTo(B.For, t => t.Body)
                 ;
 
@@ -294,7 +288,6 @@ namespace MiniPL.Grammars
                 + B.LEFT_PAREN
                 + B.Expression.BindTo(B.If, t => t.Condition)
                 + B.RIGHT_PAREN
-                + B.THEN
                 + B.Statement.BindTo(B.If, t => t.Body)
                 + (B.ELSE + B.Statement).QRef().BindTo(B.If, t => t.ElseBody)
                 ;
