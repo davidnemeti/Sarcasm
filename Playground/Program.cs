@@ -45,6 +45,7 @@ namespace Playground
             var astRootValue = parseTree.RootAstValue;
 
 //            string generatedCode = new MiniPLC.CSharpGenerator().Generate(astRootValue);
+//            string generatedCode = new MiniPLC.CppGenerator().Generate(astRootValue);
 
 #if false
             var jsonGrammar = new JsonGrammar();

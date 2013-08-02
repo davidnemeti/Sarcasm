@@ -10,12 +10,12 @@ using Sarcasm.Reflection;
 
 namespace MiniPL.CodeGenerators
 {
-    [CodeGenerator(typeof(Program), "C#")]
-    public class CSharpGenerator : ICodeGenerator
+    [CodeGenerator(typeof(Program), "C++")]
+    public class CppGenerator : ICodeGenerator
     {
         public string Generate(Program program)
         {
-            return new CSharpGeneratorTemplate() { Program = program }.TransformText();
+            return new CppGeneratorTemplate() { Program = program }.TransformText();
         }
 
         string ICodeGenerator.Generate(object root)
@@ -24,7 +24,7 @@ namespace MiniPL.CodeGenerators
         }
     }
 
-    public partial class CSharpGeneratorTemplate
+    public partial class CppGeneratorTemplate
     {
         public Program Program { get; set; }
     }

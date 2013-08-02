@@ -1,0 +1,265 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="MiniPL.DomainModel" #>
+<#@ import namespace="MiniPL.CodeGenerators" #>
+#include <iostream>
+
+namespace <#= Program.Namespace #>.<#= Program.Name #>
+{
+    int main()
+    {
+<#
+    Generate(Program.Body);
+#>
+        return 0;
+    }
+
+<#
+    foreach (Function function in Program.Functions)
+    {
+#>
+    <#= function.ReturnType != null ? GetTypeString(function.ReturnType.Value) : "void" #> <#= function.Name #>(<#= string.Join(", ", function.Parameters.Select(parameter => GetTypeString(parameter.Type) + " " + parameter.Name)) #>)
+    {
+<#
+    Generate(function.Body);
+#>
+    }
+
+<#
+    }
+#>
+}
+
+<#+
+void Generate(IEnumerable<Statement> statements)
+{
+    foreach (var statement in statements)
+        Generate(statement);
+}
+
+void Generate(Statement statement)
+{
+    PushIndent(indent);
+
+    if (statement is StatementList)
+    {
+        Generate(((StatementList)statement).Body);
+    }
+    else if (statement is LocalVariable)
+    {
+        var localVariable = (LocalVariable)statement;
+
+        if (localVariable.InitValue != null)
+        {
+#>
+    <#= GetLocalVariableString(localVariable) #>;
+<#+
+        }
+        else
+        {
+#>
+    <#= GetTypeString(localVariable.Type) #> <#= localVariable.Name #>;
+<#+
+        }
+    }
+    else if (statement is Assignment)
+    {
+        var assignment = (Assignment)statement;
+#>
+    <#= GetAssignmentString(assignment) #>;
+<#+
+    }
+    else if (statement is Return)
+    {
+        var @return = (Return)statement;
+#>
+    return <#= GetExpressionString(@return.Value) #>;
+<#+
+    }
+    else if (statement is While)
+    {
+        var @while = (While)statement;
+#>
+    while (<#= GetExpressionString(@while.Condition) #>)
+    {
+<#+ Generate(@while.Body); #>
+    }
+<#+
+    }
+    else if (statement is For)
+    {
+        var @for = (For)statement;
+#>
+    for (<#= string.Join(", ", @for.Init.Select(localVariable => GetLocalVariableString(localVariable))) #>; <#= GetExpressionString(@for.Condition) #>; <#= string.Join(", ", @for.Update.Select(assignment => GetAssignmentString(assignment))) #>)
+    {
+<#+ Generate(@for.Body); #>
+    }
+<#+
+    }
+    else if (statement is Write)
+    {
+        var write = (Write)statement;
+#>
+    std::cout << <#= string.Join(" << ", write.Arguments.Select(argument => GetExpressionString(argument))) #>;
+<#+
+    }
+    else if (statement is WriteLn)
+    {
+        var writeLn = (WriteLn)statement;
+#>
+    std::cout << <#= string.Join(" << ", writeLn.Arguments.Select(argument => GetExpressionString(argument))) #> << std::endl;
+<#+
+    }
+    else if (statement is If)
+    {
+        var @if = (If)statement;
+#>
+    if (<#= GetExpressionString(@if.Condition) #>)
+    {
+<#+
+        Generate(@if.Body);
+#>
+    }
+<#+
+        if (@if.ElseBody != null)
+        {
+#>
+    else
+    {
+<#+
+        Generate(@if.ElseBody);
+#>
+    }
+<#+
+        }
+    }
+    else if (statement is FunctionCall)
+    {
+        var functionCall = (FunctionCall)statement;
+#>
+    <#= GetExpressionString(functionCall) #>);
+<#+
+    }
+    else
+        throw new ArgumentException("Unknown statement: " + statement, "statement");
+
+    PopIndent();
+}
+
+string GetLocalVariableString(LocalVariable localVariable)
+{
+    return GetTypeString(localVariable.Type) + " " + localVariable.Name + " = " + GetExpressionString(localVariable.InitValue);
+}
+
+string GetAssignmentString(Assignment assignment)
+{
+    return GetExpressionString(assignment.LValue) + " = " + GetExpressionString(assignment.RValue);
+}
+
+string GetArgumentString(Argument argument)
+{
+    return GetExpressionString(argument.Expression);
+}
+
+string GetExpressionString(Expression expression)
+{
+    if (expression is BinaryExpression)
+    {
+        var binaryExpression = (BinaryExpression)expression;
+        return string.Format("({0} {1} {2})", GetExpressionString(binaryExpression.Term1), GetOperatorString(binaryExpression.Op), GetExpressionString(binaryExpression.Term2));
+    }
+    else if (expression is UnaryExpression)
+    {
+        var unaryExpression = (UnaryExpression)expression;
+        return string.Format("({0}{1})", GetOperatorString(unaryExpression.Op), GetExpressionString(unaryExpression.Term));
+    }
+    else if (expression is ConditionalTernaryExpression)
+    {
+        var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
+        return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
+    }
+    else if (expression is ConditionalTernaryExpression)
+    {
+        var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
+        return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
+    }
+    else if (expression is NumberLiteral)
+    {
+        var numberLiteral = (NumberLiteral)expression;
+        return numberLiteral.Value.ToString();
+    }
+    else if (expression is StringLiteral)
+    {
+        var stringLiteral = (StringLiteral)expression;
+        return "\"" + stringLiteral.Value + "\"";
+    }
+    else if (expression is BoolLiteral)
+    {
+        var boolLiteral = (BoolLiteral)expression;
+        return boolLiteral.Value ? "true" : "false";
+    }
+    else if (expression is FunctionCall)
+    {
+        var functionCall = (FunctionCall)expression;
+        return string.Format("{0}({1})", functionCall.FunctionReference.NameRef, string.Join(", ", functionCall.Arguments.Select(argument => GetArgumentString(argument))));
+    }
+    else if (expression is VariableReference)
+    {
+        var variableReference = (VariableReference)expression;
+        return variableReference.Target.NameRef.Value;
+    }
+    else
+        throw new ArgumentException("Unknown expression: " + expression, "expression");
+}
+
+string GetTypeString(MiniPL.DomainModel.Type type)
+{
+    switch (type)
+    {
+        case MiniPL.DomainModel.Type.Integer:   return "int";
+        case MiniPL.DomainModel.Type.Real:      return "double";
+        case MiniPL.DomainModel.Type.String:    return "string";
+        case MiniPL.DomainModel.Type.Char:      return "char";
+        case MiniPL.DomainModel.Type.Bool:      return "bool";
+        default:                                throw new ArgumentException("Unknown type: " + type, "type");
+    }
+}
+
+string GetOperatorString(BinaryOperator binaryOperator)
+{
+    switch (binaryOperator)
+    {
+        case BinaryOperator.Add:    return "+";
+        case BinaryOperator.Sub:    return "-";
+        case BinaryOperator.Mul:    return "*";
+        case BinaryOperator.Div:    return "/";
+        case BinaryOperator.Pow:    return "^";
+        case BinaryOperator.Mod:    return "%";
+        case BinaryOperator.Eq:     return "==";
+        case BinaryOperator.Neq:    return "!=";
+        case BinaryOperator.Lt:     return "<";
+        case BinaryOperator.Lte:    return "<=";
+        case BinaryOperator.Gt:     return ">";
+        case BinaryOperator.Gte:    return ">=";
+        case BinaryOperator.And:    return "&&";
+        case BinaryOperator.Or:     return "||";
+        default:                    throw new ArgumentException("Unknown binaryOperator: " + binaryOperator, "binaryOperator");
+    }
+}
+
+string GetOperatorString(UnaryOperator unaryOperator)
+{
+    switch (unaryOperator)
+    {
+        case UnaryOperator.Pos:     return "+";
+        case UnaryOperator.Neg:     return "-";
+        case UnaryOperator.Not:     return "!";
+        default:                    throw new ArgumentException("Unknown unaryOperator: " + unaryOperator, "unaryOperator");
+    }
+}
+
+const string indent = "    ";
+#>

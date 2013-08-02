@@ -42,6 +42,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeGenerators\CppGeneratorTemplate.cs">
+      <DependentUpon>CppGeneratorTemplate.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="CodeGenerators\CppGenerator.cs" />
     <Compile Include="CodeGenerators\CSharpGenerator.cs" />
     <Compile Include="CodeGenerators\CSharpGeneratorTemplate.cs">
       <AutoGen>True</AutoGen>
@@ -60,6 +66,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="CodeGenerators\CppGeneratorTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CppGeneratorTemplate.cs</LastGenOutput>
+      <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
+&lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
+    </None>
     <None Include="CodeGenerators\CSharpGeneratorTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
