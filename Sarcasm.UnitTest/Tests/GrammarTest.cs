@@ -10,7 +10,7 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 

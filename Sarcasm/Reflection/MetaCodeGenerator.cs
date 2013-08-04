@@ -19,7 +19,7 @@ namespace Sarcasm.Reflection
     {
         public Type CodeGeneratorType { get; private set; }
         public CodeGeneratorAttribute CodeGeneratorAttribute { get; private set; }
-        public Type DomainRoot { get; private set; }
+        public Type DomainType { get; private set; }
 
         public string Name { get { return CodeGeneratorAttribute.Name; } }
 
@@ -32,7 +32,7 @@ namespace Sarcasm.Reflection
 
             this.CodeGeneratorType = codeGeneratorType;
             this.CodeGeneratorAttribute = codeGeneratorAttribute;
-            this.DomainRoot = codeGeneratorAttribute.DomainRoot;
+            this.DomainType = codeGeneratorAttribute.DomainType;
         }
 
         public static bool IsCodeGeneratorType(Type type)

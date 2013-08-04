@@ -56,7 +56,7 @@ namespace Sarcasm.Parsing
             this.grammar = grammar;
             this.language = new LanguageData(grammar);
 
-            if (!this.language.CanParse())
+            if (this.language.ErrorLevel >= GrammarErrorLevel.Conflict && grammar.ErrorHandling == ErrorHandling.ThrowException)
                 GrammarHelper.ThrowGrammarErrorException(this.language.ErrorLevel, string.Join("\n", this.language.Errors));
 
             this.mainParser = new Parser(language);

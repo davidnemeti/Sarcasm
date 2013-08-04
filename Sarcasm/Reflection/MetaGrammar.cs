@@ -18,7 +18,7 @@ namespace Sarcasm.Reflection
     {
         public Type GrammarType { get; private set; }
         public GrammarAttribute GrammarAttribute { get; private set; }
-        public Type DomainRoot { get; private set; }
+        public Type DomainType { get; private set; }
 
         private ObservableCollection<MetaFormatter> metaFormatters;
         public ReadOnlyObservableCollection<MetaFormatter> MetaFormatters { get; private set; }
@@ -34,7 +34,7 @@ namespace Sarcasm.Reflection
 
             this.GrammarType = grammarType;
             this.GrammarAttribute = grammarAttribute;
-            this.DomainRoot = grammarAttribute.DomainRoot;
+            this.DomainType = grammarAttribute.DomainType;
 
             MetaFormatters = Util.CreateAndGetReadonlyCollection(out metaFormatters);
         }
@@ -54,12 +54,19 @@ namespace Sarcasm.Reflection
 
         public bool IsUniversalGrammar()
         {
-            return DomainRoot == null || DomainRoot == typeof(object);
+            return DomainType == null || DomainType == typeof(object);
         }
 
         public Grammar CreateGrammar()
         {
-            return (Grammar)Activator.CreateInstance(GrammarType);
+            /*
+             * We need to lock here in order to support concurrency, which could cause problems
+             * because of the usage of the static CurrentGrammar of Irony during the construction of the grammar.
+             * */
+            lock (Grammar.GrammarCreationLock)
+            {
+                return (Grammar)Activator.CreateInstance(GrammarType);
+            }
         }
 
         public Grammar CreateGrammar(CultureInfo cultureInfo)

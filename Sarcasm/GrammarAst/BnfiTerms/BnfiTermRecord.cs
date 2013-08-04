@@ -14,6 +14,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.GrammarAst
 {

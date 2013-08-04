@@ -11,7 +11,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 

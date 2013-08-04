@@ -1,5 +1,5 @@
 {
-  "$type": "MiniPL.DomainModel.Program, MiniPL",
+  "$type": "MiniPL.DomainDefinitions.Program, MiniPL",
   "Name": {
     "$type": "Sarcasm.DomainCore.Name, Sarcasm",
     "Value": "HelloWorld"
@@ -9,76 +9,76 @@
     "Value": "Sea.Shell"
   },
   "Body": {
-    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Statement, MiniPL]], mscorlib",
+    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Statement, MiniPL]], mscorlib",
     "$values": [
       {
-        "$type": "MiniPL.DomainModel.LocalVariable, MiniPL",
+        "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
         "Name": {
           "$type": "Sarcasm.DomainCore.Name, Sarcasm",
           "Value": "number"
         },
         "Type": "Integer",
         "InitValue": {
-          "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+          "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
           "Value": 5
         }
       },
       {
-        "$type": "MiniPL.DomainModel.LocalVariable, MiniPL",
+        "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
         "Name": {
           "$type": "Sarcasm.DomainCore.Name, Sarcasm",
           "Value": "just_for_test"
         },
         "Type": "Bool",
         "InitValue": {
-          "$type": "MiniPL.DomainModel.BoolLiteral, MiniPL",
+          "$type": "MiniPL.DomainDefinitions.BoolLiteral, MiniPL",
           "Value": true
         }
       },
       {
-        "$type": "MiniPL.DomainModel.WriteLn, MiniPL",
+        "$type": "MiniPL.DomainDefinitions.WriteLn, MiniPL",
         "Arguments": {
-          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Expression, MiniPL]], mscorlib",
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Expression, MiniPL]], mscorlib",
           "$values": [
             {
-              "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+              "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
               "Target": {
-                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                 "NameRef": {
                   "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "number"
                 },
-                "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
               }
             },
             {
-              "$type": "MiniPL.DomainModel.StringLiteral, MiniPL",
+              "$type": "MiniPL.DomainDefinitions.StringLiteral, MiniPL",
               "Value": "th Fibonacci number: "
             },
             {
-              "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+              "$type": "MiniPL.DomainDefinitions.FunctionCall, MiniPL",
               "FunctionReference": {
-                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
+                "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.Function, MiniPL]], Sarcasm",
                 "NameRef": {
                   "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                   "Value": "Fibonacci"
                 },
-                "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                "Type": "MiniPL.DomainDefinitions.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
               },
               "Arguments": {
-                "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Argument, MiniPL]], mscorlib",
                 "$values": [
                   {
-                    "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                    "$type": "MiniPL.DomainDefinitions.Argument, MiniPL",
                     "Expression": {
-                      "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                      "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                       "Target": {
-                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "number"
                         },
-                        "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                        "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       }
                     }
                   }
@@ -91,20 +91,20 @@
     ]
   },
   "Functions": {
-    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Function, MiniPL]], mscorlib",
+    "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Function, MiniPL]], mscorlib",
     "$values": [
       {
-        "$type": "MiniPL.DomainModel.Function, MiniPL",
+        "$type": "MiniPL.DomainDefinitions.Function, MiniPL",
         "Name": {
           "$type": "Sarcasm.DomainCore.Name, Sarcasm",
           "Value": "Fibonacci"
         },
         "ReturnType": "Integer",
         "Parameters": {
-          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Parameter, MiniPL]], mscorlib",
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Parameter, MiniPL]], mscorlib",
           "$values": [
             {
-              "$type": "MiniPL.DomainModel.Parameter, MiniPL",
+              "$type": "MiniPL.DomainDefinitions.Parameter, MiniPL",
               "Name": {
                 "$type": "Sarcasm.DomainCore.Name, Sarcasm",
                 "Value": "n"
@@ -114,99 +114,99 @@
           ]
         },
         "Body": {
-          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Statement, MiniPL]], mscorlib",
+          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Statement, MiniPL]], mscorlib",
           "$values": [
             {
-              "$type": "MiniPL.DomainModel.If, MiniPL",
+              "$type": "MiniPL.DomainDefinitions.If, MiniPL",
               "Condition": {
-                "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
                 "Term1": {
-                  "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                   "Target": {
-                    "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                    "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                     "NameRef": {
                       "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                       "Value": "n"
                     },
-                    "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                    "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                   }
                 },
                 "Op": "Eq",
                 "Term2": {
-                  "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                   "Value": 0
                 }
               },
               "Body": {
-                "$type": "MiniPL.DomainModel.Return, MiniPL",
+                "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                 "Value": {
-                  "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                   "Value": 0
                 }
               },
               "ElseBody": {
-                "$type": "MiniPL.DomainModel.If, MiniPL",
+                "$type": "MiniPL.DomainDefinitions.If, MiniPL",
                 "Condition": {
-                  "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
                   "Term1": {
-                    "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                    "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                     "Target": {
-                      "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                      "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                       "NameRef": {
                         "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                         "Value": "n"
                       },
-                      "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                      "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                     }
                   },
                   "Op": "Eq",
                   "Term2": {
-                    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                     "Value": 1
                   }
                 },
                 "Body": {
-                  "$type": "MiniPL.DomainModel.Return, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                   "Value": {
-                    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                     "Value": 1
                   }
                 },
                 "ElseBody": {
-                  "$type": "MiniPL.DomainModel.Return, MiniPL",
+                  "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                   "Value": {
-                    "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                    "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
                     "Term1": {
-                      "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+                      "$type": "MiniPL.DomainDefinitions.FunctionCall, MiniPL",
                       "FunctionReference": {
-                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.Function, MiniPL]], Sarcasm",
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
                         },
-                        "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                        "Type": "MiniPL.DomainDefinitions.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       },
                       "Arguments": {
-                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Argument, MiniPL]], mscorlib",
                         "$values": [
                           {
-                            "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                            "$type": "MiniPL.DomainDefinitions.Argument, MiniPL",
                             "Expression": {
-                              "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                              "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
                               "Term1": {
-                                "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                                "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                                 "Target": {
-                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                                   "NameRef": {
                                     "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
                                   },
-                                  "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                                  "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                                 }
                               },
                               "Op": "Sub",
                               "Term2": {
-                                "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                                "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                                 "Value": 1
                               }
                             }
@@ -216,36 +216,36 @@
                     },
                     "Op": "Add",
                     "Term2": {
-                      "$type": "MiniPL.DomainModel.FunctionCall, MiniPL",
+                      "$type": "MiniPL.DomainDefinitions.FunctionCall, MiniPL",
                       "FunctionReference": {
-                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.Function, MiniPL]], Sarcasm",
+                        "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.Function, MiniPL]], Sarcasm",
                         "NameRef": {
                           "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                           "Value": "Fibonacci"
                         },
-                        "Type": "MiniPL.DomainModel.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                        "Type": "MiniPL.DomainDefinitions.Function, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                       },
                       "Arguments": {
-                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainModel.Argument, MiniPL]], mscorlib",
+                        "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Argument, MiniPL]], mscorlib",
                         "$values": [
                           {
-                            "$type": "MiniPL.DomainModel.Argument, MiniPL",
+                            "$type": "MiniPL.DomainDefinitions.Argument, MiniPL",
                             "Expression": {
-                              "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+                              "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
                               "Term1": {
-                                "$type": "MiniPL.DomainModel.VariableReference, MiniPL",
+                                "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                                 "Target": {
-                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainModel.IVariable, MiniPL]], Sarcasm",
+                                  "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
                                   "NameRef": {
                                     "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
                                     "Value": "n"
                                   },
-                                  "Type": "MiniPL.DomainModel.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                                  "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
                                 }
                               },
                               "Op": "Sub",
                               "Term2": {
-                                "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+                                "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
                                 "Value": 2
                               }
                             }

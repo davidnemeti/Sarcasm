@@ -74,7 +74,12 @@ namespace Sarcasm.UniversalGrammars
         public const string PRIMITIVE_VALUE_KEYWORD = "$value";
 
         public JsonGrammar()
-            : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
+            : this(Domain.UniversalDefaultDomain)
+        {
+        }
+
+        public JsonGrammar(Domain domain)
+            : base(domain)
         {
             B = new BnfTerms(new TerminalFactoryS(this));
 

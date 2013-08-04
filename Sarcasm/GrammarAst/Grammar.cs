@@ -5,52 +5,79 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
+using Sarcasm.DomainCore;
 using Sarcasm.Unparsing;
+using Sarcasm.Utility;
 
 namespace Sarcasm.GrammarAst
 {
     public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
-    public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
     public enum ErrorHandling { ThrowException, ErrorMessage }
 
     public abstract partial class Grammar : Irony.Parsing.Grammar
     {
+        #region Defaults
+
+        private const AstCreation astCreationDefault = AstCreation.CreateAstWithAutoBrowsableAstNodes;
+        private const ErrorHandling errorHandlingDefault = ErrorHandling.ThrowException;
+
+        #endregion
+
         #region Construction
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
+        public Grammar(Domain domain)
             : base()
         {
-            Init(astCreation, emptyCollectionHandling, errorHandling);
+            this.domain = domain;
+
+            Init();
         }
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling, bool caseSensitive)
+        public Grammar(Domain domain, bool caseSensitive)
             : base(caseSensitive)
         {
-            Init(astCreation, emptyCollectionHandling, errorHandling);
+            this.domain = domain;
+
+            Init();
         }
 
-        void Init(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
+        void Init()
         {
-            this.LanguageFlags = astCreation == AstCreation.CreateAst || astCreation == AstCreation.CreateAstWithAutoBrowsableAstNodes
-                ? LanguageFlags.CreateAst
-                : LanguageFlags.Default;
-
-            this.AstCreation = astCreation;
-            this.EmptyCollectionHandling = emptyCollectionHandling;
-            this.ErrorHandling = errorHandling;
+            this.AstCreation = astCreationDefault;
+            this.ErrorHandling = errorHandlingDefault;
+            this.EmptyCollectionHandling = domain.EmptyCollectionHandling;
         }
+
+        #endregion
+
+        #region State
+
+        private readonly Domain domain;
 
         #endregion
 
         #region Properties
 
-        public AstCreation AstCreation { get; set; }
-        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
+        public AstCreation _astCreation;
+        public AstCreation AstCreation
+        {
+            get { return _astCreation; }
+
+            set
+            {
+                this._astCreation = value;
+
+                this.LanguageFlags = value.EqualToAny(AstCreation.CreateAst, AstCreation.CreateAstWithAutoBrowsableAstNodes)
+                    ? LanguageFlags.CreateAst
+                    : LanguageFlags.Default;
+            }
+        }
+
         public ErrorHandling ErrorHandling { get; set; }
+        public EmptyCollectionHandling EmptyCollectionHandling { get; private set; }
 
         #endregion
 
@@ -292,6 +319,8 @@ namespace Sarcasm.GrammarAst
             get { return (Grammar)Irony.Parsing.Grammar.CurrentGrammar; }
         }
 
+        public static readonly object GrammarCreationLock = new object();
+
         #endregion
 
         #region Unparsing
@@ -337,13 +366,13 @@ namespace Sarcasm.GrammarAst
     {
         #region Construction
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling)
-            : base(astCreation, emptyCollectionHandling, errorHandling)
+        public Grammar(Domain<TRoot> domain)
+            : base(domain)
         {
         }
 
-        public Grammar(AstCreation astCreation, EmptyCollectionHandling emptyCollectionHandling, ErrorHandling errorHandling, bool caseSensitive)
-            : base(astCreation, emptyCollectionHandling, errorHandling, caseSensitive)
+        public Grammar(Domain<TRoot> domain, bool caseSensitive)
+            : base(domain, caseSensitive)
         {
         }
 

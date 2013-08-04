@@ -18,24 +18,24 @@ namespace Sarcasm.Reflection
     {
         public MetaRepository()
         {
-            Domains = Util.CreateAndGetReadonlyCollection(out domains);
+            MetaDomains = Util.CreateAndGetReadonlyCollection(out metaDomains);
             UniversalMetaGrammars = Util.CreateAndGetReadonlyCollection(out universalMetaGrammars);
         }
 
-        private ObservableCollection<Domain> domains;
-        public ReadOnlyObservableCollection<Domain> Domains { get; private set; }
+        private ObservableCollection<MetaDomain> metaDomains;
+        public ReadOnlyObservableCollection<MetaDomain> MetaDomains { get; private set; }
 
         private ObservableCollection<MetaGrammar> universalMetaGrammars;
         public ReadOnlyObservableCollection<MetaGrammar> UniversalMetaGrammars { get; private set; }
 
-        public Domain DomainRootToDomain(Type domainRoot)
+        public MetaDomain DomainTypeToMetaDomain(Type domainType)
         {
-            return Domains.First(domain => domain.DomainRoot == domainRoot);
+            return MetaDomains.First(metaDomain => metaDomain.DomainType == domainType);
         }
 
         public MetaGrammar GrammarTypeToMetaGrammar(Type grammarType)
         {
-            return Domains
+            return MetaDomains
                 .SelectMany(domain => domain.MetaGrammars)
                 .Concat(UniversalMetaGrammars)
                 .First(metaGrammar => metaGrammar.GrammarType == grammarType);
@@ -53,20 +53,20 @@ namespace Sarcasm.Reflection
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
-            var newDomains = assembly
+            var newMetaDomains = assembly
                 .GetTypes()
-                .Where(type => Domain.IsDomainRoot(type))
-                .Select(domainRoot => new Domain(domainRoot));
+                .Where(type => MetaDomain.IsDomain(type))
+                .Select(domain => new MetaDomain(domain));
 
-            foreach (Domain newDomain in newDomains)
-                RegisterDomain(newDomain);
+            foreach (MetaDomain newMetaDomain in newMetaDomains)
+                RegisterDomain(newMetaDomain);
 
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
         }
 
-        public void RegisterDomain(Domain domain)
+        public void RegisterDomain(MetaDomain metaDomain)
         {
-            domains.Add(domain);
+            metaDomains.Add(metaDomain);
         }
 
         public void RegisterGrammars(Assembly assembly)
@@ -89,7 +89,7 @@ namespace Sarcasm.Reflection
             if (metaGrammar.IsUniversalGrammar())
                 RegisterUniversalGrammar(metaGrammar);
             else
-                DomainRootToDomain(metaGrammar.DomainRoot).RegisterGrammar(metaGrammar);
+                DomainTypeToMetaDomain(metaGrammar.DomainType).RegisterGrammar(metaGrammar);
         }
 
         private void RegisterUniversalGrammar(MetaGrammar metaGrammar)
@@ -117,7 +117,7 @@ namespace Sarcasm.Reflection
 
         public void RegisterCodeGenerator(MetaCodeGenerator metaCodeGenerator)
         {
-            DomainRootToDomain(metaCodeGenerator.DomainRoot).RegisterCodeGenerator(metaCodeGenerator);
+            DomainTypeToMetaDomain(metaCodeGenerator.DomainType).RegisterCodeGenerator(metaCodeGenerator);
         }
 
         public void RegisterFormatters(Assembly assembly)

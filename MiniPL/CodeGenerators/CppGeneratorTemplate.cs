@@ -12,7 +12,7 @@ namespace MiniPL.CodeGenerators
     using System.Linq;
     using System.Text;
     using System.Collections.Generic;
-    using MiniPL.DomainModel;
+    using MiniPL.DomainDefinitions;
     using MiniPL.CodeGenerators;
     using System;
     
@@ -632,15 +632,15 @@ string GetExpressionString(Expression expression)
         throw new ArgumentException("Unknown expression: " + expression, "expression");
 }
 
-string GetTypeString(MiniPL.DomainModel.Type type)
+string GetTypeString(MiniPL.DomainDefinitions.Type type)
 {
     switch (type)
     {
-        case MiniPL.DomainModel.Type.Integer:   return "int";
-        case MiniPL.DomainModel.Type.Real:      return "double";
-        case MiniPL.DomainModel.Type.String:    return "string";
-        case MiniPL.DomainModel.Type.Char:      return "char";
-        case MiniPL.DomainModel.Type.Bool:      return "bool";
+        case MiniPL.DomainDefinitions.Type.Integer:   return "int";
+        case MiniPL.DomainDefinitions.Type.Real:      return "double";
+        case MiniPL.DomainDefinitions.Type.String:    return "string";
+        case MiniPL.DomainDefinitions.Type.Char:      return "char";
+        case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
 }

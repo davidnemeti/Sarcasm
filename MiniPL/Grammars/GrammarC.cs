@@ -15,17 +15,17 @@ using Sarcasm.DomainCore;
 using Sarcasm.Reflection;
 using Sarcasm.Utility;
 
-using MiniPL.DomainModel;
-using D = MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
+using D = MiniPL.DomainDefinitions;
 using DC = Sarcasm.DomainCore;
-using Type = MiniPL.DomainModel.Type;
-using NumberLiteral = MiniPL.DomainModel.NumberLiteral;
-using StringLiteral = MiniPL.DomainModel.StringLiteral;
+using Type = MiniPL.DomainDefinitions.Type;
+using NumberLiteral = MiniPL.DomainDefinitions.NumberLiteral;
+using StringLiteral = MiniPL.DomainDefinitions.StringLiteral;
 
 namespace MiniPL.Grammars
 {
-    [Grammar(typeof(Program), "C-like")]
-    public class GrammarC : Sarcasm.GrammarAst.Grammar<MiniPL.DomainModel.Program>
+    [Grammar(typeof(Domain), "C-like")]
+    public class GrammarC : Sarcasm.GrammarAst.Grammar<MiniPL.DomainDefinitions.Program>
     {
         #region BnfTerms
 
@@ -54,33 +54,33 @@ namespace MiniPL.Grammars
                 this.RIGHT_PAREN = TerminalFactoryS.CreatePunctuation(")");
                 this.QUESTION_MARK = TerminalFactoryS.CreatePunctuation("?");
 
-                this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DomainModel.BinaryOperator.Add);
-                this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DomainModel.BinaryOperator.Sub);
-                this.MUL_OP = TerminalFactoryS.CreateKeyTerm("*", DomainModel.BinaryOperator.Mul);
-                this.DIV_OP = TerminalFactoryS.CreateKeyTerm("/", DomainModel.BinaryOperator.Div);
-                this.POW_OP = TerminalFactoryS.CreateKeyTerm("^", DomainModel.BinaryOperator.Pow);
-                this.MOD_OP = TerminalFactoryS.CreateKeyTerm("%", DomainModel.BinaryOperator.Mod);
+                this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DomainDefinitions.BinaryOperator.Add);
+                this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DomainDefinitions.BinaryOperator.Sub);
+                this.MUL_OP = TerminalFactoryS.CreateKeyTerm("*", DomainDefinitions.BinaryOperator.Mul);
+                this.DIV_OP = TerminalFactoryS.CreateKeyTerm("/", DomainDefinitions.BinaryOperator.Div);
+                this.POW_OP = TerminalFactoryS.CreateKeyTerm("^", DomainDefinitions.BinaryOperator.Pow);
+                this.MOD_OP = TerminalFactoryS.CreateKeyTerm("%", DomainDefinitions.BinaryOperator.Mod);
 
-                this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DomainModel.UnaryOperator.Pos);
-                this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DomainModel.UnaryOperator.Neg);
+                this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DomainDefinitions.UnaryOperator.Pos);
+                this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DomainDefinitions.UnaryOperator.Neg);
 
-                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("==", DomainModel.BinaryOperator.Eq);
-                this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DomainModel.BinaryOperator.Neq);
-                this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DomainModel.BinaryOperator.Lt);
-                this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainModel.BinaryOperator.Lte);
-                this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainModel.BinaryOperator.Gt);
-                this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainModel.BinaryOperator.Gte);
+                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("==", DomainDefinitions.BinaryOperator.Eq);
+                this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DomainDefinitions.BinaryOperator.Neq);
+                this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DomainDefinitions.BinaryOperator.Lt);
+                this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainDefinitions.BinaryOperator.Lte);
+                this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainDefinitions.BinaryOperator.Gt);
+                this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainDefinitions.BinaryOperator.Gte);
 
-                this.AND_OP = TerminalFactoryS.CreateKeyTerm("&&", DomainModel.BinaryOperator.And);
-                this.OR_OP = TerminalFactoryS.CreateKeyTerm("||", DomainModel.BinaryOperator.Or);
+                this.AND_OP = TerminalFactoryS.CreateKeyTerm("&&", DomainDefinitions.BinaryOperator.And);
+                this.OR_OP = TerminalFactoryS.CreateKeyTerm("||", DomainDefinitions.BinaryOperator.Or);
 
-                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", DomainModel.UnaryOperator.Not);
+                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", DomainDefinitions.UnaryOperator.Not);
 
-                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("int", DomainModel.Type.Integer);
-                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("double", DomainModel.Type.Real);
-                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainModel.Type.String);
-                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainModel.Type.Char);
-                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("bool", DomainModel.Type.Bool);
+                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("int", DomainDefinitions.Type.Integer);
+                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("double", DomainDefinitions.Type.Real);
+                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainDefinitions.Type.String);
+                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainDefinitions.Type.Char);
+                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("bool", DomainDefinitions.Type.Bool);
 
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
@@ -185,7 +185,7 @@ namespace MiniPL.Grammars
         public readonly BnfTerms B;
 
         public GrammarC()
-            : base(AstCreation.CreateAstWithAutoBrowsableAstNodes, EmptyCollectionHandling.ReturnEmpty, ErrorHandling.ThrowException)
+            : base(new Domain())
         {
             B = new BnfTerms(new TerminalFactoryS(this));
 

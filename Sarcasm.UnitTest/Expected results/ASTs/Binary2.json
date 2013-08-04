@@ -1,19 +1,19 @@
 {
-  "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+  "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
   "Term1": {
-    "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
     "Value": 1
   },
   "Op": "Add",
   "Term2": {
-    "$type": "MiniPL.DomainModel.BinaryExpression, MiniPL",
+    "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
     "Term1": {
-      "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+      "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
       "Value": 2
     },
     "Op": "Mul",
     "Term2": {
-      "$type": "MiniPL.DomainModel.NumberLiteral, MiniPL",
+      "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
       "Value": 3
     }
   }

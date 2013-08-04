@@ -14,7 +14,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
 
 using MiniPLG = MiniPL.Grammars;
 using Grammar = Sarcasm.GrammarAst.Grammar;
@@ -35,7 +35,7 @@ namespace Sarcasm.UnitTest
         protected const string actualResultsDir = @"Actual results";
 
         protected static MiniPLG.GrammarP grammar;
-        protected static MultiParser<MiniPL.DomainModel.Program> parser;
+        protected static MultiParser<MiniPL.DomainDefinitions.Program> parser;
 
         protected static MiniPLG.GrammarP.BnfTerms B { get { return grammar.B; } }
 
@@ -87,7 +87,7 @@ namespace Sarcasm.UnitTest
             return ParseTextAndCheckTS(root, ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
         }
 
-        protected static ParseTree<MiniPL.DomainModel.Program> ParseFileAndCheck(string parseFileName)
+        protected static ParseTree<MiniPL.DomainDefinitions.Program> ParseFileAndCheck(string parseFileName)
         {
             return ParseTextAndCheck(ConvertTabsToSpaces(File.ReadAllText(GetParseFilePath(parseFileName))), parseFileName);
         }
@@ -114,9 +114,9 @@ namespace Sarcasm.UnitTest
             return parseTree;
         }
 
-        protected static ParseTree<MiniPL.DomainModel.Program> ParseTextAndCheck(string sourceText, string parseFileName = null)
+        protected static ParseTree<MiniPL.DomainDefinitions.Program> ParseTextAndCheck(string sourceText, string parseFileName = null)
         {
-            ParseTree<MiniPL.DomainModel.Program> parseTree = parseFileName != null
+            ParseTree<MiniPL.DomainDefinitions.Program> parseTree = parseFileName != null
                 ? parser.Parse(sourceText, parseFileName)
                 : parser.Parse(sourceText);
 

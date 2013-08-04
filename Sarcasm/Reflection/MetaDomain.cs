@@ -14,10 +14,10 @@ using Sarcasm.Utility;
 
 namespace Sarcasm.Reflection
 {
-    public class Domain
+    public class MetaDomain
     {
-        public Type DomainRoot { get; private set; }
-        public DomainRootAttribute DomainRootAttribute { get; private set; }
+        public Type DomainType { get; private set; }
+        public DomainAttribute DomainAttribute { get; private set; }
 
         private ObservableCollection<MetaGrammar> metaGrammars;
         public ReadOnlyObservableCollection<MetaGrammar> MetaGrammars { get; private set; }
@@ -25,25 +25,25 @@ namespace Sarcasm.Reflection
         private ObservableCollection<MetaCodeGenerator> metaCodeGenerators;
         public ReadOnlyObservableCollection<MetaCodeGenerator> MetaCodeGenerators { get; private set; }
 
-        public string Name { get { return DomainRootAttribute.Name; } }
+        public string Name { get { return DomainAttribute.Name; } }
 
-        public Domain(Type domainRoot)
+        public MetaDomain(Type domainType)
         {
-            var domainRootAttribute = domainRoot.GetCustomAttribute<DomainRootAttribute>();
+            var domainAttribute = domainType.GetCustomAttribute<DomainAttribute>();
 
-            if (!IsDomainRoot(domainRoot))
-                throw new ArgumentException("Type should be a domain root, i.e. a type with DomainRootAttribute", "type");
+            if (!IsDomain(domainType))
+                throw new ArgumentException("Type should be a domain, i.e. a type with DomainAttribute", "type");
 
-            this.DomainRoot = domainRoot;
-            this.DomainRootAttribute = domainRootAttribute;
+            this.DomainType = domainType;
+            this.DomainAttribute = domainAttribute;
 
             MetaGrammars = Util.CreateAndGetReadonlyCollection(out metaGrammars);
             MetaCodeGenerators = Util.CreateAndGetReadonlyCollection(out metaCodeGenerators);
         }
 
-        public static bool IsDomainRoot(Type type)
+        public static bool IsDomain(Type type)
         {
-            return type.GetCustomAttribute<DomainRootAttribute>() != null;
+            return type.GetCustomAttribute<DomainAttribute>() != null;
         }
 
         public void RegisterGrammar(MetaGrammar metaGrammar)

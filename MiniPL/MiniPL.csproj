@@ -54,7 +54,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharpGeneratorTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="DomainModel.cs" />
+    <Compile Include="Domain.cs" />
     <Compile Include="Grammars\GrammarC.cs" />
     <Compile Include="Grammars\GrammarP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

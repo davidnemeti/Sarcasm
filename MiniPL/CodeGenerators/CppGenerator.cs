@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
 using Sarcasm.CodeGeneration;
 using Sarcasm.Reflection;
 
 namespace MiniPL.CodeGenerators
 {
-    [CodeGenerator(typeof(Program), "C++")]
+    [CodeGenerator(typeof(Domain), "C++")]
     public class CppGenerator : ICodeGenerator
     {
         public string Generate(Program program)

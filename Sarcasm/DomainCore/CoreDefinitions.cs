@@ -6,6 +6,19 @@ using System.Threading.Tasks;
 
 namespace Sarcasm.DomainCore
 {
+    public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
+
+    public class Domain
+    {
+        public static readonly Domain UniversalDefaultDomain = new Domain() { EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty };
+
+        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
+    }
+
+    public class Domain<TRoot> : Domain
+    {
+    }
+
     public interface IdentityWithGuid
     {
         Guid Guid { get; }

@@ -15,11 +15,11 @@ using Sarcasm.Utility;
 namespace Sarcasm.Reflection
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class DomainRootAttribute : Attribute
+    public class DomainAttribute : Attribute
     {
         public string Name { get; private set; }
 
-        public DomainRootAttribute(string name)
+        public DomainAttribute(string name)
         {
             this.Name = name;
         }
@@ -28,12 +28,12 @@ namespace Sarcasm.Reflection
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class CodeGeneratorAttribute : Attribute
     {
-        public Type DomainRoot { get; private set; }
+        public Type DomainType { get; private set; }
         public string Name { get; private set; }
 
-        public CodeGeneratorAttribute(Type domainRoot, string name)
+        public CodeGeneratorAttribute(Type domainType, string name)
         {
-            this.DomainRoot = domainRoot;
+            this.DomainType = domainType;
             this.Name = name;
         }
     }
@@ -41,12 +41,12 @@ namespace Sarcasm.Reflection
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
     public class GrammarAttribute : Attribute
     {
-        public Type DomainRoot { get; private set; }
+        public Type DomainType { get; private set; }
         public string Name { get; private set; }
 
-        public GrammarAttribute(Type domainRoot, string name)
+        public GrammarAttribute(Type domainType, string name)
         {
-            this.DomainRoot = domainRoot;
+            this.DomainType = domainType;
             this.Name = name;
         }
     }

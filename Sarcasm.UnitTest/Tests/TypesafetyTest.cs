@@ -14,7 +14,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainModel;
+using MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using System.Reflection;
@@ -35,7 +35,7 @@ namespace Sarcasm.UnitTest
             // NOTE: This is just to test whether these calls compile successfully. There is no need to actually call the Parse methods.
 
             // ensure that parser is typesafe
-            MultiParser<MiniPL.DomainModel.Program> _parser = parser;
+            MultiParser<MiniPL.DomainDefinitions.Program> _parser = parser;
 
             parser.Parse(string.Empty);
             parser.Parse(string.Empty, string.Empty);
@@ -162,7 +162,7 @@ namespace Sarcasm.UnitTest
         {
             // BindTo for Choice is not good
             string sourceCodeFail = @"
-                var numberLiteral = new BnfiTermChoice<MiniPL.DomainModel.NumberLiteral>();
+                var numberLiteral = new BnfiTermChoice<MiniPL.DomainDefinitions.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
                     + B.Expression.BindTo(numberLiteral, t => t.Value)
@@ -171,7 +171,7 @@ namespace Sarcasm.UnitTest
 
             // BindTo for Record is good
             string sourceCodeSuccess = @"
-                var numberLiteral = new BnfiTermRecord<MiniPL.DomainModel.NumberLiteral>();
+                var numberLiteral = new BnfiTermRecord<MiniPL.DomainDefinitions.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
                     + B.Expression.BindTo(numberLiteral, t => t.Value)
@@ -190,7 +190,7 @@ namespace Sarcasm.UnitTest
                 var logicalBinaryBoolExpression = new BnfiTermRecord<MiniPLExtension.LogicalBinaryBoolExpression>();
                 var logicalBinaryBoolExpressionTL = new BnfiTermRecordTL(typeof(MiniPLExtension.LogicalBinaryBoolExpression));
                 var boolExpression = new BnfiTermRecord<MiniPLExtension.BoolExpression>();
-                var expressionTL = new BnfiTermChoiceTL(typeof(MiniPL.DomainModel.Expression));
+                var expressionTL = new BnfiTermChoiceTL(typeof(MiniPL.DomainDefinitions.Expression));
             ";
 
             string sourceCodeFail = @"
@@ -228,12 +228,12 @@ namespace Sarcasm.UnitTest
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).BindTo(B.While, t => t.Body);
+                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Function)).BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).BindTo(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Function)).BindTo(() => new MiniPL.DomainDefinitions.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -251,12 +251,12 @@ namespace Sarcasm.UnitTest
 
             // typeless binding is okay
             string sourceCodeSuccess = @"
-                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(B.While, t => t.Body);
+                var foo2 = new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Function)).PlusListTL().BindTo(B.While, t => t.Body);
             ";
 
             // another form of typeless binding is okay
             string sourceCodeSuccess2 = @"
-                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Function)).PlusListTL().BindTo(() => new MiniPL.DomainModel.While().Body);
+                var foo3 = new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Function)).PlusListTL().BindTo(() => new MiniPL.DomainDefinitions.While().Body);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0311");
@@ -308,7 +308,7 @@ namespace Sarcasm.UnitTest
 
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
-                B.Program.RuleTypeless = new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type);
+                B.Program.RuleTypeless = new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Type)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().Type);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");
@@ -328,8 +328,8 @@ namespace Sarcasm.UnitTest
             // with typeless bnfterms it is okay
             string sourceCodeSuccess = @"
                 B.Program.RuleTypeless =
-                    new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Type)).BindTo(() => new MiniPL.DomainModel.LocalVariable().Type)
-                    + new BnfiTermRecordTL(typeof(MiniPL.DomainModel.Expression)).BindTo(() => new MiniPL.DomainModel.LocalVariable().InitValue);
+                    new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Type)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().Type)
+                    + new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Expression)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().InitValue);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");
@@ -409,7 +409,8 @@ namespace Sarcasm.UnitTest
                 using Sarcasm.GrammarAst;
                 using Sarcasm.Unparsing;
                 using Sarcasm.UnitTest;
-                using MiniPL.DomainModel;
+                using MiniPL;
+                using MiniPL.DomainDefinitions;
 
                 public static class TestCode
                 {
@@ -444,7 +445,7 @@ namespace Sarcasm.UnitTest
             public BoolExpression Term2 { get; set; }
         }
 
-        public class BoolExpression : MiniPL.DomainModel.Expression
+        public class BoolExpression : MiniPL.DomainDefinitions.Expression
         {
         }
 
