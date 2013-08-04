@@ -27,22 +27,27 @@ namespace Sarcasm.Unparsing
 
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return await Task.Run(() => utokens.AsText(unparser));
+            return await Task.Run(async () => { using (await unparser.Lock.LockAsync()) return utokens.AsText(unparser); });
         }
 
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
         {
             return await Task.Run(
-                () =>
-                    string.Concat(
-                        utokens.Select(
-                            utoken =>
+                async () =>
+                {
+                    using (await unparser.Lock.LockAsync())
+                    {
+                        return string.Concat(
+                            utokens.Select(
+                                utoken =>
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
                                     return utoken.ToText(unparser.Formatter);
                                 }
-                        )
-                    ),
+                            )
+                        );
+                    }
+                },
                 cancellationToken
             );
         }
@@ -63,12 +68,15 @@ namespace Sarcasm.Unparsing
 
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser, CancellationToken cancellationToken)
         {
-            using (StreamWriter sw = new StreamWriter(stream))
+            using (await unparser.Lock.LockAsync())
             {
-                foreach (Utoken utoken in utokens)
+                using (StreamWriter sw = new StreamWriter(stream))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    await sw.WriteAsync(utoken.ToText(unparser.Formatter));
+                    foreach (Utoken utoken in utokens)
+                    {
+                        cancellationToken.ThrowIfCancellationRequested();
+                        await sw.WriteAsync(utoken.ToText(unparser.Formatter));
+                    }
                 }
             }
         }

@@ -121,6 +121,8 @@
     <Compile Include="Unparsing\UnparsableAst.cs" />
     <Compile Include="Unparsing\FormatterExtensions.cs" />
     <Compile Include="Unparsing\Decoration.cs" />
+    <Compile Include="Utility\AsyncSemaphore.cs" />
+    <Compile Include="Utility\AsyncLock.cs" />
     <Compile Include="Utility\ResourceCounter.cs" />
     <Compile Include="Utility\ReverseList.cs" />
     <Compile Include="Utility\ForAll.cs" />

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MiniPL.DomainDefinitions;
 using Sarcasm.CodeGeneration;
 using Sarcasm.Reflection;
+using Sarcasm.Utility;
 
 namespace MiniPL.CodeGenerators
 {
@@ -22,6 +23,9 @@ namespace MiniPL.CodeGenerators
         {
             return Generate((Program)root);
         }
+
+        private readonly AsyncLock _lock = new AsyncLock();
+        public AsyncLock Lock { get { return _lock; } }
     }
 
     public partial class CppGeneratorTemplate

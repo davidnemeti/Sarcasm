@@ -64,6 +64,7 @@ namespace Sarcasm.Unparsing
         private readonly UnparseControl unparseControl;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
+        public readonly AsyncLock Lock = new AsyncLock(); 
 
         #endregion
 

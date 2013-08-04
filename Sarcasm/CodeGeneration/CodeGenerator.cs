@@ -17,13 +17,14 @@ namespace Sarcasm.CodeGeneration
     public interface ICodeGenerator
     {
         string Generate(object root);
+        AsyncLock Lock { get; }
     }
 
     public static class CodeGeneratorExtensions
     {
         public static async Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
         {
-            return await Task.Run(() => codeGenerator.Generate(root));
+            return await Task.Run(async () => { using (await codeGenerator.Lock.LockAsync()) return codeGenerator.Generate(root); });
         }
     }
 }
