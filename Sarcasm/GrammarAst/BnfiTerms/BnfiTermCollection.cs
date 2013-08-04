@@ -67,7 +67,7 @@ namespace Sarcasm.GrammarAst
         private BnfTerm element;
         private BnfTerm delimiter;
 
-        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
+        public EmptyCollectionHandling EmptyCollectionHandling { get; private set; }
 
         #endregion
 
@@ -443,18 +443,6 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        public BnfiTermCollection ReturnNullInsteadOfEmptyCollection()
-        {
-            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
-            return this;
-        }
-
-        public BnfiTermCollection ReturnEmptyCollectionInsteadOfNull()
-        {
-            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
-            return this;
-        }
-
         #region Unparse
 
         bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
@@ -592,17 +580,5 @@ namespace Sarcasm.GrammarAst
         public BnfiTermCollection RuleTypeless { set { base.Rule = value; } }
 
         public new BnfiTermCollection<TCollectionType, TElementType> Rule { set { base.Rule = value; } }
-
-        public new BnfiTermCollection<TCollectionType, TElementType> ReturnNullInsteadOfEmptyCollection()
-        {
-            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnNull;
-            return this;
-        }
-
-        public new BnfiTermCollection<TCollectionType, TElementType> ReturnEmptyCollectionInsteadOfNull()
-        {
-            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
-            return this;
-        }
     }
 }
