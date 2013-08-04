@@ -8,16 +8,17 @@ namespace Sarcasm.DomainCore
 {
     public enum EmptyCollectionHandling { ReturnNull, ReturnEmpty }
 
-    public class Domain
+    public abstract class Domain
     {
-        public static readonly Domain UniversalDefaultDomain = new Domain() { EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty };
-
-        public EmptyCollectionHandling EmptyCollectionHandling { get; set; }
+        /// <summary>
+        /// The default is EmptyCollectionHandling.ReturnEmpty.
+        /// </summary>
+        public virtual EmptyCollectionHandling EmptyCollectionHandling { get { return EmptyCollectionHandling.ReturnEmpty; } }
     }
 
-    public class Domain<TRoot> : Domain
-    {
-    }
+    public abstract class Domain<TRoot> : Domain { }
+
+    public class UniversalDefaultDomain : Domain { }
 
     public interface IdentityWithGuid
     {

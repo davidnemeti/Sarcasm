@@ -74,7 +74,7 @@ namespace Sarcasm.UniversalGrammars
         public const string PRIMITIVE_VALUE_KEYWORD = "$value";
 
         public JsonGrammar()
-            : this(Domain.UniversalDefaultDomain)
+            : this(new UniversalDefaultDomain())
         {
         }
 

@@ -10,13 +10,7 @@ using Sarcasm.Reflection;
 namespace MiniPL
 {
     [Domain("MiniPL")]
-    public class Domain : Sarcasm.DomainCore.Domain<DomainDefinitions.Program>
-    {
-        public Domain()
-        {
-            this.EmptyCollectionHandling = EmptyCollectionHandling.ReturnEmpty;
-        }
-    }
+    public class Domain : Sarcasm.DomainCore.Domain<DomainDefinitions.Program> { }
 
     namespace DomainDefinitions
     {
