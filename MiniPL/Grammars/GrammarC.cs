@@ -415,10 +415,10 @@ namespace MiniPL.Grammars
             public bool FlattenIfHierarchy { get; set; }
             public IndentStyle IndentStyle { get; set; }
 
-            public Color KeyTermForeColor { get; set; }
-            public Color OperatorForeColor { get; set; }
-            public Color TypeForeColor { get; set; }
-            public Color LiteralForeColor { get; set; }
+            public Color ForeColorOfKeyword { get; set; }
+            public Color ForeColorOfOperator { get; set; }
+            public Color ForeColorOfType { get; set; }
+            public Color ForeColorOfLiteral { get; set; }
 
             public bool ShowNamesInBold { get; set; }
             public bool ShowNameRefsInItalic { get; set; }
@@ -436,10 +436,10 @@ namespace MiniPL.Grammars
                 FlattenIfHierarchy = true;
                 IndentStyle = GrammarC.IndentStyle.Allman;
 
-                KeyTermForeColor = Color.Blue;
-                OperatorForeColor = Color.Red;
-                TypeForeColor = Color.Cyan;
-                LiteralForeColor = Color.ForestGreen;
+                ForeColorOfKeyword = Color.Blue;
+                ForeColorOfOperator = Color.Red;
+                ForeColorOfType = Color.Cyan;
+                ForeColorOfLiteral = Color.ForestGreen;
 
                 ShowNamesInBold = true;
                 ShowNameRefsInItalic = false;
@@ -467,26 +467,26 @@ namespace MiniPL.Grammars
                     if (target.BnfTerm.IsOperator() || target.BnfTerm.IsBrace())
                     {
                         decoration
-                            .Add(DecorationKey.Foreground, OperatorForeColor)
+                            .Add(DecorationKey.Foreground, ForeColorOfOperator)
                             ;
                     }
                     else
                     {
                         decoration
-                            .Add(DecorationKey.Foreground, KeyTermForeColor)
+                            .Add(DecorationKey.Foreground, ForeColorOfKeyword)
                             ;
                     }
                 }
                 else if (target.AstValue is D.Type)
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, TypeForeColor)
+                        .Add(DecorationKey.Foreground, ForeColorOfType)
                         ;
                 }
                 else if (target.BnfTerm.IsLiteral() || target.BnfTerm.IsConstant())
                 {
                     decoration
-                        .Add(DecorationKey.Foreground, LiteralForeColor)
+                        .Add(DecorationKey.Foreground, ForeColorOfLiteral)
                         ;
                 }
                 else if (ShowNamesInBold && target.AstParent != null && target.AstParent.AstValue is Name)
