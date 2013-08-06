@@ -246,6 +246,13 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UtokenBase> UnparseComment(UnparsableAst owner, Comment comment)
         {
+            return direction == Direction.LeftToRight
+                ? _UnparseComment(owner, comment)
+                : _UnparseComment(owner, comment).Reverse();
+        }
+
+        private IEnumerable<UtokenBase> _UnparseComment(UnparsableAst owner, Comment comment)
+        {
             string[] commentTextLines = Formatter.GetDecoratedCommentTextLines(owner, comment);
             var commentTerminal = GetProperCommentTerminal(comment);
 
@@ -261,7 +268,19 @@ namespace Sarcasm.Unparsing
             }
 
             yield return UtokenControl.NoWhitespace();
-            yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0]);
+
+            if (comment.Kind == CommentKind.SingleLine)
+            {
+                /*
+                 * returning a NewLine is more expressive here than returning commentTerminal.EndSymbols[0] (which is a newline string)
+                 * 
+                 * NOTE that this NewLine is not a simple formatting whitespace. It should be a NewLine regardless to the formatter,
+                 * otherwise the source code that follows this comment will got into the comment, and this would be wrong.
+                 * */
+                yield return UtokenWhitespace.NewLine();
+            }
+            else
+                yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0]);
         }
 
         private CommentTerminal GetProperCommentTerminal(Comment comment)

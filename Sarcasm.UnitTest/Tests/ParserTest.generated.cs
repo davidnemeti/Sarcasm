@@ -162,6 +162,34 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
+        public void Parse_MiniPLWithComments_TS_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPLWithComments.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPLWithComments_TS()
+        {
+            ParseFileSaveAstAndCheckTS(B.Program, "MiniPLWithComments.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPLWithComments_Root()
+        {
+            ParseFileSaveAstAndCheck("MiniPLWithComments.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Parse_MiniPLWithComments()
+        {
+            ParseFileSaveAstAndCheck(B.Program, "MiniPLWithComments.mplp");
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
         public void Parse_Unary1_TS()
         {
             ParseFileSaveAstAndCheckTS(B.Expression, "Unary1.expr");

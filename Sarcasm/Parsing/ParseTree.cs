@@ -207,8 +207,14 @@ namespace Sarcasm.Parsing
         {
             CommentTerminal commentTerminal = (CommentTerminal)comment.Terminal;
 
+            CommentKind commentKind = GrammarHelper.GetCommentKind(commentTerminal, GetCommentCleaner(commentTerminal).NewLine);
+
             string startSymbol = commentTerminal.StartSymbol;
-            string endSymbol = commentTerminal.EndSymbols.First(_endSymbol => comment.Text.EndsWith(_endSymbol));
+
+            string endSymbol = commentKind == CommentKind.Delimited
+                ? commentTerminal.EndSymbols.First(_endSymbol => comment.Text.EndsWith(_endSymbol))
+                : string.Empty;
+
             string text = comment.Text;
 
             text = text

@@ -14,6 +14,7 @@ using Sarcasm.Unparsing;
 using MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.UnitTest
 {
@@ -45,20 +46,20 @@ namespace Sarcasm.UnitTest
         protected void ReunparseCheck(NonTerminal root, string parseFileName, bool leftToRight)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
-            object astValue = ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue;
-            ReunparseCheck(root, astValue, sourceText, parseFileName, leftToRight);
+            Document document = ParseTextAndCheck(root, sourceText, parseFileName).GetDocument();
+            ReunparseCheck(root, document, sourceText, parseFileName, leftToRight);
         }
 
         protected void ReunparseCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName, bool leftToRight)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
-            object astValue = ParseTextAndCheckTS(root, sourceText, parseFileName).RootAstValue;
-            ReunparseCheck(root.AsNonTerminal(), astValue, sourceText, parseFileName, leftToRight);
+            Document document = ParseTextAndCheckTS(root, sourceText, parseFileName).GetDocument();
+            ReunparseCheck(root.AsNonTerminal(), document, sourceText, parseFileName, leftToRight);
         }
 
-        private void ReunparseCheck(NonTerminal root, object astValue, string originalSourceText, string parseFileName, bool leftToRight)
+        private void ReunparseCheck(NonTerminal root, Document document, string originalSourceText, string parseFileName, bool leftToRight)
         {
-            var utokens = unparser.Unparse(astValue, root, leftToRight ? Unparser.Direction.LeftToRight : Unparser.Direction.RightToLeft);
+            var utokens = unparser.Unparse(document, root, leftToRight ? Unparser.Direction.LeftToRight : Unparser.Direction.RightToLeft);
 
             if (!leftToRight)
                 utokens = utokens.Reverse();

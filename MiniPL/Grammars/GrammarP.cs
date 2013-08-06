@@ -453,6 +453,12 @@ namespace MiniPL.Grammars
             // NOTE: we must not recurse, since NEG_OP and POS_OP has the same terminals as SUB_OP and ADD_OP, respectively ('-' and '+').
 
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
+
+            CommentTerminal DelimitedComment = new CommentTerminal("DelimitedComment", "(@", "@)");
+            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "@@", Environment.NewLine);
+
+            NonGrammarTerminals.Add(DelimitedComment);
+            NonGrammarTerminals.Add(SingleLineComment);
         }
 
         #region Unparse
@@ -497,6 +503,8 @@ namespace MiniPL.Grammars
                 ForeColorOfOperator = Color.Red;
                 ForeColorOfType = Color.Cyan;
                 ForeColorOfLiteral = Color.ForestGreen;
+
+                MultiLineCommentDecorator = " @ ";
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)

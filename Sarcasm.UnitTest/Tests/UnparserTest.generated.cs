@@ -400,6 +400,60 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Sequential_Typesafe()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = false;
+            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Sequential()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = false;
+            ReunparseCheck(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Sequential_Typesafe_Reversed()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = false;
+            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Parallel_Typesafe()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = true;
+            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Parallel()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = true;
+            ReunparseCheck(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
+        public void Unparse_MiniPLWithComments_Parallel_Typesafe_Reversed()
+        {
+            unparser.Formatter = formatterDefault;
+            unparser.EnableParallelProcessing = true;
+            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: false);
+        }
+
+        [TestMethod]
+        [TestCategory(category)]
         public void Unparse_Unary1_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;

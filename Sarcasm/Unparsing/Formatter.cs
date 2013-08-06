@@ -259,14 +259,14 @@ namespace Sarcasm.Unparsing
             return InsertedUtokens.None;
         }
 
-        protected virtual InsertedUtokens GetUtokensBetweenCommentAndOwner(UnparsableAst owner, Comment comment, CommentPlacement commentPlacement, int commentIndex, int commentCount,
+        protected virtual InsertedUtokens GetUtokensBetweenCommentAndOwner(UnparsableAst owner, Comment comment, int commentIndex, int commentCount,
             IEnumerable<Comment> commentsBetweenThisAndOwner)
         {
             if (comment.LineIndexDistanceFromOwner > 0)
             {
                 int newLinesCount;
 
-                if (commentPlacement == CommentPlacement.OwnerLeft)
+                if (comment.Placement == CommentPlacement.OwnerLeft)
                 {
                     newLinesCount = comment.LineIndexDistanceFromOwner - (comment.TextLines.Length - 1);
 
@@ -281,6 +281,15 @@ namespace Sarcasm.Unparsing
                     Comment prevComment = commentsBetweenThisAndOwner.FirstOrDefault();
                     if (prevComment != null)
                         newLinesCount -= prevComment.LineIndexDistanceFromOwner + (prevComment.TextLines.Length - 1);
+                }
+
+                if (comment.Placement == CommentPlacement.OwnerLeft && comment.Kind == CommentKind.SingleLine)
+                {
+                    /*
+                     * We have already yielded a NewLine in Unparser.UnparseComment (see comment there),
+                     * thus we have to yield one less "formatting" NewLine here.
+                     * */
+                    newLinesCount--;
                 }
 
                 return new UtokenRepeat(UtokenWhitespace.NewLine(), newLinesCount);
@@ -318,17 +327,17 @@ namespace Sarcasm.Unparsing
                             if (trimmedStartCommentTextLine.StartsWith(trimmedStartMultiLineCommentDecorator))
                             {
                                 _isDecorated = true;
-                                return trimmedStartCommentTextLine.Remove(0, trimmedStartMultiLineCommentDecorator.Length).TrimEnd();   // decorated
+                                return trimmedStartCommentTextLine.Remove(0, trimmedStartMultiLineCommentDecorator.Length);   // decorated
                             }
                             else if (trimmedStartCommentTextLine.StartsWith(trimmedMultiLineCommentDecorator))
                             {
                                 _isDecorated = true;
-                                return trimmedStartCommentTextLine.Remove(0, trimmedMultiLineCommentDecorator.Length).TrimEnd();    // decorated with missing whitespaces at the right of decorator
+                                return trimmedStartCommentTextLine.Remove(0, trimmedMultiLineCommentDecorator.Length);    // decorated with missing whitespaces at the right of decorator
                             }
                             else if (commentTextLine.Length >= columnIndex && commentTextLine.Take(columnIndex).All(ch => char.IsWhiteSpace(ch)))
-                                return commentTextLine.Remove(0, columnIndex).TrimEnd();    // undecorated -> remove indentation
+                                return commentTextLine.Remove(0, columnIndex);    // undecorated -> remove indentation
                             else
-                                return commentTextLine.TrimEnd();   // undecorated -> could not remove indentation (the indentation of this line is smaller then the indentation of the start of the comment)
+                                return commentTextLine;   // undecorated -> could not remove indentation (the indentation of this line is smaller then the indentation of the start of the comment)
                         }
                     )
                     .ToArray();
@@ -471,31 +480,41 @@ namespace Sarcasm.Unparsing
         {
             IReadOnlyList<Comment> beforeComments;
             IReadOnlyList<Comment> beforeCommentsForFormatter;
-            CommentPlacement commentPlacement;
+            Func<IEnumerable<Comment>, int, IEnumerable<Comment>> skipOrTake;
 
             if (direction == Unparser.Direction.LeftToRight)
             {
                 beforeComments = comments.Left;
                 beforeCommentsForFormatter = comments.Left;
-                commentPlacement = CommentPlacement.OwnerLeft;
+                skipOrTake = Enumerable.Skip;
             }
             else
             {
                 beforeComments = comments.Right.ReverseOptimized();
                 beforeCommentsForFormatter = comments.Right;
-                commentPlacement = CommentPlacement.OwnerRight;
+                skipOrTake = Enumerable.Take;
             }
 
             foreach (var beforeComment in beforeComments.Select((beforeComment, commentIndex) => new { Value = beforeComment, Index = commentIndex }))
             {
-                int index = direction == Unparser.Direction.LeftToRight
-                    ? beforeComment.Index
-                    : beforeComments.Count - beforeComment.Index - 1;
+                int index;
+                int commentCountToSkipOrTake;
+
+                if (direction == Unparser.Direction.LeftToRight)
+                {
+                    index = beforeComment.Index;
+                    commentCountToSkipOrTake = index + 1;
+                }
+                else
+                {
+                    index = beforeComments.Count - 1 - beforeComment.Index;
+                    commentCountToSkipOrTake = index;
+                }
 
                 foreach (UtokenBase utoken in unparseComment(owner, beforeComment.Value))
                     yield return utoken;
 
-                yield return GetUtokensBetweenCommentAndOwner(owner, beforeComment.Value, commentPlacement, index, beforeComments.Count, beforeCommentsForFormatter.Skip(index + 1))
+                yield return GetUtokensBetweenCommentAndOwner(owner, beforeComment.Value, index, beforeComments.Count, skipOrTake(beforeCommentsForFormatter, commentCountToSkipOrTake))
                     .SetKind(InsertedUtokens.Kind.Between)
                     .SetAffected(owner);
             }
@@ -505,28 +524,38 @@ namespace Sarcasm.Unparsing
         {
             IReadOnlyList<Comment> afterComments;
             IReadOnlyList<Comment> afterCommentsForFormatter;
-            CommentPlacement commentPlacement;
+            Func<IEnumerable<Comment>, int, IEnumerable<Comment>> skipOrTake;
 
             if (direction == Unparser.Direction.LeftToRight)
             {
                 afterComments = comments.Right;
                 afterCommentsForFormatter = comments.Right;
-                commentPlacement = CommentPlacement.OwnerRight;
+                skipOrTake = Enumerable.Take;
             }
             else
             {
                 afterComments = comments.Left.ReverseOptimized();
                 afterCommentsForFormatter = comments.Left;
-                commentPlacement = CommentPlacement.OwnerLeft;
+                skipOrTake = Enumerable.Skip;
             }
 
             foreach (var afterComment in afterComments.Select((beforeComment, commentIndex) => new { Value = beforeComment, Index = commentIndex }))
             {
-                int index = direction == Unparser.Direction.LeftToRight
-                    ? afterComment.Index
-                    : afterComments.Count - afterComment.Index - 1;
+                int index;
+                int commentCountToSkipOrTake;
 
-                yield return GetUtokensBetweenCommentAndOwner(owner, afterComment.Value, commentPlacement, index, afterComments.Count, afterCommentsForFormatter.Take(index))
+                if (direction == Unparser.Direction.LeftToRight)
+                {
+                    index = afterComment.Index;
+                    commentCountToSkipOrTake = index;
+                }
+                else
+                {
+                    index = afterComments.Count - 1 - afterComment.Index;
+                    commentCountToSkipOrTake = index + 1;
+                }
+
+                yield return GetUtokensBetweenCommentAndOwner(owner, afterComment.Value, index, afterComments.Count, skipOrTake(afterCommentsForFormatter, commentCountToSkipOrTake))
                     .SetKind(InsertedUtokens.Kind.Between)
                     .SetAffected(owner);
 

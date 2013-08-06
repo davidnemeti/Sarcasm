@@ -1,0 +1,32 @@
+﻿program HelloWorld
+
+namespace Sea.Shell
+
+function Fibonacci(var n : integer) : integer
+begin
+    (@ this is a delimited comment @)
+    if (n = 0) then
+        return 0; (@ this is another delimited comment @)
+    else if (n = 1) then
+        return 1;
+    else
+        return Fibonacci(n - 1) + Fibonacci(n - 2);
+end
+
+begin
+    var number : integer := 5;
+    (@
+    delimited
+    multiline comment
+    @)
+    (@
+     @ delimited
+     @ decorated
+     @ 
+     @ multiline
+     @ comment
+     @ @)
+    var just_for_test : boolean := True;
+    @@ single line comment
+    WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
+end.
