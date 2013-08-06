@@ -94,7 +94,7 @@ namespace Sarcasm.Parsing
 
         public Document GetDocument()
         {
-            return new Document(RootAstValue, astValueToDomainComments);
+            return Root != null ? new Document(RootAstValue, astValueToDomainComments) : null;
         }
 
         private void BuildAstValueToParseTreeNode()
@@ -307,7 +307,7 @@ namespace Sarcasm.Parsing
 
         public new Document<TRoot> GetDocument()
         {
-            return new Document<TRoot>(RootAstValue, astValueToDomainComments);
+            return Root != null ? new Document<TRoot>(RootAstValue, astValueToDomainComments) : null;
         }
     }
 }
