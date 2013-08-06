@@ -276,8 +276,10 @@ namespace Sarcasm.Unparsing
                  * 
                  * NOTE that this NewLine is not a simple formatting whitespace. It should be a NewLine regardless to the formatter,
                  * otherwise the source code that follows this comment will got into the comment, and this would be wrong.
+                 * 
+                 * NOTE that we are wrapping the NewLine in an InsertedUtokens in order to behave correctly during filtering.
                  * */
-                yield return UtokenWhitespace.NewLine();
+                yield return new InsertedUtokens(UtokenWhitespace.NewLine()).SetPriority(double.PositiveInfinity);
             }
             else
                 yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0]);

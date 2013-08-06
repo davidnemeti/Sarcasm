@@ -8,7 +8,7 @@ begin
     if (n = 0) then
         return 0; (@ this is another delimited comment @)
     else if (n = 1) then
-        return 1;
+        return 1; @@ another single line comment
     else
         return Fibonacci(n - 1) + Fibonacci(n - 2);
 end

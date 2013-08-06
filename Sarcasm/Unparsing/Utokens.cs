@@ -406,6 +406,18 @@ namespace Sarcasm.Unparsing
         {
             return new InsertedUtokens(utokens);
         }
+
+        public InsertedUtokens SetPriority(double priority)
+        {
+            this.Priority = priority;
+            return this;
+        }
+
+        public InsertedUtokens SetBehavior(Behavior behavior)
+        {
+            this.Behavior = behavior;
+            return this;
+        }
     }
 
     public static class UtokenInsertExtensions
