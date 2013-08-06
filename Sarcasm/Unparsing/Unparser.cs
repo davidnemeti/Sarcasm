@@ -16,9 +16,12 @@ using Sarcasm.Utility;
 using Sarcasm.GrammarAst;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.Unparsing
 {
+    internal delegate IEnumerable<UtokenBase> UnparseCommentDelegate(UnparsableAst owner, Comment comment);
+
     public class Unparser : IUnparser, IPostProcessHelper
     {
         #region Tracing
@@ -62,6 +65,8 @@ namespace Sarcasm.Unparsing
         private Grammar _grammar;
         private LanguageData _language;
         private readonly UnparseControl unparseControl;
+        private IReadOnlyDictionary<object, Comments> astValueToComments;
+        private HashSet<Comments> unparsedComments;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
         public readonly AsyncLock Lock = new AsyncLock(); 
@@ -143,6 +148,8 @@ namespace Sarcasm.Unparsing
         {
             this._grammar = that.Grammar;   // NOTE: we don't want to recalculate _language so we don't use the Grammar property setter
             this.unparseControl = that.unparseControl;
+            this.astValueToComments = that.astValueToComments;
+            this.unparsedComments = that.unparsedComments;
             this.EnablePartialInvalidation = that.EnablePartialInvalidation;
             this.EnableParallelProcessing = that.EnableParallelProcessing;
             this.parallelTaskCounter = that.parallelTaskCounter;
@@ -171,12 +178,31 @@ namespace Sarcasm.Unparsing
 
         #region Unparse logic
 
+        public IEnumerable<Utoken> Unparse(Document document, Direction direction = directionDefault)
+        {
+            return Unparse(document, Grammar.Root, direction);
+        }
+
+        public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, Direction direction = directionDefault)
+        {
+            this.astValueToComments = document.AstValueToComments;
+            this.unparsedComments = new HashSet<Comments>();
+            return _Unparse(document.Root, bnfTerm, direction);
+        }
+
         public IEnumerable<Utoken> Unparse(object astValue, Direction direction = directionDefault)
         {
             return Unparse(astValue, Grammar.Root, direction);
         }
 
         public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, Direction direction = directionDefault)
+        {
+            this.astValueToComments = new Dictionary<object, Comments>();
+            this.unparsedComments = new HashSet<Comments>();
+            return _Unparse(astValue, bnfTerm, direction);
+        }
+
+        private IEnumerable<Utoken> _Unparse(object astValue, BnfTerm bnfTerm, Direction direction)
         {
             ResetMutableState();
             this.direction = direction;
@@ -218,8 +244,53 @@ namespace Sarcasm.Unparsing
                     );
         }
 
+        private IEnumerable<UtokenBase> UnparseComment(UnparsableAst owner, Comment comment)
+        {
+            string[] commentTextLines = Formatter.GetDecoratedCommentTextLines(owner, comment);
+            var commentTerminal = GetProperCommentTerminal(comment);
+
+            yield return UtokenValue.CreateText(commentTerminal.StartSymbol);
+            yield return UtokenControl.NoWhitespace();
+
+            foreach (var commentTextLine in commentTextLines.Select((commentLine, index) => new { Value = commentLine, Index = index }))
+            {
+                if (commentTextLine.Index > 0)
+                    yield return UtokenWhitespace.NewLine();
+
+                yield return UtokenValue.CreateText(commentTextLine.Value, owner);
+            }
+
+            yield return UtokenControl.NoWhitespace();
+            yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0]);
+        }
+
+        private CommentTerminal GetProperCommentTerminal(Comment comment)
+        {
+            bool isMultiLineComment = comment.IsMultiLine;
+            var commentTerminals = Grammar.NonGrammarTerminals.OfType<CommentTerminal>();
+
+            return commentTerminals.FirstOrDefault(commentTerminal => IsMultiLine(commentTerminal) == isMultiLineComment) ??
+                commentTerminals.First();
+        }
+
+        private bool IsMultiLine(CommentTerminal commentTerminal)
+        {
+            return GrammarHelper.IsMultiLine(commentTerminal, Formatter.NewLine);
+        }
+
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableAst self)
         {
+            Comments comments;
+            bool hasComments = astValueToComments.TryGetValue(self.AstValue, out comments) && !unparsedComments.Contains(comments);
+
+            if (hasComments)
+            {
+                unparsedComments.Add(comments);
+
+                foreach (UtokenBase utoken in Formatter.YieldBeforeComments(self, comments, UnparseComment))
+                    yield return utoken;
+            }
+
             if (self.BnfTerm is KeyTerm)
             {
                 tsUnparse.Debug("keyterm: [{0}]", ((KeyTerm)self.BnfTerm).Text);
@@ -333,6 +404,10 @@ namespace Sarcasm.Unparsing
             {
                 throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
             }
+
+            if (hasComments)
+                foreach (UtokenBase utoken in Formatter.YieldAfterComments(self, comments, UnparseComment))
+                    yield return utoken;
         }
 
         private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableAst> chosenChildrenList, int numberOfParallelTaskToStartActually, int subRangeCount)

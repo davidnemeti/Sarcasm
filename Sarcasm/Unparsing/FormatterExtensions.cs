@@ -361,7 +361,7 @@ namespace Sarcasm.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                ((UtokenBase)utoken).Decoration = formatter._GetDecoration(utoken);
+                ((UtokenBase)utoken).Decoration = formatter.GetDecoration(utoken);
                 yield return utoken;
             }
         }

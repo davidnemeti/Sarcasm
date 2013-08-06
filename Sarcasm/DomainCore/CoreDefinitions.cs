@@ -147,6 +147,74 @@ namespace Sarcasm.DomainCore
         }
     }
 
+    public enum CommentCategory
+    {
+        Outline,
+        Comment,
+        Directive
+    }
+
+    public enum CommentPlacement
+    {
+        OwnerLeft,
+        OwnerRight
+    }
+
+    public class Comment
+    {
+        public string[] TextLines { get; private set; }
+        public CommentCategory Category { get; private set; }
+        public CommentPlacement Placement { get; private set; }
+        public int LineIndexDistanceFromOwner { get; private set; }
+        public bool IsMultiLine { get; private set; }
+
+        public Comment(string[] textLines, CommentCategory category, CommentPlacement placement, int lineIndexDistanceFromOwner, bool isMultiLine)
+        {
+            this.TextLines = textLines;
+            this.Category = category;
+            this.Placement = placement;
+            this.LineIndexDistanceFromOwner = lineIndexDistanceFromOwner;
+            this.IsMultiLine = isMultiLine;
+        }
+    }
+
+    public class Comments
+    {
+        public IReadOnlyList<Comment> Left { get { return left; } }
+        public IReadOnlyList<Comment> Right { get { return right; } }
+
+        internal List<Comment> left { get; private set; }
+        internal List<Comment> right { get; private set; }
+
+        public Comments()
+        {
+            this.left = new List<Comment>();
+            this.right = new List<Comment>();
+        }
+    }
+
+    public class Document
+    {
+        public object Root { get; private set; }
+        public IReadOnlyDictionary<object, Comments> AstValueToComments { get; private set; }
+
+        public Document(object root, IReadOnlyDictionary<object, Comments> astValueToComments)
+        {
+            this.Root = root;
+            this.AstValueToComments = astValueToComments;
+        }
+    }
+
+    public class Document<TRoot> : Document
+    {
+        public new TRoot Root { get { return (TRoot)base.Root; } }
+
+        public Document(TRoot root, IReadOnlyDictionary<object, Comments> astValueToComments)
+            : base(root, astValueToComments)
+        {
+        }
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
     public class OptionalAttribute : Attribute
     {

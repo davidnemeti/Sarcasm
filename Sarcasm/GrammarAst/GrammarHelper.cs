@@ -614,6 +614,11 @@ namespace Sarcasm.GrammarAst
                     );
         }
 
+        internal static bool IsMultiLine(CommentTerminal commentTerminal, params string[] newLines)
+        {
+            return commentTerminal.EndSymbols.All(endSymbol => !endSymbol.EqualToAny(newLines));
+        }
+
         #endregion
     }
 }

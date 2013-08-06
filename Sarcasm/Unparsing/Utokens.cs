@@ -296,13 +296,16 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    internal class UtokenRepeat : UtokenBase
+    internal class UtokenRepeat : UtokenInsert
     {
         private readonly UtokenBase utoken;
         private readonly int count;
 
         public UtokenRepeat(UtokenBase utoken, int count)
         {
+            if (count < 0)
+                throw new ArgumentOutOfRangeException("count");
+
             this.utoken = utoken;
             this.count = count;
         }

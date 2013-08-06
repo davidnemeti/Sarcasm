@@ -17,10 +17,16 @@ using Sarcasm.Utility;
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using System.Globalization;
 using Sarcasm.Parsing;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.Unparsing
 {
-    public class Formatter
+    public interface ICommentFormatter : ICommentCleaner
+    {
+        string[] GetDecoratedCommentTextLines(UnparsableAst owner, Comment comment);
+    }
+
+    public class Formatter : ICommentFormatter
     {
         #region Tracing
 
@@ -243,6 +249,46 @@ namespace Sarcasm.Unparsing
             return InsertedUtokens.None;
         }
 
+        protected virtual InsertedUtokens GetUtokensBetweenCommentAndOwner(UnparsableAst owner, Comment comment, CommentPlacement commentPlacement, int commentIndex, int commentCount,
+            IEnumerable<Comment> commentsBetweenThisAndOwner)
+        {
+            if (comment.LineIndexDistanceFromOwner > 0)
+            {
+                int newLinesCount;
+
+                if (commentPlacement == CommentPlacement.OwnerLeft)
+                {
+                    newLinesCount = comment.LineIndexDistanceFromOwner - (comment.TextLines.Length - 1);
+
+                    Comment nextComment = commentsBetweenThisAndOwner.FirstOrDefault();
+                    if (nextComment != null)
+                        newLinesCount -= nextComment.LineIndexDistanceFromOwner;
+                }
+                else
+                {
+                    newLinesCount = comment.LineIndexDistanceFromOwner;
+
+                    Comment prevComment = commentsBetweenThisAndOwner.FirstOrDefault();
+                    if (prevComment != null)
+                        newLinesCount -= prevComment.LineIndexDistanceFromOwner + (prevComment.TextLines.Length - 1);
+                }
+
+                return new UtokenRepeat(UtokenWhitespace.NewLine(), newLinesCount);
+            }
+            else
+                return UtokenWhitespace.Space();
+        }
+
+        internal protected virtual string[] GetDecoratedCommentTextLines(UnparsableAst owner, Comment comment)
+        {
+            return comment.TextLines;
+        }
+
+        protected virtual string[] GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal)
+        {
+            return commentTextLines;
+        }
+
         protected virtual BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
         {
             return BlockIndentation.IndentNotNeeded;
@@ -358,6 +404,83 @@ namespace Sarcasm.Unparsing
             UpdateCacheOnTheFly(self, State.After);
         }
 
+        internal IDecoration GetDecoration(Utoken utoken)
+        {
+            UnparsableAst target = utoken is UtokenText
+                ? ((UtokenText)utoken).Reference
+                : null;
+
+            return GetDecoration(utoken, target);
+        }
+
+        internal IEnumerable<UtokenBase> YieldBeforeComments(UnparsableAst owner, Comments comments, UnparseCommentDelegate unparseComment)
+        {
+            IReadOnlyList<Comment> beforeComments;
+            IReadOnlyList<Comment> beforeCommentsForFormatter;
+            CommentPlacement commentPlacement;
+
+            if (direction == Unparser.Direction.LeftToRight)
+            {
+                beforeComments = comments.Left;
+                beforeCommentsForFormatter = comments.Left;
+                commentPlacement = CommentPlacement.OwnerLeft;
+            }
+            else
+            {
+                beforeComments = comments.Right.ReverseOptimized();
+                beforeCommentsForFormatter = comments.Right;
+                commentPlacement = CommentPlacement.OwnerRight;
+            }
+
+            foreach (var beforeComment in beforeComments.Select((beforeComment, commentIndex) => new { Value = beforeComment, Index = commentIndex }))
+            {
+                int index = direction == Unparser.Direction.LeftToRight
+                    ? beforeComment.Index
+                    : beforeComments.Count - beforeComment.Index - 1;
+
+                foreach (UtokenBase utoken in unparseComment(owner, beforeComment.Value))
+                    yield return utoken;
+
+                yield return GetUtokensBetweenCommentAndOwner(owner, beforeComment.Value, commentPlacement, index, beforeComments.Count, beforeCommentsForFormatter.Skip(index + 1))
+                    .SetKind(InsertedUtokens.Kind.Between)
+                    .SetAffected(owner);
+            }
+        }
+
+        internal IEnumerable<UtokenBase> YieldAfterComments(UnparsableAst owner, Comments comments, UnparseCommentDelegate unparseComment)
+        {
+            IReadOnlyList<Comment> afterComments;
+            IReadOnlyList<Comment> afterCommentsForFormatter;
+            CommentPlacement commentPlacement;
+
+            if (direction == Unparser.Direction.LeftToRight)
+            {
+                afterComments = comments.Right;
+                afterCommentsForFormatter = comments.Right;
+                commentPlacement = CommentPlacement.OwnerRight;
+            }
+            else
+            {
+                afterComments = comments.Left.ReverseOptimized();
+                afterCommentsForFormatter = comments.Left;
+                commentPlacement = CommentPlacement.OwnerLeft;
+            }
+
+            foreach (var afterComment in afterComments.Select((beforeComment, commentIndex) => new { Value = beforeComment, Index = commentIndex }))
+            {
+                int index = direction == Unparser.Direction.LeftToRight
+                    ? afterComment.Index
+                    : afterComments.Count - afterComment.Index - 1;
+
+                yield return GetUtokensBetweenCommentAndOwner(owner, afterComment.Value, commentPlacement, index, afterComments.Count, afterCommentsForFormatter.Take(index))
+                    .SetKind(InsertedUtokens.Kind.Between)
+                    .SetAffected(owner);
+
+                foreach (UtokenBase utoken in unparseComment(owner, afterComment.Value))
+                    yield return utoken;
+            }
+        }
+
         internal static IEnumerable<Utoken> PostProcess(IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
             return utokens                                      .DebugWriteLines(tsRaw)
@@ -372,6 +495,20 @@ namespace Sarcasm.Unparsing
         internal void ResetMutableState()
         {
             topAncestorCacheForLeft = UnparsableAst.NonCalculated;
+        }
+
+        string[] ICommentFormatter.GetDecoratedCommentTextLines(UnparsableAst owner, Comment comment)
+        {
+            return GetDecoratedCommentTextLines(owner, comment);
+        }
+
+        #endregion
+
+        #region Interface to parser
+
+        string[] ICommentCleaner.GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal)
+        {
+            return GetCleanedUpCommentTextLines(commentTextLines, commentTerminal);
         }
 
         #endregion
@@ -612,8 +749,10 @@ namespace Sarcasm.Unparsing
         {
             if (blockIndentation == BlockIndentation.Indent)
                 yield return UtokenControl.IncreaseIndentLevel;
+
             else if (blockIndentation == BlockIndentation.Unindent)
                 yield return UtokenControl.DecreaseIndentLevel;
+
             else if (blockIndentation == BlockIndentation.ZeroIndent)
                 yield return UtokenControl.SetIndentLevelToNone;
         }
@@ -622,8 +761,10 @@ namespace Sarcasm.Unparsing
         {
             if (blockIndentation == BlockIndentation.Indent)
                 yield return UtokenControl.DecreaseIndentLevel;
+
             else if (blockIndentation == BlockIndentation.Unindent)
                 yield return UtokenControl.IncreaseIndentLevel;
+
             else if (blockIndentation == BlockIndentation.ZeroIndent)
                 yield return UtokenControl.RestoreIndentLevel;
         }
@@ -655,15 +796,6 @@ namespace Sarcasm.Unparsing
         private BlockIndentation _GetBlockIndentation(UnparsableAst leftIfAny, UnparsableAst target)
         {
             return GetBlockIndentation(leftIfAny, target);
-        }
-
-        internal IDecoration _GetDecoration(Utoken utoken)
-        {
-            UnparsableAst target = utoken is UtokenText
-                ? ((UtokenText)utoken).Reference
-                : null;
-
-            return GetDecoration(utoken, target);
         }
 
         private static IEnumerable<UnparsableAst> GetSelfAndAncestors(UnparsableAst self)

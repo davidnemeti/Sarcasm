@@ -17,6 +17,12 @@ namespace Sarcasm.GrammarAst
     public enum AstCreation { NoAst, CreateAst, CreateAstWithAutoBrowsableAstNodes }
     public enum ErrorHandling { ThrowException, ErrorMessage }
 
+    public interface ICommentCleaner
+    {
+        string[] GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal);
+        string NewLine { get; }
+    }
+
     public abstract partial class Grammar : Irony.Parsing.Grammar
     {
         #region Defaults
@@ -320,6 +326,11 @@ namespace Sarcasm.GrammarAst
         }
 
         public static readonly object GrammarCreationLock = new object();
+
+        internal ICommentCleaner GetDefaultCommentCleaner()
+        {
+            return UnparseControl.DefaultFormatter;
+        }
 
         #endregion
 

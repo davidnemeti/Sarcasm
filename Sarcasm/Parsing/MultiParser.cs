@@ -25,6 +25,7 @@ namespace Sarcasm.Parsing
         private readonly LanguageData language;
         private readonly Parser mainParser;
         private IDictionary<NonTerminal, Parser> rootToParser = new Dictionary<NonTerminal, Parser>();    // mainParser is included as well
+        public ICommentCleaner CommentCleaner { get; set; }
 
         #endregion
 
@@ -81,32 +82,32 @@ namespace Sarcasm.Parsing
 
         public ParseTree Parse(string sourceText)
         {
-            return (ParseTree)mainParser.Parse(sourceText);
+            return SetParseTree(mainParser.Parse(sourceText));
         }
 
         public ParseTree Parse(string sourceText, NonTerminal root)
         {
-            return (ParseTree)GetParser(root).Parse(sourceText);
+            return SetParseTree(GetParser(root).Parse(sourceText));
         }
 
         public ParseTree Parse(string sourceText, string fileName)
         {
-            return (ParseTree)mainParser.Parse(sourceText, fileName);
+            return SetParseTree(mainParser.Parse(sourceText, fileName));
         }
 
         public ParseTree Parse(string sourceText, string fileName, NonTerminal root)
         {
-            return (ParseTree)GetParser(root).Parse(sourceText, fileName);
+            return SetParseTree(GetParser(root).Parse(sourceText, fileName));
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName)
         {
-            return (ParseTree)mainParser.ScanOnly(sourceText, fileName);
+            return SetParseTree(mainParser.ScanOnly(sourceText, fileName));
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName, NonTerminal root)
         {
-            return (ParseTree)GetParser(root).ScanOnly(sourceText, fileName);
+            return SetParseTree(GetParser(root).ScanOnly(sourceText, fileName));
         }
 
         #endregion
@@ -176,6 +177,13 @@ namespace Sarcasm.Parsing
                     return parser;
                 }
             }
+        }
+
+        private ParseTree SetParseTree(Irony.Parsing.ParseTree _parseTree)
+        {
+            var parseTree = (ParseTree)_parseTree;
+            parseTree.CommentCleaner = CommentCleaner;
+            return parseTree;
         }
 
         #endregion
