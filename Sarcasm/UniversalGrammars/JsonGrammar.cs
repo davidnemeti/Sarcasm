@@ -371,15 +371,15 @@ namespace Sarcasm.UniversalGrammars
                 {
                     if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL) || target.BnfTerm is NumberLiteral)
                         decoration.Add(DecorationKey.Foreground, Color.Violet);
-                    else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Key)
+                    else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Key)
                     {
-                        if (((string)target.AstParent.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
+                        if (((string)target.AstImage.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
                             decoration.Add(DecorationKey.Foreground, Color.Red);
                         else
                             decoration.Add(DecorationKey.Foreground, Color.Blue);
                     }
-                    else if (target.ParentMember != null && target.ParentMember.BnfTerm == B.Value && target.AstParent.AstParent != null &&
-                        target.AstParent.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstParent.AstValue).IsTypeInfo)
+                    else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Value && target.AstParent != null &&
+                        target.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstValue).IsTypeInfo)
                     {
                         decoration.Add(DecorationKey.Foreground, Color.ForestGreen);
                     }

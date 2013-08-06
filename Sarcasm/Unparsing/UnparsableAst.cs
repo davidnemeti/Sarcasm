@@ -33,10 +33,11 @@ namespace Sarcasm.Unparsing
 
         public BnfTerm BnfTerm { get; private set; }
         public object AstValue { get; private set; }
-        public Member ParentMember { get; internal set; }
+        public Member AstParentMember { get; internal set; }
 
         private UnparsableAst syntaxParent = NonCalculated;
         private UnparsableAst astParent = NonCalculated;
+        private UnparsableAst astImage = NonCalculated;
         private UnparsableAst leftMostChild = NonCalculated;
         private UnparsableAst rightMostChild = NonCalculated;
         private UnparsableAst leftSibling = NonCalculated;
@@ -46,11 +47,11 @@ namespace Sarcasm.Unparsing
 
         #region Construction
 
-        public UnparsableAst(BnfTerm bnfTerm, object astValue, Member parentMember = null)
+        public UnparsableAst(BnfTerm bnfTerm, object astValue, Member astParentMember = null)
         {
             this.BnfTerm = bnfTerm;
             this.AstValue = astValue;
-            this.ParentMember = parentMember;
+            this.AstParentMember = astParentMember;
 
             this.IsLeftSiblingNeededForDeferredCalculation = false;
         }
@@ -73,6 +74,19 @@ namespace Sarcasm.Unparsing
 
                 return astParent != NonCalculated
                     ? astParent
+                    : Util.RecurseStopBeforeNull(this, unparsableAst => unparsableAst.SyntaxParent).FirstOrDefault(unparsableAst => unparsableAst.BnfTerm is BnfiTermRecord);
+            }
+            set { CheckIfNotThrownOut(astParent); astParent = value; }
+        }
+
+        public UnparsableAst AstImage
+        {
+            get
+            {
+                CheckIfNotThrownOut(astImage);     // NOTE: special handling for AstImage getter, that's why it's CheckIfNotThrownOut and not CheckIfValid
+
+                return astImage != NonCalculated
+                    ? astImage
                     : Util.RecurseStopBeforeNull(this, unparsableAst => unparsableAst.SyntaxParent).FirstOrDefault(unparsableAst => unparsableAst.AstValue != this.AstValue);
             }
             set { CheckIfNotThrownOut(astParent); astParent = value; }
@@ -104,6 +118,7 @@ namespace Sarcasm.Unparsing
 
         public bool IsSyntaxParentCalculated { get { return IsCalculated(syntaxParent); } }
         public bool IsAstParentCalculated { get { return IsCalculated(astParent); } }
+        public bool IsAstImageCalculated { get { return IsCalculated(astImage); } }
         public bool IsLeftMostChildCalculated { get { return IsCalculated(leftMostChild); } }
         public bool IsRightMostChildCalculated { get { return IsCalculated(rightMostChild); } }
         public bool IsLeftSiblingCalculated { get { return IsCalculated(leftSibling); } }

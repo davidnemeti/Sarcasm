@@ -554,12 +554,16 @@ namespace Sarcasm.Unparsing
 
                 child.SyntaxParent = self;
 
-                child.AstParent =   child.AstValue != self.AstValue ?   self :
+                child.AstParent =   self.BnfTerm is BnfiTermRecord  ?   self :
                                     self.IsAstParentCalculated      ?   self.AstParent :
                                                                         UnparsableAst.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
 
-                if (child.ParentMember == null)
-                    child.ParentMember = self.ParentMember;
+                child.AstImage =    child.AstValue != self.AstValue ?   self :
+                                    self.IsAstImageCalculated       ?   self.AstImage :
+                                                                        UnparsableAst.NonCalculated;     // NOTE: if NonCalculated then it will be calculated later
+
+                if (child.AstParentMember == null)
+                    child.AstParentMember = self.AstParentMember;
             }
 
             if (!IsPrevMostChildCalculated(self))

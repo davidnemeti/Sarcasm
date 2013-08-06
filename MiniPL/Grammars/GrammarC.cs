@@ -499,13 +499,13 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Foreground, ForeColorOfLiteral)
                         ;
                 }
-                else if (ShowNamesInBold && target.AstParent != null && target.AstParent.AstValue is Name)
+                else if (ShowNamesInBold && target.AstImage != null && target.AstImage.AstValue is Name)
                 {
                     decoration
                         .Add(DecorationKey.FontWeight, FontWeight.Bold)
                         ;
                 }
-                else if (ShowNameRefsInItalic && target.AstParent != null && target.AstParent.AstValue is NameRef)
+                else if (ShowNameRefsInItalic && target.AstImage != null && target.AstImage.AstValue is NameRef)
                 {
                     decoration
                         .Add(DecorationKey.FontStyle, FontStyle.Italic)
@@ -571,10 +571,10 @@ namespace MiniPL.Grammars
 
             protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
-                if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
+                if (leftTerminalLeaveTarget.AstImage != null && leftTerminalLeaveTarget.AstImage.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
 
-                else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTerminalLeaveTarget.AstImage != null && leftTerminalLeaveTarget.AstImage.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)

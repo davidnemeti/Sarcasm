@@ -688,10 +688,10 @@ namespace MiniPL.Grammars
 
             protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
-                if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
+                if (leftTerminalLeaveTarget.AstImage != null && leftTerminalLeaveTarget.AstImage.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
 
-                else if (leftTerminalLeaveTarget.AstParent != null && leftTerminalLeaveTarget.AstParent.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
+                else if (leftTerminalLeaveTarget.AstImage != null && leftTerminalLeaveTarget.AstImage.AstValue is DC.NameRef && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
 
                 else if (leftTerminalLeaveTarget.BnfTerm == B.WRITE && rightTarget.BnfTerm == B.LEFT_PAREN)
