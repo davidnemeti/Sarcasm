@@ -19,7 +19,7 @@ namespace Sarcasm.GrammarAst
 
     public interface ICommentCleaner
     {
-        string[] GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal);
+        string[] GetCleanedUpCommentTextLines(string[] commentTextLines, int columnIndex, CommentTerminal commentTerminal, out bool isDecorated);
         string NewLine { get; }
     }
 

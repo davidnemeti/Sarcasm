@@ -191,17 +191,19 @@ namespace Sarcasm.Parsing
         private Comment CommentToDomainComment(Token comment, ParseTreeNode parseTreeNodeOwner, CommentPlacement placement)
         {
             CommentTerminal commentTerminal = (CommentTerminal)comment.Terminal;
+            bool isDecorated;
 
             return new Comment(
-                CommentTextToDomainCommentTextLines(comment),
+                CommentTextToDomainCommentTextLines(comment, out isDecorated),
                 CommentCategoryToDomainCommentCategory(comment.Category),
                 placement,
                 Math.Abs(comment.Location.Line - parseTreeNodeOwner.Span.Location.Line),
-                GrammarHelper.IsMultiLine(commentTerminal, GetCommentCleaner(commentTerminal).NewLine)
+                GrammarHelper.GetCommentKind(commentTerminal, GetCommentCleaner(commentTerminal).NewLine),
+                isDecorated
             );
         }
 
-        private string[] CommentTextToDomainCommentTextLines(Token comment)
+        private string[] CommentTextToDomainCommentTextLines(Token comment, out bool isDecorated)
         {
             CommentTerminal commentTerminal = (CommentTerminal)comment.Terminal;
 
@@ -215,7 +217,7 @@ namespace Sarcasm.Parsing
 
             var commentCleaner = GetCommentCleaner(commentTerminal);
             string[] textLines = text.Split(new[] { commentCleaner.NewLine }, StringSplitOptions.None);
-            textLines = commentCleaner.GetCleanedUpCommentTextLines(textLines, commentTerminal);
+            textLines = commentCleaner.GetCleanedUpCommentTextLines(textLines, comment.Location.Column, commentTerminal, out isDecorated);
 
             return textLines;
         }

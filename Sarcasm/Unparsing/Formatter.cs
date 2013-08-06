@@ -92,6 +92,7 @@ namespace Sarcasm.Unparsing
         private static readonly string indentUnitDefault = string.Concat(Enumerable.Repeat(spaceDefault, 4));
         private const string whiteSpaceBetweenUtokensDefault = spaceDefault;
         private const bool indentEmptyLinesDefault = false;
+        private const string multiLineCommentDecoratorDefault = "";
         private static readonly IFormatProvider formatProviderDefault = CultureInfo.InvariantCulture;
 
         #endregion
@@ -100,13 +101,19 @@ namespace Sarcasm.Unparsing
 
         #region Immutable after initialization
 
+        #region Settings
+
         public string NewLine { get; set; }
         public string Space { get; set; }
         public string Tab { get; set; }
         public string IndentUnit { get; set; }
         public string WhiteSpaceBetweenUtokens { get; set; }
         public bool IndentEmptyLines { get; set; }
+        public string MultiLineCommentDecorator { get; set; }
         public IFormatProvider FormatProvider { get; private set; }
+
+        #endregion
+
         private List<Parser> attachedParsers;
 
         #endregion
@@ -153,6 +160,7 @@ namespace Sarcasm.Unparsing
             this.IndentUnit = indentUnitDefault;
             this.WhiteSpaceBetweenUtokens = whiteSpaceBetweenUtokensDefault;
             this.IndentEmptyLines = indentEmptyLinesDefault;
+            this.MultiLineCommentDecorator = multiLineCommentDecoratorDefault;
         }
 
         private Formatter(Formatter that)
@@ -164,6 +172,8 @@ namespace Sarcasm.Unparsing
             this.WhiteSpaceBetweenUtokens = that.WhiteSpaceBetweenUtokens;
             this.IndentEmptyLines = that.IndentEmptyLines;
             this.FormatProvider = that.FormatProvider;
+            this.MultiLineCommentDecorator = that.MultiLineCommentDecorator;
+
             this.attachedParsers = that.attachedParsers;
 
             this.direction = that.direction;
@@ -281,12 +291,56 @@ namespace Sarcasm.Unparsing
 
         internal protected virtual string[] GetDecoratedCommentTextLines(UnparsableAst owner, Comment comment)
         {
-            return comment.TextLines;
+            if (comment.TextLines.Length > 1)
+            {
+                return comment.TextLines
+                    .Select((textLine, lineIndex) => lineIndex > 0 && comment.IsDecorated ? MultiLineCommentDecorator + textLine : textLine)
+                    .ToArray();
+            }
+            else
+                return comment.TextLines;
         }
 
-        protected virtual string[] GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal)
+        protected virtual string[] GetCleanedUpCommentTextLines(string[] commentTextLines, int columnIndex, CommentTerminal commentTerminal, out bool isDecorated)
         {
-            return commentTextLines;
+            if (commentTextLines.Length > 1)
+            {
+                bool _isDecorated = false;
+
+                commentTextLines = commentTextLines
+                    .Select(
+                        (commentTextLine, lineIndex) =>
+                        {
+                            string trimmedStartCommentTextLine = commentTextLine.TrimStart();
+                            string trimmedStartMultiLineCommentDecorator = MultiLineCommentDecorator.TrimStart();
+                            string trimmedMultiLineCommentDecorator = trimmedStartMultiLineCommentDecorator.TrimEnd();
+
+                            if (trimmedStartCommentTextLine.StartsWith(trimmedStartMultiLineCommentDecorator))
+                            {
+                                _isDecorated = true;
+                                return trimmedStartCommentTextLine.Remove(0, trimmedStartMultiLineCommentDecorator.Length).TrimEnd();   // decorated
+                            }
+                            else if (trimmedStartCommentTextLine.StartsWith(trimmedMultiLineCommentDecorator))
+                            {
+                                _isDecorated = true;
+                                return trimmedStartCommentTextLine.Remove(0, trimmedMultiLineCommentDecorator.Length).TrimEnd();    // decorated with missing whitespaces at the right of decorator
+                            }
+                            else if (commentTextLine.Length >= columnIndex && commentTextLine.Take(columnIndex).All(ch => char.IsWhiteSpace(ch)))
+                                return commentTextLine.Remove(0, columnIndex).TrimEnd();    // undecorated -> remove indentation
+                            else
+                                return commentTextLine.TrimEnd();   // undecorated -> could not remove indentation (the indentation of this line is smaller then the indentation of the start of the comment)
+                        }
+                    )
+                    .ToArray();
+
+                isDecorated = _isDecorated;
+                return commentTextLines;
+            }
+            else
+            {
+                isDecorated = false;
+                return commentTextLines;
+            }
         }
 
         protected virtual BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
@@ -506,9 +560,9 @@ namespace Sarcasm.Unparsing
 
         #region Interface to parser
 
-        string[] ICommentCleaner.GetCleanedUpCommentTextLines(string[] commentTextLines, CommentTerminal commentTerminal)
+        string[] ICommentCleaner.GetCleanedUpCommentTextLines(string[] commentTextLines, int columnIndex, CommentTerminal commentTerminal, out bool isDecorated)
         {
-            return GetCleanedUpCommentTextLines(commentTextLines, commentTerminal);
+            return GetCleanedUpCommentTextLines(commentTextLines, columnIndex, commentTerminal, out isDecorated);
         }
 
         #endregion

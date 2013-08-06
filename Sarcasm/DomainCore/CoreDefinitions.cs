@@ -154,6 +154,12 @@ namespace Sarcasm.DomainCore
         Directive
     }
 
+    public enum CommentKind
+    {
+        SingleLine,
+        Delimited
+    }
+
     public enum CommentPlacement
     {
         OwnerLeft,
@@ -166,15 +172,17 @@ namespace Sarcasm.DomainCore
         public CommentCategory Category { get; private set; }
         public CommentPlacement Placement { get; private set; }
         public int LineIndexDistanceFromOwner { get; private set; }
-        public bool IsMultiLine { get; private set; }
+        public CommentKind Kind { get; private set; }
+        public bool IsDecorated { get; private set; }
 
-        public Comment(string[] textLines, CommentCategory category, CommentPlacement placement, int lineIndexDistanceFromOwner, bool isMultiLine)
+        public Comment(string[] textLines, CommentCategory category, CommentPlacement placement, int lineIndexDistanceFromOwner, CommentKind kind, bool isDecorated)
         {
             this.TextLines = textLines;
             this.Category = category;
             this.Placement = placement;
             this.LineIndexDistanceFromOwner = lineIndexDistanceFromOwner;
-            this.IsMultiLine = isMultiLine;
+            this.Kind = kind;
+            this.IsDecorated = isDecorated;
         }
     }
 

@@ -267,7 +267,7 @@ namespace Sarcasm.Unparsing
         private CommentTerminal GetProperCommentTerminal(Comment comment)
         {
             var commentTerminals = Grammar.NonGrammarTerminals.OfType<CommentTerminal>();
-            var matchingCommentTerminal = commentTerminals.FirstOrDefault(commentTerminal => IsMultiLine(commentTerminal) == comment.IsMultiLine);
+            var matchingCommentTerminal = commentTerminals.FirstOrDefault(commentTerminal => GetCommentKind(commentTerminal) == comment.Kind);
 
             if (!commentTerminals.Any())
                 throw new UnparseException("Grammar has no comment terminals therefore cannot unparse domain comments");
@@ -275,16 +275,16 @@ namespace Sarcasm.Unparsing
             if (matchingCommentTerminal != null)
                 return matchingCommentTerminal;     // we found a matching comment terminal
 
-            else if (!comment.IsMultiLine || comment.TextLines.Length == 1)
-                return commentTerminals.First();    // for a non-multiline comment (or if it can fit into a non-multiline comment) any comment terminal would be appropriate
+            else if (comment.Kind == CommentKind.SingleLine || comment.TextLines.Length == 1)
+                return commentTerminals.First();    // for a singleline comment (or if it can fit into a singleline comment) any comment terminal would be appropriate
 
             else
-                throw new UnparseException("Grammar has no multiline comment terminals therefore cannot unparse multiline domain comments");
+                throw new UnparseException("Grammar has no delimited comment terminals, therefore cannot unparse multiline domain comments");
         }
 
-        private bool IsMultiLine(CommentTerminal commentTerminal)
+        private CommentKind GetCommentKind(CommentTerminal commentTerminal)
         {
-            return GrammarHelper.IsMultiLine(commentTerminal, Formatter.NewLine);
+            return GrammarHelper.GetCommentKind(commentTerminal, Formatter.NewLine);
         }
 
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableAst self)

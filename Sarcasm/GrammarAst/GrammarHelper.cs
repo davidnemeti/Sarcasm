@@ -12,6 +12,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Utility;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.GrammarAst
 {
@@ -614,9 +615,11 @@ namespace Sarcasm.GrammarAst
                     );
         }
 
-        internal static bool IsMultiLine(CommentTerminal commentTerminal, params string[] newLines)
+        internal static CommentKind GetCommentKind(CommentTerminal commentTerminal, params string[] newLines)
         {
-            return commentTerminal.EndSymbols.All(endSymbol => !endSymbol.EqualToAny(newLines));
+            return commentTerminal.EndSymbols.All(endSymbol => !endSymbol.EqualToAny(newLines))
+                ? CommentKind.Delimited
+                : CommentKind.SingleLine;
         }
 
         #endregion
