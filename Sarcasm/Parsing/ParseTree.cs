@@ -11,6 +11,7 @@ using Irony.Parsing;
 using Sarcasm;
 using Sarcasm.DomainCore;
 using Sarcasm.GrammarAst;
+using Sarcasm.Utility;
 
 namespace Sarcasm.Parsing
 {
@@ -212,23 +213,18 @@ namespace Sarcasm.Parsing
 
         private void AddCommentToLeftOfAstValue(ParseTreeNode parseTreeNode, Token comment)
         {
-            object astValue = GrammarHelper.AstNodeToValue(parseTreeNode.AstNode);
-
-            Comments domainComments;
-
-            if (!astValueToDomainComments.TryGetValue(astValue, out domainComments))
-            {
-                domainComments = new Comments();
-                astValueToDomainComments.Add(astValue, domainComments);
-            }
-
-            domainComments.left.Add(CommentToDomainComment(comment, parseTreeNode, CommentPlacement.OwnerLeft));
-
-            decoratedComments.Add(comment);
+            AddCommentToSideOfAstValue(parseTreeNode, comment, CommentPlacement.OwnerLeft);
         }
 
         private void AddCommentToRightOfAstValue(ParseTreeNode parseTreeNode, Token comment)
         {
+            AddCommentToSideOfAstValue(parseTreeNode, comment, CommentPlacement.OwnerRight);
+        }
+
+        private void AddCommentToSideOfAstValue(ParseTreeNode parseTreeNode, Token comment, CommentPlacement commentPlacement)
+        {
+            parseTreeNode = Util.Recurse(parseTreeNode, GetParent).First(_parseTreeNode => _parseTreeNode.AstNode != null);
+
             object astValue = GrammarHelper.AstNodeToValue(parseTreeNode.AstNode);
 
             Comments domainComments;
@@ -239,7 +235,11 @@ namespace Sarcasm.Parsing
                 astValueToDomainComments.Add(astValue, domainComments);
             }
 
-            domainComments.right.Add(CommentToDomainComment(comment, parseTreeNode, CommentPlacement.OwnerRight));
+            var commentList = commentPlacement == CommentPlacement.OwnerLeft
+                ? domainComments.left
+                : domainComments.right;
+
+            commentList.Add(CommentToDomainComment(comment, parseTreeNode, commentPlacement));
 
             decoratedComments.Add(comment);
         }
