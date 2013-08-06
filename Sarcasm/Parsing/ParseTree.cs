@@ -211,21 +211,22 @@ namespace Sarcasm.Parsing
             return position <= 0 || this.SourceText[position] == '\n';
         }
 
-        private void AddCommentToLeftOfAstValue(ParseTreeNode parseTreeNode, Token comment)
+        private void AddCommentToLeftOfAstValue(ParseTreeNode owner, Token comment)
         {
-            AddCommentToSideOfAstValue(parseTreeNode, comment, CommentPlacement.OwnerLeft);
+            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerLeft);
         }
 
-        private void AddCommentToRightOfAstValue(ParseTreeNode parseTreeNode, Token comment)
+        private void AddCommentToRightOfAstValue(ParseTreeNode owner, Token comment)
         {
-            AddCommentToSideOfAstValue(parseTreeNode, comment, CommentPlacement.OwnerRight);
+            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerRight);
         }
 
-        private void AddCommentToSideOfAstValue(ParseTreeNode parseTreeNode, Token comment, CommentPlacement commentPlacement)
+        private void AddCommentToSideOfAstValue(ParseTreeNode owner, Token comment, CommentPlacement commentPlacement)
         {
-            parseTreeNode = Util.Recurse(parseTreeNode, GetParent).First(_parseTreeNode => _parseTreeNode.AstNode != null);
-
-            object astValue = GrammarHelper.AstNodeToValue(parseTreeNode.AstNode);
+            // first we calculate the lineIndexDistanceFromOwner, then we find a proper node with a non-null astNode to decorate (it can be in another line)
+            int lineIndexDistanceFromOwner = Math.Abs(comment.Location.Line - owner.Span.Location.Line);
+            owner = Util.Recurse(owner, GetParent).First(_parseTreeNode => _parseTreeNode.AstNode != null);
+            object astValue = GrammarHelper.AstNodeToValue(owner.AstNode);
 
             Comments domainComments;
 
@@ -239,12 +240,12 @@ namespace Sarcasm.Parsing
                 ? domainComments.left
                 : domainComments.right;
 
-            commentList.Add(CommentToDomainComment(comment, parseTreeNode, commentPlacement));
+            commentList.Add(CommentToDomainComment(comment, owner, commentPlacement, lineIndexDistanceFromOwner));
 
             decoratedComments.Add(comment);
         }
 
-        private Comment CommentToDomainComment(Token comment, ParseTreeNode parseTreeNodeOwner, CommentPlacement placement)
+        private Comment CommentToDomainComment(Token comment, ParseTreeNode parseTreeNodeOwner, CommentPlacement placement, int lineIndexDistanceFromOwner)
         {
             CommentTerminal commentTerminal = (CommentTerminal)comment.Terminal;
             bool isDecorated;
@@ -253,7 +254,7 @@ namespace Sarcasm.Parsing
                 CommentTextToDomainCommentTextLines(comment, out isDecorated),
                 CommentCategoryToDomainCommentCategory(comment.Category),
                 placement,
-                Math.Abs(comment.Location.Line - parseTreeNodeOwner.Span.Location.Line),
+                lineIndexDistanceFromOwner,
                 GrammarHelper.GetCommentKind(commentTerminal, GetCommentCleaner(commentTerminal).NewLine),
                 isDecorated
             );
