@@ -1,4 +1,6 @@
-﻿program HelloWorld
+﻿@@ comment1 at the beginning
+@@ comment2 at the beginning
+program HelloWorld
 
 namespace Sea.Shell
 
@@ -32,3 +34,5 @@ begin
     WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
     @@ comment almost at the end
 end.
+@@ comment1 at the end
+@@ comment2 at the end

@@ -108,16 +108,23 @@ namespace Sarcasm.Parsing
             prevLine = null;
             currentLine = null;
 
-            StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
+            if (Root != null)
+            {
+                StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
 
-            // decorate comments at the end (Irony does not put these comments into the parse tree)
-            var commentsAtTheEnd = Tokens
-                .ReverseOptimized()
-                .SkipWhile(token => token.Terminal == token.Terminal.Grammar.Eof)
-                .TakeWhile(token => token.Terminal is CommentTerminal);
+                // decorate comments at the end (Irony does not put these comments into the parse tree)
+                var commentsAtTheEnd = Tokens
+                    .ReverseOptimized()
+                    .SkipWhile(token => token.Terminal == token.Terminal.Grammar.Eof)
+                    .TakeWhile(token => token.Terminal is CommentTerminal);
 
-            foreach (Token commentAtTheEnd in commentsAtTheEnd)
-                AddCommentToRightOfAstValue(parseTree.Root, commentAtTheEnd);
+                var lastNonCommentToken = Tokens
+                    .ReverseOptimized()
+                    .First(token => token.Terminal != token.Terminal.Grammar.Eof && !(token.Terminal is CommentTerminal));
+
+                foreach (Token commentAtTheEnd in commentsAtTheEnd.Reverse())
+                    AddCommentToRightOfAstValue(parseTree.Root, commentAtTheEnd, lineIndexDistanceFromOwnerExplicit: Math.Abs(commentAtTheEnd.Location.Line - lastNonCommentToken.Location.Line));
+            }
         }
 
         private void StoreAstValueToParseTreeNodeRecursive(ParseTreeNode currentNode, int nodeIndex)
@@ -220,20 +227,20 @@ namespace Sarcasm.Parsing
             return position <= 0 || this.SourceText[position] == '\n';
         }
 
-        private void AddCommentToLeftOfAstValue(ParseTreeNode owner, Token comment)
+        private void AddCommentToLeftOfAstValue(ParseTreeNode owner, Token comment, int? lineIndexDistanceFromOwnerExplicit = null)
         {
-            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerLeft);
+            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerLeft, lineIndexDistanceFromOwnerExplicit);
         }
 
-        private void AddCommentToRightOfAstValue(ParseTreeNode owner, Token comment)
+        private void AddCommentToRightOfAstValue(ParseTreeNode owner, Token comment, int? lineIndexDistanceFromOwnerExplicit = null)
         {
-            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerRight);
+            AddCommentToSideOfAstValue(owner, comment, CommentPlacement.OwnerRight, lineIndexDistanceFromOwnerExplicit);
         }
 
-        private void AddCommentToSideOfAstValue(ParseTreeNode owner, Token comment, CommentPlacement commentPlacement)
+        private void AddCommentToSideOfAstValue(ParseTreeNode owner, Token comment, CommentPlacement commentPlacement, int? lineIndexDistanceFromOwnerExplicit)
         {
             // first we calculate the lineIndexDistanceFromOwner, then we find a proper node with a non-null astNode to decorate (it can be in another line)
-            int lineIndexDistanceFromOwner = Math.Abs(comment.Location.Line - owner.Span.Location.Line);
+            int lineIndexDistanceFromOwner = lineIndexDistanceFromOwnerExplicit ?? Math.Abs(comment.Location.Line - owner.Span.Location.Line);
             owner = Util.Recurse(owner, GetParent).First(_parseTreeNode => _parseTreeNode.AstNode != null);
             object astValue = GrammarHelper.AstNodeToValue(owner.AstNode);
 
