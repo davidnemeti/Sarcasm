@@ -10,7 +10,7 @@ begin
     else if (n = 1) then
         return 1; @@ another single line comment
     else
-        return Fibonacci(n - 1) + Fibonacci(n - 2);
+        return Fibonacci(n - 1) + Fibonacci(n - 2); @@ single line comment at tricky syntax tree position
 end
 
 begin

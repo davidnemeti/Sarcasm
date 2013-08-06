@@ -20,7 +20,7 @@ namespace Sarcasm.Parsing
         private Dictionary<object, ParseTreeNode> astValueToParseTreeNode;
         private HashSet<Token> decoratedComments;
         private Dictionary<ParseTreeNode, ParseTreeNode> parseTreeNodeToParent;
-        private ParseTreeNode lastVisitedParseTreeNode;
+        private ParseTreeNode lastVisitedLine;
 
         private Dictionary<object, Comments> _astValueToDomainComments;
         protected Dictionary<object, Comments> astValueToDomainComments
@@ -83,6 +83,14 @@ namespace Sarcasm.Parsing
             return astValueToParseTreeNode[astValue];
         }
 
+        public ParseTreeNode GetParent(ParseTreeNode parseTreeNode)
+        {
+            if (parseTreeNodeToParent == null)
+                BuildAstValueToParseTreeNode();
+
+            return parseTreeNodeToParent[parseTreeNode];
+        }
+
         public Document GetDocument()
         {
             return new Document(RootAstValue, astValueToDomainComments);
@@ -94,7 +102,7 @@ namespace Sarcasm.Parsing
             parseTreeNodeToParent = new Dictionary<ParseTreeNode, ParseTreeNode>();
             astValueToDomainComments = new Dictionary<object, Comments>();
             decoratedComments = new HashSet<Token>();
-            lastVisitedParseTreeNode = null;
+            lastVisitedLine = null;
 
             StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
         }
@@ -105,8 +113,6 @@ namespace Sarcasm.Parsing
 
             if (astValue != null && astValue.GetType().IsClass && !astValueToParseTreeNode.ContainsKey(astValue))
                 astValueToParseTreeNode.Add(astValue, parseTreeNode);
-
-            ParseTreeNode lastVisitedParseTreeNodeLocal = this.lastVisitedParseTreeNode;
 
             foreach (var parseTreeChild in parseTreeNode.ChildNodes.Select((parseTreeChild, childIndex) => new { Value = parseTreeChild, Index = childIndex }))
             {
@@ -126,18 +132,19 @@ namespace Sarcasm.Parsing
 
                     bool isCommentInLineOfFirstComment = comment.Location.Line == lineIndexForFirstComment;
 
-                    if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && lastVisitedParseTreeNodeLocal.AstNode != null)
-                        AddCommentToRightOfAstValue(lastVisitedParseTreeNodeLocal, comment);     // the comment belongs to the previous node (is in line with it)
+                    if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && lastVisitedLine.AstNode != null)
+                        AddCommentToRightOfAstValue(lastVisitedLine, comment);     // the comment belongs to the previous node (they are in the same line)
 
                     else if (astValue != null)
-                        AddCommentToLeftOfAstValue(parseTreeNode, comment);               // the comment belongs to this node (is in line with it)
+                        AddCommentToLeftOfAstValue(parseTreeNode, comment);               // the comment belongs to this node
 
                     else if (nodeIndex > 0)
-                        parseTreeNodeToParent[parseTreeNode].Comments.Add(comment);     // could not decorate comment, because we have no ast, so copy it on the parent and handle it there (if nodeIndex == 0 then Irony has already copied it on the parent)
+                        GetParent(parseTreeNode).Comments.Add(comment);     // could not decorate comment, because we have no ast, so copy it on the parent and handle it there (if nodeIndex == 0 then Irony has already copied it on the parent)
                 }
             }
 
-            this.lastVisitedParseTreeNode = parseTreeNode;
+            if (parseTreeNode.Term is Terminal || parseTreeNode.Span.Location.Line == lastVisitedLine.Span.Location.Line)
+                lastVisitedLine = parseTreeNode;
         }
 
         private bool IsTextInLineAtLeftOfComment(Token comment)
