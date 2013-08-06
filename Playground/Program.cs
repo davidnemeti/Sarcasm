@@ -70,7 +70,9 @@ namespace Playground
             //var utokens = unparser.Unparse(astRootValue).ToList();
             //ShowTimeAndRestart(stopwatch, "Unparsing to utokens");
 
-            //string unparsedText = utokens.AsString(unparser);
+            //string unparsedText = unparser.Unparse(astRootValue).AsText(unparser);
+            //var document = parseTree.GetDocument();
+            //string unparsedText = unparser.Unparse(document).AsText(unparser);
             //ShowTimeAndRestart(stopwatch, "Converting utokens to string");
 
             unparser.EnableParallelProcessing = false;
@@ -101,7 +103,7 @@ namespace Playground
 
             //var parseTree2 = parser.Parse(File.ReadAllText(path2), path2, grammar.B.Expression);
             //var parseTree3 = parser.Parse(File.ReadAllText(path2), path2, (NonTerminal)grammar.B.Expression);
-            //MiniPL.DomainModel.Expression astValue2 = parseTree2.RootAstValue;
+            //MiniPL.DomainDefinitions.Expression astValue2 = parseTree2.RootAstValue;
 
             //Unparser unparser = new Unparser(grammar);
 
