@@ -128,7 +128,7 @@ namespace Sarcasm.Unparsing
 
         public void SetAsRoot()
         {
-            SyntaxParent = AstParent = null;
+            SyntaxParent = AstParent = AstImage = null;
             LeftSibling = null;
             RightSibling = null;
         }
