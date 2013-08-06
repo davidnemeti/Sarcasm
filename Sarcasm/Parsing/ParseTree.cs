@@ -20,7 +20,8 @@ namespace Sarcasm.Parsing
         private Dictionary<object, ParseTreeNode> astValueToParseTreeNode;
         private HashSet<Token> decoratedComments;
         private Dictionary<ParseTreeNode, ParseTreeNode> parseTreeNodeToParent;
-        private ParseTreeNode lastVisitedLine;
+        private ParseTreeNode prevLine;
+        private ParseTreeNode currentLine;
 
         private Dictionary<object, Comments> _astValueToDomainComments;
         protected Dictionary<object, Comments> astValueToDomainComments
@@ -102,7 +103,8 @@ namespace Sarcasm.Parsing
             parseTreeNodeToParent = new Dictionary<ParseTreeNode, ParseTreeNode>();
             astValueToDomainComments = new Dictionary<object, Comments>();
             decoratedComments = new HashSet<Token>();
-            lastVisitedLine = null;
+            prevLine = null;
+            currentLine = null;
 
             StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
         }
@@ -132,9 +134,29 @@ namespace Sarcasm.Parsing
 
                     bool isCommentInLineOfFirstComment = comment.Location.Line == lineIndexForFirstComment;
 
-                    if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && lastVisitedLine.AstNode != null)
-                        AddCommentToRightOfAstValue(lastVisitedLine, comment);      // the comment belongs to the previous node (they are in the same line)
+                    if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && comment.Location.Line == currentLine.Span.Location.Line && currentLine.AstNode != null)
+                    {
+                        /*
+                         * The comment belongs to the previous node (they are in the same line).
+                         * 
+                         * Now we have one of the followings:
+                         * 
+                         * code1 (*comment*) code2
+                         * */
 
+                        AddCommentToRightOfAstValue(currentLine, comment);
+                    }
+                    else if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && comment.Location.Line == prevLine.Span.Location.Line && prevLine.AstNode != null)
+                    {
+                        /*
+                         * The comment belongs to the previous node (they are in the same line).
+                         * 
+                         * code1 (*comment*)
+                         * code2
+                         * */
+
+                        AddCommentToRightOfAstValue(prevLine, comment);
+                    }
                     else if (astValue != null)
                         AddCommentToLeftOfAstValue(parseTreeNode, comment);         // the comment belongs to this node
 
@@ -143,8 +165,13 @@ namespace Sarcasm.Parsing
                 }
             }
 
-            if (parseTreeNode.Term is Terminal || parseTreeNode.Span.Location.Line == lastVisitedLine.Span.Location.Line)
-                lastVisitedLine = parseTreeNode;
+            if (currentLine == null || parseTreeNode.Term is Terminal || parseTreeNode.Span.Location.Line == currentLine.Span.Location.Line)
+            {
+                if (currentLine != null && parseTreeNode.Span.Location.Line > currentLine.Span.Location.Line)
+                    prevLine = currentLine;
+
+                currentLine = parseTreeNode;
+            }
         }
 
         private bool IsTextInLineAtLeftOfComment(Token comment)
