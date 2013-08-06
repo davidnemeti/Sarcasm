@@ -76,7 +76,15 @@ namespace Sarcasm.Unparsing
                     ? astParent
                     : Util.RecurseStopBeforeNull(this, unparsableAst => unparsableAst.SyntaxParent).FirstOrDefault(unparsableAst => unparsableAst.BnfTerm is BnfiTermRecord);
             }
-            set { CheckIfNotThrownOut(astParent); astParent = value; }
+
+            set
+            {
+                CheckIfNotThrownOut(astParent);
+                astParent = value;
+
+                if (value != null && value != NonCalculated && !(value.BnfTerm is BnfiTermRecord))
+                    throw new ArgumentException("value.BnfTerm should be BnfiTermRecord", "value");
+            }
         }
 
         public UnparsableAst AstImage
@@ -89,7 +97,7 @@ namespace Sarcasm.Unparsing
                     ? astImage
                     : Util.RecurseStopBeforeNull(this, unparsableAst => unparsableAst.SyntaxParent).FirstOrDefault(unparsableAst => unparsableAst.AstValue != this.AstValue);
             }
-            set { CheckIfNotThrownOut(astParent); astParent = value; }
+            set { CheckIfNotThrownOut(astImage); astImage = value; }
         }
 
         public UnparsableAst LeftMostChild
