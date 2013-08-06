@@ -251,6 +251,12 @@ namespace Sarcasm.Utility
                 return items.Reverse();
         }
 
+        // to avoid ambiguity for Lists
+        public static IList<T> ReverseOptimized<T>(this List<T> items)
+        {
+            return new ReverseList<T>(items);
+        }
+
         public static IList<T> ReverseOptimized<T>(this IList<T> items)
         {
             return new ReverseList<T>(items);
