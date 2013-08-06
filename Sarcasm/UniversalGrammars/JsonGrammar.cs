@@ -45,12 +45,12 @@ namespace Sarcasm.UniversalGrammars
 
             internal BnfTerms(TerminalFactoryS TerminalFactoryS)
             {
-                this.OBJECT_BEGIN = TerminalFactoryS.CreatePunctuation("{");
-                this.OBJECT_END = TerminalFactoryS.CreatePunctuation("}");
-                this.ARRAY_BEGIN = TerminalFactoryS.CreatePunctuation("[");
-                this.ARRAY_END = TerminalFactoryS.CreatePunctuation("]");
-                this.COMMA = TerminalFactoryS.CreatePunctuation(",");
-                this.COLON = TerminalFactoryS.CreatePunctuation(":");
+                this.OBJECT_BEGIN = TerminalFactoryS.CreateKeyTerm("{");
+                this.OBJECT_END = TerminalFactoryS.CreateKeyTerm("}");
+                this.ARRAY_BEGIN = TerminalFactoryS.CreateKeyTerm("[");
+                this.ARRAY_END = TerminalFactoryS.CreateKeyTerm("]");
+                this.COMMA = TerminalFactoryS.CreateKeyTerm(",");
+                this.COLON = TerminalFactoryS.CreateKeyTerm(":");
                 this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
                 this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
 

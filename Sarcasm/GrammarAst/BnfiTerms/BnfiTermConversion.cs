@@ -554,7 +554,7 @@ namespace Sarcasm.GrammarAst
 
         private static bool IsMainChild(BnfTerm bnfTerm)
         {
-            return !bnfTerm.Flags.IsSet(TermFlags.IsPunctuation) && !(bnfTerm is GrammarHint);
+            return !(bnfTerm is KeyTerm) && !(bnfTerm is GrammarHint);
         }
 
         private UnparsableAst GetMainChild(object astValue, IEnumerable<UnparsableAst> children)

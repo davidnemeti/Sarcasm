@@ -242,6 +242,7 @@ namespace Sarcasm.GrammarAst
                     {
                         bnfTermIndexAtRule++;
 
+                        // NOTE: punctuation terminals will not be put into the parsetree, that's why we have to index like this
                         if (!bnfTerms[bnfTermIndex].IsPunctuation())
                             bnfTermIndexAtParse++;
                     }

@@ -45,14 +45,14 @@ namespace MiniPL.Grammars
                 this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                 this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
 
-                this.DOT = TerminalFactoryS.CreatePunctuation(".");
-                this.LET = TerminalFactoryS.CreatePunctuation("=");
-                this.SEMICOLON = TerminalFactoryS.CreatePunctuation(";");
-                this.COLON = TerminalFactoryS.CreatePunctuation(":");
-                this.COMMA = TerminalFactoryS.CreatePunctuation(",");
-                this.LEFT_PAREN = TerminalFactoryS.CreatePunctuation("(");
-                this.RIGHT_PAREN = TerminalFactoryS.CreatePunctuation(")");
-                this.QUESTION_MARK = TerminalFactoryS.CreatePunctuation("?");
+                this.DOT = TerminalFactoryS.CreateKeyTerm(".");
+                this.LET = TerminalFactoryS.CreateKeyTerm("=");
+                this.SEMICOLON = TerminalFactoryS.CreateKeyTerm(";");
+                this.COLON = TerminalFactoryS.CreateKeyTerm(":");
+                this.COMMA = TerminalFactoryS.CreateKeyTerm(",");
+                this.LEFT_PAREN = TerminalFactoryS.CreateKeyTerm("(");
+                this.RIGHT_PAREN = TerminalFactoryS.CreateKeyTerm(")");
+                this.QUESTION_MARK = TerminalFactoryS.CreateKeyTerm("?");
 
                 this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DomainDefinitions.BinaryOperator.Add);
                 this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DomainDefinitions.BinaryOperator.Sub);

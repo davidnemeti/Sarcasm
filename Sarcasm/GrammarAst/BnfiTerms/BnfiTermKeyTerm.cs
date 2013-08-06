@@ -26,7 +26,6 @@ namespace Sarcasm.GrammarAst
         public BnfiTermKeyTerm ToPunctuation()
         {
             this.SetFlag(TermFlags.IsPunctuation);
-
             return this;
         }
     }
