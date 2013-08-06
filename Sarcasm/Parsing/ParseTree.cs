@@ -133,13 +133,13 @@ namespace Sarcasm.Parsing
                     bool isCommentInLineOfFirstComment = comment.Location.Line == lineIndexForFirstComment;
 
                     if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && lastVisitedLine.AstNode != null)
-                        AddCommentToRightOfAstValue(lastVisitedLine, comment);     // the comment belongs to the previous node (they are in the same line)
+                        AddCommentToRightOfAstValue(lastVisitedLine, comment);      // the comment belongs to the previous node (they are in the same line)
 
                     else if (astValue != null)
-                        AddCommentToLeftOfAstValue(parseTreeNode, comment);               // the comment belongs to this node
+                        AddCommentToLeftOfAstValue(parseTreeNode, comment);         // the comment belongs to this node
 
                     else if (nodeIndex > 0)
-                        GetParent(parseTreeNode).Comments.Add(comment);     // could not decorate comment, because we have no ast, so copy it on the parent and handle it there (if nodeIndex == 0 then Irony has already copied it on the parent)
+                        GetParent(parseTreeNode).Comments.Add(comment); // could not decorate comment, because we have no ast, so copy it on the parent and handle it there (if nodeIndex == 0 then Irony has already copied it on the parent)
                 }
             }
 
