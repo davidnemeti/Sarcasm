@@ -266,11 +266,20 @@ namespace Sarcasm.Unparsing
 
         private CommentTerminal GetProperCommentTerminal(Comment comment)
         {
-            bool isMultiLineComment = comment.IsMultiLine;
             var commentTerminals = Grammar.NonGrammarTerminals.OfType<CommentTerminal>();
+            var matchingCommentTerminal = commentTerminals.FirstOrDefault(commentTerminal => IsMultiLine(commentTerminal) == comment.IsMultiLine);
 
-            return commentTerminals.FirstOrDefault(commentTerminal => IsMultiLine(commentTerminal) == isMultiLineComment) ??
-                commentTerminals.First();
+            if (!commentTerminals.Any())
+                throw new UnparseException("Grammar has no comment terminals therefore cannot unparse domain comments");
+
+            if (matchingCommentTerminal != null)
+                return matchingCommentTerminal;     // we found a matching comment terminal
+
+            else if (!comment.IsMultiLine || comment.TextLines.Length == 1)
+                return commentTerminals.First();    // for a non-multiline comment (or if it can fit into a non-multiline comment) any comment terminal would be appropriate
+
+            else
+                throw new UnparseException("Grammar has no multiline comment terminals therefore cannot unparse multiline domain comments");
         }
 
         private bool IsMultiLine(CommentTerminal commentTerminal)
