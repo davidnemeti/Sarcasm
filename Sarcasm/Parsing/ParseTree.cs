@@ -108,8 +108,6 @@ namespace Sarcasm.Parsing
             prevLine = null;
             currentLine = null;
 
-            // TODO: try to build astValueToDomainComments from this.Tokens
-
             StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
 
             // decorate comments at the end (Irony does not put these comments into the parse tree)
