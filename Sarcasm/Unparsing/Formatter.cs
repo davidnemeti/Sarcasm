@@ -28,18 +28,13 @@ namespace Sarcasm.Unparsing
 
     public class Formatter : ICommentFormatter
     {
-        #region Tracing
-
-        internal readonly static TraceSource tsRaw = new TraceSource("RAW", SourceLevels.Verbose);
-        internal readonly static TraceSource tsCalculatedDeferred = new TraceSource("CALCULATED_DEFERRED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsCalculatedDeferredDetailed = new TraceSource("CALCULATED_DEFERRED_DETAILED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
-        internal readonly static TraceSource tsProcessedControls = new TraceSource("PROCESSED_CONTROLS", SourceLevels.Verbose);
-
-#if DEBUG
         static Formatter()
         {
+            CommentContent = new Discriminator();
+            CommentStartSymbol = new Discriminator();
+            CommentEndSymbol = new Discriminator();
+
+#if DEBUG
             tsRaw.Listeners.Clear();
             tsRaw.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_raw.log"))));
 
@@ -57,8 +52,17 @@ namespace Sarcasm.Unparsing
 
             tsProcessedControls.Listeners.Clear();
             tsProcessedControls.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "05_processed_controls.log"))));
-        }
 #endif
+        }
+
+        #region Tracing
+
+        internal readonly static TraceSource tsRaw = new TraceSource("RAW", SourceLevels.Verbose);
+        internal readonly static TraceSource tsCalculatedDeferred = new TraceSource("CALCULATED_DEFERRED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsCalculatedDeferredDetailed = new TraceSource("CALCULATED_DEFERRED_DETAILED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsFiltered = new TraceSource("FILTERED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsFlattened = new TraceSource("FLATTENED", SourceLevels.Verbose);
+        internal readonly static TraceSource tsProcessedControls = new TraceSource("PROCESSED_CONTROLS", SourceLevels.Verbose);
 
         #endregion
 
@@ -81,6 +85,14 @@ namespace Sarcasm.Unparsing
         }
 
         private delegate InsertedUtokens GetUtokensBeforeAfter(UnparsableAst target);
+
+        #endregion
+
+        #region Constants
+
+        public static Discriminator CommentContent { get; private set; }
+        public static Discriminator CommentStartSymbol { get; private set; }
+        public static Discriminator CommentEndSymbol { get; private set; }
 
         #endregion
 

@@ -18,6 +18,8 @@ using Grammar = Sarcasm.GrammarAst.Grammar;
 
 namespace Sarcasm.Unparsing
 {
+    public class Discriminator { }
+
     public abstract class UtokenBase
     {
         public virtual IEnumerable<UtokenBase> Flatten()
@@ -50,12 +52,15 @@ namespace Sarcasm.Unparsing
             get { return _decoration ?? Unparsing.Decoration.None; }
             internal set { _decoration = value; }
         }
+
+        public Discriminator Discriminator { get; protected set; }
     }
 
     public interface Utoken
     {
         string ToText(Formatter formatter);
         IReadOnlyDecoration Decoration { get; }
+        Discriminator Discriminator { get; }
     }
 
     public abstract class UtokenValue : UtokenBase
@@ -84,6 +89,12 @@ namespace Sarcasm.Unparsing
         {
             return CreateText(text);
         }
+
+        public UtokenValue SetDiscriminator(Discriminator discriminator)
+        {
+            this.Discriminator = discriminator;
+            return this;
+        }
     }
 
     public class UtokenText : UtokenValue, Utoken
@@ -110,6 +121,12 @@ namespace Sarcasm.Unparsing
         public string ToText(Formatter formatter)
         {
             return this.Text ?? Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
+        }
+
+        public new UtokenText SetDiscriminator(Discriminator discriminator)
+        {
+            this.Discriminator = discriminator;
+            return this;
         }
 
         public override string ToString()

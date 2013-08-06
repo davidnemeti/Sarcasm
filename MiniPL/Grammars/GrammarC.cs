@@ -425,6 +425,7 @@ namespace MiniPL.Grammars
             public Color ForeColorOfOperator { get; set; }
             public Color ForeColorOfType { get; set; }
             public Color ForeColorOfLiteral { get; set; }
+            public Color ForeColorOfComment { get; set; }
 
             public bool ShowNamesInBold { get; set; }
             public bool ShowNameRefsInItalic { get; set; }
@@ -446,6 +447,7 @@ namespace MiniPL.Grammars
                 ForeColorOfOperator = Color.Red;
                 ForeColorOfType = Color.Cyan;
                 ForeColorOfLiteral = Color.ForestGreen;
+                ForeColorOfComment = Color.DarkGreen;
 
                 ShowNamesInBold = true;
                 ShowNameRefsInItalic = false;
@@ -462,13 +464,13 @@ namespace MiniPL.Grammars
                 if (target != null)
                 {
                     if (SyntaxHighlight == GrammarC.SyntaxHighlight.Color)
-                        NormalSyntaxHighlight(target, decoration);
+                        NormalSyntaxHighlight(utoken, target, decoration);
                 }
 
                 return decoration;
             }
 
-            private void NormalSyntaxHighlight(UnparsableAst target, IDecoration decoration)
+            private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
                 if (target.BnfTerm is KeyTerm)
                 {
@@ -507,6 +509,12 @@ namespace MiniPL.Grammars
                 {
                     decoration
                         .Add(DecorationKey.FontStyle, FontStyle.Italic)
+                        ;
+                }
+                else if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, ForeColorOfComment)
                         ;
                 }
             }

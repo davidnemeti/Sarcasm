@@ -256,7 +256,7 @@ namespace Sarcasm.Unparsing
             string[] commentTextLines = Formatter.GetDecoratedCommentTextLines(owner, comment);
             var commentTerminal = GetProperCommentTerminal(comment);
 
-            yield return UtokenValue.CreateText(commentTerminal.StartSymbol);
+            yield return UtokenValue.CreateText(commentTerminal.StartSymbol, owner).SetDiscriminator(Formatter.CommentStartSymbol);
             yield return UtokenControl.NoWhitespace();
 
             foreach (var commentTextLine in commentTextLines.Select((commentLine, index) => new { Value = commentLine, Index = index }))
@@ -264,7 +264,7 @@ namespace Sarcasm.Unparsing
                 if (commentTextLine.Index > 0)
                     yield return UtokenWhitespace.NewLine();
 
-                yield return UtokenValue.CreateText(commentTextLine.Value, owner);
+                yield return UtokenValue.CreateText(commentTextLine.Value, owner).SetDiscriminator(Formatter.CommentContent);
             }
 
             yield return UtokenControl.NoWhitespace();
@@ -282,7 +282,7 @@ namespace Sarcasm.Unparsing
                 yield return new InsertedUtokens(UtokenWhitespace.NewLine()).SetPriority(double.PositiveInfinity);
             }
             else
-                yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0]);
+                yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0], owner).SetDiscriminator(Formatter.CommentEndSymbol);
         }
 
         private CommentTerminal GetProperCommentTerminal(Comment comment)
