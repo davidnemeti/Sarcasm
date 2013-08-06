@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -100,7 +101,7 @@ namespace Sarcasm.Parsing
         private void BuildAstValueToParseTreeNode()
         {
             astValueToParseTreeNode = new Dictionary<object, ParseTreeNode>();
-            parseTreeNodeToParent = new Dictionary<ParseTreeNode, ParseTreeNode>();
+            parseTreeNodeToParent = new Dictionary<ParseTreeNode, ParseTreeNode>() { { parseTree.Root, null } };
             astValueToDomainComments = new Dictionary<object, Comments>();
             decoratedComments = new HashSet<Token>();
             prevLine = null;
@@ -109,68 +110,89 @@ namespace Sarcasm.Parsing
             StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
         }
 
-        private void StoreAstValueToParseTreeNodeRecursive(ParseTreeNode parseTreeNode, int nodeIndex)
+        private void StoreAstValueToParseTreeNodeRecursive(ParseTreeNode currentNode, int nodeIndex)
         {
-            object astValue = GrammarHelper.AstNodeToValue(parseTreeNode.AstNode);
+            object astValue = GrammarHelper.AstNodeToValue(currentNode.AstNode);
 
             if (astValue != null && astValue.GetType().IsClass && !astValueToParseTreeNode.ContainsKey(astValue))
-                astValueToParseTreeNode.Add(astValue, parseTreeNode);
+                astValueToParseTreeNode.Add(astValue, currentNode);
 
-            foreach (var parseTreeChild in parseTreeNode.ChildNodes.Select((parseTreeChild, childIndex) => new { Value = parseTreeChild, Index = childIndex }))
+            foreach (var parseTreeChild in currentNode.ChildNodes.Select((parseTreeChild, childIndex) => new { Value = parseTreeChild, Index = childIndex }))
             {
-                parseTreeNodeToParent.Add(parseTreeChild.Value, parseTreeNode);
+                parseTreeNodeToParent.Add(parseTreeChild.Value, currentNode);
                 StoreAstValueToParseTreeNodeRecursive(parseTreeChild.Value, parseTreeChild.Index);
             }
 
-            if (parseTreeNode.Comments.Count > 0)
+            if (currentNode.Comments.Count > 0)
             {
-                bool isTextInLineAtLeftOfFirstComment = IsTextInLineAtLeftOfComment(parseTreeNode.Comments[0]);
-                int lineIndexForFirstComment = parseTreeNode.Comments[0].Location.Line;
+                bool isTextInLineAtLeftOfFirstComment = IsTextInLineAtLeftOfComment(currentNode.Comments[0]);
+                int lineIndexForFirstComment = currentNode.Comments[0].Location.Line;
 
-                foreach (Token comment in parseTreeNode.Comments)
+                foreach (Token comment in currentNode.Comments)
                 {
                     if (decoratedComments.Contains(comment))
-                        continue;
+                        continue;   // we have already decorated this comment
+
+                    ParseTreeNode parentNode = GetParent(currentNode);
 
                     bool isCommentInLineOfFirstComment = comment.Location.Line == lineIndexForFirstComment;
+                    bool isTextInLineAtLeftOfComment = isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment;
 
-                    if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && comment.Location.Line == currentLine.Span.Location.Line && currentLine.AstNode != null)
+                    if (!isTextInLineAtLeftOfComment && parentNode != null && parentNode.Comments.Contains(comment) &&
+                        parentNode.Span.Location.Line == currentNode.Span.Location.Line && !(GrammarHelper.AstNodeToValue(parentNode.AstNode) is IEnumerable))
+                    {
+                        /*
+                         * Try to go up so we decorate the comment on the largest "subparsetree", but stop before lists
+                         * */
+                        continue;
+                    }
+
+                    if (isTextInLineAtLeftOfComment && comment.Location.Line == currentLine.Span.Location.Line && currentLine.AstNode != null)
                     {
                         /*
                          * The comment belongs to the previous node (they are in the same line).
                          * 
                          * Now we have one of the followings:
                          * 
-                         * code1 (*comment*) code2
+                         * code_prev (*comment*) code_this
                          * */
 
                         AddCommentToRightOfAstValue(currentLine, comment);
                     }
-                    else if (isTextInLineAtLeftOfFirstComment && isCommentInLineOfFirstComment && comment.Location.Line == prevLine.Span.Location.Line && prevLine.AstNode != null)
+                    else if (isTextInLineAtLeftOfComment && comment.Location.Line == prevLine.Span.Location.Line && prevLine.AstNode != null)
                     {
                         /*
                          * The comment belongs to the previous node (they are in the same line).
                          * 
-                         * code1 (*comment*)
-                         * code2
+                         * code_prev (*comment*)
+                         * code_this
                          * */
 
                         AddCommentToRightOfAstValue(prevLine, comment);
                     }
-                    else if (astValue != null)
-                        AddCommentToLeftOfAstValue(parseTreeNode, comment);         // the comment belongs to this node
+                    else if (currentNode.AstNode != null)
+                        AddCommentToLeftOfAstValue(currentNode, comment);         // the comment belongs to this node
 
                     else if (nodeIndex > 0)
-                        GetParent(parseTreeNode).Comments.Add(comment); // could not decorate comment, because we have no ast, so copy it on the parent and handle it there (if nodeIndex == 0 then Irony has already copied it on the parent)
+                    {
+                        // could not decorate comment, because we have no ast (if nodeIndex == 0 then Irony has already copied it onto the parent)
+
+                        Debug.Assert(parentNode != null);
+
+                        if (currentLine != null)
+                            AddCommentToRightOfAstValue(currentLine, comment);     // decorate the comment onto currentLine
+                        else
+                            parentNode.Comments.Add(comment);   // copy the comment onto the parent and handle it there
+                    }
                 }
             }
 
-            if (currentLine == null || parseTreeNode.Term is Terminal || parseTreeNode.Span.Location.Line == currentLine.Span.Location.Line)
+            if (currentLine == null || currentNode.Term is Terminal || currentNode.Span.Location.Line == currentLine.Span.Location.Line)
             {
-                if (currentLine != null && parseTreeNode.Span.Location.Line > currentLine.Span.Location.Line)
+                if (currentLine != null && currentNode.Span.Location.Line > currentLine.Span.Location.Line)
                     prevLine = currentLine;
 
-                currentLine = parseTreeNode;
+                currentLine = currentNode;
             }
         }
 

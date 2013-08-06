@@ -14,6 +14,7 @@ begin
 end
 
 begin
+    @@ comment at the beginning of a parselist
     var number : integer := 5;
     (@
     delimited
@@ -29,4 +30,5 @@ begin
     var just_for_test : boolean := True;
     @@ single line comment
     WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
+    @@ comment almost at the end
 end.
