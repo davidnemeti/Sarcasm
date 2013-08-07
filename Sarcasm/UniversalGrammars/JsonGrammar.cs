@@ -10,6 +10,7 @@ using System.IO;
 
 using Sarcasm;
 using Sarcasm.GrammarAst;
+using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.DomainCore;
 using Sarcasm.Utility;
@@ -139,70 +140,86 @@ namespace Sarcasm.UniversalGrammars
             var typeKeyValue = keyValuePairs.First();
 
             if (typeKeyValue.Key != TYPE_KEYWORD)
-                throw new InvalidOperationException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
+                throw new ParseException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
+
+            MetaRepository.EnsureThatAssemblyResolverIsRegistered();
 
             string typeNameWithAssembly = (string)typeKeyValue.Value;
             Type type = Type.GetType(typeNameWithAssembly);
+
+            if (type == null)
+                throw new ParseException("Type cannot be resolved: " + typeNameWithAssembly);
 
             var discriminatorKeyValue = keyValuePairs.ElementAtOrDefault(1);
 
             if (discriminatorKeyValue.Key == PRIMITIVE_VALUE_KEYWORD)
             {
-                if (type.IsEnum)
-                    return Enum.Parse(type, (string)discriminatorKeyValue.Value);
+                try
+                {
+                    if (type.IsEnum)
+                        return Enum.Parse(type, (string)discriminatorKeyValue.Value);
 
-                else if (type == typeof(Boolean))
-                    return Boolean.Parse((string)discriminatorKeyValue.Value);
+                    else if (type == typeof(Boolean))
+                        return Boolean.Parse((string)discriminatorKeyValue.Value);
 
-                else if (type == typeof(Byte))
-                    return Byte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Byte))
+                        return Byte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(SByte))
-                    return SByte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(SByte))
+                        return SByte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Int16))
-                    return Int16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Int16))
+                        return Int16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Int32))
-                    return Int32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Int32))
+                        return Int32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Int64))
-                    return Int64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Int64))
+                        return Int64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(UInt16))
-                    return UInt16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(UInt16))
+                        return UInt16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(UInt32))
-                    return UInt32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(UInt32))
+                        return UInt32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(UInt64))
-                    return UInt64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(UInt64))
+                        return UInt64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Single))
-                    return Single.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Single))
+                        return Single.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Double))
-                    return Double.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Double))
+                        return Double.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Decimal))
-                    return Decimal.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(Decimal))
+                        return Decimal.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else if (type == typeof(Char))
-                    return Char.Parse((string)discriminatorKeyValue.Value);
+                    else if (type == typeof(Char))
+                        return Char.Parse((string)discriminatorKeyValue.Value);
 
-                else if (type == typeof(String))
-                    return (String)discriminatorKeyValue.Value;
+                    else if (type == typeof(String))
+                        return (String)discriminatorKeyValue.Value;
 
-                else if (type == typeof(DateTime))
-                    return DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                    else if (type == typeof(DateTime))
+                        return DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
-                else
-                    throw new ArgumentException(string.Format("Unsupported primitive type: {0}", type.FullName), "type");
+                    else
+                        throw new ParseException(string.Format("Unsupported primitive type: {0}", type.FullName));
+                }
+                catch (ArgumentException)
+                {
+                    throw new ParseException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
+                }
+                catch (FormatException)
+                {
+                    throw new ParseException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
+                }
             }
             else if (discriminatorKeyValue.Key == COLLECTION_VALUES_KEYWORD)
             {
                 if (!IsCollectionType(type))
-                    throw new InvalidOperationException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
+                    throw new ParseException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
 
                 dynamic array = Activator.CreateInstance(type);
 
@@ -226,6 +243,8 @@ namespace Sarcasm.UniversalGrammars
                         ((PropertyInfo)field).SetValue(obj, value);
                     else if (field is FieldInfo)
                         ((FieldInfo)field).SetValue(obj, value);
+                    else
+                        throw new ParseException(string.Format("Type '{0}' does not have a '{1}' field", type.FullName, fieldName));
                 }
 
                 return obj;

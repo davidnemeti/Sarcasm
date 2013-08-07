@@ -470,7 +470,12 @@ namespace Sarcasm.GrammarAst
                 }
                 catch (InvalidOperationException e)
                 {
-                    throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
+                    bool isAnyChildInErrorState = parseTreeNode.ChildNodes
+                        .Any(childNode => { object value; return context.Values.TryGetValue(childNode, out value) && object.Equals(value, ErrorLevel.Error); });
+
+                    // throw exception only if this exception cannot be the consequence of another parse error
+                    if (!context.Messages.Any(message => message.Level == ErrorLevel.Error))
+                        throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
                 }
             };
 
@@ -520,42 +525,6 @@ namespace Sarcasm.GrammarAst
         internal static CustomActionHint CustomActionHere(ExecuteActionMethod executeMethod, PreviewActionMethod previewMethod = null)
         {
             return new CustomActionHint(executeMethod, previewMethod);
-        }
-
-        [DebuggerStepThrough()]
-        public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string format, params object[] args)
-        {
-            GrammarError(context, location, errorLevel, string.Format(format, args));
-        }
-
-        [DebuggerStepThrough()]
-        public static void GrammarError(AstContext context, SourceLocation location, ErrorLevel errorLevel, string message)
-        {
-            context.AddMessage(errorLevel, location, message);
-
-            if (((Grammar)context.Language.Grammar).ErrorHandling == ErrorHandling.ThrowException)
-            {
-                GrammarErrorLevel grammarErrorLevel;
-                switch (errorLevel)
-                {
-                    case ErrorLevel.Error:
-                        grammarErrorLevel = GrammarErrorLevel.Error;
-                        break;
-
-                    case ErrorLevel.Warning:
-                        grammarErrorLevel = GrammarErrorLevel.Warning;
-                        break;
-
-                    case ErrorLevel.Info:
-                        grammarErrorLevel = GrammarErrorLevel.Info;
-                        break;
-
-                    default:
-                        throw new ArgumentException(string.Format("Unknown errorLevel: {0}", errorLevel), "errorLevel");
-                }
-
-                ThrowGrammarErrorException(grammarErrorLevel, message);
-            }
         }
 
         [DebuggerStepThrough()]

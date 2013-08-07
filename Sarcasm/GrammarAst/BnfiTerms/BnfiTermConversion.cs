@@ -68,8 +68,26 @@ namespace Sarcasm.GrammarAst
                 ? GrammarHelper.PreferShiftHere() + bnfTerm | Irony.Parsing.Grammar.CurrentGrammar.Empty
                 : bnfTerm.ToBnfExpression();
 
-            this.AstConfig.NodeCreator = (context, parseTreeNode) =>
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueIntroducer(context, new ParseTreeNodeWithoutAst(parseTreeNode)), context, parseTreeNode);
+            this.AstConfig.NodeCreator =
+                (context, parseTreeNode) =>
+                {
+                    try
+                    {
+                        parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueIntroducer(context, new ParseTreeNodeWithoutAst(parseTreeNode)), context, parseTreeNode);
+                    }
+                    catch (ParseException e)
+                    {
+                        context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);
+                        context.Values.Add(parseTreeNode, ErrorLevel.Error);
+                    }
+                    catch (FatalParseException e)
+                    {
+                        context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);   // although it will be abandoned anyway
+                        context.Values.Add(parseTreeNode, ErrorLevel.Error);
+                        e.Location = parseTreeNode.Span.Location;
+                        throw;	// handle in MultiParser
+                    }
+                };
 
             this.inverseValueConverterForUnparse = inverseValueConverterForUnparse;
         }

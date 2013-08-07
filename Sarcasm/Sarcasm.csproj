@@ -109,6 +109,7 @@
     <Compile Include="GrammarAst\Common.cs" />
     <Compile Include="DomainCore\CoreDefinitions.cs" />
     <Compile Include="GrammarAst\TerminalFactoryS.cs" />
+    <Compile Include="Parsing\Exceptions.cs" />
     <Compile Include="Reflection\Attributes.cs" />
     <Compile Include="Reflection\MetaCodeGenerator.cs" />
     <Compile Include="Reflection\MetaFormatter.cs" />

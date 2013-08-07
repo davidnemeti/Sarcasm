@@ -15,6 +15,7 @@ using Sarcasm;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
 using Sarcasm.DomainCore;
+using Sarcasm.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
@@ -125,32 +126,47 @@ namespace Sarcasm.GrammarAst
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
-                object astValue = Activator.CreateInstance(type, nonPublic: true);
+                try
+                {
+                    object astValue = Activator.CreateInstance(type, nonPublic: true);
 
-                var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
+                    var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
 
-                var parseChildValues = parseTreeNode.ChildNodes
-                    .Select(
-                        (parseChildNode, parseChildNodeIndex) => new
-                            {
-                                ReferredBnfTerm = new ReferredBnfTermEL(parseChildBnfTerms, parseChildNode.Term, parseChildNodeIndex),
-                                Value = GrammarHelper.AstNodeToValue(parseChildNode.AstNode)
-                            }
-                        )
-                    .Where(parseChildValue => parseChildValue.Value != null)
-                    .ToList();
+                    var parseChildValues = parseTreeNode.ChildNodes
+                        .Select(
+                            (parseChildNode, parseChildNodeIndex) => new
+                                {
+                                    ReferredBnfTerm = new ReferredBnfTermEL(parseChildBnfTerms, parseChildNode.Term, parseChildNodeIndex),
+                                    Value = GrammarHelper.AstNodeToValue(parseChildNode.AstNode)
+                                }
+                            )
+                        .Where(parseChildValue => parseChildValue.Value != null)
+                        .ToList();
 
-                // 1. memberwise copy for BnfiTermCopy items
-                foreach (var parseChildValue in parseChildValues)
-                    if (astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
-                        MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
+                    // 1. memberwise copy for BnfiTermCopy items
+                    foreach (var parseChildValue in parseChildValues)
+                        if (astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
+                            MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
 
-                // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
-                foreach (var parseChildValue in parseChildValues)
-                    if (IsMemberAtParse(parseChildValue.ReferredBnfTerm))
-                        SetValue(GetMemberAtParse(parseChildValue.ReferredBnfTerm).MemberInfo, astValue, parseChildValue.Value);
+                    // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
+                    foreach (var parseChildValue in parseChildValues)
+                        if (IsMemberAtParse(parseChildValue.ReferredBnfTerm))
+                            SetValue(GetMemberAtParse(parseChildValue.ReferredBnfTerm).MemberInfo, astValue, parseChildValue.Value);
 
-                parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
+                    parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(astValue, context, parseTreeNode);
+                }
+                catch (ParseException e)
+                {
+                    context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);
+                    context.Values.Add(parseTreeNode, ErrorLevel.Error);
+                }
+                catch (FatalParseException e)
+                {
+                    context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);   // although it will be abandoned anyway
+                    context.Values.Add(parseTreeNode, ErrorLevel.Error);
+                    e.Location = parseTreeNode.Span.Location;
+                    throw;
+                }
             };
         }
 

@@ -230,11 +230,16 @@ namespace Sarcasm.GrammarAst
                 }
                 else
                 {
-                    GrammarHelper.GrammarError(
-                        context,
-                        parseTreeChild.Span.Location,
-                        ErrorLevel.Error,
-                        "Term '{0}' should be type of '{1}' but found '{2}' instead", parseTreeChild.Term, elementType.FullName, childValue != null ? childValue.GetType().FullName : "<<NULL>>");
+                    // throw exception only if this exception cannot be the consequence of another parse error
+                    if (!context.Messages.Any(message => message.Level == ErrorLevel.Error))
+                    {
+                        string errorMessage = string.Format("Term '{0}' should be type of '{1}' but found '{2}' instead",
+                            parseTreeChild.Term,
+                            elementType.FullName,
+                            childValue != null ? childValue.GetType().FullName : "<<NULL>>");
+
+                        throw new InvalidOperationException(errorMessage);
+                    }
                 }
             }
         }

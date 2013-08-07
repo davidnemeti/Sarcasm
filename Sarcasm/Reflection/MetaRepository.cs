@@ -51,7 +51,7 @@ namespace Sarcasm.Reflection
 
         public void RegisterDomains(Assembly assembly)
         {
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            RegisterAssemblyResolver();
 
             var newMetaDomains = assembly
                 .GetTypes()
@@ -61,7 +61,7 @@ namespace Sarcasm.Reflection
             foreach (MetaDomain newMetaDomain in newMetaDomains)
                 RegisterDomain(newMetaDomain);
 
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+            UnregisterAssemblyResolver();
         }
 
         public void RegisterDomain(MetaDomain metaDomain)
@@ -71,7 +71,7 @@ namespace Sarcasm.Reflection
 
         public void RegisterGrammars(Assembly assembly)
         {
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            RegisterAssemblyResolver();
 
             var newMetaGrammars = assembly
                 .GetTypes()
@@ -81,7 +81,7 @@ namespace Sarcasm.Reflection
             foreach (MetaGrammar newMetaGrammar in newMetaGrammars)
                 RegisterGrammar(newMetaGrammar);
 
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+            UnregisterAssemblyResolver();
         }
 
         public void RegisterGrammar(MetaGrammar metaGrammar)
@@ -102,7 +102,7 @@ namespace Sarcasm.Reflection
 
         public void RegisterCodeGenerators(Assembly assembly)
         {
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            RegisterAssemblyResolver();
 
             var newMetaCodeGenerators = assembly
                 .GetTypes()
@@ -112,7 +112,7 @@ namespace Sarcasm.Reflection
             foreach (MetaCodeGenerator metaCodeGenerator in newMetaCodeGenerators)
                 RegisterCodeGenerator(metaCodeGenerator);
 
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+            UnregisterAssemblyResolver();
         }
 
         public void RegisterCodeGenerator(MetaCodeGenerator metaCodeGenerator)
@@ -122,7 +122,7 @@ namespace Sarcasm.Reflection
 
         public void RegisterFormatters(Assembly assembly)
         {
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            RegisterAssemblyResolver();
 
             var newMetaFormatters = assembly
                 .GetTypes()
@@ -132,13 +132,33 @@ namespace Sarcasm.Reflection
             foreach (MetaFormatter newMetaFormatter in newMetaFormatters)
                 RegisterFormatter(newMetaFormatter);
 
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+            UnregisterAssemblyResolver();
         }
 
         public void RegisterFormatter(MetaFormatter metaFormatter)
         {
             GrammarTypeToMetaGrammar(metaFormatter.GrammarType).RegisterFormatter(metaFormatter);
         }
+
+        internal static void EnsureThatAssemblyResolverIsRegistered()
+        {
+            if (assemblyResolverRegistrationCount == 0)
+                RegisterAssemblyResolver();
+        }
+
+        internal static void RegisterAssemblyResolver()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+            assemblyResolverRegistrationCount++;
+        }
+
+        internal static void UnregisterAssemblyResolver()
+        {
+            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
+            assemblyResolverRegistrationCount--;
+        }
+
+        private static int assemblyResolverRegistrationCount = 0;
 
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {

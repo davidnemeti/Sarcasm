@@ -82,32 +82,32 @@ namespace Sarcasm.Parsing
 
         public ParseTree Parse(string sourceText)
         {
-            return SetParseTree(mainParser.Parse(sourceText));
+            return HandleParseErrors(() => SetParseTree(mainParser.Parse(sourceText)), sourceText);
         }
 
         public ParseTree Parse(string sourceText, NonTerminal root)
         {
-            return SetParseTree(GetParser(root).Parse(sourceText));
+            return HandleParseErrors(() => SetParseTree(GetParser(root).Parse(sourceText)), sourceText);
         }
 
         public ParseTree Parse(string sourceText, string fileName)
         {
-            return SetParseTree(mainParser.Parse(sourceText, fileName));
+            return HandleParseErrors(() => SetParseTree(mainParser.Parse(sourceText, fileName)), sourceText);
         }
 
         public ParseTree Parse(string sourceText, string fileName, NonTerminal root)
         {
-            return SetParseTree(GetParser(root).Parse(sourceText, fileName));
+            return HandleParseErrors(() => SetParseTree(GetParser(root).Parse(sourceText, fileName)), sourceText);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName)
         {
-            return SetParseTree(mainParser.ScanOnly(sourceText, fileName));
+            return HandleParseErrors(() => SetParseTree(mainParser.ScanOnly(sourceText, fileName)), sourceText);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName, NonTerminal root)
         {
-            return SetParseTree(GetParser(root).ScanOnly(sourceText, fileName));
+            return HandleParseErrors(() => SetParseTree(GetParser(root).ScanOnly(sourceText, fileName)), sourceText);
         }
 
         #endregion
@@ -184,6 +184,18 @@ namespace Sarcasm.Parsing
             var parseTree = (ParseTree)_parseTree;
             parseTree.CommentCleaner = CommentCleaner;
             return parseTree;
+        }
+
+        private static ParseTree HandleParseErrors(Func<ParseTree> action, string sourceText)
+        {
+            try
+            {
+                return action();
+            }
+            catch (FatalParseException e)
+            {
+                return new ParseTree(new Irony.Parsing.ParseTree(sourceText, "Source")) { ParserMessages = { new LogMessage(ErrorLevel.Error, e.Location, e.Message, null) } };
+            }
         }
 
         #endregion
