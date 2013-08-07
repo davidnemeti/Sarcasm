@@ -26,7 +26,7 @@ namespace Sarcasm.Parsing
         private readonly Parser mainParser;
         private IDictionary<NonTerminal, Parser> rootToParser = new Dictionary<NonTerminal, Parser>();    // mainParser is included as well
         public ICommentCleaner CommentCleaner { get; set; }
-        public readonly AsyncLock Lock = new AsyncLock(); 
+        public readonly AsyncLock Lock = new AsyncLock();
 
         #endregion
 
