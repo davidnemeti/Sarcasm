@@ -471,7 +471,7 @@ namespace Sarcasm.GrammarAst
                 catch (InvalidOperationException e)
                 {
                     bool isAnyChildInErrorState = parseTreeNode.ChildNodes
-                        .Any(childNode => { object value; return context.Values.TryGetValue(childNode, out value) && object.Equals(value, ErrorLevel.Error); });
+                        .Any(childNode => { object value; return context.Values.TryGetValue(childNode, out value) && value.EqualToAny(ErrorLevel.Error, ErrorLevel.Warning); });
 
                     // throw exception only if this exception cannot be the consequence of another parse error
                     if (!context.Messages.Any(message => message.Level == ErrorLevel.Error))

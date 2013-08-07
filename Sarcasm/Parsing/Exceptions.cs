@@ -26,6 +26,8 @@ namespace Sarcasm.Parsing
             : base(message)
         {
         }
+
+        internal readonly static ErrorLevel ErrorLevel = ErrorLevel.Warning;
     }
 
     public class FatalAstException : Exception
@@ -40,5 +42,7 @@ namespace Sarcasm.Parsing
             : base(message)
         {
         }
+
+        internal readonly static ErrorLevel ErrorLevel = ErrorLevel.Warning;
     }
 }
