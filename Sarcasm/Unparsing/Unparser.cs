@@ -673,8 +673,6 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UnparsableAst> ChooseChildrenByPriority(UnparsableAst self)
         {
-            // TODO: we should check whether any bnfTermList has an UnparseHint
-
             IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
 
             tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
