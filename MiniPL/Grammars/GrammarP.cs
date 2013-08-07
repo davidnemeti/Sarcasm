@@ -528,7 +528,13 @@ namespace MiniPL.Grammars
 
             private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (target.BnfTerm is KeyTerm)
+                if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, ForeColorOfComment)
+                        ;
+                }
+                else if (target.BnfTerm is KeyTerm)
                 {
                     if (target.BnfTerm.IsOperator() || target.BnfTerm.IsBrace())
                     {
@@ -555,17 +561,33 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Foreground, ForeColorOfLiteral)
                         ;
                 }
-                else if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, ForeColorOfComment)
-                        ;
-                }
             }
 
             private void CrazySyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (target.AstValue is D.If)
+                if (utoken.Discriminator == CommentContent)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Pink)
+                        .Add(DecorationKey.TextDecoration, TextDecoration.Strikethrough)
+                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
+                        ;
+                }
+                else if (utoken.Discriminator == CommentStartSymbol)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Yellow)
+                        .Add(DecorationKey.Background, Color.Violet)
+                        ;
+                }
+                else if (utoken.Discriminator == CommentEndSymbol)
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, Color.Blue)
+                        .Add(DecorationKey.Background, Color.Yellow)
+                        ;
+                }
+                else if (target.AstValue is D.If)
                 {
                     if (target.BnfTerm == B.LEFT_PAREN)
                     {
@@ -605,28 +627,6 @@ namespace MiniPL.Grammars
                         decoration.Add(DecorationKey.Foreground, Color.Red);
                     else
                         decoration.Add(DecorationKey.Background, Color.Yellow);
-                }
-                else if (utoken.Discriminator == CommentContent)
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Pink)
-                        .Add(DecorationKey.TextDecoration, TextDecoration.Strikethrough)
-                        .Add(DecorationKey.FontStyle, FontStyle.Italic)
-                        ;
-                }
-                else if (utoken.Discriminator == CommentStartSymbol)
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Yellow)
-                        .Add(DecorationKey.Background, Color.Violet)
-                        ;
-                }
-                else if (utoken.Discriminator == CommentEndSymbol)
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, Color.Blue)
-                        .Add(DecorationKey.Background, Color.Yellow)
-                        ;
                 }
             }
 

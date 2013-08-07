@@ -131,6 +131,13 @@ namespace Sarcasm.UniversalGrammars
 
             RegisterBracePair(B.OBJECT_BEGIN, B.OBJECT_END);
             RegisterBracePair(B.ARRAY_BEGIN, B.ARRAY_END);
+
+            // TODO: although JSON does not have comments, we define C-style comments for until we solve parsing and unparsing of comments into JSON data
+            CommentTerminal DelimitedComment = new CommentTerminal("DelimitedComment", "/*", "*/");
+            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "//", Environment.NewLine);
+
+            NonGrammarTerminals.Add(DelimitedComment);
+            NonGrammarTerminals.Add(SingleLineComment);
         }
 
         #region Helpers
@@ -367,6 +374,14 @@ namespace Sarcasm.UniversalGrammars
             #region Settings
 
             public bool CompactFormat { get; set; }
+            public bool ShowTypesInBold { get; set; }
+
+            public Color ForeColorOfKeyword { get; set; }
+            public Color ForeColorOfKey { get; set; }
+            public Color ForeColorOfType { get; set; }
+            public Color ForeColorOfValue { get; set; }
+            public Color ForeColorOfLiteral { get; set; }
+            public Color ForeColorOfComment { get; set; }
 
             #endregion
 
@@ -378,6 +393,14 @@ namespace Sarcasm.UniversalGrammars
                 this.B = grammar.B;
 
                 this.CompactFormat = true;
+                this.ShowTypesInBold = true;
+
+                ForeColorOfKeyword = Color.Red;
+                ForeColorOfKey = Color.Blue;
+                ForeColorOfType = Color.ForestGreen;
+                ForeColorOfValue = Color.Black;
+                ForeColorOfLiteral = Color.Violet;
+                ForeColorOfComment = Color.DarkGray;
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
@@ -386,21 +409,32 @@ namespace Sarcasm.UniversalGrammars
 
                 decoration.Add(DecorationKey.FontFamily, FontFamily.GenericMonospace);
 
+                if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, ForeColorOfComment)
+                        ;
+
+                    return decoration;
+                }
+
                 if (target != null)
                 {
                     if (target.BnfTerm.EqualToAny(B.BOOLEAN, B.NULL) || target.BnfTerm is NumberLiteral)
-                        decoration.Add(DecorationKey.Foreground, Color.Violet);
+                        decoration.Add(DecorationKey.Foreground, ForeColorOfLiteral);
                     else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Key)
                     {
                         if (((string)target.AstImage.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
-                            decoration.Add(DecorationKey.Foreground, Color.Red);
+                            decoration.Add(DecorationKey.Foreground, ForeColorOfKeyword);
                         else
-                            decoration.Add(DecorationKey.Foreground, Color.Blue);
+                            decoration.Add(DecorationKey.Foreground, ForeColorOfKey);
                     }
-                    else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Value && target.AstParent != null &&
-                        target.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstValue).IsTypeInfo)
+                    else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Value)
                     {
-                        decoration.Add(DecorationKey.Foreground, Color.ForestGreen);
+                        if (target.AstParent != null && target.AstParent.AstValue is KeyValuePair<string, object> && ((KeyValuePair<string, object>)target.AstParent.AstValue).IsTypeInfo)
+                            decoration.Add(DecorationKey.Foreground, ForeColorOfType);
+                        else
+                            decoration.Add(DecorationKey.Foreground, ForeColorOfValue);
                     }
                 }
 

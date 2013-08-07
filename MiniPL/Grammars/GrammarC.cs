@@ -472,7 +472,13 @@ namespace MiniPL.Grammars
 
             private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (target.BnfTerm is KeyTerm)
+                if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
+                {
+                    decoration
+                        .Add(DecorationKey.Foreground, ForeColorOfComment)
+                        ;
+                }
+                else if (target.BnfTerm is KeyTerm)
                 {
                     if (target.BnfTerm.IsOperator() || target.BnfTerm.IsBrace())
                     {
@@ -509,12 +515,6 @@ namespace MiniPL.Grammars
                 {
                     decoration
                         .Add(DecorationKey.FontStyle, FontStyle.Italic)
-                        ;
-                }
-                else if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
-                {
-                    decoration
-                        .Add(DecorationKey.Foreground, ForeColorOfComment)
                         ;
                 }
             }
