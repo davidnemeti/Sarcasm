@@ -58,6 +58,12 @@ namespace Sarcasm.Parsing
         public ParseTreeNode Root { get { return parseTree.Root; } }
         public object RootAstValue { get { return GrammarHelper.AstNodeToValue(parseTree.Root.AstNode); } }
 
+        public ParseTree SetCommentCleaner(ICommentCleaner commentCleaner)
+        {
+            this.CommentCleaner = commentCleaner;
+            return this;
+        }
+
         public bool HasErrors()
         {
             return parseTree.HasErrors();

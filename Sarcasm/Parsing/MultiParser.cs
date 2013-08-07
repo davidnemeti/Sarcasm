@@ -26,6 +26,7 @@ namespace Sarcasm.Parsing
         private readonly Parser mainParser;
         private IDictionary<NonTerminal, Parser> rootToParser = new Dictionary<NonTerminal, Parser>();    // mainParser is included as well
         public ICommentCleaner CommentCleaner { get; set; }
+        public readonly AsyncLock Lock = new AsyncLock(); 
 
         #endregion
 
@@ -82,32 +83,62 @@ namespace Sarcasm.Parsing
 
         public ParseTree Parse(string sourceText)
         {
-            return HandleParseErrors(() => SetParseTree(mainParser.Parse(sourceText)), sourceText);
+            return Parse(mainParser, sourceText);
         }
 
         public ParseTree Parse(string sourceText, NonTerminal root)
         {
-            return HandleParseErrors(() => SetParseTree(GetParser(root).Parse(sourceText)), sourceText);
+            return Parse(GetParser(root), sourceText);
         }
 
         public ParseTree Parse(string sourceText, string fileName)
         {
-            return HandleParseErrors(() => SetParseTree(mainParser.Parse(sourceText, fileName)), sourceText);
+            return Parse(mainParser, sourceText, fileName);
         }
 
         public ParseTree Parse(string sourceText, string fileName, NonTerminal root)
         {
-            return HandleParseErrors(() => SetParseTree(GetParser(root).Parse(sourceText, fileName)), sourceText);
+            return Parse(GetParser(root), sourceText, fileName);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName)
         {
-            return HandleParseErrors(() => SetParseTree(mainParser.ScanOnly(sourceText, fileName)), sourceText);
+            return ScanOnly(mainParser, sourceText, fileName);
         }
 
         public ParseTree ScanOnly(string sourceText, string fileName, NonTerminal root)
         {
-            return HandleParseErrors(() => SetParseTree(GetParser(root).ScanOnly(sourceText, fileName)), sourceText);
+            return ScanOnly(GetParser(root), sourceText, fileName);
+        }
+
+        public async Task<ParseTree> ParseAsync(string sourceText)
+        {
+            return await ParseAsync(mainParser, sourceText);
+        }
+
+        public async Task<ParseTree> ParseAsync(string sourceText, NonTerminal root)
+        {
+            return await ParseAsync(GetParser(root), sourceText);
+        }
+
+        public async Task<ParseTree> ParseAsync(string sourceText, string fileName)
+        {
+            return await ParseAsync(mainParser, sourceText, fileName);
+        }
+
+        public async Task<ParseTree> ParseAsync(string sourceText, string fileName, NonTerminal root)
+        {
+            return await ParseAsync(GetParser(root), sourceText, fileName);
+        }
+
+        public async Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName)
+        {
+            return await ScanOnlyAsync(mainParser, sourceText, fileName);
+        }
+
+        public async Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName, NonTerminal root)
+        {
+            return await ScanOnlyAsync(GetParser(root), sourceText, fileName);
         }
 
         #endregion
@@ -179,23 +210,40 @@ namespace Sarcasm.Parsing
             }
         }
 
-        private ParseTree SetParseTree(Irony.Parsing.ParseTree _parseTree)
+        private ParseTree Parse(Parser parser, string sourceText)
         {
-            var parseTree = (ParseTree)_parseTree;
-            parseTree.CommentCleaner = CommentCleaner;
-            return parseTree;
+            return new ParseTree(parser.ParsePlus(sourceText))
+                .SetCommentCleaner(this.CommentCleaner);
         }
 
-        private static ParseTree HandleParseErrors(Func<ParseTree> action, string sourceText)
+        private ParseTree Parse(Parser parser, string sourceText, string fileName)
         {
-            try
-            {
-                return action();
-            }
-            catch (FatalParseException e)
-            {
-                return new ParseTree(new Irony.Parsing.ParseTree(sourceText, "Source")) { ParserMessages = { new LogMessage(ErrorLevel.Error, e.Location, e.Message, null) } };
-            }
+            return new ParseTree(parser.ParsePlus(sourceText, fileName))
+                .SetCommentCleaner(this.CommentCleaner);
+        }
+
+        private ParseTree ScanOnly(Parser parser, string sourceText, string fileName)
+        {
+            return new ParseTree(parser.ScanOnlyPlus(sourceText, fileName))
+                .SetCommentCleaner(this.CommentCleaner);
+        }
+
+        private async Task<ParseTree> ParseAsync(Parser parser, string sourceText)
+        {
+            return new ParseTree(await parser.ParsePlusAsync(sourceText, this.Lock))
+                .SetCommentCleaner(this.CommentCleaner);
+        }
+
+        private async Task<ParseTree> ParseAsync(Parser parser, string sourceText, string fileName)
+        {
+            return new ParseTree(await parser.ParsePlusAsync(sourceText, fileName, this.Lock))
+                .SetCommentCleaner(this.CommentCleaner);
+        }
+
+        private async Task<ParseTree> ScanOnlyAsync(Parser parser, string sourceText, string fileName)
+        {
+            return new ParseTree(await parser.ScanOnlyPlusAsync(sourceText, fileName, this.Lock))
+                .SetCommentCleaner(this.CommentCleaner);
         }
 
         #endregion
@@ -252,5 +300,50 @@ namespace Sarcasm.Parsing
         public new INonTerminal<TMainRoot> MainRoot { get { return (INonTerminal<TMainRoot>)base.MainRoot; } }
 
         #endregion
+    }
+
+    public static class ParserExtensions
+    {
+        public static Irony.Parsing.ParseTree ParsePlus(this Parser parser, string sourceText)
+        {
+            return HandleParseErrors(() => parser.Parse(sourceText), sourceText);
+        }
+
+        public static Irony.Parsing.ParseTree ParsePlus(this Parser parser, string sourceText, string fileName)
+        {
+            return HandleParseErrors(() => parser.Parse(sourceText, fileName), sourceText);
+        }
+
+        public static Irony.Parsing.ParseTree ScanOnlyPlus(this Parser parser, string sourceText, string fileName)
+        {
+            return HandleParseErrors(() => parser.ScanOnly(sourceText, fileName), sourceText);
+        }
+
+        public static async Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, AsyncLock @lock = null)
+        {
+            return await Task.Run(async () => { using (await @lock.LockAsync()) return parser.ParsePlus(sourceText); });
+        }
+
+        public static async Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
+        {
+            return await Task.Run(async () => { using (await @lock.LockAsync()) return parser.ParsePlus(sourceText, fileName); });
+        }
+
+        public static async Task<Irony.Parsing.ParseTree> ScanOnlyPlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
+        {
+            return await Task.Run(async () => { using (await @lock.LockAsync()) return parser.ScanOnlyPlus(sourceText, fileName); });
+        }
+
+        private static Irony.Parsing.ParseTree HandleParseErrors(Func<Irony.Parsing.ParseTree> action, string sourceText)
+        {
+            try
+            {
+                return action();
+            }
+            catch (FatalParseException e)
+            {
+                return new Irony.Parsing.ParseTree(sourceText, "Source") { ParserMessages = { new LogMessage(ErrorLevel.Error, e.Location, e.Message, null) } };
+            }
+        }
     }
 }
