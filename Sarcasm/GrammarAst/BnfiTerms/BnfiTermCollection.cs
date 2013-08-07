@@ -230,8 +230,8 @@ namespace Sarcasm.GrammarAst
                 }
                 else
                 {
-                    // throw exception only if this exception cannot be the consequence of another parse error
-                    if (!context.Messages.Any(message => message.Level == ErrorLevel.Error))
+                    // throw exception only if this situation cannot be the consequence of another ast error
+                    if (!GrammarHelper.HasError(context))
                     {
                         string errorMessage = string.Format("Term '{0}' should be type of '{1}' but found '{2}' instead",
                             parseTreeChild.Term,

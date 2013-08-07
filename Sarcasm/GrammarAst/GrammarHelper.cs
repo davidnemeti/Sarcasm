@@ -470,13 +470,18 @@ namespace Sarcasm.GrammarAst
                 }
                 catch (InvalidOperationException e)
                 {
-                    // throw exception only if this exception cannot be the consequence of another parse error
-                    if (!context.Messages.Any(message => message.Level.EqualToAny(ErrorLevel.Error, ErrorLevel.Warning)))
+                    // throw exception only if this exception cannot be the consequence of another ast error
+                    if (!GrammarHelper.HasError(context))
                         throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
                 }
             };
 
             nonTerminal.SetFlag(TermFlags.InheritPrecedence);
+        }
+
+        internal static bool HasError(AstContext context)
+        {
+            return context.Messages.Any(message => message.Level.EqualToAny(ErrorLevel.Error, ErrorLevel.Warning));
         }
 
         internal static GrammarHint PreferShiftHere()
