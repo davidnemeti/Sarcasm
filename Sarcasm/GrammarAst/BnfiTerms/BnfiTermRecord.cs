@@ -158,12 +158,10 @@ namespace Sarcasm.GrammarAst
                 catch (AstException e)
                 {
                     context.AddMessage(AstException.ErrorLevel, parseTreeNode.Span.Location, e.Message);
-                    context.Values.Add(parseTreeNode, AstException.ErrorLevel);
                 }
                 catch (FatalAstException e)
                 {
                     context.AddMessage(FatalAstException.ErrorLevel, parseTreeNode.Span.Location, e.Message);   // although it will be abandoned anyway
-                    context.Values.Add(parseTreeNode, FatalAstException.ErrorLevel);
                     e.Location = parseTreeNode.Span.Location;
                     throw;
                 }
