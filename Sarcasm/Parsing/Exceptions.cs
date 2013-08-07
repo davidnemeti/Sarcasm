@@ -16,27 +16,27 @@ using Grammar = Sarcasm.GrammarAst.Grammar;
 
 namespace Sarcasm.Parsing
 {
-    public class ParseException : Exception
+    public class AstException : Exception
     {
-        public ParseException()
+        public AstException()
         {
         }
 
-        public ParseException(string message)
+        public AstException(string message)
             : base(message)
         {
         }
     }
 
-    public class FatalParseException : Exception
+    public class FatalAstException : Exception
     {
         public SourceLocation Location { get; internal set; }
 
-        public FatalParseException()
+        public FatalAstException()
         {
         }
 
-        public FatalParseException(string message)
+        public FatalAstException(string message)
             : base(message)
         {
         }

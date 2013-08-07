@@ -340,7 +340,7 @@ namespace Sarcasm.Parsing
             {
                 return action();
             }
-            catch (FatalParseException e)
+            catch (FatalAstException e)
             {
                 return new Irony.Parsing.ParseTree(sourceText, "Source") { ParserMessages = { new LogMessage(ErrorLevel.Error, e.Location, e.Message, null) } };
             }

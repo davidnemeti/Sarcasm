@@ -147,7 +147,7 @@ namespace Sarcasm.UniversalGrammars
             var typeKeyValue = keyValuePairs.First();
 
             if (typeKeyValue.Key != TYPE_KEYWORD)
-                throw new ParseException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
+                throw new AstException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
 
             MetaRepository.EnsureThatAssemblyResolverIsRegistered();
 
@@ -155,7 +155,7 @@ namespace Sarcasm.UniversalGrammars
             Type type = Type.GetType(typeNameWithAssembly);
 
             if (type == null)
-                throw new ParseException("Type cannot be resolved: " + typeNameWithAssembly);
+                throw new AstException("Type cannot be resolved: " + typeNameWithAssembly);
 
             var discriminatorKeyValue = keyValuePairs.ElementAtOrDefault(1);
 
@@ -212,21 +212,21 @@ namespace Sarcasm.UniversalGrammars
                         return DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
 
                     else
-                        throw new ParseException(string.Format("Unsupported primitive type: {0}", type.FullName));
+                        throw new AstException(string.Format("Unsupported primitive type: {0}", type.FullName));
                 }
                 catch (ArgumentException)
                 {
-                    throw new ParseException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
+                    throw new AstException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
                 }
                 catch (FormatException)
                 {
-                    throw new ParseException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
+                    throw new AstException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
                 }
             }
             else if (discriminatorKeyValue.Key == COLLECTION_VALUES_KEYWORD)
             {
                 if (!IsCollectionType(type))
-                    throw new ParseException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
+                    throw new AstException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
 
                 dynamic array = Activator.CreateInstance(type);
 
@@ -251,7 +251,7 @@ namespace Sarcasm.UniversalGrammars
                     else if (field is FieldInfo)
                         ((FieldInfo)field).SetValue(obj, value);
                     else
-                        throw new ParseException(string.Format("Type '{0}' does not have a '{1}' field", type.FullName, fieldName));
+                        throw new AstException(string.Format("Type '{0}' does not have a '{1}' field", type.FullName, fieldName));
                 }
 
                 return obj;

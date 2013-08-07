@@ -75,12 +75,12 @@ namespace Sarcasm.GrammarAst
                     {
                         parseTreeNode.AstNode = GrammarHelper.ValueToAstNode(valueIntroducer(context, new ParseTreeNodeWithoutAst(parseTreeNode)), context, parseTreeNode);
                     }
-                    catch (ParseException e)
+                    catch (AstException e)
                     {
                         context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);
                         context.Values.Add(parseTreeNode, ErrorLevel.Error);
                     }
-                    catch (FatalParseException e)
+                    catch (FatalAstException e)
                     {
                         context.AddMessage(ErrorLevel.Error, parseTreeNode.Span.Location, e.Message);   // although it will be abandoned anyway
                         context.Values.Add(parseTreeNode, ErrorLevel.Error);
