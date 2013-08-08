@@ -52,8 +52,8 @@ namespace Sarcasm.UniversalGrammars
                 this.ARRAY_END = TerminalFactoryS.CreateKeyTerm("]");
                 this.COMMA = TerminalFactoryS.CreateKeyTerm(",");
                 this.COLON = TerminalFactoryS.CreateKeyTerm(":");
-                this.NUMBER = TerminalFactoryS.CreateNumberLiteral().MakeUncontractible();
-                this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").MakeUncontractible();
+                this.NUMBER = TerminalFactoryS.CreateNumberLiteral();
+                this.STRING = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"");
 
                 this.BOOLEAN = new BnfiTermConstant<bool>()
                 {
