@@ -74,7 +74,7 @@ namespace Sarcasm.GrammarAst
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal, IBnfiTermCopyable
+    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal, IBnfiTermCopyable, IUnparsableNonTerminal
     {
         protected readonly Type type;
         protected readonly bool hasExplicitName;
@@ -161,6 +161,8 @@ namespace Sarcasm.GrammarAst
             }
         }
 
+        #region Unparse
+
         private void ProcessUnparseHints(BnfExpression rule)
         {
             if (rule != null)
@@ -192,5 +194,26 @@ namespace Sarcasm.GrammarAst
                 ? unparseHint
                 : null;
         }
+
+        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
+        {
+            return TryGetUtokensDirectly(unparser, self, out utokens);
+        }
+
+        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
+        {
+            return GetChildren(childBnfTerms, astValue, direction);
+        }
+
+        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children childrenAtRule, Unparser.Direction direction)
+        {
+            return GetChildrenPriority(unparser, astValue, childrenAtRule, direction);
+        }
+
+        protected abstract bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens);
+        protected abstract IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction);
+        protected abstract int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children childrenAtRule, Unparser.Direction direction);
+
+        #endregion
     }
 }

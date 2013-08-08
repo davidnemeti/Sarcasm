@@ -527,7 +527,7 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
+        protected override bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
         {
             if (this.UtokenizerForUnparse != null)
             {
@@ -553,12 +553,12 @@ namespace Sarcasm.GrammarAst
                 throw new UnparseException(string.Format("Cannot unparse. '{0}' has neither UtokenizerForUnparse nor ValueConverterForUnparse", this.Name));
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
+        protected override IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, ConvertAstValueForChild(astValue, childBnfTerm)));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
+        protected override int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
             if (this.value != null)
                 return this.value.Equals(astValue) ? (int?)1 : null;

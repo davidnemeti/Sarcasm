@@ -303,13 +303,13 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
+        protected override bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
+        protected override IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
             foreach (var childRuleReferredBnfTerm in childBnfTerms.Select((childBnfTerm, index) =>
                 new ReferredBnfTermEI(childBnfTerms.ContentIndex, childBnfTerm, direction == Unparser.Direction.LeftToRight ? index : childBnfTerms.Count - 1 - index)
@@ -338,7 +338,7 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children childrenAtRule, Unparser.Direction direction)
+        protected override int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children childrenAtRule, Unparser.Direction direction)
         {
             return childrenAtRule
                 .SumIncludingNullValues(

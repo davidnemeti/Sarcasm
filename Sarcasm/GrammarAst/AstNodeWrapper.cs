@@ -10,7 +10,7 @@ using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public class AstNodeWrapper : IBrowsableAstNode
+    public sealed class AstNodeWrapper : IBrowsableAstNode
     {
         public object Value { get; private set; }
 

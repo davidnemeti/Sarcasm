@@ -64,18 +64,18 @@ namespace Sarcasm.GrammarAst
 
         #region Unparse
 
-        bool IUnparsableNonTerminal.TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
+        protected override bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)
         {
             utokens = null;
             return false;
         }
 
-        IEnumerable<UnparsableAst> IUnparsableNonTerminal.GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
+        protected override IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
         {
             return childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue: valueCreatorFromNoAst != null ? valueCreatorFromNoAst() : null));
         }
 
-        int? IUnparsableNonTerminal.GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
+        protected override int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
             return 0;
         }
