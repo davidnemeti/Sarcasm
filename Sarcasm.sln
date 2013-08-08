@@ -18,6 +18,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.WPF", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Forms", "DecorationConnector.Forms\DecorationConnector.Forms.csproj", "{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{AC0608C7-181C-49F0-AB19-28187C6ACAA6}"
+	ProjectSection(SolutionItems) = preProject
+		Deploy.ps1 = Deploy.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
