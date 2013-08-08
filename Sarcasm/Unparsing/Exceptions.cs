@@ -13,9 +13,11 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
+using System.Runtime.Serialization;
 
 namespace Sarcasm.Unparsing
 {
+    [Serializable]
     public class UnparserInitializationException : Exception
     {
         public UnparserInitializationException()
@@ -26,8 +28,14 @@ namespace Sarcasm.Unparsing
             : base(message)
         {
         }
+
+        protected UnparserInitializationException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
+    [Serializable]
     public class UnparseException : Exception
     {
         public UnparseException()
@@ -38,8 +46,14 @@ namespace Sarcasm.Unparsing
             : base(message)
         {
         }
+
+        protected UnparseException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
+    [Serializable]
     internal class NonCalculatedException : Exception
     {
         public NonCalculatedException()
@@ -50,8 +64,14 @@ namespace Sarcasm.Unparsing
             : base(message)
         {
         }
+
+        protected NonCalculatedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
     }
 
+    [Serializable]
     internal class ThrownOutException : Exception
     {
         public ThrownOutException()
@@ -60,6 +80,11 @@ namespace Sarcasm.Unparsing
 
         public ThrownOutException(string message)
             : base(message)
+        {
+        }
+
+        protected ThrownOutException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }

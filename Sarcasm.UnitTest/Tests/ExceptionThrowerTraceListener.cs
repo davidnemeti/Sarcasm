@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 
 namespace Sarcasm.UnitTest
@@ -42,10 +43,16 @@ namespace Sarcasm.UnitTest
         }
     }
 
+    [Serializable]
     public class AssertionFailedException : Exception
     {
         public AssertionFailedException(string message)
             : base(message)
+        {
+        }
+
+        protected AssertionFailedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
         }
     }
