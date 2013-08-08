@@ -52,16 +52,6 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermNoAst(bnfTerm.AsBnfTerm(), CastValueCreator(valueCreatorFromNoAst));
         }
 
-        BnfTerm IBnfiTerm.AsBnfTerm()
-        {
-            return this;
-        }
-
-        NonTerminal INonTerminal.AsNonTerminal()
-        {
-            return this;
-        }
-
         #region Unparse
 
         protected override bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens)

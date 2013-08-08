@@ -22,7 +22,7 @@ namespace Sarcasm.Unparsing
 {
     internal delegate IEnumerable<UtokenBase> UnparseCommentDelegate(UnparsableAst owner, Comment comment);
 
-    public class Unparser : IUnparser, IPostProcessHelper
+    public sealed class Unparser : IUnparser, IPostProcessHelper
     {
         #region Tracing
 

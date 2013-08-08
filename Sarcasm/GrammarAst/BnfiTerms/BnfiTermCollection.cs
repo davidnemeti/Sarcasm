@@ -80,6 +80,7 @@ namespace Sarcasm.GrammarAst
 
         #region Construction
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected BnfiTermCollection(Type collectionTypeOrTypeDefinition, Type elementTypeHint, string name, bool runtimeCheck)
             : base(GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck).collectionType, name)
         {
@@ -98,9 +99,9 @@ namespace Sarcasm.GrammarAst
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
             }
 
-            SetNodeCreator();
-
             this.EmptyCollectionHandling = Sarcasm.GrammarAst.Grammar.CurrentGrammar.EmptyCollectionHandling;
+
+            SetNodeCreator();
         }
 
         private static CollectionInfo GetCollectionInfo(Type collectionTypeOrTypeDefinition, Type elementTypeHint, bool runtimeCheck)
