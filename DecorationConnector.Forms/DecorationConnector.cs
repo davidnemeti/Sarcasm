@@ -14,7 +14,7 @@ using Unparsing = Sarcasm.Unparsing;
 
 namespace DecorationConnector.Forms
 {
-    public class DecorConnector : IReadOnlyDecorationConnector
+    public class DecorConnector : IReadOnlyDecoration
     {
         private readonly IReadOnlyDecoration decoration;
 
@@ -23,18 +23,125 @@ namespace DecorationConnector.Forms
             this.decoration = decoration;
         }
 
-        public bool ContainsKey(IDecorationKeyConnector key)
+        public bool ContainsKey(IDecorationKey key)
         {
-            var connectedKey = key.DecorationKeyFrom;
-            return decoration.ContainsKey(connectedKey);
+            object _;
+            return TryGetValueTypeless(key, out _);
         }
 
-        public bool TryGetValue<T>(IDecorationKeyConnector<T> key, out T value)
+        public bool TryGetValueTypeless(IDecorationKey key, out object value)
         {
-            object valueFrom;
-            bool found = decoration.TryGetValueTypeless(key.DecorationKeyFrom, out valueFrom);
-            value = (T)key.Convert(valueFrom);
+            bool found;
+
+            if (key == DecorKeyConnector.FontFamily)
+                value = decoration.GetValueConnectedTry(DecorationKey.FontFamily, TransformFontFamily, out found);
+
+            else if (key == DecorKeyConnector.FontStyle)
+            {
+                Drawing.FontStyle fontStyle;
+                bool foundStyle = decoration.TryGetValueConnected(DecorationKey.FontStyle, TransformFontStyle, out fontStyle);
+
+                Drawing.FontStyle fontWeight;
+                bool foundWeight = decoration.TryGetValueConnected(DecorationKey.FontWeight, TransformFontWeight, out fontWeight);
+
+                Drawing.FontStyle textDecoration;
+                bool foundTextDecoration = decoration.TryGetValueConnected(DecorationKey.TextDecoration, TransformTextDecoration, out textDecoration);
+
+                found = foundStyle | foundWeight | foundTextDecoration;
+                value = fontStyle | fontWeight | textDecoration;
+            }
+
+            else if (key == DecorKeyConnector.FontSize)
+                value = decoration.GetValueConnectedTry(DecorationKey.FontSize, DecorationExtensions.IdentityTransformation, out found);
+
+            else if (key == DecorKeyConnector.FontSizeRelativePercent)
+                value = decoration.GetValueConnectedTry(DecorationKey.FontSizeRelativePercent, DecorationExtensions.IdentityTransformation, out found);
+
+            else if (key == DecorKeyConnector.Foreground)
+                value = decoration.GetValueConnectedTry(DecorationKey.Foreground, TransformColor, out found);
+
+            else if (key == DecorKeyConnector.Background)
+                value = decoration.GetValueConnectedTry(DecorationKey.Background, TransformColor, out found);
+
+            else
+            {
+                found = false;
+                value = null;
+            }
+
             return found;
+        }
+
+        private Drawing.FontFamily TransformFontFamily(Styles.FontFamily fontFamily)
+        {
+            if (fontFamily == Styles.FontFamily.GenericMonospace)
+                return Drawing.FontFamily.GenericMonospace;
+
+            else if (fontFamily == Styles.FontFamily.GenericSansSerif)
+                return Drawing.FontFamily.GenericSansSerif;
+
+            else if (fontFamily == Styles.FontFamily.GenericSerif)
+                return Drawing.FontFamily.GenericSerif;
+
+            else
+                return new Drawing.FontFamily(fontFamily.Name);
+        }
+
+        private Drawing.FontStyle TransformFontStyle(Styles.FontStyle fontStyle)
+        {
+            switch (fontStyle)
+            {
+                case Styles.FontStyle.Normal:
+                    return Drawing.FontStyle.Regular;
+
+                case Styles.FontStyle.Italic:
+                    return Drawing.FontStyle.Italic;
+
+                default:
+                    throw new ArgumentException("fontStyle");
+            }
+        }
+
+        private Drawing.FontStyle TransformFontWeight(Styles.FontWeight fontWeight)
+        {
+            switch (fontWeight)
+            {
+                case Styles.FontWeight.Normal:
+                    return Drawing.FontStyle.Regular;
+
+                case Styles.FontWeight.Bold:
+                    return Drawing.FontStyle.Bold;
+
+                case Styles.FontWeight.Thin:
+                    return Drawing.FontStyle.Regular;       // no pair for this -> return the default style
+
+                default:
+                    throw new ArgumentException("fontWeight");
+            }
+        }
+
+        private Drawing.FontStyle TransformTextDecoration(Styles.TextDecoration textDecoration)
+        {
+            switch (textDecoration)
+            {
+                case Styles.TextDecoration.Baseline:
+                case Styles.TextDecoration.OverLine:
+                    return Drawing.FontStyle.Regular;       // no pair for these -> return the default style
+
+                case Styles.TextDecoration.Strikethrough:
+                    return Drawing.FontStyle.Strikeout;
+
+                case Styles.TextDecoration.Underline:
+                    return Drawing.FontStyle.Underline;
+
+                default:
+                    throw new ArgumentException("textDecoration");
+            }
+        }
+
+        private Drawing.Color TransformColor(Styles.Color color)
+        {
+            return Drawing.Color.FromArgb(color.A(), color.R(), color.G(), color.B());
         }
     }
 
@@ -55,102 +162,25 @@ namespace DecorationConnector.Forms
          * Styles.BaselineAlignment
          * */
 
-        public static DecorationKeyConnector<Styles.FontFamily, Drawing.FontFamily> FontFamily { get; private set; }
-        public static DecorationKeyConnector<Styles.FontStyle, Drawing.FontStyle> FontStyle { get; private set; }
-        public static DecorationKeyConnector<Styles.FontWeight, Drawing.FontStyle> FontWeight { get; private set; }
+        public static DecorationKey<Drawing.FontFamily> FontFamily { get; private set; }
+        public static DecorationKey<Drawing.FontStyle> FontStyle { get; private set; }
 
-        public static DecorationKeyConnector<double, double> FontSize { get; private set; }
-        public static DecorationKeyConnector<double, double> FontSizeRelativePercent { get; private set; }
+        public static DecorationKey<double> FontSize { get; private set; }
+        public static DecorationKey<double> FontSizeRelativePercent { get; private set; }
 
-        public static DecorationKeyConnector<Styles.TextDecoration, Drawing.FontStyle> TextDecoration { get; private set; }
-
-        public static DecorationKeyConnector<Styles.Color, Drawing.Color> Foreground { get; private set; }
-        public static DecorationKeyConnector<Styles.Color, Drawing.Color> Background { get; private set; }
+        public static DecorationKey<Drawing.Color> Foreground { get; private set; }
+        public static DecorationKey<Drawing.Color> Background { get; private set; }
 
         static DecorKeyConnector()
         {
-            FontFamily = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontFamily,
-                fontFamily =>
-                {
-                    if (fontFamily == Styles.FontFamily.GenericMonospace)
-                        return Drawing.FontFamily.GenericMonospace;
+            FontFamily = new DecorationKey<Drawing.FontFamily>("FontFamily");
+            FontStyle = new DecorationKey<Drawing.FontStyle>("FontStyle");
 
-                    else if (fontFamily == Styles.FontFamily.GenericSansSerif)
-                        return Drawing.FontFamily.GenericSansSerif;
+            FontSize = new DecorationKey<double>("FontSize");
+            FontSizeRelativePercent = new DecorationKey<double>("FontSizeRelativePercent");
 
-                    else if (fontFamily == Styles.FontFamily.GenericSerif)
-                        return Drawing.FontFamily.GenericSerif;
-
-                    else
-                        return new Drawing.FontFamily(fontFamily.Name);
-                }
-                );
-
-            FontStyle = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontStyle,
-                fontStyle =>
-                {
-                    switch (fontStyle)
-                    {
-                        case Styles.FontStyle.Normal:
-                            return Drawing.FontStyle.Regular;
-
-                        case Styles.FontStyle.Italic:
-                            return Drawing.FontStyle.Italic;
-
-                        default:
-                            throw new ArgumentException("fontStyle");
-                    }
-                }
-                );
-
-            FontWeight = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontWeight,
-                fontWeight =>
-                {
-                    switch (fontWeight)
-                    {
-                        case Styles.FontWeight.Normal:
-                            return Drawing.FontStyle.Regular;
-
-                        case Styles.FontWeight.Bold:
-                            return Drawing.FontStyle.Bold;
-
-                        case Styles.FontWeight.Thin:
-                            return Drawing.FontStyle.Regular;       // no pair for this -> return the default style
-
-                        default:
-                            throw new ArgumentException("fontWeight");
-                    }
-                }
-                );
-
-            FontSize = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontSize, fontSize => fontSize);
-
-            FontSizeRelativePercent = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.FontSizeRelativePercent, fontSizeRelativePercent => fontSizeRelativePercent);
-
-            TextDecoration = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.TextDecoration,
-                textDecoration =>
-                {
-                    switch (textDecoration)
-                    {
-                        case Styles.TextDecoration.Baseline:
-                        case Styles.TextDecoration.OverLine:
-                            return Drawing.FontStyle.Regular;       // no pair for these -> return the default style
-
-                        case Styles.TextDecoration.Strikethrough:
-                            return Drawing.FontStyle.Strikeout;
-
-                        case Styles.TextDecoration.Underline:
-                            return Drawing.FontStyle.Underline;
-
-                        default:
-                            throw new ArgumentException("textDecoration");
-                    }
-                }
-                );
-
-            Foreground = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Foreground, color => Drawing.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
-
-            Background = DecorationKeyConnector.ConnectTo(Unparsing.DecorationKey.Background, color => Drawing.Color.FromArgb(color.A(), color.R(), color.G(), color.B()));
+            Foreground = new DecorationKey<Drawing.Color>("Foreground");
+            Background = new DecorationKey<Drawing.Color>("Background");
         }
     }
 }
