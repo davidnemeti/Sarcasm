@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniPL.PCL", "MiniPL\MiniPL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Silverlight", "DecorationConnector.Silverlight\DecorationConnector.Silverlight.csproj", "{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Android", "DecorationConnector.Android\DecorationConnector.Android.csproj", "{FA9EBCF3-4E59-4652-B7EC-0222C552609C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +74,10 @@ Global
 		{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
