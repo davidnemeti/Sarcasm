@@ -37,6 +37,7 @@ elseif ($project -eq "Sarcasm")
 
     Copy-Item -Path Sarcasm\bin\Release\Irony.dll -Destination Downloads\Temp -Force
     Copy-Item -Path Sarcasm\bin\Release\Sarcasm.dll -Destination Downloads\Temp -Force
+    Copy-Item -Path Sarcasm\bin\Release\Sarcasm.PCL.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnector.WPF\bin\Release\DecorationConnector.WPF.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnector.Forms\bin\Release\DecorationConnector.Forms.dll -Destination Downloads\Temp -Force
 
