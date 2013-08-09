@@ -447,7 +447,7 @@ namespace Sarcasm.Unparsing
                 var childList = children.ToList();   // we are going to read the children twice, so we enforce them to be fully loaded into a list
                 children = childList;
 
-                IReadOnlyList<Operator> operators = GetOperators(children, initialization).ToList();
+                var operators = GetOperators(children, initialization).ToList();
 
                 bool needParentheses =
                     operators

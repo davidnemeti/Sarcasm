@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace Sarcasm
 {
+    public static class Extensions
+    {
+        public static IEnumerable<char> Take(this string source, int count)
+        {
+            return source.Cast<char>().Take(count);
+        }
+    }
+
     [AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)]
     public sealed class CallerMemberNameAttribute : Attribute
     {

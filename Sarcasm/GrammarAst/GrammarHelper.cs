@@ -468,11 +468,11 @@ namespace Sarcasm.GrammarAst
                 {
                     parseTreeNode.AstNode = parseTreeNode.ChildNodes.Single(childNode => childNode.AstNode != null).AstNode;
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     // throw exception only if this exception cannot be the consequence of another ast error
                     if (!GrammarHelper.HasError(context))
-                        throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal", e);
+                        throw new ArgumentException(string.Format("Only one child with astnode is allowed for a forced transient node: {0}", parseTreeNode.Term.Name), "nonTerminal");
                 }
             };
 

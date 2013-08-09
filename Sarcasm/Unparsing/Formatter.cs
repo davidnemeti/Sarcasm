@@ -490,8 +490,8 @@ namespace Sarcasm.Unparsing
 
         internal IEnumerable<UtokenBase> YieldBeforeComments(UnparsableAst owner, Comments comments, UnparseCommentDelegate unparseComment)
         {
-            IReadOnlyList<Comment> beforeComments;
-            IReadOnlyList<Comment> beforeCommentsForFormatter;
+            IList<Comment> beforeComments;
+            IList<Comment> beforeCommentsForFormatter;
             Func<IEnumerable<Comment>, int, IEnumerable<Comment>> skipOrTake;
 
             if (direction == Unparser.Direction.LeftToRight)
@@ -534,8 +534,8 @@ namespace Sarcasm.Unparsing
 
         internal IEnumerable<UtokenBase> YieldAfterComments(UnparsableAst owner, Comments comments, UnparseCommentDelegate unparseComment)
         {
-            IReadOnlyList<Comment> afterComments;
-            IReadOnlyList<Comment> afterCommentsForFormatter;
+            IList<Comment> afterComments;
+            IList<Comment> afterCommentsForFormatter;
             Func<IEnumerable<Comment>, int, IEnumerable<Comment>> skipOrTake;
 
             if (direction == Unparser.Direction.LeftToRight)
