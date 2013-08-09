@@ -47,6 +47,16 @@ namespace Sarcasm
         {
             return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
         }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> function)
+        {
+            return Task.Factory.StartNew(function, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+        }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+        }
     }
 
     public class TraceSource

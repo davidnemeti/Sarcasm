@@ -22,10 +22,18 @@ namespace Sarcasm.CodeGeneration
 
     public static class CodeGeneratorExtensions
     {
-#if !SILVERLIGHT
+#if SILVERLIGHT
+        public static Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
+        {
+            return codeGenerator.Lock.LockAsync()
+                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return codeGenerator.Generate(root); }))
+                .Unwrap();
+        }
+#else
         public static async Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
         {
-            return await Task.Run(async () => { using (await codeGenerator.Lock.LockAsync()) return codeGenerator.Generate(root); });
+            using (await codeGenerator.Lock.LockAsync())
+                return await Task.Run(() => codeGenerator.Generate(root));
         }
 #endif
     }

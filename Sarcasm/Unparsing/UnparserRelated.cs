@@ -25,18 +25,54 @@ namespace Sarcasm.Unparsing
             return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatter)));
         }
 
-#if !SILVERLIGHT
+#if SILVERLIGHT
+        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
+        {
+            return unparser.Lock.LockAsync()
+                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return utokens.AsText(unparser); }))
+                .Unwrap();
+        }
+
+        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
+        {
+            return unparser.Lock.LockAsync()
+                .ContinueWith(
+                    task =>
+                        TaskEx.Run(
+                            () =>
+                            {
+                                using (task.Result)
+                                {
+                                    return string.Concat(
+                                        utokens.Select(
+                                            utoken =>
+                                            {
+                                                cancellationToken.ThrowIfCancellationRequested();
+                                                return utoken.ToText(unparser.Formatter);
+                                            }
+                                        )
+                                    );
+                                }
+                            },
+                            cancellationToken
+                        ),
+                    cancellationToken
+                )
+                .Unwrap();
+        }
+#else
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return await Task.Run(async () => { using (await unparser.Lock.LockAsync()) return utokens.AsText(unparser); });
+            using (await unparser.Lock.LockAsync())
+                return await Task.Run(() => utokens.AsText(unparser));
         }
 
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
         {
-            return await Task.Run(
-                async () =>
-                {
-                    using (await unparser.Lock.LockAsync())
+            using (await unparser.Lock.LockAsync())
+            {
+                return await Task.Run(
+                    () =>
                     {
                         return string.Concat(
                             utokens.Select(
@@ -47,10 +83,10 @@ namespace Sarcasm.Unparsing
                                 }
                             )
                         );
-                    }
-                },
-                cancellationToken
-            );
+                    },
+                    cancellationToken
+                );
+            }
         }
 #endif
 
