@@ -118,15 +118,21 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
+#if PCL && !WINDOWS_STORE
+        internal const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+#endif
+
         protected BnfiTermRecord(Type type, string name)
             : base(type, name)
         {
+#if !WINDOWS_STORE
 #if PCL
             if (type.GetConstructor(new Type[0]) == null)
 #else
-            if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+            if (type.GetConstructor(bindingAttrInstanceAll, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
 #endif
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
+#endif
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
@@ -153,7 +159,7 @@ namespace Sarcasm.GrammarAst
 
                     // 1. memberwise copy for BnfiTermCopy items
                     foreach (var parseChildValue in parseChildValues)
-                        if (astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
+                        if (!IsMemberAtParse(parseChildValue.ReferredBnfTerm) && astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
                             MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
 
                     // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
@@ -194,7 +200,7 @@ namespace Sarcasm.GrammarAst
             if (!destinationType.IsAssignableFrom(sourceType))
                 throw new ArgumentException(string.Format("{0} is not assignable from {1}", destinationType.Name, sourceType.Name), "source");
 
-            foreach (FieldInfo fieldInfo in GetAllFields(sourceType, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (FieldInfo fieldInfo in GetAllFields(sourceType))
             {
                 object fieldValue = fieldInfo.GetValue(source);
                 if (cloneFieldValue(fieldValue))
@@ -202,12 +208,16 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        protected static IEnumerable<FieldInfo> GetAllFields(Type type, BindingFlags bindingFlags)
+        protected static IEnumerable<FieldInfo> GetAllFields(Type type)
         {
-            return type.GetFields(bindingFlags)
+#if WINDOWS_STORE
+            return type.GetRuntimeFields();
+#else
+            return type.GetFields(bindingAttrInstanceAll)
                 .Concat(type.BaseType != null
-                    ? GetAllFields(type.BaseType, bindingFlags)
+                    ? GetAllFields(type.BaseType)
                     : new FieldInfo[0]);
+#endif
         }
 
         protected static void SetValue(MemberInfo memberInfo, object obj, object value)

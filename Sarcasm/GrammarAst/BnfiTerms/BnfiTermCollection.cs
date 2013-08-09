@@ -76,8 +76,6 @@ namespace Sarcasm.GrammarAst
         [Obsolete("Use collectionType instead", error: true)]
         public new Type type { get { return base.type; } }
 
-        private const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-
         #region Construction
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -90,17 +88,19 @@ namespace Sarcasm.GrammarAst
 
             if (runtimeCheck)
             {
+#if !WINDOWS_STORE
 #if PCL
                 if (collectionType.GetConstructor(new Type[0]) == null)
 #else
-                if (collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
+                if (collectionType.GetConstructor(BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
 #endif
-                throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
+                    throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
+#endif
 
 #if PCL
                 this.addMethod = collectionType.GetMethod("Add", new[] { elementType });
 #else
-                this.addMethod = collectionType.GetMethod("Add", bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
+                this.addMethod = collectionType.GetMethod("Add", BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
 #endif
 
                 if (this.addMethod == null)

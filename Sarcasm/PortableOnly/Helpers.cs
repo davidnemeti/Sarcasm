@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Sarcasm
 {
@@ -15,6 +16,13 @@ namespace Sarcasm
         {
             return source.Cast<char>().Take(count);
         }
+
+#if WINDOWS_STORE
+        public static bool IsAssignableFrom(this Type type, Type fromType)
+        {
+            return type.GetTypeInfo().IsAssignableFrom(fromType.GetTypeInfo());
+        }
+#endif
     }
 
     [AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)]
