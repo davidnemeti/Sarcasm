@@ -18,11 +18,13 @@ namespace Sarcasm.Utility
             return new ReadOnlyObservableCollection<T>(source);
         }
 
+#if !PCL
         public static ReadOnlyDictionary<TKey, TValue> CreateAndGetReadonlyDictionary<TKey, TValue>(out Dictionary<TKey, TValue> source)
         {
             source = new Dictionary<TKey, TValue>();
             return new ReadOnlyDictionary<TKey, TValue>(source);
         }
+#endif
 
         #region GetType/GetMember
 
@@ -241,6 +243,16 @@ namespace Sarcasm.Utility
 
         #endregion
 
+        public static IEnumerable<TKey> Keys<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        {
+            return pairs.Select(pair => pair.Key);
+        }
+
+        public static IEnumerable<TValue> Values<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> pairs)
+        {
+            return pairs.Select(pair => pair.Value);
+        }
+
         public static IEnumerable<T> ReverseOptimized<T>(this IEnumerable<T> items)
         {
             if (items is IList<T>)
@@ -262,10 +274,12 @@ namespace Sarcasm.Utility
             return new ReverseList<T>(items);
         }
 
+#if !PCL
         public static IReadOnlyList<T> ReverseOptimized<T>(this IReadOnlyList<T> items)
         {
             return new ReverseReadOnlyList<T>(items);
         }
+#endif
 
         public static System.Collections.IEnumerable ReverseNonGenericOptimized(this System.Collections.IEnumerable items)
         {

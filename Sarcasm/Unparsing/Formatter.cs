@@ -34,7 +34,7 @@ namespace Sarcasm.Unparsing
             CommentStartSymbol = new Discriminator();
             CommentEndSymbol = new Discriminator();
 
-#if DEBUG
+#if DEBUG && !PCL
             tsRaw.Listeners.Clear();
             tsRaw.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_raw.log"))));
 
@@ -393,7 +393,7 @@ namespace Sarcasm.Unparsing
         /// This method needs to be fully executed before UnparseRawMiddle because this method modifies the state of Unparser and,
         /// which state is used by UnparseRawMiddle. Thus, always call this method prior to UnparseRawMiddle.
         /// </summary>
-        internal IReadOnlyList<UtokenBase> YieldBefore(UnparsableAst self, out Params @params)
+        internal IEnumerable<UtokenBase> YieldBefore(UnparsableAst self, out Params @params)
         {
             /*
              * To achieve fully execution before UnparseRawMiddle, this method is not an iterator block rather populates a list.
@@ -630,7 +630,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IReadOnlyList<UtokenBase> YieldBetween(UnparsableAst self)
+        private IEnumerable<UtokenBase> YieldBetween(UnparsableAst self)
         {
             Unparser.tsUnparse.Debug("YieldBetween");
 
@@ -676,7 +676,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableAst self, BlockIndentation blockIndentation)
+        private IEnumerable<UtokenBase> YieldIndentationLeft(UnparsableAst self, BlockIndentation blockIndentation)
         {
 #if DEBUG
             BlockIndentation originalBlockIndentation = blockIndentation;
@@ -688,7 +688,7 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        private IReadOnlyList<UtokenBase> YieldIndentationLeft(UnparsableAst self, ref BlockIndentation blockIndentation)
+        private IEnumerable<UtokenBase> YieldIndentationLeft(UnparsableAst self, ref BlockIndentation blockIndentation)
         {
             Unparser.tsUnparse.Debug("YieldIndentationLeft");
 

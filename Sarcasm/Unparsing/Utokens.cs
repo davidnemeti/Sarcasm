@@ -457,7 +457,7 @@ namespace Sarcasm.Unparsing
     internal class DeferredUtokens : UtokenBase
     {
         private readonly Func<IEnumerable<UtokenBase>> utokenYielder;
-        private IReadOnlyList<UtokenBase> calculatedUtokens;
+        private IEnumerable<UtokenBase> calculatedUtokens;
 
         public UnparsableAst Self { get; private set; }
         private readonly string helpMessage;
@@ -474,7 +474,7 @@ namespace Sarcasm.Unparsing
             self.IsLeftSiblingNeededForDeferredCalculation = true;
         }
 
-        public IReadOnlyList<UtokenBase> GetUtokens()
+        public IEnumerable<UtokenBase> GetUtokens()
         {
             CalculateUtokens();
             return calculatedUtokens;

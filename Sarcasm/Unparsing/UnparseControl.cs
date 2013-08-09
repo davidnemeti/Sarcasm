@@ -45,12 +45,12 @@ namespace Sarcasm.Unparsing
             };
         }
 
-        internal IReadOnlyDictionary<BnfTerm, ParenthesizedExpression> GetExpressionToParentheses()
+        internal IEnumerable<KeyValuePair<BnfTerm, ParenthesizedExpression>> GetExpressionToParentheses()
         {
             return expressionToParentheses;
         }
 
-        internal void SetExpressionToParentheses(IReadOnlyDictionary<BnfTerm, ParenthesizedExpression> expressionToParentheses)
+        internal void SetExpressionToParentheses(IEnumerable<KeyValuePair<BnfTerm, ParenthesizedExpression>> expressionToParentheses)
         {
             this.expressionToParentheses = expressionToParentheses.ToDictionary(pair => pair.Key, pair => pair.Value);
             this.ExpressionToParenthesesHasBeenSet = true;

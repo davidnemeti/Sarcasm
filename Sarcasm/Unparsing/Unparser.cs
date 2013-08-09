@@ -450,8 +450,12 @@ namespace Sarcasm.Unparsing
                 int taskIndex = i;      // NOTE: needed for closure working correctly
 
                 subUnparseTasks[taskIndex] =
+#if PCL
+                    TaskEx.Run(
+#else
                     Task.Run(
-                    () =>
+#endif
+() =>
                     {
                         subUtokensList[taskIndex] = new List<UtokenBase>();
 
@@ -729,12 +733,12 @@ namespace Sarcasm.Unparsing
                 : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children, direction));
         }
 
-        internal static IEnumerable<IReadOnlyList<BnfTerm>> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
+        internal static IEnumerable<BnfTermList> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
         {
             return nonTerminal.Productions.Select(production => production.RValues);
         }
 
-        internal IEnumerable<IReadOnlyList<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
+        internal IEnumerable<IEnumerable<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
         {
             return GetChildBnfTermListsLeftToRight(nonTerminal)
                 .Select(bnfTerms => direction == Direction.LeftToRight ? bnfTerms : bnfTerms.ReverseOptimized());
@@ -832,25 +836,17 @@ namespace Sarcasm.Unparsing
 
         public enum Direction { LeftToRight, RightToLeft }
 
-        public class ChildBnfTerms : IReadOnlyList<BnfTerm>
+        public class ChildBnfTerms : IEnumerable<BnfTerm>
         {
-            public IReadOnlyList<BnfTerm> Content { get; private set; }
+            public IEnumerable<BnfTerm> Content { get; private set; }
             public int ContentIndex { get; private set; }
+            private int? countCache;
 
-            public ChildBnfTerms(IReadOnlyList<BnfTerm> content, int contentIndex)
+            public ChildBnfTerms(IEnumerable<BnfTerm> content, int contentIndex)
             {
                 this.Content = content;
                 this.ContentIndex = contentIndex;
-            }
-
-            public BnfTerm this[int index]
-            {
-                get { return Content[index]; }
-            }
-
-            public int Count
-            {
-                get { return Content.Count; }
+                this.countCache = null;
             }
 
             public IEnumerator<BnfTerm> GetEnumerator()
@@ -862,6 +858,13 @@ namespace Sarcasm.Unparsing
             {
                 return GetEnumerator();
             }
+
+            /*
+             * NOTE that Content is either a BnfTermList or a ReverseList<BnfTerm>. Both of them implements the ICollection<BnfTerm> interface,
+             * so Enumerable.Count method when calling Content.Count() will notice it and will use the ICollection<BnfTerm>.Count property
+             * instead of iterating through the whole enumeration and counting all the items.
+             * */
+            public int Count { get { return countCache ?? (int)(countCache = Content.Count()); } }
         }
 
         public class Children : IEnumerable<UnparsableAst>

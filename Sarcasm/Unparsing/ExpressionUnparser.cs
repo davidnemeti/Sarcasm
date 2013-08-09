@@ -346,7 +346,7 @@ namespace Sarcasm.Unparsing
         {
             if (unparseControl.ExpressionToParenthesesHasBeenSet)
             {
-                this.expressionsThatCanCauseOthersBeingParenthesized = new HashSet<BnfTerm>(unparseControl.GetExpressionToParentheses().Keys);
+                this.expressionsThatCanCauseOthersBeingParenthesized = new HashSet<BnfTerm>(unparseControl.GetExpressionToParentheses().Keys());
                 this.expressionThatMayNeedParenthesesToParentheses = unparseControl.GetExpressionToParentheses().ToDictionary(pair => pair.Key, pair => pair.Value);
             }
             else
@@ -367,7 +367,7 @@ namespace Sarcasm.Unparsing
 
         private void RegisteringExpressionsThatNeedParentheses(NonTerminal nonTerminal)
         {
-            foreach (var childBnfTerms in Unparser.GetChildBnfTermListsLeftToRight(nonTerminal))
+            foreach (BnfTermList childBnfTerms in Unparser.GetChildBnfTermListsLeftToRight(nonTerminal))
             {
                 Unparse(
                     new UnparsableAst(nonTerminal, astValue: null),
@@ -390,7 +390,7 @@ namespace Sarcasm.Unparsing
             return OngoingExpressionUnparse || expressionsThatCanCauseOthersBeingParenthesized.Contains(bnfTerm);
         }
 
-        public IReadOnlyList<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
+        public IEnumerable<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, Unparser.Direction direction)
         {
             if (ongoingExpressionUnparseLevel == 0)
             {
@@ -411,7 +411,7 @@ namespace Sarcasm.Unparsing
             // ongoingExpressionUnparseLevel and ongoingOperatorUnparseLevel do not need reset, since they are automatically in good state
         }
 
-        private IReadOnlyList<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, bool initialization)
+        private IEnumerable<UtokenBase> Unparse(UnparsableAst self, IEnumerable<UnparsableAst> children, bool initialization)
         {
             if (ongoingOperatorUnparseLevel > 0)
             {
@@ -575,13 +575,13 @@ namespace Sarcasm.Unparsing
                 throw new ArgumentException("invalid operator", "@operator");
         }
 
-        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization)
+        private IEnumerable<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization)
         {
             OperatorInfo operatorInfoUnused;
             return UnparseRawEager(unparsableAst, initialization, out operatorInfoUnused);
         }
 
-        private IReadOnlyList<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization, out OperatorInfo operatorInfo)
+        private IEnumerable<UtokenBase> UnparseRawEager(UnparsableAst unparsableAst, bool initialization, out OperatorInfo operatorInfo)
         {
             if (initialization)
             {
