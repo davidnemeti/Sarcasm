@@ -118,7 +118,7 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-#if PCL && !WINDOWS_STORE
+#if !WINDOWS_STORE
         internal const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 #endif
 
