@@ -36,10 +36,13 @@ elseif ($project -eq "Sarcasm")
     New-Item -Path Downloads\Temp -ItemType directory -Force
 
     Copy-Item -Path Sarcasm\bin\Release\Irony.dll -Destination Downloads\Temp -Force
+    Copy-Item -Path Sarcasm\bin\Release\Irony.PCL.dll -Destination Downloads\Temp -Force
     Copy-Item -Path Sarcasm\bin\Release\Sarcasm.dll -Destination Downloads\Temp -Force
     Copy-Item -Path Sarcasm\bin\Release\Sarcasm.PCL.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnector.WPF\bin\Release\DecorationConnector.WPF.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnector.Forms\bin\Release\DecorationConnector.Forms.dll -Destination Downloads\Temp -Force
+    Copy-Item -Path DecorationConnector.Silverlight\bin\Release\DecorationConnector.Silverlight.dll -Destination Downloads\Temp -Force
+    Copy-Item -Path DecorationConnector.Android\bin\Release\DecorationConnector.Android.dll -Destination Downloads\Temp -Force
 
     $zipFileName = "Downloads\Sarcasm" + "_" + (Get-Date).ToShortDateString().TrimEnd('.').Replace('.', '-') + ".zip"
     Remove-Item -Path $zipFileName -Force
