@@ -12,6 +12,12 @@ namespace Sarcasm
 {
     public static class Extensions
     {
+        public static TAttribute GetCustomAttribute<TAttribute>(this Type type)
+            where TAttribute : Attribute
+        {
+            return (TAttribute)type.GetCustomAttributes(typeof(TAttribute), inherit: false).FirstOrDefault();
+        }
+
         public static IEnumerable<char> Take(this string source, int count)
         {
             return source.Cast<char>().Take(count);
