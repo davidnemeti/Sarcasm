@@ -109,6 +109,7 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
+#if !PCL
 	#region Intro DBNull (Data)
 
 	#region BnfiTermConversion
@@ -181,6 +182,7 @@ namespace Sarcasm.GrammarAst
 
 	#endregion
 
+#endif
 	#region Intro Boolean (Data)
 
 	#region BnfiTermConversion

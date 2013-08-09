@@ -17,7 +17,9 @@ using System.Runtime.Serialization;
 
 namespace Sarcasm.Unparsing
 {
+#if !PCL
     [Serializable]
+#endif
     public class UnparserInitializationException : Exception
     {
         public UnparserInitializationException()
@@ -29,13 +31,17 @@ namespace Sarcasm.Unparsing
         {
         }
 
+#if !PCL
         protected UnparserInitializationException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 
+#if !PCL
     [Serializable]
+#endif
     public class UnparseException : Exception
     {
         public UnparseException()
@@ -47,13 +53,17 @@ namespace Sarcasm.Unparsing
         {
         }
 
+#if !PCL
         protected UnparseException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 
+#if !PCL
     [Serializable]
+#endif
     internal class NonCalculatedException : Exception
     {
         public NonCalculatedException()
@@ -65,13 +75,17 @@ namespace Sarcasm.Unparsing
         {
         }
 
+#if !PCL
         protected NonCalculatedException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 
+#if !PCL
     [Serializable]
+#endif
     internal class ThrownOutException : Exception
     {
         public ThrownOutException()
@@ -83,9 +97,11 @@ namespace Sarcasm.Unparsing
         {
         }
 
+#if !PCL
         protected ThrownOutException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
+#endif
     }
 }

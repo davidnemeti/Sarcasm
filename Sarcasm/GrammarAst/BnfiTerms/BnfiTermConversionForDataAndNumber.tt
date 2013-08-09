@@ -26,6 +26,9 @@ namespace Sarcasm.GrammarAst
 		if (typeCode == TypeCode.Empty)
 			continue;
 
+        if (typeCode == TypeCode.DBNull)
+            WriteLine("#if !PCL");
+
 		Type type = TypeCodeToType(typeCode);
 		string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
 		string introMethodNameExt = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
@@ -161,6 +164,8 @@ namespace Sarcasm.GrammarAst
 	#endregion
 
 <#
+        if (typeCode == TypeCode.DBNull)
+            WriteLine("#endif");
     }
 #>
 }
