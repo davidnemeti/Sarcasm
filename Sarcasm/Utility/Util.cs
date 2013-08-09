@@ -12,6 +12,33 @@ namespace Sarcasm.Utility
 {
     public static class Util
     {
+#if PCL
+        private static class Comparer<T>
+        {
+            public static readonly IComparer<T> Default = System.Collections.Generic.Comparer<T>.Default;
+
+            public static IComparer<T> Create(Comparison<T> comparison)
+            {
+                return new ComparisonComparer<T>(comparison);
+            }
+        }
+
+        private class ComparisonComparer<T> : IComparer<T>
+        {
+            private readonly Comparison<T> comparison;
+
+            public ComparisonComparer(Comparison<T> comparison)
+            {
+                this.comparison = comparison;
+            }
+
+            public int Compare(T x, T y)
+            {
+                return comparison(x, y);
+            }
+        }
+#endif
+
         public static ReadOnlyObservableCollection<T> CreateAndGetReadonlyCollection<T>(out ObservableCollection<T> source)
         {
             source = new ObservableCollection<T>();
@@ -257,8 +284,10 @@ namespace Sarcasm.Utility
         {
             if (items is IList<T>)
                 return ReverseOptimized((IList<T>)items);
-            if (items is IReadOnlyList<T>)
+#if !PCL
+            else if (items is IReadOnlyList<T>)
                 return ReverseOptimized((IReadOnlyList<T>)items);
+#endif
             else
                 return items.Reverse();
         }
@@ -291,7 +320,7 @@ namespace Sarcasm.Utility
 
         public static System.Collections.IEnumerable ReverseNonGeneric(this System.Collections.IEnumerable items)
         {
-            var itemsFullyRead = new System.Collections.ArrayList();
+            var itemsFullyRead = new List<object>();
             foreach (var item in items)
                 itemsFullyRead.Add(item);
             return ReverseNonGenericOptimized(itemsFullyRead);

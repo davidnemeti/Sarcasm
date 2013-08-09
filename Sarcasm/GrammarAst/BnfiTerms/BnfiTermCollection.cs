@@ -90,10 +90,18 @@ namespace Sarcasm.GrammarAst
 
             if (runtimeCheck)
             {
+#if PCL
+                if (collectionType.GetConstructor(new Type[0]) == null)
+#else
                 if (collectionType.GetConstructor(bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
-                    throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
+#endif
+                throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
 
+#if PCL
+                this.addMethod = collectionType.GetMethod("Add", new[] { elementType });
+#else
                 this.addMethod = collectionType.GetMethod("Add", bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
+#endif
 
                 if (this.addMethod == null)
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
@@ -157,7 +165,7 @@ namespace Sarcasm.GrammarAst
 
                 if (iCollectionGenericType != null)
                 {
-                    Type guessedElementType = iCollectionGenericType.GenericTypeArguments[0];
+                    Type guessedElementType = iCollectionGenericType.GetGenericArguments()[0];
 
                     if (elementTypeHint != null && elementTypeHint != guessedElementType)
                         throw new ArgumentException("elementType should be null or equal to the generic parameter of the collectionTypeOrTypeDefinition if collectionTypeOrTypeDefinition is a generic type", "elementType");
@@ -180,8 +188,12 @@ namespace Sarcasm.GrammarAst
              * an IList, ICollection, etc., so we are just working here with an object type and require that the collection has an 'Add' method during runtime.
              * */
             SetNodeCreator<object, object>(
+#if PCL
+                () => Activator.CreateInstance(collectionType),
+#else
                 () => Activator.CreateInstance(collectionType, nonPublic: true),
-                (collection, element) => addMethod.Invoke(obj: collection, parameters: new[] { element })
+#endif
+ (collection, element) => addMethod.Invoke(obj: collection, parameters: new[] { element })
                 );
         }
 

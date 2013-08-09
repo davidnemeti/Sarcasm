@@ -148,18 +148,23 @@ namespace Sarcasm.Reflection
 
         internal static void RegisterAssemblyResolver()
         {
+#if !PCL
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
             assemblyResolverRegistrationCount++;
+#endif
         }
 
         internal static void UnregisterAssemblyResolver()
         {
+#if !PCL
             AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
             assemblyResolverRegistrationCount--;
+#endif
         }
 
         private static int assemblyResolverRegistrationCount = 0;
 
+#if !PCL
         private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
         {
             AppDomain domain = (AppDomain)sender;
@@ -178,5 +183,6 @@ namespace Sarcasm.Reflection
         {
             return Regex.Match(fullName, @"(.*, Version=\d*\.\d*)").Groups[1].Value;
         }
+#endif
     }
 }

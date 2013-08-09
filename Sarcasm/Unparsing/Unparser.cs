@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
-using System.Collections.Concurrent;
 
 using Irony;
 using Irony.Ast;
@@ -65,7 +64,7 @@ namespace Sarcasm.Unparsing
         private Grammar _grammar;
         private LanguageData _language;
         private readonly UnparseControl unparseControl;
-        private IReadOnlyDictionary<object, Comments> astValueToComments;
+        private Func<object, Comments> astValueToComments;
         private HashSet<Comments> unparsedComments;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
@@ -79,7 +78,7 @@ namespace Sarcasm.Unparsing
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
         private ResourceCounter parallelTaskCounter;
-        private ConcurrentDictionary<ConstantTerminal, Dictionary<object, string>> constantTerminalToInverseConstantTable;
+        private Dictionary<ConstantTerminal, Dictionary<object, string>> constantTerminalToInverseConstantTable;
 
         #endregion
 
@@ -136,7 +135,7 @@ namespace Sarcasm.Unparsing
             this.EnablePartialInvalidation = enablePartialInvalidationDefault;
             this.EnableParallelProcessing = enableParallelProcessingDefault;
             this.DegreeOfParallelism = Environment.ProcessorCount;
-            this.constantTerminalToInverseConstantTable = new ConcurrentDictionary<ConstantTerminal, Dictionary<object, string>>();
+            this.constantTerminalToInverseConstantTable = new Dictionary<ConstantTerminal, Dictionary<object, string>>();
         }
 
         public Unparser(Grammar grammar)
@@ -185,7 +184,15 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, Direction direction = directionDefault)
         {
-            this.astValueToComments = document.AstValueToComments;
+            this.astValueToComments =
+                astValue =>
+                {
+                    Comments comments;
+                    return document.AstValueToComments.TryGetValue(astValue, out comments)
+                        ? comments
+                        : null;
+                };
+
             this.unparsedComments = new HashSet<Comments>();
             return _Unparse(document.Root, bnfTerm, direction);
         }
@@ -197,7 +204,7 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, Direction direction = directionDefault)
         {
-            this.astValueToComments = new Dictionary<object, Comments>();
+            this.astValueToComments = _ => null;
             this.unparsedComments = new HashSet<Comments>();
             return _Unparse(astValue, bnfTerm, direction);
         }
@@ -310,10 +317,12 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UtokenBase> UnparseRawMiddle(UnparsableAst self)
         {
-            Comments comments;
-            bool hasComments = astValueToComments.TryGetValue(self.AstValue, out comments) && !unparsedComments.Contains(comments);
+            Comments comments = astValueToComments(self.AstValue);
 
-            if (hasComments)
+            if (comments != null && unparsedComments.Contains(comments))
+                comments = null;
+
+            if (comments != null)
             {
                 unparsedComments.Add(comments);
 
@@ -435,7 +444,7 @@ namespace Sarcasm.Unparsing
                 throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
             }
 
-            if (hasComments)
+            if (comments != null)
                 foreach (UtokenBase utoken in Formatter.YieldAfterComments(self, comments, UnparseComment))
                     yield return utoken;
         }
@@ -749,7 +758,31 @@ namespace Sarcasm.Unparsing
         private string GetLexemeByValue(ConstantTerminal constantTerminal, object value)
         {
             value = ObjectToDictionaryKeySafe(value);
-            var inverseConstantTable = constantTerminalToInverseConstantTable.GetOrAdd(constantTerminal, CreateInverseConstantTable);
+            Dictionary<object, string> inverseConstantTable;
+
+            /*
+             * First we just try to get the value without locking on constantTerminalToInverseConstantTable since the desired inverseConstantTable
+             * will be in constantTerminalToInverseConstantTable after the first access, so most of the time we just get the value, and we are done.
+             * Always locking on it would be a waste of time, since lock is a time consuming operation.
+             * */
+            if (!constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out inverseConstantTable))
+            {
+                // first access -> we don't have the desired inverseConstantTable -> lock on it, because we will create it and store it in constantTerminalToInverseConstantTable
+                lock (constantTerminalToInverseConstantTable)
+                {
+                    /*
+                     * But first we have to query constantTerminalToInverseConstantTable again since we locked only *after* the first query,
+                     * and during this period (after the first query, but before the lock) a parallel task might have already locked on constantTerminalToInverseConstantTable,
+                     * created the desired inverseConstantTable and stored it in constantTerminalToInverseConstantTable, and released the lock.
+                     * */
+                    if (!constantTerminalToInverseConstantTable.TryGetValue(constantTerminal, out inverseConstantTable))
+                    {
+                        inverseConstantTable = CreateInverseConstantTable(constantTerminal);
+                        constantTerminalToInverseConstantTable.Add(constantTerminal, inverseConstantTable);
+                    }
+                }
+            }
+
             return inverseConstantTable[value];
         }
 

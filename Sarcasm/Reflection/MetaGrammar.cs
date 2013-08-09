@@ -75,7 +75,11 @@ namespace Sarcasm.Reflection
             {
                 return (Grammar)Activator.CreateInstance(GrammarType, cultureInfo);
             }
+#if PCL
+            catch
+#else
             catch (MissingMethodException)
+#endif
             {
                 Grammar grammar = CreateGrammar();
                 grammar.DefaultCulture = cultureInfo;

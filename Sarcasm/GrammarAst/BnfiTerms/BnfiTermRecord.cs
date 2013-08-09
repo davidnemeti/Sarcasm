@@ -121,14 +121,22 @@ namespace Sarcasm.GrammarAst
         protected BnfiTermRecord(Type type, string name)
             : base(type, name)
         {
+#if PCL
+            if (type.GetConstructor(new Type[0]) == null)
+#else
             if (type.GetConstructor(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+#endif
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
                 try
                 {
+#if PCL
+                    object astValue = Activator.CreateInstance(type);
+#else
                     object astValue = Activator.CreateInstance(type, nonPublic: true);
+#endif
 
                     var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
 
@@ -205,21 +213,21 @@ namespace Sarcasm.GrammarAst
         protected static void SetValue(MemberInfo memberInfo, object obj, object value)
         {
             if (memberInfo is PropertyInfo)
-                ((PropertyInfo)memberInfo).SetValue(obj, value);
+                ((PropertyInfo)memberInfo).SetValue(obj, value, index: null);
             else if (memberInfo is FieldInfo)
                 ((FieldInfo)memberInfo).SetValue(obj, value);
             else
-                throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
+                throw new AstException("Object with wrong type in memberinfo: " + memberInfo.Name);
         }
 
         protected static object GetValue(MemberInfo memberInfo, object obj)
         {
             if (memberInfo is PropertyInfo)
-                return ((PropertyInfo)memberInfo).GetValue(obj);
+                return ((PropertyInfo)memberInfo).GetValue(obj, index: null);
             else if (memberInfo is FieldInfo)
                 return ((FieldInfo)memberInfo).GetValue(obj);
             else
-                throw new ApplicationException("Object with wrong type in memberinfo: " + memberInfo.Name);
+                throw new AstException("Object with wrong type in memberinfo: " + memberInfo.Name);
         }
 
         public BnfExpression RuleRaw { get { return base.Rule; } set { base.Rule = value; } }

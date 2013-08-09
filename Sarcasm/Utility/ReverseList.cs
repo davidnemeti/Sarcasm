@@ -8,6 +8,8 @@ namespace Sarcasm.Utility
     public abstract class ReverseListBase<T>
 #if !PCL
         : IReadOnlyCollection<T>
+#else
+        : IEnumerable
 #endif
     {
         public abstract int Count { get; }

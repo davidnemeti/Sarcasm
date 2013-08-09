@@ -188,8 +188,8 @@ namespace Sarcasm.DomainCore
 
     public class Comments
     {
-        public IReadOnlyList<Comment> Left { get { return left; } }
-        public IReadOnlyList<Comment> Right { get { return right; } }
+        public IList<Comment> Left { get { return left; } }
+        public IList<Comment> Right { get { return right; } }
 
         internal List<Comment> left { get; private set; }
         internal List<Comment> right { get; private set; }
@@ -204,9 +204,9 @@ namespace Sarcasm.DomainCore
     public class Document
     {
         public object Root { get; private set; }
-        public IReadOnlyDictionary<object, Comments> AstValueToComments { get; private set; }
+        public IDictionary<object, Comments> AstValueToComments { get; private set; }
 
-        public Document(object root, IReadOnlyDictionary<object, Comments> astValueToComments)
+        public Document(object root, IDictionary<object, Comments> astValueToComments)
         {
             this.Root = root;
             this.AstValueToComments = astValueToComments;
@@ -217,7 +217,7 @@ namespace Sarcasm.DomainCore
     {
         public new TRoot Root { get { return (TRoot)base.Root; } }
 
-        public Document(TRoot root, IReadOnlyDictionary<object, Comments> astValueToComments)
+        public Document(TRoot root, IDictionary<object, Comments> astValueToComments)
             : base(root, astValueToComments)
         {
         }

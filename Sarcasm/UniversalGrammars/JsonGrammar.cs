@@ -163,56 +163,72 @@ namespace Sarcasm.UniversalGrammars
             {
                 try
                 {
+                    string primitiveValueStr = (string)discriminatorKeyValue.Value;
+
                     if (type.IsEnum)
-                        return Enum.Parse(type, (string)discriminatorKeyValue.Value);
+                        return Enum.Parse(type, primitiveValueStr, ignoreCase: false);
 
                     else if (type == typeof(Boolean))
-                        return Boolean.Parse((string)discriminatorKeyValue.Value);
+                        return Boolean.Parse(primitiveValueStr);
 
                     else if (type == typeof(Byte))
-                        return Byte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Byte.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(SByte))
-                        return SByte.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return SByte.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Int16))
-                        return Int16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Int16.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Int32))
-                        return Int32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Int32.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Int64))
-                        return Int64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Int64.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(UInt16))
-                        return UInt16.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return UInt16.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(UInt32))
-                        return UInt32.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return UInt32.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(UInt64))
-                        return UInt64.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return UInt64.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Single))
-                        return Single.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Single.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Double))
-                        return Double.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Double.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Decimal))
-                        return Decimal.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return Decimal.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Char))
-                        return Char.Parse((string)discriminatorKeyValue.Value);
+                    {
+#if PCL
+                        char ch;
+                        if (Char.TryParse(primitiveValueStr, out ch))
+                            return ch;
+                        else
+                            throw new FormatException();
+#else
+                        return Char.Parse(primitiveValueStr);
+#endif
+                    }
 
                     else if (type == typeof(String))
-                        return (String)discriminatorKeyValue.Value;
+                        return primitiveValueStr;
 
                     else if (type == typeof(DateTime))
-                        return DateTime.Parse((string)discriminatorKeyValue.Value, this.DefaultCulture);
+                        return DateTime.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else
                         throw new AstException(string.Format("Unsupported primitive type: {0}", type.FullName));
+                }
+                catch (InvalidCastException)
+                {
+                    throw new AstException(string.Format("Cannot parse value '{0}' of type '{1}'", discriminatorKeyValue.Value, type.FullName));
                 }
                 catch (ArgumentException)
                 {
@@ -237,7 +253,11 @@ namespace Sarcasm.UniversalGrammars
             }
             else
             {
+#if PCL
+                object obj = Activator.CreateInstance(type);
+#else
                 object obj = Activator.CreateInstance(type, nonPublic: true);
+#endif
 
                 foreach (var keyValuePair in keyValuePairs.Skip(1))
                 {
@@ -247,7 +267,7 @@ namespace Sarcasm.UniversalGrammars
                     MemberInfo field = (MemberInfo)type.GetProperty(fieldName) ?? (MemberInfo)type.GetField(fieldName);
 
                     if (field is PropertyInfo)
-                        ((PropertyInfo)field).SetValue(obj, value);
+                        ((PropertyInfo)field).SetValue(obj, value, index: null);
                     else if (field is FieldInfo)
                         ((FieldInfo)field).SetValue(obj, value);
                     else
@@ -295,7 +315,7 @@ namespace Sarcasm.UniversalGrammars
                         ,
                         type.GetProperties()
                             .Where(property => !IsNonSerializableMemberOfReferenceType(obj, property))
-                            .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj)))
+                            .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj, index: null)))
                     )
                     .Where(keyValuePair => keyValuePair.Value != null);
 

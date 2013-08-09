@@ -25,8 +25,7 @@ namespace Sarcasm.Utility
             return wait.IsCompleted
                 ? m_releaser
                 : wait.ContinueWith(
-                    (_, state) => new Releaser((AsyncLock)state),
-                    this,
+                    _ => new Releaser(this),
                     CancellationToken.None,
                     TaskContinuationOptions.ExecuteSynchronously,
                     TaskScheduler.Default
