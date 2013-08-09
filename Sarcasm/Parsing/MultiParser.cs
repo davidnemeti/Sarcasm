@@ -111,6 +111,7 @@ namespace Sarcasm.Parsing
             return ScanOnly(GetParser(root), sourceText, fileName);
         }
 
+#if !SILVERLIGHT
         public async Task<ParseTree> ParseAsync(string sourceText)
         {
             return await ParseAsync(mainParser, sourceText);
@@ -140,6 +141,7 @@ namespace Sarcasm.Parsing
         {
             return await ScanOnlyAsync(GetParser(root), sourceText, fileName);
         }
+#endif
 
         #endregion
 
@@ -228,6 +230,7 @@ namespace Sarcasm.Parsing
                 .SetCommentCleaner(this.CommentCleaner);
         }
 
+#if !SILVERLIGHT
         private async Task<ParseTree> ParseAsync(Parser parser, string sourceText)
         {
             return new ParseTree(await parser.ParsePlusAsync(sourceText, this.Lock))
@@ -245,6 +248,7 @@ namespace Sarcasm.Parsing
             return new ParseTree(await parser.ScanOnlyPlusAsync(sourceText, fileName, this.Lock))
                 .SetCommentCleaner(this.CommentCleaner);
         }
+#endif
 
         #endregion
     }
@@ -319,6 +323,7 @@ namespace Sarcasm.Parsing
             return HandleParseErrors(() => parser.ScanOnly(sourceText, fileName), sourceText);
         }
 
+#if !SILVERLIGHT
         public static async Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, AsyncLock @lock = null)
         {
             return await Task.Run(async () => { using (await @lock.LockAsync()) return parser.ParsePlus(sourceText); });
@@ -333,6 +338,7 @@ namespace Sarcasm.Parsing
         {
             return await Task.Run(async () => { using (await @lock.LockAsync()) return parser.ScanOnlyPlus(sourceText, fileName); });
         }
+#endif
 
         private static Irony.Parsing.ParseTree HandleParseErrors(Func<Irony.Parsing.ParseTree> action, string sourceText)
         {

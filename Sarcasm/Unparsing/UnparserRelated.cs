@@ -25,6 +25,7 @@ namespace Sarcasm.Unparsing
             return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatter)));
         }
 
+#if !SILVERLIGHT
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
             return await Task.Run(async () => { using (await unparser.Lock.LockAsync()) return utokens.AsText(unparser); });
@@ -51,6 +52,7 @@ namespace Sarcasm.Unparsing
                 cancellationToken
             );
         }
+#endif
 
         public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
@@ -61,6 +63,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
+#if !SILVERLIGHT
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
             await utokens.WriteToStreamAsync(stream, unparser, CancellationToken.None);
@@ -80,6 +83,7 @@ namespace Sarcasm.Unparsing
                 }
             }
         }
+#endif
 
         internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
