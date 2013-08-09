@@ -45,9 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Sarcasm\Sarcasm.csproj">
       <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
       <Name>Sarcasm</Name>
