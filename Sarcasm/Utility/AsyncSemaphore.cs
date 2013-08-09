@@ -8,7 +8,11 @@ namespace Sarcasm.Utility
 {
     public class AsyncSemaphore
     {
+#if SILVERLIGHT
+        private readonly static Task s_completed = new Task(() => { });
+#else
         private readonly static Task s_completed = Task.FromResult(true);
+#endif
         private readonly Queue<TaskCompletionSource<bool>> m_waiters = new Queue<TaskCompletionSource<bool>>();
         private int m_currentCount;
 
