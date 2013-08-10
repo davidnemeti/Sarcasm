@@ -375,21 +375,21 @@ namespace Sarcasm.Parsing
         public static Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, AsyncLock @lock = null)
         {
             return @lock.LockAsync()
-                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return parser.ParsePlus(sourceText); }))
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ParsePlus(sourceText)); })
                 .Unwrap();
         }
 
         public static Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
         {
             return @lock.LockAsync()
-                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return parser.ParsePlus(sourceText, fileName); }))
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ParsePlus(sourceText, fileName)); })
                 .Unwrap();
         }
 
         public static Task<Irony.Parsing.ParseTree> ScanOnlyPlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
         {
             return @lock.LockAsync()
-                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return parser.ScanOnlyPlus(sourceText, fileName); }))
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ScanOnlyPlus(sourceText, fileName)); })
                 .Unwrap();
         }
 #else

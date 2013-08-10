@@ -26,7 +26,7 @@ namespace Sarcasm.CodeGeneration
         public static Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
         {
             return codeGenerator.Lock.LockAsync()
-                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return codeGenerator.Generate(root); }))
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => codeGenerator.Generate(root)); })
                 .Unwrap();
         }
 #else

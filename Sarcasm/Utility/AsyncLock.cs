@@ -22,9 +22,10 @@ namespace Sarcasm.Utility
 #endif
         }
 
+#if NET4_0
         public Task<Releaser> LockAsync()
         {
-            var wait = m_semaphore.WaitAsync();
+            Task wait = m_semaphore.WaitAsync();
 
             return wait.IsCompleted
                 ? m_releaser
@@ -35,6 +36,20 @@ namespace Sarcasm.Utility
                     TaskScheduler.Default
                     );
         }
+#else
+        public async Task<Releaser> LockAsync()
+        {
+            Task wait = m_semaphore.WaitAsync();
+
+            if (wait.IsCompleted)
+                return await m_releaser;
+            else
+            {
+                await wait;
+                return new Releaser(this);
+            }
+        }
+#endif
 
         public struct Releaser : IDisposable
         {

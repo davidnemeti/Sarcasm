@@ -29,7 +29,7 @@ namespace Sarcasm.Unparsing
         public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
             return unparser.Lock.LockAsync()
-                .ContinueWith(task => TaskEx.Run(() => { using (task.Result) return utokens.AsText(unparser); }))
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => utokens.AsText(unparser)); })
                 .Unwrap();
         }
 
@@ -38,12 +38,11 @@ namespace Sarcasm.Unparsing
             return unparser.Lock.LockAsync()
                 .ContinueWith(
                     task =>
-                        TaskEx.Run(
-                            () =>
-                            {
-                                using (task.Result)
-                                {
-                                    return string.Concat(
+                    {
+                        using (task.Result)
+                            return TaskEx.Run(
+                                () =>
+                                    string.Concat(
                                         utokens.Select(
                                             utoken =>
                                             {
@@ -51,11 +50,11 @@ namespace Sarcasm.Unparsing
                                                 return utoken.ToText(unparser.Formatter);
                                             }
                                         )
-                                    );
-                                }
-                            },
-                            cancellationToken
-                        ),
+                                    )
+                                ,
+                                cancellationToken
+                            );
+                    },
                     cancellationToken
                 )
                 .Unwrap();
