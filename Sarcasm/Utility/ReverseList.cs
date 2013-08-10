@@ -6,10 +6,10 @@ using System.Linq;
 namespace Sarcasm.Utility
 {
     public abstract class ReverseListBase<T>
-#if !PCL
-        : IReadOnlyCollection<T>
-#else
+#if NET4_0
         : IEnumerable
+#else
+        : IReadOnlyCollection<T>
 #endif
     {
         public abstract int Count { get; }
@@ -38,7 +38,7 @@ namespace Sarcasm.Utility
         }
     }
 
-#if !PCL
+#if !NET4_0
     public class ReverseReadOnlyList<T> : ReverseListBase<T>, IReadOnlyList<T>
     {
         private readonly IReadOnlyList<T> items;

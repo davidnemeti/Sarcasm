@@ -12,7 +12,7 @@ namespace Sarcasm.Utility
 {
     public static class Util
     {
-#if PCL
+#if NET4_0
         private static class Comparer<T>
         {
             public static readonly IComparer<T> Default = System.Collections.Generic.Comparer<T>.Default;
@@ -45,7 +45,7 @@ namespace Sarcasm.Utility
             return new ReadOnlyObservableCollection<T>(source);
         }
 
-#if !PCL
+#if !NET4_0
         public static ReadOnlyDictionary<TKey, TValue> CreateAndGetReadonlyDictionary<TKey, TValue>(out Dictionary<TKey, TValue> source)
         {
             source = new Dictionary<TKey, TValue>();
@@ -284,7 +284,7 @@ namespace Sarcasm.Utility
         {
             if (items is IList<T>)
                 return ReverseOptimized((IList<T>)items);
-#if !PCL
+#if !NET4_0
             else if (items is IReadOnlyList<T>)
                 return ReverseOptimized((IReadOnlyList<T>)items);
 #endif
@@ -303,7 +303,7 @@ namespace Sarcasm.Utility
             return new ReverseList<T>(items);
         }
 
-#if !PCL
+#if !NET4_0
         public static IReadOnlyList<T> ReverseOptimized<T>(this IReadOnlyList<T> items)
         {
             return new ReverseReadOnlyList<T>(items);
