@@ -12,7 +12,7 @@ namespace Sarcasm.Utility
 {
     public static class Util
     {
-#if NET4_0
+#if PCL
         private static class Comparer<T>
         {
             public static readonly IComparer<T> Default = System.Collections.Generic.Comparer<T>.Default;
