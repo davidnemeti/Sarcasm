@@ -68,7 +68,8 @@ namespace Sarcasm.Unparsing
         private HashSet<Comments> unparsedComments;
         public bool EnablePartialInvalidation { get; set; }
         public bool EnableParallelProcessing { get; set; }
-        public readonly AsyncLock Lock = new AsyncLock(); 
+        public readonly AsyncLock Lock = new AsyncLock();
+        private CancellationToken cancellationToken;
 
         #endregion
 
@@ -153,6 +154,7 @@ namespace Sarcasm.Unparsing
             this.EnableParallelProcessing = that.EnableParallelProcessing;
             this.parallelTaskCounter = that.parallelTaskCounter;
             this._direction = that._direction;
+            this.cancellationToken = that.cancellationToken;
             this.constantTerminalToInverseConstantTable = that.constantTerminalToInverseConstantTable;
 
             // the following should be set after the constructor
@@ -179,10 +181,20 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(Document document, Direction direction = directionDefault)
         {
-            return Unparse(document, Grammar.Root, direction);
+            return Unparse(document, CancellationToken.None, direction);
+        }
+
+        public IEnumerable<Utoken> Unparse(Document document, CancellationToken cancellationToken, Direction direction = directionDefault)
+        {
+            return Unparse(document, Grammar.Root, cancellationToken, direction);
         }
 
         public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, Direction direction = directionDefault)
+        {
+            return Unparse(document, bnfTerm, CancellationToken.None, direction);
+        }
+
+        public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction = directionDefault)
         {
             this.astValueToComments =
                 astValue =>
@@ -194,24 +206,37 @@ namespace Sarcasm.Unparsing
                 };
 
             this.unparsedComments = new HashSet<Comments>();
-            return _Unparse(document.Root, bnfTerm, direction);
+
+            return _Unparse(document.Root, bnfTerm, cancellationToken, direction);
         }
 
         public IEnumerable<Utoken> Unparse(object astValue, Direction direction = directionDefault)
         {
-            return Unparse(astValue, Grammar.Root, direction);
+            return Unparse(astValue, CancellationToken.None, direction);
+        }
+
+        public IEnumerable<Utoken> Unparse(object astValue, CancellationToken cancellationToken, Direction direction = directionDefault)
+        {
+            return Unparse(astValue, Grammar.Root, cancellationToken, direction);
         }
 
         public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, Direction direction = directionDefault)
         {
-            this.astValueToComments = _ => null;
-            this.unparsedComments = new HashSet<Comments>();
-            return _Unparse(astValue, bnfTerm, direction);
+            return Unparse(astValue, bnfTerm, CancellationToken.None, direction);
         }
 
-        private IEnumerable<Utoken> _Unparse(object astValue, BnfTerm bnfTerm, Direction direction)
+        public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction = directionDefault)
+        {
+            this.astValueToComments = _ => null;
+            this.unparsedComments = new HashSet<Comments>();
+
+            return _Unparse(astValue, bnfTerm, cancellationToken, direction);
+        }
+
+        private IEnumerable<Utoken> _Unparse(object astValue, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction)
         {
             ResetMutableState();
+            this.cancellationToken = cancellationToken;
             this.direction = direction;
             var root = new UnparsableAst(bnfTerm, astValue);
             root.SetAsRoot();
@@ -464,33 +489,48 @@ namespace Sarcasm.Unparsing
 #else
                     Task.Run(
 #endif
-() =>
-                    {
-                        subUtokensList[taskIndex] = new List<UtokenBase>();
+                        () =>
+                        {
+                            try
+                            {
+                                subUtokensList[taskIndex] = new List<UtokenBase>();
 
-                        int subRangeBeginIndex = taskIndex * subRangeCount;
-                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+                                int subRangeBeginIndex = taskIndex * subRangeCount;
+                                int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
 
-                        Formatter.ChildLocation childLocation =
-                            chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
-                            subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
-                            subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
-                                                                                    Formatter.ChildLocation.Middle;
+                                Formatter.ChildLocation childLocation =
+                                    chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
+                                    subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
+                                    subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
+                                                                                            Formatter.ChildLocation.Middle;
 
-                        Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+                                Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
 
-                        for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
-                            subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+                                for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                                {
+                                    subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
+                                    this.cancellationToken.ThrowIfCancellationRequested();
+                                }
+                            }
+                            finally
+                            {
+                                ReleaseTaskIfNeeded(taskIndex);
+                            }
+                        },
+                        this.cancellationToken
+                    );
 
-                        ReleaseTaskIfNeeded(taskIndex);
-                    });
+                this.cancellationToken.ThrowIfCancellationRequested();
             }
 
-            Task.WaitAll(subUnparseTasks);
+            Task.WaitAll(subUnparseTasks, this.cancellationToken);
 
             foreach (var subUtokens in subUtokensList)
                 foreach (UtokenBase utoken in subUtokens)
+                {
                     yield return utoken;
+                    this.cancellationToken.ThrowIfCancellationRequested();
+                }
         }
 
         private bool ShouldUnparseParallelAndAcquireTasksIfNeeded(IEnumerable<UnparsableAst> chosenChildren,
