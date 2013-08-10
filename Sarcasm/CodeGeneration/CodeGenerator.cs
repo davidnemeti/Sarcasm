@@ -22,7 +22,7 @@ namespace Sarcasm.CodeGeneration
 
     public static class CodeGeneratorExtensions
     {
-#if SILVERLIGHT
+#if NET4_0
         public static Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
         {
             return codeGenerator.Lock.LockAsync()

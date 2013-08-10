@@ -8,7 +8,7 @@ namespace Sarcasm.Utility
 {
     public class AsyncSemaphore
     {
-#if SILVERLIGHT
+#if NET4_0
         private readonly static Task s_completed = new Task(() => { });
 #else
         private readonly static Task s_completed = Task.FromResult(true);

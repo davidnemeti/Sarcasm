@@ -15,7 +15,7 @@ namespace Sarcasm.Utility
         public AsyncLock()
         {
             m_semaphore = new AsyncSemaphore(1);
-#if SILVERLIGHT
+#if NET4_0
             m_releaser = new Task<Releaser>(() => new Releaser(this));
 #else
             m_releaser = Task.FromResult(new Releaser(this));
