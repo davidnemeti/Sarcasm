@@ -31,6 +31,7 @@ namespace Sarcasm
 #endif
     }
 
+#if NET4_0
     [AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)]
     public sealed class CallerMemberNameAttribute : Attribute
     {
@@ -58,6 +59,7 @@ namespace Sarcasm
             return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
         }
     }
+#endif
 
     public class TraceSource
     {
