@@ -51,8 +51,6 @@ namespace Sarcasm.Reflection
 
         public void RegisterDomains(Assembly assembly)
         {
-            RegisterAssemblyResolver();
-
             var newMetaDomains = assembly
                 .GetTypes()
                 .Where(type => MetaDomain.IsDomain(type))
@@ -60,8 +58,6 @@ namespace Sarcasm.Reflection
 
             foreach (MetaDomain newMetaDomain in newMetaDomains)
                 RegisterDomain(newMetaDomain);
-
-            UnregisterAssemblyResolver();
         }
 
         public void RegisterDomain(MetaDomain metaDomain)
@@ -71,8 +67,6 @@ namespace Sarcasm.Reflection
 
         public void RegisterGrammars(Assembly assembly)
         {
-            RegisterAssemblyResolver();
-
             var newMetaGrammars = assembly
                 .GetTypes()
                 .Where(type => MetaGrammar.IsGrammarType(type))
@@ -80,8 +74,6 @@ namespace Sarcasm.Reflection
 
             foreach (MetaGrammar newMetaGrammar in newMetaGrammars)
                 RegisterGrammar(newMetaGrammar);
-
-            UnregisterAssemblyResolver();
         }
 
         public void RegisterGrammar(MetaGrammar metaGrammar)
@@ -102,8 +94,6 @@ namespace Sarcasm.Reflection
 
         public void RegisterCodeGenerators(Assembly assembly)
         {
-            RegisterAssemblyResolver();
-
             var newMetaCodeGenerators = assembly
                 .GetTypes()
                 .Where(type => MetaCodeGenerator.IsCodeGeneratorType(type))
@@ -111,8 +101,6 @@ namespace Sarcasm.Reflection
 
             foreach (MetaCodeGenerator metaCodeGenerator in newMetaCodeGenerators)
                 RegisterCodeGenerator(metaCodeGenerator);
-
-            UnregisterAssemblyResolver();
         }
 
         public void RegisterCodeGenerator(MetaCodeGenerator metaCodeGenerator)
@@ -122,8 +110,6 @@ namespace Sarcasm.Reflection
 
         public void RegisterFormatters(Assembly assembly)
         {
-            RegisterAssemblyResolver();
-
             var newMetaFormatters = assembly
                 .GetTypes()
                 .Where(type => MetaFormatter.IsFormatterType(type))
@@ -131,58 +117,11 @@ namespace Sarcasm.Reflection
 
             foreach (MetaFormatter newMetaFormatter in newMetaFormatters)
                 RegisterFormatter(newMetaFormatter);
-
-            UnregisterAssemblyResolver();
         }
 
         public void RegisterFormatter(MetaFormatter metaFormatter)
         {
             GrammarTypeToMetaGrammar(metaFormatter.GrammarType).RegisterFormatter(metaFormatter);
         }
-
-        internal static void EnsureThatAssemblyResolverIsRegistered()
-        {
-            if (assemblyResolverRegistrationCount == 0)
-                RegisterAssemblyResolver();
-        }
-
-        internal static void RegisterAssemblyResolver()
-        {
-#if !PCL
-            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
-            assemblyResolverRegistrationCount++;
-#endif
-        }
-
-        internal static void UnregisterAssemblyResolver()
-        {
-#if !PCL
-            AppDomain.CurrentDomain.AssemblyResolve -= CurrentDomain_AssemblyResolve;
-            assemblyResolverRegistrationCount--;
-#endif
-        }
-
-        private static int assemblyResolverRegistrationCount = 0;
-
-#if !PCL
-        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
-        {
-            AppDomain domain = (AppDomain)sender;
-            string nameWithMainVersionNumbers = GetAssemblyNameWithMainVersionNumbers(args.Name);
-
-            foreach (var assembly in domain.GetAssemblies())
-            {
-                if (GetAssemblyNameWithMainVersionNumbers(assembly.FullName) == nameWithMainVersionNumbers)
-                    return assembly;
-            }
-
-            return null;
-        }
-
-        private static string GetAssemblyNameWithMainVersionNumbers(string fullName)
-        {
-            return Regex.Match(fullName, @"(.*, Version=\d*\.\d*)").Groups[1].Value;
-        }
-#endif
     }
 }

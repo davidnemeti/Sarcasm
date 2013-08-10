@@ -149,8 +149,6 @@ namespace Sarcasm.UniversalGrammars
             if (typeKeyValue.Key != TYPE_KEYWORD)
                 throw new AstException(string.Format("{0} is missing for type declaration", TYPE_KEYWORD));
 
-            MetaRepository.EnsureThatAssemblyResolverIsRegistered();
-
             string typeNameWithAssembly = (string)typeKeyValue.Value;
             Type type = Type.GetType(typeNameWithAssembly);
 
