@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias globalMiniPL;
+
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,7 +12,7 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainDefinitions;
+using globalMiniPL::MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 

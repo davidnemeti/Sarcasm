@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Silverl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Android", "DecorationConnector.Android\DecorationConnector.Android.csproj", "{FA9EBCF3-4E59-4652-B7EC-0222C552609C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasm.UnitTest.PCL", "Sarcasm.UnitTest\Sarcasm.UnitTest.PCL.csproj", "{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

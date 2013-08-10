@@ -1,10 +1,12 @@
-﻿using System;
+﻿extern alias globalMiniPL;
+
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.CodeDom.Compiler;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.CSharp;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Irony;
 using Irony.Ast;
@@ -14,9 +16,10 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainDefinitions;
+using globalMiniPL::MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
+using CompilerError = global::System.CodeDom.Compiler.CompilerError;
 using System.Reflection;
 
 namespace Sarcasm.UnitTest
@@ -35,7 +38,7 @@ namespace Sarcasm.UnitTest
             // NOTE: This is just to test whether these calls compile successfully. There is no need to actually call the Parse methods.
 
             // ensure that parser is typesafe
-            MultiParser<MiniPL.DomainDefinitions.Program> _parser = parser;
+            MultiParser<Program> _parser = parser;
 
             parser.Parse(string.Empty);
             parser.Parse(string.Empty, string.Empty);
@@ -370,9 +373,15 @@ namespace Sarcasm.UnitTest
             parameters.GenerateInMemory = true;
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Core.dll");
+#if PCL
+            parameters.ReferencedAssemblies.Add("Irony.PCL.dll");
+            parameters.ReferencedAssemblies.Add("Sarcasm.PCL.dll");
+            parameters.ReferencedAssemblies.Add("MiniPL.PCL.dll");
+#else
             parameters.ReferencedAssemblies.Add("Irony.dll");
             parameters.ReferencedAssemblies.Add("Sarcasm.dll");
             parameters.ReferencedAssemblies.Add("MiniPL.dll");
+#endif
             parameters.ReferencedAssemblies.Add(typeof(TypesafetyTest).Assembly.Location);
 
             string sourceCode = GetFullSourceCodeFromMethodBody(methodBodySourceCode);
@@ -445,7 +454,7 @@ namespace Sarcasm.UnitTest
             public BoolExpression Term2 { get; set; }
         }
 
-        public class BoolExpression : MiniPL.DomainDefinitions.Expression
+        public class BoolExpression : globalMiniPL::MiniPL.DomainDefinitions.Expression
         {
         }
 

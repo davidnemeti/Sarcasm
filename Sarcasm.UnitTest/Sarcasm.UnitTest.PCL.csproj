@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F0AEF19D-DA8E-49F7-BAA6-AA636BE48F82}</ProjectGuid>
+    <ProjectGuid>{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sarcasm.UnitTest</RootNamespace>
-    <AssemblyName>Sarcasm.UnitTest</AssemblyName>
+    <AssemblyName>Sarcasm.UnitTest.PCL</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -64,14 +64,13 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\Irony.dll</HintPath>
+    <Reference Include="Irony.PCL">
+      <HintPath>..\Libraries\Irony.PCL.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -109,17 +108,6 @@
     <Compile Include="Tests\UnparserTest.cs" />
     <Compile Include="Tests\ParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MiniPL\MiniPL.csproj">
-      <Project>{30c09358-f048-417b-9df6-75d51ca96349}</Project>
-      <Name>MiniPL</Name>
-      <Aliases>globalMiniPL</Aliases>
-    </ProjectReference>
-    <ProjectReference Include="..\Sarcasm\Sarcasm.csproj">
-      <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
-      <Name>Sarcasm</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Expected results\ASTs\Binary3.json">
@@ -204,7 +192,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\MiniPL\MiniPL.PCL.csproj">
+      <Project>{49fe1105-fcea-4d3a-8880-4e31580d2068}</Project>
+      <Name>MiniPL.PCL</Name>
+      <Aliases>globalMiniPL</Aliases>
+    </ProjectReference>
+    <ProjectReference Include="..\Sarcasm\Sarcasm.PCL.csproj">
+      <Project>{e70f1a8c-e2e4-4676-acf1-f429c23cb4f5}</Project>
+      <Name>Sarcasm.PCL</Name>
+      <Aliases>global</Aliases>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>

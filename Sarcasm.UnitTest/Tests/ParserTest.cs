@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias globalMiniPL;
+
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -10,7 +12,7 @@ using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainDefinitions;
+using globalMiniPL::MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 
@@ -59,6 +61,12 @@ namespace Sarcasm.UnitTest
 
             string expectedAstPath = Path.Combine(expectedAstDir, astFileName);
             string expectedAstContent = File.ReadAllText(expectedAstPath);
+
+#if PCL
+            actualAstContent = actualAstContent.Replace(", MiniPL.PCL", ", MiniPL");
+            actualAstContent = actualAstContent.Replace(", Sarcasm.PCL", ", Sarcasm");
+            actualAstContent = actualAstContent.Replace(", Irony.PCL", ", Irony");
+#endif
 
             // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
             Assert.AreEqual(expectedAstContent, actualAstContent, string.Format("Expected and actual parsed tree differs for file: '{0}'", parseFileName));

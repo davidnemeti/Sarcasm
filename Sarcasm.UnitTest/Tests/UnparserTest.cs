@@ -1,4 +1,6 @@
-﻿using System;
+﻿extern alias globalMiniPL;
+
+using System;
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +13,7 @@ using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
-using MiniPL.DomainDefinitions;
+using globalMiniPL::MiniPL.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using Sarcasm.DomainCore;
@@ -73,9 +75,9 @@ namespace Sarcasm.UnitTest
             Assert.AreEqual(expected: originalSourceText, actual: unparsedSourceText, message: string.Format("Original and unparsed text differs for file: '{0}'", parseFileName));
         }
 
-        private class SpecialFormatter : MiniPL.Grammars.GrammarP.Formatter
+        private class SpecialFormatter : globalMiniPL::MiniPL.Grammars.GrammarP.Formatter
         {
-            public SpecialFormatter(MiniPL.Grammars.GrammarP grammar)
+            public SpecialFormatter(globalMiniPL::MiniPL.Grammars.GrammarP grammar)
                 : base(grammar)
             {
             }
