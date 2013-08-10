@@ -22,6 +22,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{AC0608C7-181C-49F0-AB19-28187C6ACAA6}"
 	ProjectSection(SolutionItems) = preProject
 		Deploy.ps1 = Deploy.ps1
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasm.PCL", "Sarcasm\Sarcasm.PCL.csproj", "{E70F1A8C-E2E4-4676-ACF1-F429C23CB4F5}"
