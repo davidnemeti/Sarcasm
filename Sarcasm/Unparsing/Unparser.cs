@@ -489,7 +489,7 @@ namespace Sarcasm.Unparsing
                     int taskIndex = i;      // NOTE: needed for closure working correctly
 
                     subUnparseTasks[taskIndex] =
-#if PCL
+#if NET4_0
                     TaskEx.Run(
 #else
                     Task.Run(
