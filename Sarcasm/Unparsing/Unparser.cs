@@ -478,7 +478,6 @@ namespace Sarcasm.Unparsing
         {
             public Task SubTask;
             public IList<UtokenBase> Result;
-            public AutoResetEvent AutoResetEvent;
         }
 
         private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableAst> chosenChildrenList, int numberOfParallelTasksToStartActually, int subRangeCount)
@@ -496,7 +495,6 @@ namespace Sarcasm.Unparsing
 
                     subUnparseTasks[taskIndex] = new SubUnparseTask();
                     subUnparseTasks[taskIndex].Result = new List<UtokenBase>();
-                    subUnparseTasks[taskIndex].AutoResetEvent = new AutoResetEvent(initialState: false);
                     subUnparseTasks[taskIndex].SubTask =
 #if NET4_0
                         TaskEx.Run(
