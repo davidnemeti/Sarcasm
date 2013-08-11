@@ -524,7 +524,6 @@ namespace Sarcasm.Unparsing
                                         {
                                             this.cancellationToken.ThrowIfCancellationRequested();
                                             subUnparseTasks[taskIndex].Result.Add(utoken);
-//                                            subUnparseTasks[taskIndex].AutoResetEvent.Set();
                                         }
                                     }
                                 }
@@ -535,7 +534,6 @@ namespace Sarcasm.Unparsing
                                         bool released = ReleaseTaskIfNeeded(taskIndex);
                                         if (released) numberOfReleasedTasks++;
                                     }
-//                                    subUnparseTasks[taskIndex].AutoResetEvent.Set();
                                 }
                             },
                             this.cancellationToken
@@ -554,12 +552,6 @@ namespace Sarcasm.Unparsing
 
                         if (subUnparseTask.SubTask.IsCompleted)
                             break;
-
-                        //if (!subUnparseTask.SubTask.IsCompleted && subUtokenIndex == subUnparseTask.Result.Count)
-                        //    subUnparseTask.AutoResetEvent.WaitOne();
-
-                        //if (subUnparseTask.SubTask.IsCompleted || subUtokenIndex == subUnparseTask.Result.Count)
-                        //    break;
 
                         yield return subUnparseTask.Result[subUtokenIndex++];
 
