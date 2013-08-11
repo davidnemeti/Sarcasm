@@ -1,6 +1,4 @@
-﻿#if PCL
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,6 +8,7 @@ using System.Reflection;
 
 namespace Sarcasm
 {
+#if PCL
     public static class Extensions
     {
         public static TAttribute GetCustomAttribute<TAttribute>(this Type type)
@@ -32,31 +31,26 @@ namespace Sarcasm
     }
 
 #if NET4_0
-    [AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)]
-    public sealed class CallerMemberNameAttribute : Attribute
+    // in .NET 4.0 SpinWait exists but not portable
+    public struct SpinWait
     {
-    }
-
-    public static class TaskEx
-    {
-        public static Task Run(Action action)
+        public static void SpinUntil(Func<bool> condition)
         {
-            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-        }
+            while (!condition())
+            {
+                // do nothing
 
-        public static Task Run(Action action, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
-        }
+                /*
+                 * In portable .NET 4.0 almost nothing is accessible what we could use here (Thread.Sleep, Thread.Yield) to implement SpinUntil,
+                 * so we just doing nothing inside the loop.
+                 * 
+                 * NOTE that a loop with a condition which body is really empty would actively use the CPU which would result in a performance decrease.
+                 * So in the body we use a little trick: we create a task which does nothing and we are waiting for that task.
+                 * Performance measurements confirm that this implementation of SpinUntil is as efficient as the original .NET version.
+                 * */
 
-        public static Task<TResult> Run<TResult>(Func<TResult> function)
-        {
-            return Task.Factory.StartNew(function, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
-        }
-
-        public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
-        {
-            return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+                Task.Factory.StartNew(() => { /* do nothing */ }, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default).Wait();
+            }
         }
     }
 #endif
@@ -93,6 +87,35 @@ namespace Sarcasm
     {
         Verbose
     }
-}
-
 #endif
+
+#if NET4_0
+    [AttributeUsageAttribute(AttributeTargets.Parameter, Inherited = false)]
+    public sealed class CallerMemberNameAttribute : Attribute
+    {
+    }
+
+    public static class TaskEx
+    {
+        public static Task Run(Action action)
+        {
+            return Task.Factory.StartNew(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+        }
+
+        public static Task Run(Action action, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+        }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> function)
+        {
+            return Task.Factory.StartNew(function, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+        }
+
+        public static Task<TResult> Run<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        {
+            return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+        }
+    }
+#endif
+}

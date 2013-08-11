@@ -76,10 +76,14 @@ namespace Playground
             //ShowTimeAndRestart(stopwatch, "Converting utokens to string");
 
             unparser.EnableParallelProcessing = false;
+            //foreach (Utoken utoken in unparser.Unparse(astRootValue))
+            //    Console.WriteLine(utoken.ToString());
             unparser.Unparse(astRootValue).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Sequential unparsing to string");
 
             unparser.EnableParallelProcessing = true;
+            //foreach (Utoken utoken in unparser.Unparse(astRootValue))
+            //    Console.WriteLine(utoken.ToString());
             unparser.Unparse(astRootValue).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Parallel unparsing to string");
 

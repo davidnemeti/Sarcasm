@@ -474,10 +474,16 @@ namespace Sarcasm.Unparsing
                     yield return utoken;
         }
 
+        private class SubUnparseTask
+        {
+            public Task SubTask;
+            public IList<UtokenBase> Result;
+            public AutoResetEvent AutoResetEvent;
+        }
+
         private IEnumerable<UtokenBase> UnparseRawParallel(List<UnparsableAst> chosenChildrenList, int numberOfParallelTasksToStartActually, int subRangeCount)
         {
-            var subUnparseTasks = new Task[numberOfParallelTasksToStartActually];
-            var subUtokensList = new List<UtokenBase>[numberOfParallelTasksToStartActually];
+            var subUnparseTasks = new SubUnparseTask[numberOfParallelTasksToStartActually];
 
             int numberOfAllTasksToBeReleased = numberOfParallelTasksToStartActually - 1;
             int numberOfReleasedTasks = 0;
@@ -488,21 +494,22 @@ namespace Sarcasm.Unparsing
                 {
                     int taskIndex = i;      // NOTE: needed for closure working correctly
 
-                    subUnparseTasks[taskIndex] =
+                    subUnparseTasks[taskIndex] = new SubUnparseTask();
+                    subUnparseTasks[taskIndex].Result = new List<UtokenBase>();
+                    subUnparseTasks[taskIndex].AutoResetEvent = new AutoResetEvent(initialState: false);
+                    subUnparseTasks[taskIndex].SubTask =
 #if NET4_0
-                    TaskEx.Run(
+                        TaskEx.Run(
 #else
-                    Task.Run(
+                        Task.Run(
 #endif
-                    () =>
+                            () =>
                             {
+                                int subRangeBeginIndex = taskIndex * subRangeCount;
+                                int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+
                                 try
                                 {
-                                    subUtokensList[taskIndex] = new List<UtokenBase>();
-
-                                    int subRangeBeginIndex = taskIndex * subRangeCount;
-                                    int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
-
                                     Formatter.ChildLocation childLocation =
                                         chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
                                         subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
@@ -513,36 +520,57 @@ namespace Sarcasm.Unparsing
 
                                     for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
                                     {
-                                        subUtokensList[taskIndex].AddRange(subUnparser.UnparseRaw(chosenChildrenList[childIndex]));
-                                        this.cancellationToken.ThrowIfCancellationRequested();
+                                        foreach (UtokenBase utoken in subUnparser.UnparseRaw(chosenChildrenList[childIndex]))
+                                        {
+                                            this.cancellationToken.ThrowIfCancellationRequested();
+                                            subUnparseTasks[taskIndex].Result.Add(utoken);
+//                                            subUnparseTasks[taskIndex].AutoResetEvent.Set();
+                                        }
                                     }
                                 }
                                 finally
                                 {
-                                    bool released = ReleaseTaskIfNeeded(taskIndex);
-                                    if (released) numberOfReleasedTasks++;
+                                    lock (parallelTaskCounter)
+                                    {
+                                        bool released = ReleaseTaskIfNeeded(taskIndex);
+                                        if (released) numberOfReleasedTasks++;
+                                    }
+//                                    subUnparseTasks[taskIndex].AutoResetEvent.Set();
                                 }
                             },
                             this.cancellationToken
-                        );
+                            );
 
                     this.cancellationToken.ThrowIfCancellationRequested();
                 }
 
-                Task.WaitAll(subUnparseTasks, this.cancellationToken);
+                foreach (var subUnparseTask in subUnparseTasks)
+                {
+                    int subUtokenIndex = 0;
+
+                    while (true)
+                    {
+                        SpinWait.SpinUntil(() => subUtokenIndex < subUnparseTask.Result.Count || subUnparseTask.SubTask.IsCompleted);
+
+                        if (subUnparseTask.SubTask.IsCompleted)
+                            break;
+
+                        //if (!subUnparseTask.SubTask.IsCompleted && subUtokenIndex == subUnparseTask.Result.Count)
+                        //    subUnparseTask.AutoResetEvent.WaitOne();
+
+                        //if (subUnparseTask.SubTask.IsCompleted || subUtokenIndex == subUnparseTask.Result.Count)
+                        //    break;
+
+                        yield return subUnparseTask.Result[subUtokenIndex++];
+
+                        this.cancellationToken.ThrowIfCancellationRequested();
+                    }
+                }
             }
             finally
             {
-                ReleaseRemainingTasksIfAny(numberOfRemainingTasksToBeReleased: numberOfAllTasksToBeReleased - numberOfReleasedTasks);
-            }
-
-            foreach (var subUtokens in subUtokensList)
-            {
-                foreach (UtokenBase utoken in subUtokens)
-                {
-                    yield return utoken;
-                    this.cancellationToken.ThrowIfCancellationRequested();
-                }
+                lock (parallelTaskCounter)
+                    ReleaseRemainingTasksIfAny(numberOfRemainingTasksToBeReleased: numberOfAllTasksToBeReleased - numberOfReleasedTasks);
             }
         }
 
