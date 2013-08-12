@@ -476,6 +476,12 @@ namespace Sarcasm.Unparsing
 
         private class SubUnparseTask
         {
+            public SubUnparseTask(Task subTask, IList<UtokenBase> result)
+            {
+                this.SubTask = subTask;
+                this.Result = result;
+            }
+
             public Task SubTask;
             public IList<UtokenBase> Result;
         }
@@ -493,49 +499,53 @@ namespace Sarcasm.Unparsing
                 {
                     int taskIndex = i;      // NOTE: needed for closure working correctly
 
-                    subUnparseTasks[taskIndex] = new SubUnparseTask();
-                    subUnparseTasks[taskIndex].Result = new List<UtokenBase>();
-                    subUnparseTasks[taskIndex].SubTask =
+                    var subUnparseUtokens = new List<UtokenBase>();
+
+                    subUnparseTasks[taskIndex] =
+                        new SubUnparseTask(
+                            result: subUnparseUtokens,
+                            subTask:
 #if NET4_0
-                        TaskEx.Run(
+                                TaskEx.Run(
 #else
-                        Task.Run(
+                                Task.Run(
 #endif
-                            () =>
-                            {
-                                int subRangeBeginIndex = taskIndex * subRangeCount;
-                                int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
-
-                                try
-                                {
-                                    Formatter.ChildLocation childLocation =
-                                        chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
-                                        subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
-                                        subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
-                                                                                                Formatter.ChildLocation.Middle;
-
-                                    Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
-
-                                    for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                                    () =>
                                     {
-                                        foreach (UtokenBase utoken in subUnparser.UnparseRaw(chosenChildrenList[childIndex]))
+                                        int subRangeBeginIndex = taskIndex * subRangeCount;
+                                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+
+                                        try
                                         {
-                                            this.cancellationToken.ThrowIfCancellationRequested();
-                                            subUnparseTasks[taskIndex].Result.Add(utoken);
+                                            Formatter.ChildLocation childLocation =
+                                                chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
+                                                subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
+                                                subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
+                                                                                                        Formatter.ChildLocation.Middle;
+
+                                            Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
+
+                                            for (int childIndex = subRangeBeginIndex; childIndex < subRangeEndIndex; childIndex++)
+                                            {
+                                                foreach (UtokenBase utoken in subUnparser.UnparseRaw(chosenChildrenList[childIndex]))
+                                                {
+                                                    this.cancellationToken.ThrowIfCancellationRequested();
+                                                    subUnparseUtokens.Add(utoken);
+                                                }
+                                            }
                                         }
-                                    }
-                                }
-                                finally
-                                {
-                                    lock (parallelTaskCounter)
-                                    {
-                                        bool released = ReleaseTaskIfNeeded(taskIndex);
-                                        if (released) numberOfReleasedTasks++;
-                                    }
-                                }
-                            },
-                            this.cancellationToken
-                            );
+                                        finally
+                                        {
+                                            lock (parallelTaskCounter)
+                                            {
+                                                bool released = ReleaseTaskIfNeeded(taskIndex);
+                                                if (released) numberOfReleasedTasks++;
+                                            }
+                                        }
+                                    },
+                                    this.cancellationToken
+                                )
+                        );
 
                     this.cancellationToken.ThrowIfCancellationRequested();
                 }
