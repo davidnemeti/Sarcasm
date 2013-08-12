@@ -54,6 +54,8 @@ namespace Sarcasm.Unparsing
         }
 
         public Discriminator Discriminator { get; protected set; }
+
+        public object Tag { get; set; }
     }
 
     public interface Utoken
@@ -61,6 +63,7 @@ namespace Sarcasm.Unparsing
         string ToText(Formatter formatter);
         IReadOnlyDecoration Decoration { get; }
         Discriminator Discriminator { get; }
+        object Tag { get; set; }
     }
 
     public abstract class UtokenValue : UtokenBase
