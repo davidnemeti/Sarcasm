@@ -140,22 +140,37 @@ namespace DecorationConnector.Silverlight
 
         private Windows.TextDecorationCollection TransformTextDecoration(Styles.TextDecoration textDecoration)
         {
-            switch (textDecoration)
+            if (textDecoration == TextDecoration.Baseline)
+                return null;    // no pair for this -> return the default style
+
+            else if (textDecoration == TextDecoration.OverLine)
+                return null;    // no pair for this -> return the default style
+
+            else if (textDecoration == TextDecoration.Strikethrough)
+                return null;    // no pair for this -> return the default style
+
+            else if (textDecoration == TextDecoration.Underline)
+                return Windows.TextDecorations.Underline;
+
+            else
             {
-                case Styles.TextDecoration.Baseline:
-                    return null;    // no pair for this -> return the default style
+                switch (textDecoration.Location)
+                {
+                    case Styles.TextDecorationLocation.Baseline:
+                        return null;    // no pair for this -> return the default style
 
-                case Styles.TextDecoration.OverLine:
-                    return null;    // no pair for this -> return the default style
+                    case Styles.TextDecorationLocation.OverLine:
+                        return null;    // no pair for this -> return the default style
 
-                case Styles.TextDecoration.Strikethrough:
-                    return null;    // no pair for this -> return the default style
+                    case Styles.TextDecorationLocation.Strikethrough:
+                        return null;    // no pair for this -> return the default style
 
-                case Styles.TextDecoration.Underline:
-                    return Windows.TextDecorations.Underline;
+                    case Styles.TextDecorationLocation.Underline:
+                        return Windows.TextDecorations.Underline;
 
-                default:
-                    throw new ArgumentException("textDecoration");
+                    default:
+                        throw new ArgumentException("textDecoration");
+                }
             }
         }
 

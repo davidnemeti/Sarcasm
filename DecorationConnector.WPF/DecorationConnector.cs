@@ -140,23 +140,59 @@ namespace DecorationConnector.WPF
 
         private Windows.TextDecorationCollection TransformTextDecoration(Styles.TextDecoration textDecoration)
         {
-            switch (textDecoration)
+            if (textDecoration == TextDecoration.Baseline)
+                return Windows.TextDecorations.Baseline;
+
+            else if (textDecoration == TextDecoration.OverLine)
+                return Windows.TextDecorations.OverLine;
+
+            else if (textDecoration == TextDecoration.Strikethrough)
+                return Windows.TextDecorations.Strikethrough;
+
+            else if (textDecoration == TextDecoration.Underline)
+                return Windows.TextDecorations.Underline;
+
+            else
             {
-                case Styles.TextDecoration.Baseline:
-                    return Windows.TextDecorations.Baseline;
+                return new Windows.TextDecorationCollection(
+                    new[]
+                    {
+                        new Windows.TextDecoration(
+                            TransformTextDecorationLocation(textDecoration.Location),
+                            TransformPen(textDecoration.Pen),
+                            textDecoration.PenOffset,
+                            Windows.TextDecorationUnit.FontRecommended,
+                            Windows.TextDecorationUnit.FontRecommended
+                            )
+                    }
+                    );
+            }
+        }
 
-                case Styles.TextDecoration.OverLine:
-                    return Windows.TextDecorations.OverLine;
+        private Windows.TextDecorationLocation TransformTextDecorationLocation(Styles.TextDecorationLocation textDecorationLocation)
+        {
+            switch (textDecorationLocation)
+            {
+                case Styles.TextDecorationLocation.Baseline:
+                    return Windows.TextDecorationLocation.Baseline;
 
-                case Styles.TextDecoration.Strikethrough:
-                    return Windows.TextDecorations.Strikethrough;
+                case Styles.TextDecorationLocation.OverLine:
+                    return Windows.TextDecorationLocation.OverLine;
 
-                case Styles.TextDecoration.Underline:
-                    return Windows.TextDecorations.Underline;
+                case Styles.TextDecorationLocation.Strikethrough:
+                    return Windows.TextDecorationLocation.Strikethrough;
+
+                case Styles.TextDecorationLocation.Underline:
+                    return Windows.TextDecorationLocation.Underline;
 
                 default:
                     throw new ArgumentException("textDecoration");
             }
+        }
+
+        private Media.Pen TransformPen(Styles.Pen pen)
+        {
+            return new Media.Pen(new Media.SolidColorBrush(TransformColor(pen.Color)), pen.Thickness);
         }
 
         private Windows.BaselineAlignment TransformBaselineAlignment(Styles.BaselineAlignment baselineAlignment)

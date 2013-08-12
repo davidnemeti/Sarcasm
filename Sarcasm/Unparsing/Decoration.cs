@@ -128,6 +128,11 @@ namespace Sarcasm.Unparsing
         {
             return value;
         }
+
+        public static IReadOnlyDecoration Compose(this IReadOnlyDecoration primaryDecoration, IReadOnlyDecoration secondaryDecoration)
+        {
+            return new DecorationComposer(primaryDecoration, secondaryDecoration);
+        }
     }
 
     public class Decoration : IDecoration
@@ -167,11 +172,6 @@ namespace Sarcasm.Unparsing
         public bool ContainsKey(IDecorationKey key)
         {
             return primaryDecoration.ContainsKey(key) || secondaryDecoration.ContainsKey(key);
-        }
-
-        public bool TryGetValue<T>(IDecorationKey<T> key, out T value)
-        {
-            return primaryDecoration.TryGetValue(key, out value) || secondaryDecoration.TryGetValue(key, out value);
         }
 
         public bool TryGetValueTypeless(IDecorationKey key, out object value)

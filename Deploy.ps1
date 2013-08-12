@@ -19,19 +19,19 @@ if ($project -eq "")
     $project = $projects[$projectIndex].HelpMessage
 }
 
-$msbuildpath = "C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe"
+$msbuild = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
 
 if ($project -eq "Irony")
 {
-    & $msbuildpath ..\Irony\Irony\Irony.csproj /p:Configuration=Release
-    & $msbuildpath ..\Irony\Irony\Irony.PCL.csproj /p:Configuration=Release
+    & $msbuild ..\Irony\Irony\Irony.csproj /p:Configuration=Release
+    & $msbuild ..\Irony\Irony\Irony.PCL.csproj /p:Configuration=Release
 
     Copy-Item -Path ..\Irony\Irony\bin\Release\Irony.dll -Destination Libraries -Force
     Copy-Item -Path ..\Irony\Irony\bin\Release\Irony.PCL.dll -Destination Libraries -Force
 }
 elseif ($project -eq "Sarcasm")
 {
-    & $msbuildpath Sarcasm.sln /p:Configuration=Release
+    & $msbuild Sarcasm.sln /p:Configuration=Release
 
     New-Item -Path Downloads\Temp -ItemType directory -Force
 

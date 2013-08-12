@@ -8,7 +8,33 @@ namespace Sarcasm.Unparsing.Styles
 {
     public enum FontWeight { Normal, Bold, Thin }
 
-    public enum TextDecoration { Baseline, OverLine, Strikethrough, Underline }
+    public class TextDecoration
+    {
+        static TextDecoration()
+        {
+            Baseline = new TextDecoration() { Location = TextDecorationLocation.Baseline };
+            OverLine = new TextDecoration() { Location = TextDecorationLocation.OverLine };
+            Strikethrough = new TextDecoration() { Location = TextDecorationLocation.Strikethrough };
+            Underline = new TextDecoration() { Location = TextDecorationLocation.Underline };
+        }
+
+        public TextDecorationLocation Location { get; set; }
+        public Pen Pen { get; set; }
+        public double PenOffset { get; set; }
+
+        public static TextDecoration Baseline { get; private set; }
+        public static TextDecoration OverLine { get; private set; }
+        public static TextDecoration Strikethrough { get; private set; }
+        public static TextDecoration Underline { get; private set; }
+    }
+
+    public enum TextDecorationLocation { Baseline, OverLine, Strikethrough, Underline }
+
+    public class Pen
+    {
+        public Color Color { get; set; }
+        public double Thickness { get; set; }
+    }
 
     public enum FontStyle { Normal, Italic }
 

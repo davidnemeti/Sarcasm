@@ -122,20 +122,37 @@ namespace DecorationConnector.Forms
 
         private Drawing.FontStyle TransformTextDecoration(Styles.TextDecoration textDecoration)
         {
-            switch (textDecoration)
+            if (textDecoration == TextDecoration.Baseline)
+                return Drawing.FontStyle.Regular;    // no pair for this -> return the default style
+
+            else if (textDecoration == TextDecoration.OverLine)
+                return Drawing.FontStyle.Regular;    // no pair for this -> return the default style
+
+            else if (textDecoration == TextDecoration.Strikethrough)
+                return Drawing.FontStyle.Strikeout;
+
+            else if (textDecoration == TextDecoration.Underline)
+                return Drawing.FontStyle.Underline;
+
+            else
             {
-                case Styles.TextDecoration.Baseline:
-                case Styles.TextDecoration.OverLine:
-                    return Drawing.FontStyle.Regular;       // no pair for these -> return the default style
+                switch (textDecoration.Location)
+                {
+                    case Styles.TextDecorationLocation.Baseline:
+                        return Drawing.FontStyle.Regular;    // no pair for this -> return the default style
 
-                case Styles.TextDecoration.Strikethrough:
-                    return Drawing.FontStyle.Strikeout;
+                    case Styles.TextDecorationLocation.OverLine:
+                        return Drawing.FontStyle.Regular;    // no pair for this -> return the default style
 
-                case Styles.TextDecoration.Underline:
-                    return Drawing.FontStyle.Underline;
+                    case Styles.TextDecorationLocation.Strikethrough:
+                        return Drawing.FontStyle.Strikeout;
 
-                default:
-                    throw new ArgumentException("textDecoration");
+                    case Styles.TextDecorationLocation.Underline:
+                        return Drawing.FontStyle.Underline;
+
+                    default:
+                        throw new ArgumentException("textDecoration");
+                }
             }
         }
 
