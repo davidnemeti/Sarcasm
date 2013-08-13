@@ -46,24 +46,21 @@ namespace Sarcasm.Unparsing
 
         #endregion
 
-        private IReadOnlyDecoration _decoration;
-        public IReadOnlyDecoration Decoration
+        private IDecoration _decoration;
+        public IDecoration Decoration
         {
             get { return _decoration ?? Unparsing.Decoration.None; }
             internal set { _decoration = value; }
         }
 
         public Discriminator Discriminator { get; protected set; }
-
-        public object Tag { get; set; }
     }
 
     public interface Utoken
     {
         string ToText(Formatter formatter);
-        IReadOnlyDecoration Decoration { get; }
+        IDecoration Decoration { get; }
         Discriminator Discriminator { get; }
-        object Tag { get; set; }
     }
 
     public abstract class UtokenValue : UtokenBase

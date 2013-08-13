@@ -124,6 +124,19 @@ namespace Sarcasm.Unparsing
         public string MultiLineCommentDecorator { get; set; }
         public IFormatProvider FormatProvider { get; private set; }
 
+        public CultureInfo CultureInfo
+        {
+            get { return FormatProvider as CultureInfo; }
+
+            set
+            {
+                FormatProvider = value;
+
+                foreach (Parser parser in attachedParsers)
+                    parser.Context.Culture = value;
+            }
+        }
+
         #endregion
 
         private List<Parser> attachedParsers;
@@ -227,19 +240,6 @@ namespace Sarcasm.Unparsing
 
         #region Interface to grammar
 
-        public CultureInfo CultureInfo
-        {
-            get { return (CultureInfo)FormatProvider; }
-
-            set
-            {
-                FormatProvider = value;
-
-                foreach (Parser parser in attachedParsers)
-                    parser.Context.Culture = value;
-            }
-        }
-
         public void AttachParser(MultiParser multiParserToAttach)
         {
             foreach (Parser parser in multiParserToAttach.GetParsers())
@@ -249,11 +249,6 @@ namespace Sarcasm.Unparsing
         public void AttachParser(Parser parserToAttach)
         {
             attachedParsers.Add(parserToAttach);
-        }
-
-        public void SetFormatProviderIndependentlyFromAttachedParsers(IFormatProvider formatProvider)
-        {
-            this.FormatProvider = formatProvider;
         }
 
         #endregion
