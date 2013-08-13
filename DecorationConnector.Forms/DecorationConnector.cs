@@ -23,13 +23,13 @@ namespace DecorationConnector.Forms
             this.decoration = decoration;
         }
 
-        public bool ContainsKey(IDecorationKey key)
+        public bool ContainsKey(object key)
         {
             object _;
             return TryGetValueTypeless(key, out _);
         }
 
-        public bool TryGetValueTypeless(IDecorationKey key, out object value)
+        public bool TryGetValueTypeless(object key, out object value)
         {
             bool found;
 

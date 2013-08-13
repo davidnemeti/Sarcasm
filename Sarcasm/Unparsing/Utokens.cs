@@ -49,8 +49,13 @@ namespace Sarcasm.Unparsing
         private IDecoration _decoration;
         public IDecoration Decoration
         {
-            get { return _decoration ?? Unparsing.Decoration.None; }
+            get { return _decoration ?? (_decoration = Unparsing.Decoration.None); }
             internal set { _decoration = value; }
+        }
+
+        public bool HasDecoration()
+        {
+            return _decoration != null;
         }
 
         public Discriminator Discriminator { get; protected set; }
@@ -60,6 +65,7 @@ namespace Sarcasm.Unparsing
     {
         string ToText(Formatter formatter);
         IDecoration Decoration { get; }
+        bool HasDecoration();
         Discriminator Discriminator { get; }
     }
 
