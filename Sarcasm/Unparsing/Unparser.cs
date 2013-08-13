@@ -490,13 +490,16 @@ namespace Sarcasm.Unparsing
         {
             var subUnparseTasks = new SubUnparseTask[numberOfParallelTasksToStartActually];
 
-            int numberOfAllTasksToBeReleased = numberOfParallelTasksToStartActually - 1;
-            int numberOfReleasedTasks = 0;
+            // by default all task resources should be released manually, since they have not started yet, so their finally block cannot release the resource task
+            int numberOfTaskResourcesToBeReleasedManually = numberOfParallelTasksToStartActually;
 
             try
             {
                 for (int i = 0; i < subUnparseTasks.Length; i++)
                 {
+                    this.cancellationToken.ThrowIfCancellationRequested();  // 1st
+                    numberOfTaskResourcesToBeReleasedManually--;            // 2nd (the finally block of this task will take care of the release of the resource task)
+
                     int taskIndex = i;      // NOTE: needed for closure working correctly
 
                     var subUnparseUtokens = new List<UtokenBase>();
@@ -512,11 +515,11 @@ namespace Sarcasm.Unparsing
 #endif
                                     () =>
                                     {
-                                        int subRangeBeginIndex = taskIndex * subRangeCount;
-                                        int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
-
                                         try
                                         {
+                                            int subRangeBeginIndex = taskIndex * subRangeCount;
+                                            int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
+
                                             Formatter.ChildLocation childLocation =
                                                 chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
                                                 subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
@@ -536,18 +539,12 @@ namespace Sarcasm.Unparsing
                                         }
                                         finally
                                         {
-                                            lock (parallelTaskCounter)
-                                            {
-                                                bool released = ReleaseTaskIfNeeded(taskIndex);
-                                                if (released) numberOfReleasedTasks++;
-                                            }
+                                            ReleaseTaskResource();
                                         }
                                     },
                                     this.cancellationToken
                                 )
                         );
-
-                    this.cancellationToken.ThrowIfCancellationRequested();
                 }
 
                 foreach (var subUnparseTask in subUnparseTasks)
@@ -569,8 +566,7 @@ namespace Sarcasm.Unparsing
             }
             finally
             {
-                lock (parallelTaskCounter)
-                    ReleaseRemainingTasksIfAny(numberOfRemainingTasksToBeReleased: numberOfAllTasksToBeReleased - numberOfReleasedTasks);
+                ReleaseRemainingTaskResourcesIfAny(numberOfTaskResourcesToBeReleasedManually);
             }
         }
 
@@ -594,13 +590,11 @@ namespace Sarcasm.Unparsing
                 return false;
 
             int numberOfParallelTasksToStartIdeally = chosenChildrenList.Count;
-            int numberOfNewParallelTasksToStartIdeally = numberOfParallelTasksToStartIdeally - 1;
-            int numberOfNewParallelTasksCanBeStartedActually;
+            int numberOfParallelTasksCanBeStartedActually;
 
-            if (!parallelTaskCounter.TryAcquireOrLess(numberOfNewParallelTasksToStartIdeally, out numberOfNewParallelTasksCanBeStartedActually))
+            if (!parallelTaskCounter.TryAcquireOrLess(numberOfParallelTasksToStartIdeally, out numberOfParallelTasksCanBeStartedActually))
                 return false;
 
-            int numberOfParallelTasksCanBeStartedActually = numberOfNewParallelTasksCanBeStartedActually + 1;
             subRangeCount = (int)Math.Ceiling((double)(chosenChildrenList.Count) / numberOfParallelTasksCanBeStartedActually);
             numberOfParallelTasksToStartActually = (int)Math.Ceiling((double)(chosenChildrenList.Count) / subRangeCount);
 
@@ -610,22 +604,16 @@ namespace Sarcasm.Unparsing
             return true;
         }
 
-        private bool ReleaseTaskIfNeeded(int taskIndex)
+        private void ReleaseTaskResource()
         {
-            if (taskIndex > 0)
-            {
-                parallelTaskCounter.Release(1);     // release all tasks except the first one
-                return true;
-            }
-            else
-                return false;
+            parallelTaskCounter.Release(1);
         }
 
-        private bool ReleaseRemainingTasksIfAny(int numberOfRemainingTasksToBeReleased)
+        private bool ReleaseRemainingTaskResourcesIfAny(int numberOfTasksToBeReleasedManually)
         {
-            if (numberOfRemainingTasksToBeReleased > 0)
+            if (numberOfTasksToBeReleasedManually > 0)
             {
-                parallelTaskCounter.Release(numberOfRemainingTasksToBeReleased);     // release all tasks except the first one
+                parallelTaskCounter.Release(numberOfTasksToBeReleasedManually);
                 return true;
             }
             else
