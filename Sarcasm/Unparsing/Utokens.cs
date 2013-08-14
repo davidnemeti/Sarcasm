@@ -59,6 +59,8 @@ namespace Sarcasm.Unparsing
         }
 
         public Discriminator Discriminator { get; protected set; }
+
+        internal Unparser UnparserForAsyncLock;
     }
 
     public interface Utoken

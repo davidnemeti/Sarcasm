@@ -287,6 +287,9 @@ namespace Sarcasm.Unparsing
              * */
             foreach (UtokenBase utoken in utokens.Concat((UtokenBase)null))
             {
+                if (utoken != null)
+                    utoken.UnparserForAsyncLock = (Unparser)postProcessHelper;
+
                 if (IsControl(utoken))
                 {
                     UtokenControl utokenControl = (UtokenControl)utoken;

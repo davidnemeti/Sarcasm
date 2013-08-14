@@ -18,6 +18,28 @@ using System.Threading;
 
 namespace Sarcasm.Unparsing
 {
+    public delegate IEnumerable<UtokenValue> ValueUtokenizer<in TD>(IFormatProvider formatProvider, UnparsableAst reference, TD astValue);
+
+    public interface IUnparsableNonTerminal : INonTerminal
+    {
+        bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens);
+        IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction);
+        int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction);
+    }
+
+    public interface IUnparser
+    {
+        int? GetPriority(UnparsableAst unparsableAst);
+        IFormatProvider FormatProvider { get; }
+    }
+
+    internal interface IPostProcessHelper
+    {
+        Formatter Formatter { get; }
+        Unparser.Direction Direction { get; }
+        Action<UnparsableAst> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
+    }
+
     public static class UnparserExtensions
     {
         public static string AsText(this IEnumerable<Utoken> utokens)
@@ -26,16 +48,16 @@ namespace Sarcasm.Unparsing
         }
 
 #if NET4_0
-        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
+        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens)
         {
-            return unparser.Lock.LockAsync()
+            return GetUnparserAsyncLock(utokens).LockAsync()
                 .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => utokens.AsText()); })
                 .Unwrap();
         }
 
-        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
+        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, CancellationToken cancellationToken)
         {
-            return unparser.Lock.LockAsync()
+            return GetUnparserAsyncLock(utokens).LockAsync()
                 .ContinueWith(
                     task =>
                     {
@@ -60,15 +82,15 @@ namespace Sarcasm.Unparsing
                 .Unwrap();
         }
 #else
-        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
+        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens)
         {
-            using (await unparser.Lock.LockAsync())
+            using (await GetUnparserAsyncLock(utokens).LockAsync())
                 return await Task.Run(() => utokens.AsText());
         }
 
-        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
+        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, CancellationToken cancellationToken)
         {
-            using (await unparser.Lock.LockAsync())
+            using (await GetUnparserAsyncLock(utokens).LockAsync())
             {
                 return await Task.Run(
                     () =>
@@ -99,14 +121,14 @@ namespace Sarcasm.Unparsing
         }
 
 #if !NET4_0
-        public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
+        public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream)
         {
-            await utokens.WriteToStreamAsync(stream, unparser, CancellationToken.None);
+            await utokens.WriteToStreamAsync(stream, CancellationToken.None);
         }
 
-        public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser, CancellationToken cancellationToken)
+        public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, CancellationToken cancellationToken)
         {
-            using (await unparser.Lock.LockAsync())
+            using (await GetUnparserAsyncLock(utokens).LockAsync())
             {
                 using (StreamWriter sw = new StreamWriter(stream))
                 {
@@ -124,27 +146,11 @@ namespace Sarcasm.Unparsing
         {
             return Formatter.PostProcess(utokens, postProcessHelper);
         }
-    }
 
-    public delegate IEnumerable<UtokenValue> ValueUtokenizer<in T>(IFormatProvider formatProvider, UnparsableAst reference, T astValue);
-
-    public interface IUnparsableNonTerminal : INonTerminal
-    {
-        bool TryGetUtokensDirectly(IUnparser unparser, UnparsableAst self, out IEnumerable<UtokenValue> utokens);
-        IEnumerable<UnparsableAst> GetChildren(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction);
-        int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction);
-    }
-
-    public interface IUnparser
-    {
-        int? GetPriority(UnparsableAst unparsableAst);
-        IFormatProvider FormatProvider { get; }
-    }
-
-    internal interface IPostProcessHelper
-    {
-        Formatter Formatter { get; }
-        Unparser.Direction Direction { get; }
-        Action<UnparsableAst> UnlinkChildFromChildPrevSiblingIfNotFullUnparse { get; }
+        private static AsyncLock GetUnparserAsyncLock(IEnumerable<Utoken> utokens)
+        {
+            var utoken = (UtokenBase)utokens.FirstOrDefault();
+            return utoken != null ? utoken.UnparserForAsyncLock.Lock : new AsyncLock();
+        }
     }
 }
