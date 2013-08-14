@@ -34,6 +34,11 @@ namespace Sarcasm.GrammarAst
             return grammar.ToTerm(text, name);
         }
 
+        public BnfiTermConversionTL CreateKeyTermTL(string text, object value)
+        {
+            return grammar.ToTermTL(text, value);
+        }
+
         public BnfiTermConversion<T> CreateKeyTerm<T>(string text, T value)
         {
             return grammar.ToTerm(text, value);

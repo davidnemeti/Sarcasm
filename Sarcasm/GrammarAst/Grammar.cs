@@ -175,6 +175,11 @@ namespace Sarcasm.GrammarAst
             return ToTerm(text).IntroValue(value);
         }
 
+        public BnfiTermConversionTL ToTermTL(string text, object value)
+        {
+            return ToTerm(text).IntroValue(value);
+        }
+
         public static BnfiTermKeyTerm ToPunctuation(string text)
         {
             return new BnfiTermKeyTerm(text, text).ToPunctuation();
