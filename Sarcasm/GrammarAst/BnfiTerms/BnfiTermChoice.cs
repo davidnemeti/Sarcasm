@@ -88,10 +88,10 @@ namespace Sarcasm.GrammarAst
         public new BnfiExpressionChoiceTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermChoice<TType> : BnfiTermChoice, IBnfiTerm<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
+    public partial class BnfiTermChoice<TD> : BnfiTermChoice, IBnfiTerm<TD>, IBnfiTermOrAbleForChoice<TD>, INonTerminal<TD>
     {
         public BnfiTermChoice(string name = null)
-            : base(typeof(TType), name)
+            : base(typeof(TD), name)
         {
         }
 
@@ -103,17 +103,17 @@ namespace Sarcasm.GrammarAst
 
         public BnfiExpressionChoiceTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionChoice<TType> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionChoice<TD> Rule { set { base.Rule = value; } }
 
         // NOTE: type inference for subclasses works only if SetRuleOr is an instance method and not an extension method
-        public void SetRuleOr(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, IBnfiTermOrAbleForChoice<TType> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
+        public void SetRuleOr(IBnfiTermOrAbleForChoice<TD> bnfiTermFirst, IBnfiTermOrAbleForChoice<TD> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TD>[] bnfiTerms)
         {
             this.Rule = Or(bnfiTermFirst, bnfiTermSecond, bnfiTerms);
         }
 
-        public BnfiExpressionChoice<TType> Or(IBnfiTermOrAbleForChoice<TType> bnfiTermFirst, IBnfiTermOrAbleForChoice<TType> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TType>[] bnfiTerms)
+        public BnfiExpressionChoice<TD> Or(IBnfiTermOrAbleForChoice<TD> bnfiTermFirst, IBnfiTermOrAbleForChoice<TD> bnfiTermSecond, params IBnfiTermOrAbleForChoice<TD>[] bnfiTerms)
         {
-            return (BnfiExpressionChoice<TType>)bnfiTerms
+            return (BnfiExpressionChoice<TD>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
                 bnfiTermFirst.AsBnfTerm() | bnfiTermSecond.AsBnfTerm(),

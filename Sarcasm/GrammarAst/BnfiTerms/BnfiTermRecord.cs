@@ -389,20 +389,20 @@ namespace Sarcasm.GrammarAst
         public new BnfiExpressionRecordTL Rule { set { base.Rule = value; } }
     }
 
-    public partial class BnfiTermRecord<TType> : BnfiTermRecord, IBnfiTerm<TType>, IBnfiTermCopyable<TType>, IBnfiTermOrAbleForChoice<TType>, INonTerminal<TType>
-        where TType : new()
+    public partial class BnfiTermRecord<TD> : BnfiTermRecord, IBnfiTerm<TD>, IBnfiTermCopyable<TD>, IBnfiTermOrAbleForChoice<TD>, INonTerminal<TD>
+        where TD : new()
     {
-        public static TType __ { get; private set; }
+        public static TD __ { get; private set; }
 
         static BnfiTermRecord()
         {
-            __ = new TType();
+            __ = new TD();
         }
 
-        public TType _ { get { return BnfiTermRecord<TType>.__; } }
+        public TD _ { get { return BnfiTermRecord<TD>.__; } }
 
         public BnfiTermRecord(string name = null)
-            : base(typeof(TType), name)
+            : base(typeof(TD), name)
         {
         }
 
@@ -414,17 +414,17 @@ namespace Sarcasm.GrammarAst
 
         public BnfiExpressionRecordTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionRecord<TType> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionRecord<TD> Rule { set { base.Rule = value; } }
 
         // NOTE: type inference for superclasses works only if SetRulePlus is an instance method and not an extension method
-        public void SetRulePlus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        public void SetRulePlus(IBnfiTermPlusAbleForType<TD> bnfiTermFirst, IBnfiTermPlusAbleForType<TD> bnfiTermSecond, params IBnfiTermPlusAbleForType<TD>[] bnfiTerms)
         {
             this.Rule = Plus(bnfiTermFirst, bnfiTermSecond, bnfiTerms);
         }
 
-        public BnfiExpressionRecord<TType> Plus(IBnfiTermPlusAbleForType<TType> bnfiTermFirst, IBnfiTermPlusAbleForType<TType> bnfiTermSecond, params IBnfiTermPlusAbleForType<TType>[] bnfiTerms)
+        public BnfiExpressionRecord<TD> Plus(IBnfiTermPlusAbleForType<TD> bnfiTermFirst, IBnfiTermPlusAbleForType<TD> bnfiTermSecond, params IBnfiTermPlusAbleForType<TD>[] bnfiTerms)
         {
-            return (BnfiExpressionRecord<TType>)bnfiTerms
+            return (BnfiExpressionRecord<TD>)bnfiTerms
                 .Select(bnfiTerm => bnfiTerm.AsBnfTerm())
                 .Aggregate(
                 bnfiTermFirst.AsBnfTerm() + bnfiTermSecond.AsBnfTerm(),

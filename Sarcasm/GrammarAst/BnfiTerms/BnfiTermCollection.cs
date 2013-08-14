@@ -548,35 +548,35 @@ namespace Sarcasm.GrammarAst
         public new BnfiTermCollectionTL Rule { set { base.Rule = value; } }
     }
 
-    public abstract partial class BnfiTermCollectionWithCollectionType<TCollectionType> : BnfiTermCollection
+    public abstract partial class BnfiTermCollectionWithCollectionType<TDCollectionType> : BnfiTermCollection
     {
         protected BnfiTermCollectionWithCollectionType(Type elementType, string name = null)
-            : base(typeof(TCollectionType), elementType, name: name, runtimeCheck: false)
+            : base(typeof(TDCollectionType), elementType, name: name, runtimeCheck: false)
         {
         }
     }
 
-    public partial class BnfiTermCollection<TCollectionType, TElementType> : BnfiTermCollectionWithCollectionType<TCollectionType>, IBnfiTermCollection<TElementType>,
-        IBnfiTermOrAbleForChoice<TCollectionType>
-        where TCollectionType : ICollection<TElementType>, new()
+    public partial class BnfiTermCollection<TDCollectionType, TDElementType> : BnfiTermCollectionWithCollectionType<TDCollectionType>, IBnfiTermCollection<TDElementType>,
+        IBnfiTermOrAbleForChoice<TDCollectionType>
+        where TDCollectionType : ICollection<TDElementType>, new()
     {
         public BnfiTermCollection(string name = null)
-            : base(typeof(TElementType), name: name)
+            : base(typeof(TDElementType), name: name)
         {
         }
 
-        internal static BnfiTermCollection<TCollectionType, TElementType> CreateContractible()
+        internal static BnfiTermCollection<TDCollectionType, TDElementType> CreateContractible()
         {
-            return new BnfiTermCollection<TCollectionType, TElementType>(name: null).MakeContractible();
+            return new BnfiTermCollection<TDCollectionType, TDElementType>(name: null).MakeContractible();
         }
 
-        public BnfiTermCollection<TCollectionType, TElementType> MakeContractible()
+        public BnfiTermCollection<TDCollectionType, TDElementType> MakeContractible()
         {
             this.IsContractible = true;
             return this;
         }
 
-        public BnfiTermCollection<TCollectionType, TElementType> MakeUncontractible()
+        public BnfiTermCollection<TDCollectionType, TDElementType> MakeUncontractible()
         {
             this.IsContractible = false;
             return this;
@@ -584,8 +584,8 @@ namespace Sarcasm.GrammarAst
 
         protected override void SetNodeCreator()
         {
-            SetNodeCreator<TCollectionType, TElementType>(
-                () => new TCollectionType(),
+            SetNodeCreator<TDCollectionType, TDElementType>(
+                () => new TDCollectionType(),
                 (collection, element) => collection.Add(element)
                 );
         }
@@ -598,6 +598,6 @@ namespace Sarcasm.GrammarAst
 
         public BnfiTermCollection RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiTermCollection<TCollectionType, TElementType> Rule { set { base.Rule = value; } }
+        public new BnfiTermCollection<TDCollectionType, TDElementType> Rule { set { base.Rule = value; } }
     }
 }

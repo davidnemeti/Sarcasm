@@ -15,9 +15,9 @@ using Sarcasm.Unparsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public delegate T ValueIntroducer<out T>(AstContext context, ParseTreeNodeWithoutAst parseTreeNode);
-    public delegate TOut ValueConverter<in TIn, out TOut>(TIn inputAstValue);
-    public delegate T ValueCreatorFromNoAst<out T>();
+    public delegate TD ValueIntroducer<out TD>(AstContext context, ParseTreeNodeWithoutAst parseTreeNode);
+    public delegate TDOut ValueConverter<in TDIn, out TDOut>(TDIn inputAstValue);
+    public delegate TD ValueCreatorFromNoAst<out TD>();
 
     public interface IBnfiTerm
     {
@@ -30,7 +30,7 @@ namespace Sarcasm.GrammarAst
         NonTerminal AsNonTerminal();
     }
 
-    public interface INonTerminal<out T> : INonTerminal
+    public interface INonTerminal<out TD> : INonTerminal
     {
     }
 
@@ -44,17 +44,17 @@ namespace Sarcasm.GrammarAst
     /// <summary>
     /// Typesafe IBnfiTerm
     /// </summary>
-    public interface IBnfiTerm<out T> : IBnfiTerm
+    public interface IBnfiTerm<out TD> : IBnfiTerm
     {
     }
 
-    // NOTE: cannot inherit from IBnfiTerm<T> because of interface implementation conflict in BnfiTermCollection
-    public interface IBnfiTermOrAbleForChoice<out T> : IBnfiTerm
+    // NOTE: cannot inherit from IBnfiTerm<TD> because of interface implementation conflict in BnfiTermCollection
+    public interface IBnfiTermOrAbleForChoice<out TD> : IBnfiTerm
     {
     }
 
-    // NOTE: cannot inherit from IBnfiTerm<T> because of covariance vs. contravariance conflict
-    public interface IBnfiTermPlusAbleForType<in T> : IBnfiTerm
+    // NOTE: cannot inherit from IBnfiTerm<TD> because of covariance vs. contravariance conflict
+    public interface IBnfiTermPlusAbleForType<in TD> : IBnfiTerm
     {
     }
 
@@ -66,7 +66,7 @@ namespace Sarcasm.GrammarAst
     {
     }
 
-    public interface IBnfiTermCopyable<out T> : IBnfiTermCopyable, IBnfiTerm<T>
+    public interface IBnfiTermCopyable<out TD> : IBnfiTermCopyable, IBnfiTerm<TD>
     {
     }
 

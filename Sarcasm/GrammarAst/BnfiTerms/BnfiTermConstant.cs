@@ -50,14 +50,14 @@ namespace Sarcasm.GrammarAst
         }
     }
 
-    public partial class BnfiTermConstant<T> : BnfiTermConstant, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, IEnumerable<KeyValuePair<string, T>>
+    public partial class BnfiTermConstant<TD> : BnfiTermConstant, IBnfiTerm<TD>, IBnfiTermOrAbleForChoice<TD>, IEnumerable<KeyValuePair<string, TD>>
     {
         public BnfiTermConstant()
-            : base(typeof(T))
+            : base(typeof(TD))
         {
         }
 
-        public void Add(string lexeme, T value)
+        public void Add(string lexeme, TD value)
         {
             base.Add(lexeme, value);
         }
@@ -68,9 +68,9 @@ namespace Sarcasm.GrammarAst
             base.Add(lexeme, value);
         }
 
-        public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
+        public IEnumerator<KeyValuePair<string, TD>> GetEnumerator()
         {
-            return base.Constants.Select(keyValuePair => new KeyValuePair<string, T>(keyValuePair.Key, (T)keyValuePair.Value)).GetEnumerator();
+            return base.Constants.Select(keyValuePair => new KeyValuePair<string, TD>(keyValuePair.Key, (TD)keyValuePair.Value)).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

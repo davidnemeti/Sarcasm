@@ -685,30 +685,30 @@ namespace Sarcasm.GrammarAst
         }
     }
 
-    public partial class BnfiTermConversion<T> : BnfiTermConversion, IBnfiTerm<T>, IBnfiTermOrAbleForChoice<T>, INonTerminal<T>
+    public partial class BnfiTermConversion<TD> : BnfiTermConversion, IBnfiTerm<TD>, IBnfiTermOrAbleForChoice<TD>, INonTerminal<TD>
     {
         public BnfiTermConversion(string name = null)
-            : base(typeof(T), name)
+            : base(typeof(TD), name)
         {
         }
 
-        internal BnfiTermConversion(BnfTerm bnfTerm, T value, bool isOptionalValue, string name, bool astForChild)
-            : base(typeof(T), bnfTerm, value, isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, TD value, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(TD), bnfTerm, value, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
-            : this(bnfTerm, valueIntroducer, NoUnparseByInverse<T>(), isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
+            : this(bnfTerm, valueIntroducer, NoUnparseByInverse<TD>(), isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<T> valueIntroducer, ValueConverter<T, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
-            : base(typeof(T), bnfTerm, (context, parseNode) => valueIntroducer(context, parseNode), CastValueConverter<T, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, ValueConverter<TD, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(TD), bnfTerm, (context, parseNode) => valueIntroducer(context, parseNode), CastValueConverter<TD, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, name, astForChild)
         {
         }
 
-        public new ValueUtokenizer<T> UtokenizerForUnparse
+        public new ValueUtokenizer<TD> UtokenizerForUnparse
         {
             set
             {
@@ -718,7 +718,7 @@ namespace Sarcasm.GrammarAst
 
         public BnfiExpressionConversionTL RuleTypeless { set { base.Rule = value; } }
 
-        public new BnfiExpressionConversion<T> Rule { set { base.Rule = value; } }
+        public new BnfiExpressionConversion<TD> Rule { set { base.Rule = value; } }
 
         [Obsolete(BnfiTermNonTerminal.typelessQErrorMessage, error: true)]
         public new BnfExpression Q()
@@ -726,13 +726,13 @@ namespace Sarcasm.GrammarAst
             return base.Q();
         }
 
-        public BnfiTermConversion<T> MakeContractible()
+        public BnfiTermConversion<TD> MakeContractible()
         {
             this.IsContractible = true;
             return this;
         }
 
-        public BnfiTermConversion<T> MakeUncontractible()
+        public BnfiTermConversion<TD> MakeUncontractible()
         {
             this.IsContractible = false;
             return this;

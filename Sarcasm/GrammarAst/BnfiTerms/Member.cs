@@ -176,8 +176,8 @@ namespace Sarcasm.GrammarAst
         }
     }
 
-    // NOTE: it does not implement IBnfiTermOrAbleForChoice<T>, instead it implements IBnfiTermPlusAbleForType<T>
-    public partial class Member<TDeclaringType> : Member, IBnfiTerm<TDeclaringType>, IBnfiTermPlusAbleForType<TDeclaringType>
+    // NOTE: it does not implement IBnfiTermOrAbleForChoice<TD>, instead it implements IBnfiTermPlusAbleForType<TD>
+    public partial class Member<TDDeclaringType> : Member, IBnfiTerm<TDDeclaringType>, IBnfiTermPlusAbleForType<TDDeclaringType>
     {
         internal Member(MemberInfo memberInfo, BnfTerm bnfTerm)
             : base(memberInfo, bnfTerm)
