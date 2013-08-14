@@ -63,10 +63,15 @@ namespace Sarcasm.Unparsing
 
     public interface Utoken
     {
-        string ToText(Formatter formatter);
+        string Text { get; }
         IDecoration Decoration { get; }
         bool HasDecoration();
         Discriminator Discriminator { get; }
+    }
+
+    internal interface IHasText
+    {
+        void SetText(Formatter formatter);
     }
 
     public abstract class UtokenValue : UtokenBase
@@ -103,7 +108,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenText : UtokenValue, Utoken
+    public class UtokenText : UtokenValue, Utoken, IHasText
     {
         public string Text { get; private set; }
         public UnparsableAst Reference { get; private set; }
@@ -124,11 +129,6 @@ namespace Sarcasm.Unparsing
             return new UtokenText(text);
         }
 
-        public string ToText(Formatter formatter)
-        {
-            return this.Text ?? Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
-        }
-
         public new UtokenText SetDiscriminator(Discriminator discriminator)
         {
             this.Discriminator = discriminator;
@@ -139,6 +139,12 @@ namespace Sarcasm.Unparsing
         {
             string text = this.Text ?? this.Reference.ToString();
             return ToString("\"{0}\"{1}", text, Reference != null ? " (with ref)" : string.Empty);
+        }
+
+        void IHasText.SetText(Formatter formatter)
+        {
+            if (this.Text == null)
+                this.Text = Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
         }
     }
 
@@ -185,10 +191,11 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenWhitespace : UtokenInsert, Utoken
+    public class UtokenWhitespace : UtokenInsert, Utoken, IHasText
     {
         internal enum Kind { NewLine, EmptyLine, Space, Tab, WhiteSpaceBetweenUtokens }
 
+        public string Text { get; private set; }
         internal readonly Kind kind;
 
         private UtokenWhitespace(Kind kind)
@@ -221,33 +228,38 @@ namespace Sarcasm.Unparsing
             return new UtokenWhitespace(UtokenWhitespace.Kind.WhiteSpaceBetweenUtokens);
         }
 
-        public string ToText(Formatter formatter)
+        public override string ToString()
+        {
+            return ToString("." + kind);
+        }
+
+        void IHasText.SetText(Formatter formatter)
         {
             switch (kind)
             {
                 case Kind.NewLine:
-                    return formatter.NewLine;
+                    this.Text = formatter.NewLine;
+                    break;
 
                 case Kind.EmptyLine:
-                    return formatter.NewLine + formatter.NewLine;
+                    this.Text = formatter.NewLine + formatter.NewLine;
+                    break;
 
                 case Kind.Space:
-                    return formatter.Space;
+                    this.Text = formatter.Space;
+                    break;
 
                 case Kind.Tab:
-                    return formatter.Tab;
+                    this.Text = formatter.Tab;
+                    break;
 
                 case Kind.WhiteSpaceBetweenUtokens:
-                    return formatter.WhiteSpaceBetweenUtokens;
+                    this.Text = formatter.WhiteSpaceBetweenUtokens;
+                    break;
 
                 default:
                     throw new InvalidOperationException("Unknown UtokenWhitespace");
             }
-        }
-
-        public override string ToString()
-        {
-            return ToString("." + kind);
         }
     }
 
@@ -296,9 +308,10 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenIndent : UtokenBase, Utoken
+    public class UtokenIndent : UtokenBase, Utoken, IHasText
     {
         public int IndentLevel { get; private set; }
+        public string Text { get; private set; }
 
         internal UtokenIndent(int indentLevel)
         {
@@ -308,14 +321,14 @@ namespace Sarcasm.Unparsing
             this.IndentLevel = indentLevel;
         }
 
-        public string ToText(Formatter formatter)
-        {
-            return string.Concat(Enumerable.Repeat(formatter.IndentUnit, IndentLevel));
-        }
-
         public override string ToString()
         {
             return ToString("indent level: {0}", IndentLevel);
+        }
+
+        void IHasText.SetText(Formatter formatter)
+        {
+            this.Text = string.Concat(Enumerable.Repeat(formatter.IndentUnit, IndentLevel));
         }
     }
 

@@ -20,16 +20,16 @@ namespace Sarcasm.Unparsing
 {
     public static class UnparserExtensions
     {
-        public static string AsText(this IEnumerable<Utoken> utokens, Unparser unparser)
+        public static string AsText(this IEnumerable<Utoken> utokens)
         {
-            return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatter)));
+            return string.Concat(utokens.Select(utoken => utoken.Text));
         }
 
 #if NET4_0
         public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
             return unparser.Lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => utokens.AsText(unparser)); })
+                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => utokens.AsText()); })
                 .Unwrap();
         }
 
@@ -47,7 +47,7 @@ namespace Sarcasm.Unparsing
                                             utoken =>
                                             {
                                                 cancellationToken.ThrowIfCancellationRequested();
-                                                return utoken.ToText(unparser.Formatter);
+                                                return utoken.Text;
                                             }
                                         )
                                     )
@@ -63,7 +63,7 @@ namespace Sarcasm.Unparsing
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
             using (await unparser.Lock.LockAsync())
-                return await Task.Run(() => utokens.AsText(unparser));
+                return await Task.Run(() => utokens.AsText());
         }
 
         public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
@@ -78,7 +78,7 @@ namespace Sarcasm.Unparsing
                                 utoken =>
                                 {
                                     cancellationToken.ThrowIfCancellationRequested();
-                                    return utoken.ToText(unparser.Formatter);
+                                    return utoken.Text;
                                 }
                             )
                         );
@@ -89,12 +89,12 @@ namespace Sarcasm.Unparsing
         }
 #endif
 
-        public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
+        public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream)
         {
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    sw.Write(utoken.ToText(unparser.Formatter));
+                    sw.Write(utoken.Text);
             }
         }
 
@@ -113,7 +113,7 @@ namespace Sarcasm.Unparsing
                     foreach (Utoken utoken in utokens)
                     {
                         cancellationToken.ThrowIfCancellationRequested();
-                        await sw.WriteAsync(utoken.ToText(unparser.Formatter));
+                        await sw.WriteAsync(utoken.Text);
                     }
                 }
             }
