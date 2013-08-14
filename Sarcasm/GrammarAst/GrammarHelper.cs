@@ -541,19 +541,19 @@ namespace Sarcasm.GrammarAst
             throw new GrammarErrorException(message, new GrammarError(grammarErrorLevel, null, message));
         }
 
-        public static string TypeNameWithDeclaringTypes(Type type)
+        public static string TypeNameWithDeclaringTypes(Type domainType)
         {
-            string typeName = type.Name.ToLower();
+            string typeName = domainType.Name.ToLower();
 
-            if (type.IsGenericType)
+            if (domainType.IsGenericType)
             {
                 typeName = string.Format("{0}<{1}>",
                     typeName.Remove(typeName.IndexOf('`')),
-                    string.Join(",", type.GetGenericArguments().Select(genericArgumentType => TypeNameWithDeclaringTypes(genericArgumentType))));
+                    string.Join(",", domainType.GetGenericArguments().Select(genericArgumentType => TypeNameWithDeclaringTypes(genericArgumentType))));
             }
 
-            if (type.IsNested)
-                typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(type.DeclaringType), typeName);
+            if (domainType.IsNested)
+                typeName = string.Format("{0}_{1}", TypeNameWithDeclaringTypes(domainType.DeclaringType), typeName);
 
             return typeName;
         }

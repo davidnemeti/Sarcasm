@@ -23,7 +23,7 @@ namespace Sarcasm.GrammarAst
             return this;
         }
 
-        Type IBnfiTerm.Type
+        Type IBnfiTerm.DomainType
         {
             get { return null; }
         }

@@ -122,14 +122,14 @@ namespace Sarcasm.GrammarAst
         internal const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
 #endif
 
-        protected BnfiTermRecord(Type type, string name)
-            : base(type, name)
+        protected BnfiTermRecord(Type domainType, string name)
+            : base(domainType, name)
         {
 #if !WINDOWS_STORE
 #if PCL
-            if (type.GetConstructor(new Type[0]) == null)
+            if (domainType.GetConstructor(new Type[0]) == null)
 #else
-            if (type.GetConstructor(bindingAttrInstanceAll, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
+            if (domainType.GetConstructor(bindingAttrInstanceAll, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
 #endif
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
 #endif
@@ -139,9 +139,9 @@ namespace Sarcasm.GrammarAst
                 try
                 {
 #if PCL
-                    object astValue = Activator.CreateInstance(type);
+                    object astValue = Activator.CreateInstance(domainType);
 #else
-                    object astValue = Activator.CreateInstance(type, nonPublic: true);
+                    object astValue = Activator.CreateInstance(domainType, nonPublic: true);
 #endif
 
                     var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
@@ -208,14 +208,14 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        protected static IEnumerable<FieldInfo> GetAllFields(Type type)
+        protected static IEnumerable<FieldInfo> GetAllFields(Type domainType)
         {
 #if WINDOWS_STORE
-            return type.GetRuntimeFields();
+            return domainType.GetRuntimeFields();
 #else
-            return type.GetFields(bindingAttrInstanceAll)
-                .Concat(type.BaseType != null
-                    ? GetAllFields(type.BaseType)
+            return domainType.GetFields(bindingAttrInstanceAll)
+                .Concat(domainType.BaseType != null
+                    ? GetAllFields(domainType.BaseType)
                     : new FieldInfo[0]);
 #endif
         }
@@ -381,8 +381,8 @@ namespace Sarcasm.GrammarAst
 
     public partial class BnfiTermRecordTL : BnfiTermRecord, IBnfiTermTL, IBnfiTermCopyableTL
     {
-        public BnfiTermRecordTL(Type type, string name = null)
-            : base(type, name)
+        public BnfiTermRecordTL(Type domainType, string name = null)
+            : base(domainType, name)
         {
         }
 

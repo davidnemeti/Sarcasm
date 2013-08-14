@@ -14,8 +14,8 @@ namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermCopy : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
-        protected BnfiTermCopy(Type type, BnfTerm bnfTerm, string name)
-            : base(type, name: name ?? GetName(type, bnfTerm))
+        protected BnfiTermCopy(Type domainType, BnfTerm bnfTerm, string name)
+            : base(domainType, name: name ?? GetName(domainType, bnfTerm))
         {
             if (bnfTerm != null)
             {
@@ -34,7 +34,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermCopyTL Copy(IBnfiTermCopyableTL bnfiTerm)
         {
-            return new BnfiTermCopyTL(bnfiTerm.Type, bnfiTerm.AsBnfTerm());
+            return new BnfiTermCopyTL(bnfiTerm.DomainType, bnfiTerm.AsBnfTerm());
         }
 
         public static BnfiTermCopy<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
@@ -42,14 +42,14 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermCopy<T>(bnfiTerm.AsBnfTerm());
         }
 
-        private static string GetName(Type type, BnfTerm bnfTerm)
+        private static string GetName(Type domainType, BnfTerm bnfTerm)
         {
             string name = string.Empty;
 
             if (bnfTerm != null)
                 name += bnfTerm.Name + "_";
 
-            name += "copyAs_" + type.Name.ToLower();
+            name += "copyAs_" + domainType.Name.ToLower();
 
             return name;
         }
@@ -81,13 +81,13 @@ namespace Sarcasm.GrammarAst
 
     public partial class BnfiTermCopyTL : BnfiTermCopy, IBnfiTermTL
     {
-        public BnfiTermCopyTL(Type type, string name = null)
-            : base(type, bnfTerm: null, name: name)
+        public BnfiTermCopyTL(Type domainType, string name = null)
+            : base(domainType, bnfTerm: null, name: name)
         {
         }
 
-        internal BnfiTermCopyTL(Type type, BnfTerm bnfTerm)
-            : base(type, bnfTerm: bnfTerm, name: null)
+        internal BnfiTermCopyTL(Type domainType, BnfTerm bnfTerm)
+            : base(domainType, bnfTerm: bnfTerm, name: null)
         {
             if (bnfTerm == null)
                 throw new ArgumentNullException("bnfTerm");

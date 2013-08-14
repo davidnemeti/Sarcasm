@@ -162,7 +162,7 @@ namespace Sarcasm.GrammarAst
             return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
         }
 
-        public Type Type
+        public Type DomainType
         {
             get { return MemberInfo is PropertyInfo ? ((PropertyInfo)MemberInfo).PropertyType : ((FieldInfo)MemberInfo).FieldType; }
         }

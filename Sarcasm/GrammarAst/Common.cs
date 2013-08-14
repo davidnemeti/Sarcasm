@@ -22,7 +22,7 @@ namespace Sarcasm.GrammarAst
     public interface IBnfiTerm
     {
         BnfTerm AsBnfTerm();
-        Type Type { get; }
+        Type DomainType { get; }
     }
 
     public interface INonTerminal
@@ -72,7 +72,7 @@ namespace Sarcasm.GrammarAst
 
     public abstract class BnfiTermNonTerminal : NonTerminal, IBnfiTerm, INonTerminal, IBnfiTermCopyable, IUnparsableNonTerminal
     {
-        protected readonly Type type;
+        protected readonly Type domainType;
         protected readonly bool hasExplicitName;
         private readonly Dictionary<int, UnparseHint> childBnfTermListIndexToUnparseHint;
 
@@ -85,13 +85,13 @@ namespace Sarcasm.GrammarAst
             this.childBnfTermListIndexToUnparseHint = new Dictionary<int, UnparseHint>();
         }
 
-        protected BnfiTermNonTerminal(Type type, string name)
-            : this(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(type))
+        protected BnfiTermNonTerminal(Type domainType, string name)
+            : this(name: name ?? GrammarHelper.TypeNameWithDeclaringTypes(domainType))
         {
-            if (type == null)
-                throw new ArgumentNullException("type");
+            if (domainType == null)
+                throw new ArgumentNullException("domainType");
 
-            this.type = type;
+            this.domainType = domainType;
             this.hasExplicitName = name != null;
         }
 
@@ -100,9 +100,9 @@ namespace Sarcasm.GrammarAst
         public bool IsContractible { get; protected set; }
         protected bool hasBeenContracted;
 
-        public Type Type
+        public Type DomainType
         {
-            get { return this.type; }
+            get { return this.domainType; }
         }
 
         BnfTerm IBnfiTerm.AsBnfTerm()

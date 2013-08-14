@@ -61,7 +61,7 @@ namespace Sarcasm.GrammarAst
 
         private ListKind? listKind = null;
 
-        private readonly Type elementType;
+        private readonly Type domainElementType;
         private readonly MethodInfo addMethod;
 
         private BnfTerm element;
@@ -71,10 +71,11 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-        protected Type collectionType { get { return base.type; } }
+        public Type DomainCollectionType { get { return base.domainType; } }
+        public Type DomainElementType { get { return domainElementType; } }
 
         [Obsolete("Use collectionType instead", error: true)]
-        public new Type type { get { return base.type; } }
+        public new Type DomainType { get { return base.DomainType; } }
 
         #region Construction
 
@@ -84,7 +85,7 @@ namespace Sarcasm.GrammarAst
         {
             CollectionInfo collectionInfo = GetCollectionInfo(collectionTypeOrTypeDefinition, elementTypeHint, runtimeCheck);
             Type collectionType = collectionInfo.collectionType;
-            this.elementType = collectionInfo.elementType;
+            this.domainElementType = collectionInfo.elementType;
 
             if (runtimeCheck)
             {
@@ -98,9 +99,9 @@ namespace Sarcasm.GrammarAst
 #endif
 
 #if PCL
-                this.addMethod = collectionType.GetMethod("Add", new[] { elementType });
+                this.addMethod = collectionType.GetMethod("Add", new[] { domainElementType });
 #else
-                this.addMethod = collectionType.GetMethod("Add", BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { elementType }, modifiers: null);
+                this.addMethod = collectionType.GetMethod("Add", BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { domainElementType }, modifiers: null);
 #endif
 
                 if (this.addMethod == null)
@@ -189,11 +190,11 @@ namespace Sarcasm.GrammarAst
              * */
             SetNodeCreator<object, object>(
 #if PCL
-                () => Activator.CreateInstance(collectionType),
+                () => Activator.CreateInstance(DomainCollectionType),
 #else
-                () => Activator.CreateInstance(collectionType, nonPublic: true),
+                () => Activator.CreateInstance(DomainCollectionType, nonPublic: true),
 #endif
- (collection, element) => addMethod.Invoke(obj: collection, parameters: new[] { element })
+                (collection, element) => addMethod.Invoke(obj: collection, parameters: new[] { element })
                 );
         }
 
@@ -228,7 +229,7 @@ namespace Sarcasm.GrammarAst
                  * */
                 object childValue = GrammarHelper.AstNodeToValue(parseTreeChild.AstNode);
 
-                if (elementType.IsInstanceOfType(childValue))
+                if (domainElementType.IsInstanceOfType(childValue))
                 {
                     yield return (TElementStaticType)childValue;
                 }
@@ -248,7 +249,7 @@ namespace Sarcasm.GrammarAst
                     {
                         string errorMessage = string.Format("Term '{0}' should be type of '{1}' but found '{2}' instead",
                             parseTreeChild.Term,
-                            elementType.FullName,
+                            domainElementType.FullName,
                             childValue != null ? childValue.GetType().FullName : "<<NULL>>");
 
                         throw new InvalidOperationException(errorMessage);

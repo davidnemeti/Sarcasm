@@ -12,12 +12,12 @@ namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermConstant : ConstantTerminal, IBnfiTerm
     {
-        protected readonly Type type;
+        protected readonly Type domainType;
 
-        protected BnfiTermConstant(Type type)
-            : base(GrammarHelper.TypeNameWithDeclaringTypes(type))
+        protected BnfiTermConstant(Type domainType)
+            : base(GrammarHelper.TypeNameWithDeclaringTypes(domainType))
         {
-            this.type = type;
+            this.domainType = domainType;
             this.AstConfig.NodeCreator = (context, parseTreeNode) => parseTreeNode.AstNode = parseTreeNode.Token.Value;
         }
 
@@ -26,9 +26,9 @@ namespace Sarcasm.GrammarAst
             return this;
         }
 
-        public Type Type
+        public Type DomainType
         {
-            get { return type; }
+            get { return domainType; }
         }
     }
 

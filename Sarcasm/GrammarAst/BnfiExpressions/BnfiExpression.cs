@@ -68,7 +68,7 @@ namespace Sarcasm.GrammarAst
             return bnfExpression;
         }
 
-        Type IBnfiTerm.Type
+        Type IBnfiTerm.DomainType
         {
             get { return null; }
         }

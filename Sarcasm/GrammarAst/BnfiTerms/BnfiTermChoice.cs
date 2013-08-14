@@ -19,8 +19,8 @@ namespace Sarcasm.GrammarAst
 {
     public abstract partial class BnfiTermChoice : BnfiTermNonTerminal, IBnfiTerm, IUnparsableNonTerminal
     {
-        protected BnfiTermChoice(Type type, string name)
-            : base(type, name)
+        protected BnfiTermChoice(Type domainType, string name)
+            : base(domainType, name)
         {
             GrammarHelper.MarkTransientForced(this);      // the child node already contains the created ast node
         }
@@ -46,21 +46,21 @@ namespace Sarcasm.GrammarAst
         {
             UnparsableAst mainChild = children.Single(childValue => IsMainChild(childValue.BnfTerm));
 
-            if (astValue.GetType() == this.type)
+            if (astValue.GetType() == this.domainType)
                 return unparser.GetPriority(mainChild);
             else
             {
-                IBnfiTerm mainChildWithType = mainChild.BnfTerm as IBnfiTerm;
+                IBnfiTerm mainChildWithDomainType = mainChild.BnfTerm as IBnfiTerm;
 
-                if (mainChildWithType == null || mainChildWithType.Type == null)
+                if (mainChildWithDomainType == null || mainChildWithDomainType.DomainType == null)
                 {
-                    throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not an IBnfiTerm or it has no type information.",
+                    throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not an IBnfiTerm or it has no domain type.",
                         astValue, astValue.GetType().Name, mainChild.BnfTerm));
                 }
 
-                int? priority = mainChildWithType.Type == typeof(object)
+                int? priority = mainChildWithDomainType.DomainType == typeof(object)
                     ? int.MinValue
-                    : 0 - mainChildWithType.Type.GetInheritanceDistance(astValue);
+                    : 0 - mainChildWithDomainType.DomainType.GetInheritanceDistance(astValue);
 
                 Unparser.tsPriorities.Indent();
                 priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);
@@ -80,8 +80,8 @@ namespace Sarcasm.GrammarAst
 
     public partial class BnfiTermChoiceTL : BnfiTermChoice, IBnfiTermTL
     {
-        public BnfiTermChoiceTL(Type type, string name = null)
-            : base(type, name)
+        public BnfiTermChoiceTL(Type domainType, string name = null)
+            : base(domainType, name)
         {
         }
 
