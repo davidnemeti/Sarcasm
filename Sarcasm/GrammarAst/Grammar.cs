@@ -367,9 +367,9 @@ namespace Sarcasm.GrammarAst
             return BnfiTermConversion.NoUnparseByInverse<T>();
         }
 
-        public static ValueConverter<TIn, TOut> NoUnparseByInverse<TIn, TOut>()
+        public static ValueConverter<TDIn, TDOut> NoUnparseByInverse<TDIn, TDOut>()
         {
-            return BnfiTermConversion.NoUnparseByInverse<TIn, TOut>();
+            return BnfiTermConversion.NoUnparseByInverse<TDIn, TDOut>();
         }
 
         public static UnparseHint SetUnparsePriority(ChildrenPriorityGetter getChildrenPriority)

@@ -260,53 +260,53 @@ namespace Sarcasm.GrammarAst
             return BnfiTermConversion.IntroStringLiteral(stringLiteral);
         }
 
-        public static BnfiTermConversion<TOut> IntroConstantTerminal<TOut>(this ConstantTerminal constantTerminal)
+        public static BnfiTermConversion<TDOut> IntroConstantTerminal<TDOut>(this ConstantTerminal constantTerminal)
         {
-            return BnfiTermConversion.IntroConstantTerminal<TOut>(constantTerminal);
+            return BnfiTermConversion.IntroConstantTerminal<TDOut>(constantTerminal);
         }
 
         [Obsolete(BnfiTermConversion.messageForIntroForBnfiTermConstant, error: true)]
-        public static BnfiTermConversion<TOut> IntroConstantTerminal<TOut>(this BnfiTermConstant<TOut> bnfiTermConstant)
+        public static BnfiTermConversion<TDOut> IntroConstantTerminal<TDOut>(this BnfiTermConstant<TDOut> bnfiTermConstant)
         {
-            return BnfiTermConversion.IntroConstantTerminal<TOut>(bnfiTermConstant);
+            return BnfiTermConversion.IntroConstantTerminal<TDOut>(bnfiTermConstant);
         }
 
-        public static BnfiTermConversion<TOut> IntroValue<TOut>(this Terminal terminal, TOut value, bool astForChild = true)
+        public static BnfiTermConversion<TDOut> IntroValue<TDOut>(this Terminal terminal, TDOut value, bool astForChild = true)
         {
             return BnfiTermConversion.Intro(terminal, value, astForChild);
         }
 
         [Obsolete(BnfiTermConversion.messageForMissingUnparseValueConverter, BnfiTermConversion.errorForMissingUnparseValueConverter)]
-        public static BnfiTermConversion<TOut> IntroValue<TOut>(this Terminal terminal, ValueIntroducer<TOut> valueIntroducer, bool astForChild = true)
+        public static BnfiTermConversion<TDOut> IntroValue<TDOut>(this Terminal terminal, ValueIntroducer<TDOut> valueIntroducer, bool astForChild = true)
         {
             return BnfiTermConversion.Intro(terminal, valueIntroducer, astForChild);
         }
 
-        public static BnfiTermConversion<TOut> IntroValue<TOut>(this Terminal terminal, ValueIntroducer<TOut> valueIntroducer,
-            ValueConverter<TOut, object> inverseValueConverterForUnparse, bool astForChild = true)
+        public static BnfiTermConversion<TDOut> IntroValue<TDOut>(this Terminal terminal, ValueIntroducer<TDOut> valueIntroducer,
+            ValueConverter<TDOut, object> inverseValueConverterForUnparse, bool astForChild = true)
         {
             return BnfiTermConversion.Intro(terminal, valueIntroducer, inverseValueConverterForUnparse, astForChild);
         }
 
         [Obsolete(BnfiTermConversion.messageForMissingUnparseValueConverter, BnfiTermConversion.errorForMissingUnparseValueConverter)]
-        public static BnfiTermConversion<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter)
+        public static BnfiTermConversion<TDOut> ConvertValue<TDIn, TDOut>(this IBnfiTerm<TDIn> bnfiTerm, ValueConverter<TDIn, TDOut> valueConverter)
         {
             return BnfiTermConversion.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermConversion<TOut> ConvertValue<TIn, TOut>(this IBnfiTerm<TIn> bnfiTerm, ValueConverter<TIn, TOut> valueConverter,
-            ValueConverter<TOut, TIn> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TDOut> ConvertValue<TDIn, TDOut>(this IBnfiTerm<TDIn> bnfiTerm, ValueConverter<TDIn, TDOut> valueConverter,
+            ValueConverter<TDOut, TDIn> inverseValueConverterForUnparse)
         {
             return BnfiTermConversion.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
 
         [Obsolete(BnfiTermConversion.messageForMissingUnparseValueConverter, BnfiTermConversion.errorForMissingUnparseValueConverter)]
-        public static BnfiTermConversion<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter)
+        public static BnfiTermConversion<TDOut> ConvertValue<TDOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TDOut> valueConverter)
         {
             return BnfiTermConversion.Convert(bnfiTerm, valueConverter);
         }
 
-        public static BnfiTermConversion<TOut> ConvertValue<TOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TOut> valueConverter, ValueConverter<TOut, object> inverseValueConverterForUnparse)
+        public static BnfiTermConversion<TDOut> ConvertValue<TDOut>(this IBnfiTermTL bnfiTerm, ValueConverter<object, TDOut> valueConverter, ValueConverter<TDOut, object> inverseValueConverterForUnparse)
         {
             return BnfiTermConversion.Convert(bnfiTerm, valueConverter, inverseValueConverterForUnparse);
         }
@@ -326,19 +326,19 @@ namespace Sarcasm.GrammarAst
 
         #region Cast
 
-        public static BnfiTermConversion<TOut> Cast<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm)
+        public static BnfiTermConversion<TDOut> Cast<TDIn, TDOut>(this IBnfiTerm<TDIn> bnfTerm)
         {
-            return BnfiTermConversion.Cast<TIn, TOut>(bnfTerm);
+            return BnfiTermConversion.Cast<TDIn, TDOut>(bnfTerm);
         }
 
-        public static BnfiTermConversion<TOut> Cast<TOut>(this Terminal terminal)
+        public static BnfiTermConversion<TDOut> Cast<TDOut>(this Terminal terminal)
         {
-            return BnfiTermConversion.Cast<TOut>(terminal);
+            return BnfiTermConversion.Cast<TDOut>(terminal);
         }
 
-        public static BnfiTermConversion<TOut> Cast<TIn, TOut>(this IBnfiTerm<TIn> bnfTerm, IBnfiTerm<TOut> dummyBnfTerm)
+        public static BnfiTermConversion<TDOut> Cast<TDIn, TDOut>(this IBnfiTerm<TDIn> bnfTerm, IBnfiTerm<TDOut> dummyBnfTerm)
         {
-            return BnfiTermConversion.Cast<TIn, TOut>(bnfTerm);
+            return BnfiTermConversion.Cast<TDIn, TDOut>(bnfTerm);
         }
 
         #endregion
