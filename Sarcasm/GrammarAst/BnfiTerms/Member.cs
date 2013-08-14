@@ -161,6 +161,11 @@ namespace Sarcasm.GrammarAst
         {
             return string.Format("[{0} (declaring type: {1}, member: {2}, value: {3})]", this.Name, this.MemberInfo.DeclaringType, this.MemberInfo.Name, this.BnfTerm.Name);
         }
+
+        public Type Type
+        {
+            get { return MemberInfo is PropertyInfo ? ((PropertyInfo)MemberInfo).PropertyType : ((FieldInfo)MemberInfo).FieldType; }
+        }
     }
 
     public partial class MemberTL : Member, IBnfiTermTL

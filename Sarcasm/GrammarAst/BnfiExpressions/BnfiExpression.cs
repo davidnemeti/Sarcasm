@@ -68,6 +68,11 @@ namespace Sarcasm.GrammarAst
             return bnfExpression;
         }
 
+        Type IBnfiTerm.Type
+        {
+            get { return null; }
+        }
+
         internal static BnfExpression Op_Plus(BnfTerm term1, BnfTerm term2)
         {
             return term1 + term2;

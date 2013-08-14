@@ -10,7 +10,7 @@ using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
-    public abstract partial class BnfiTermConstant : ConstantTerminal, IBnfiTerm, IHasType
+    public abstract partial class BnfiTermConstant : ConstantTerminal, IBnfiTerm
     {
         protected readonly Type type;
 
@@ -26,7 +26,7 @@ namespace Sarcasm.GrammarAst
             return this;
         }
 
-        Type IHasType.Type
+        public Type Type
         {
             get { return type; }
         }

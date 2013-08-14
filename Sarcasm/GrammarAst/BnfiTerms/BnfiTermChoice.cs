@@ -50,17 +50,17 @@ namespace Sarcasm.GrammarAst
                 return unparser.GetPriority(mainChild);
             else
             {
-                IHasType mainChildBnfTermWithType = mainChild.BnfTerm as IHasType;
+                IBnfiTerm mainChildWithType = mainChild.BnfTerm as IBnfiTerm;
 
-                if (mainChildBnfTermWithType == null)
+                if (mainChildWithType == null || mainChildWithType.Type == null)
                 {
-                    throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not a BnfiTermNonTerminal.",
+                    throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not an IBnfiTerm or it has no type information.",
                         astValue, astValue.GetType().Name, mainChild.BnfTerm));
                 }
 
-                int? priority = mainChildBnfTermWithType.Type == typeof(object)
+                int? priority = mainChildWithType.Type == typeof(object)
                     ? int.MinValue
-                    : 0 - mainChildBnfTermWithType.Type.GetInheritanceDistance(astValue);
+                    : 0 - mainChildWithType.Type.GetInheritanceDistance(astValue);
 
                 Unparser.tsPriorities.Indent();
                 priority.DebugWriteLinePriority(Unparser.tsPriorities, mainChild);

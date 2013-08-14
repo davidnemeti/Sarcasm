@@ -23,6 +23,11 @@ namespace Sarcasm.GrammarAst
             return this;
         }
 
+        Type IBnfiTerm.Type
+        {
+            get { return null; }
+        }
+
         public BnfiTermKeyTerm ToPunctuation()
         {
             this.SetFlag(TermFlags.IsPunctuation);

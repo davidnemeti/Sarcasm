@@ -22,6 +22,7 @@ namespace Sarcasm.GrammarAst
     public interface IBnfiTerm
     {
         BnfTerm AsBnfTerm();
+        Type Type { get; }
     }
 
     public interface INonTerminal
@@ -47,11 +48,6 @@ namespace Sarcasm.GrammarAst
     {
     }
 
-    public interface IHasType
-    {
-        Type Type { get; }
-    }
-
     // NOTE: cannot inherit from IBnfiTerm<T> because of interface implementation conflict in BnfiTermCollection
     public interface IBnfiTermOrAbleForChoice<out T> : IBnfiTerm
     {
@@ -62,7 +58,7 @@ namespace Sarcasm.GrammarAst
     {
     }
 
-    public interface IBnfiTermCopyable : IHasType, IBnfiTerm
+    public interface IBnfiTermCopyable : IBnfiTerm
     {
     }
 
@@ -74,7 +70,7 @@ namespace Sarcasm.GrammarAst
     {
     }
 
-    public abstract class BnfiTermNonTerminal : NonTerminal, IHasType, IBnfiTerm, INonTerminal, IBnfiTermCopyable, IUnparsableNonTerminal
+    public abstract class BnfiTermNonTerminal : NonTerminal, IBnfiTerm, INonTerminal, IBnfiTermCopyable, IUnparsableNonTerminal
     {
         protected readonly Type type;
         protected readonly bool hasExplicitName;
@@ -104,7 +100,7 @@ namespace Sarcasm.GrammarAst
         public bool IsContractible { get; protected set; }
         protected bool hasBeenContracted;
 
-        Type IHasType.Type
+        public Type Type
         {
             get { return this.type; }
         }
