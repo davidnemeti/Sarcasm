@@ -28,6 +28,6 @@ Sarcasm is released under the GNU Lesser General Public License (LGPL). It means
 
 For legal license see [License](License/License.txt).
 
-For *precise, legal* license information see [License descriptions](Licenses).
+For *precise, legal* license information see [License descriptions](License).
 
 For *usable, comprehensible* information see [LGPL on Wikipedia](http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License).
