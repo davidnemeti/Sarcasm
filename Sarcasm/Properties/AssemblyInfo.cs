@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Sarcasm")]
-[assembly: AssemblyDescription("Index-free AST builder and typesafe grammar for Irony")]
+[assembly: AssemblyDescription("SDK for creating typesafe and typeless domain bound grammar and using the general unparser")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Sarcasm")]
