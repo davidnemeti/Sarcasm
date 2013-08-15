@@ -21,7 +21,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Forms",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{AC0608C7-181C-49F0-AB19-28187C6ACAA6}"
 	ProjectSection(SolutionItems) = preProject
+		AddOrUpdateLicenseInfoOnSourceFiles.ps1 = AddOrUpdateLicenseInfoOnSourceFiles.ps1
+		COPYING.LESSER.txt = COPYING.LESSER.txt
+		COPYING.txt = COPYING.txt
 		Deploy.ps1 = Deploy.ps1
+		License.txt = License.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
