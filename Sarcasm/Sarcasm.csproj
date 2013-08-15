@@ -187,6 +187,6 @@
   <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\TextTemplating\Microsoft.TextTemplating.targets" Condition="false" />
   <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\system32\WindowsPowerShell\v1.0\powershell.exe $(SolutionDir)\Scripts\AutoIncrementAssemblyFileVersion.ps1 -assemblyInfoPath $(ProjectDir)\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PreBuildEvent>%25SystemRoot%25\system32\WindowsPowerShell\v1.0\powershell.exe $(ProjectDir)..\Scripts\AutoIncrementAssemblyFileVersion.ps1 -assemblyInfoPath $(ProjectDir)\Properties\AssemblyInfo.cs</PreBuildEvent>
   </PropertyGroup>
 </Project>
