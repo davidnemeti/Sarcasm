@@ -361,16 +361,7 @@ namespace Sarcasm.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                UtokenBase utokenBase = (UtokenBase)utoken;
-                IHasTextToBeSet utokenHasText = utoken as IHasTextToBeSet;
-
-                utokenBase.UnparserForAsyncLock = (Unparser)postProcessHelper;
-
-                if (utokenHasText != null)
-                    utokenHasText.SetText(formatter);
-
-                utokenBase.Decoration = formatter.GetDecoration(utoken);
-
+                ((UtokenBase)utoken).Decoration = formatter.GetDecoration(utoken);
                 yield return utoken;
             }
         }
