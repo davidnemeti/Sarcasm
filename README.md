@@ -18,6 +18,6 @@ binaryExpression.Rule =
     ;
 ```
 
-For license information see [License](License/License.txt).
+Sarcasm is released under the GNU Lesser General Public License (LGPL). It means that you can use it as a library even in your prorietary (closed source) software. However if you are copying, modifying the whole source code or part of it, that derivate work should also be released under the LGPL license. For more information see [License](License/License.txt).
 
 For more info see the [Introduction](https://github.com/davidnemeti/Sarcasm/wiki/Introduction).
