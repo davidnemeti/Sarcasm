@@ -16,7 +16,7 @@ Get-ChildItem $rootPath -include $fileNames -recurse |
     ForEach-Object {
         $sr = $_.OpenText();
         $origText = $sr.ReadToEnd();
-        $text = $origText -replace $pattern, "";
+        $text = $origText -replace $pattern;
         $encoding = $sr.CurrentEncoding;
         $sr.Close();
 
