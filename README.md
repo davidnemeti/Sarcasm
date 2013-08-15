@@ -27,5 +27,7 @@ For more information see the [Introduction](https://github.com/davidnemeti/Sarca
 Sarcasm is released under the GNU Lesser General Public License (LGPL). It means that you can use it **freely** as a library even in your **prorietary (closed source) software**. However if you copy or modify the whole source code or part of it, that **derivate work** should also be released under the LGPL.
 
 For legal license see [License](License/License.txt).
+
 For precise *legal* license information see [License descriptions](Licenses).
+
 For *usable* information see [LGPL on Wikipedia](http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License).
