@@ -8,7 +8,7 @@ Param(
 
 $pattern = "([:b]*\r?\n)*#region License(.*\r?\n)*?#endregion([:b]*\r?\n)*"
 
-$sl = (Get-Item -Path "License.txt").OpenText()
+$sl = (Get-Item -Path "License\License.txt").OpenText()
 $licenseText = $sl.ReadToEnd();
 $sl.Close();
 

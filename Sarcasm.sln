@@ -15,29 +15,49 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasm.UnitTest", "Sarcasm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniPL", "MiniPL\MiniPL.csproj", "{30C09358-F048-417B-9DF6-75D51CA96349}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.WPF", "DecorationConnector.WPF\DecorationConnector.WPF.csproj", "{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.WPF", "DecorationConnectors\DecorationConnector.WPF\DecorationConnector.WPF.csproj", "{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Forms", "DecorationConnector.Forms\DecorationConnector.Forms.csproj", "{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Forms", "DecorationConnectors\DecorationConnector.Forms\DecorationConnector.Forms.csproj", "{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{AC0608C7-181C-49F0-AB19-28187C6ACAA6}"
 	ProjectSection(SolutionItems) = preProject
-		AddOrUpdateLicenseInfoOnSourceFiles.ps1 = AddOrUpdateLicenseInfoOnSourceFiles.ps1
-		COPYING.LESSER.txt = COPYING.LESSER.txt
-		COPYING.txt = COPYING.txt
-		Deploy.ps1 = Deploy.ps1
-		License.txt = License.txt
 		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasm.PCL", "Sarcasm\Sarcasm.PCL.csproj", "{E70F1A8C-E2E4-4676-ACF1-F429C23CB4F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A02FB9DE-B174-4438-83AF-034F8004C724} = {A02FB9DE-B174-4438-83AF-034F8004C724}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniPL.PCL", "MiniPL\MiniPL.PCL.csproj", "{49FE1105-FCEA-4D3A-8880-4E31580D2068}"
+	ProjectSection(ProjectDependencies) = postProject
+		{30C09358-F048-417B-9DF6-75D51CA96349} = {30C09358-F048-417B-9DF6-75D51CA96349}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Silverlight", "DecorationConnector.Silverlight\DecorationConnector.Silverlight.csproj", "{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Silverlight", "DecorationConnectors\DecorationConnector.Silverlight\DecorationConnector.Silverlight.csproj", "{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Android", "DecorationConnector.Android\DecorationConnector.Android.csproj", "{FA9EBCF3-4E59-4652-B7EC-0222C552609C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Android", "DecorationConnectors\DecorationConnector.Android\DecorationConnector.Android.csproj", "{FA9EBCF3-4E59-4652-B7EC-0222C552609C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasm.UnitTest.PCL", "Sarcasm.UnitTest\Sarcasm.UnitTest.PCL.csproj", "{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F0AEF19D-DA8E-49F7-BAA6-AA636BE48F82} = {F0AEF19D-DA8E-49F7-BAA6-AA636BE48F82}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DecorationConnectors", "DecorationConnectors", "{C822E0E5-18D7-4087-9742-41D50521D68E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4962E38A-C8F6-43B8-BC1B-6C19C7340471}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\AddOrUpdateLicenseInfoOnSourceFiles.ps1 = Scripts\AddOrUpdateLicenseInfoOnSourceFiles.ps1
+		Scripts\AutoIncrementAssemblyFileVersion.ps1 = Scripts\AutoIncrementAssemblyFileVersion.ps1
+		Scripts\Deploy.ps1 = Scripts\Deploy.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "License", "License", "{0791E093-96C6-4F4A-BE26-DEAEE2648109}"
+	ProjectSection(SolutionItems) = preProject
+		License\COPYING.LESSER.txt = License\COPYING.LESSER.txt
+		License\COPYING.txt = License\COPYING.txt
+		License\License.txt = License\License.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,5 +112,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FA9EBCF3-4E59-4652-B7EC-0222C552609C} = {C822E0E5-18D7-4087-9742-41D50521D68E}
+		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978} = {C822E0E5-18D7-4087-9742-41D50521D68E}
+		{F702A0DE-F266-4EB0-B5D1-8A78457B7EA8} = {C822E0E5-18D7-4087-9742-41D50521D68E}
+		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0} = {C822E0E5-18D7-4087-9742-41D50521D68E}
 	EndGlobalSection
 EndGlobal

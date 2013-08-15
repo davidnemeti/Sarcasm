@@ -61,7 +61,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sarcasm\Sarcasm.PCL.csproj">
+    <ProjectReference Include="..\..\Sarcasm\Sarcasm.PCL.csproj">
       <Project>{e70f1a8c-e2e4-4676-acf1-f429c23cb4f5}</Project>
       <Name>Sarcasm.PCL</Name>
     </ProjectReference>
