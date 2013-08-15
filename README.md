@@ -8,7 +8,7 @@ It provides the following features:
   - Typesafe grammar and typesafe AST building using domain-grammar bindings.
   - Automatic unparsing provided by the general unparser based on domain bound grammar.
 
-In a domain bound grammar you can write this:
+In a domain bound grammar you can write this e.g.:
 
 ```
 binaryExpression.Rule =
