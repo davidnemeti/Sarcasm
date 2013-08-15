@@ -18,4 +18,6 @@ binaryExpression.Rule =
     ;
 ```
 
-For more info see the [[Introduction]].
+For license information see [License](License/License.txt).
+
+For more info see the [Introduction](https://github.com/davidnemeti/Sarcasm/wiki/Introduction).
