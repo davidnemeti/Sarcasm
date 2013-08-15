@@ -287,9 +287,6 @@ namespace Sarcasm.Unparsing
              * */
             foreach (UtokenBase utoken in utokens.Concat((UtokenBase)null))
             {
-                if (utoken != null)
-                    utoken.UnparserForAsyncLock = (Unparser)postProcessHelper;
-
                 if (IsControl(utoken))
                 {
                     UtokenControl utokenControl = (UtokenControl)utoken;
@@ -364,11 +361,16 @@ namespace Sarcasm.Unparsing
 
             foreach (Utoken utoken in utokens)
             {
-                IHasText utokenHasText = utoken as IHasText;
+                UtokenBase utokenBase = (UtokenBase)utoken;
+                IHasTextToBeSet utokenHasText = utoken as IHasTextToBeSet;
+
+                utokenBase.UnparserForAsyncLock = (Unparser)postProcessHelper;
+
                 if (utokenHasText != null)
                     utokenHasText.SetText(formatter);
 
-                ((UtokenBase)utoken).Decoration = formatter.GetDecoration(utoken);
+                utokenBase.Decoration = formatter.GetDecoration(utoken);
+
                 yield return utoken;
             }
         }

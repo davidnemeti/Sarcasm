@@ -149,8 +149,10 @@ namespace Sarcasm.Unparsing
 
         private static AsyncLock GetUnparserAsyncLock(IEnumerable<Utoken> utokens)
         {
+            // NOTE that utoken list might be empty
+            // NOTE that utoken list might not come from the unparser (might be user created), so they might not contain an unparser
             var utoken = (UtokenBase)utokens.FirstOrDefault();
-            return utoken != null ? utoken.UnparserForAsyncLock.Lock : new AsyncLock();
+            return utoken != null && utoken.UnparserForAsyncLock != null ? utoken.UnparserForAsyncLock.Lock : new AsyncLock();
         }
     }
 }

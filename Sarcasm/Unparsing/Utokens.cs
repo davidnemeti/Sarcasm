@@ -71,7 +71,7 @@ namespace Sarcasm.Unparsing
         Discriminator Discriminator { get; }
     }
 
-    internal interface IHasText
+    internal interface IHasTextToBeSet
     {
         void SetText(Formatter formatter);
     }
@@ -110,7 +110,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenText : UtokenValue, Utoken, IHasText
+    public class UtokenText : UtokenValue, Utoken, IHasTextToBeSet
     {
         public string Text { get; private set; }
         public UnparsableAst Reference { get; private set; }
@@ -143,7 +143,7 @@ namespace Sarcasm.Unparsing
             return ToString("\"{0}\"{1}", text, Reference != null ? " (with ref)" : string.Empty);
         }
 
-        void IHasText.SetText(Formatter formatter)
+        void IHasTextToBeSet.SetText(Formatter formatter)
         {
             if (this.Text == null)
                 this.Text = Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
@@ -193,7 +193,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenWhitespace : UtokenInsert, Utoken, IHasText
+    public class UtokenWhitespace : UtokenInsert, Utoken, IHasTextToBeSet
     {
         internal enum Kind { NewLine, EmptyLine, Space, Tab, WhiteSpaceBetweenUtokens }
 
@@ -235,7 +235,7 @@ namespace Sarcasm.Unparsing
             return ToString("." + kind);
         }
 
-        void IHasText.SetText(Formatter formatter)
+        void IHasTextToBeSet.SetText(Formatter formatter)
         {
             switch (kind)
             {
@@ -310,7 +310,7 @@ namespace Sarcasm.Unparsing
         }
     }
 
-    public class UtokenIndent : UtokenBase, Utoken, IHasText
+    public class UtokenIndent : UtokenBase, Utoken, IHasTextToBeSet
     {
         public int IndentLevel { get; private set; }
         public string Text { get; private set; }
@@ -328,7 +328,7 @@ namespace Sarcasm.Unparsing
             return ToString("indent level: {0}", IndentLevel);
         }
 
-        void IHasText.SetText(Formatter formatter)
+        void IHasTextToBeSet.SetText(Formatter formatter)
         {
             this.Text = string.Concat(Enumerable.Repeat(formatter.IndentUnit, IndentLevel));
         }
