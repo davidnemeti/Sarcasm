@@ -44,7 +44,12 @@ namespace Sarcasm.Unparsing
     {
         public static string AsText(this IEnumerable<Utoken> utokens, Unparser unparser)
         {
-            return string.Concat(utokens.Select(utoken => utoken.ToText(unparser.Formatter)));
+            return utokens.AsText(unparser.Formatter);
+        }
+
+        public static string AsText(this IEnumerable<Utoken> utokens, Formatter formatter)
+        {
+            return string.Concat(utokens.Select(utoken => utoken.ToText(formatter)));
         }
 
 #if NET4_0
@@ -113,10 +118,15 @@ namespace Sarcasm.Unparsing
 
         public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
+            utokens.WriteToStream(stream, unparser.Formatter);
+        }
+
+        public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Formatter formatter)
+        {
             using (StreamWriter sw = new StreamWriter(stream))
             {
                 foreach (Utoken utoken in utokens)
-                    sw.Write(utoken.ToText(unparser.Formatter));
+                    sw.Write(utoken.ToText(formatter));
             }
         }
 
