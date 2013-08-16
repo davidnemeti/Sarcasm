@@ -137,6 +137,13 @@ namespace Sarcasm
         {
             return Task.Factory.StartNew(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
         }
+
+        public static Task<TResult> FromResult<TResult>(TResult result)
+        {
+            var task = new Task<TResult>(() => result);
+            task.RunSynchronously();
+            return task;
+        }
     }
 #endif
 }

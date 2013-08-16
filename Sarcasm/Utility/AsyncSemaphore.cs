@@ -30,7 +30,7 @@ namespace Sarcasm.Utility
     public class AsyncSemaphore
     {
 #if NET4_0
-        private readonly static Task s_completed = new Task(() => { });
+        private readonly static Task s_completed = TaskEx.FromResult(true);
 #else
         private readonly static Task s_completed = Task.FromResult(true);
 #endif

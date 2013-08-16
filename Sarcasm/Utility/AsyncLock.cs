@@ -37,7 +37,7 @@ namespace Sarcasm.Utility
         {
             m_semaphore = new AsyncSemaphore(1);
 #if NET4_0
-            m_releaser = new Task<Releaser>(() => new Releaser(this));
+            m_releaser = TaskEx.FromResult(new Releaser(this));
 #else
             m_releaser = Task.FromResult(new Releaser(this));
 #endif

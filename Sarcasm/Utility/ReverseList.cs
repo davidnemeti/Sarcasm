@@ -28,7 +28,7 @@ namespace Sarcasm.Utility
 {
     public abstract class ReverseListBase<T>
 #if NET4_0
-        : IEnumerable
+        : IEnumerable<T>
 #else
         : IReadOnlyCollection<T>
 #endif
