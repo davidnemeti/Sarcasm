@@ -31,7 +31,7 @@ begin
      @ @)
     var just_for_test : boolean := True;
     @@ single line comment
-    WriteLn(number, "th Fibonacci number: ", Fibonacci(number));
+    WriteLn(number, 'th Fibonacci number: ', Fibonacci(number));
     @@ comment almost at the end
 end.
 @@ comment1 at the end
