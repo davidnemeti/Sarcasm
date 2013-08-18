@@ -36,12 +36,8 @@ using Sarcasm.DomainCore;
 using Sarcasm.Reflection;
 using Sarcasm.Utility;
 
-using MiniPL.DomainDefinitions;
 using D = MiniPL.DomainDefinitions;
 using DC = Sarcasm.DomainCore;
-using Type = MiniPL.DomainDefinitions.Type;
-using NumberLiteral = MiniPL.DomainDefinitions.NumberLiteral;
-using StringLiteral = MiniPL.DomainDefinitions.StringLiteral;
 
 namespace MiniPL.Grammars
 {
@@ -112,37 +108,37 @@ namespace MiniPL.Grammars
                 this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
             }
 
-            public readonly BnfiTermRecord<Program> Program = new BnfiTermRecord<Program>();
-            public readonly BnfiTermRecord<Function> Function = new BnfiTermRecord<Function>();
-            public readonly BnfiTermChoice<Type> Type = new BnfiTermChoice<Type>();
-            public readonly BnfiTermRecord<LocalVariable> LocalVariable = new BnfiTermRecord<LocalVariable>();
-            public readonly BnfiTermRecord<Parameter> Parameter = new BnfiTermRecord<Parameter>();
-            public readonly BnfiTermRecord<Argument> Argument = new BnfiTermRecord<Argument>();
-            public readonly BnfiTermChoice<Statement> Statement = new BnfiTermChoice<Statement>();
-            public readonly BnfiTermRecord<StatementList> StatementList = new BnfiTermRecord<StatementList>();
-            public readonly BnfiTermRecord<While> While = new BnfiTermRecord<While>();
-            public readonly BnfiTermRecord<For> For = new BnfiTermRecord<For>();
-            public readonly BnfiTermRecord<If> If = new BnfiTermRecord<If>();
-//            public readonly BnfiTermRecord<IfElse> IfElse = new BnfiTermRecord<IfElse>();
-            public readonly BnfiTermRecord<Return> Return = new BnfiTermRecord<Return>();
-            public readonly BnfiTermRecord<Assignment> Assignment = new BnfiTermRecord<Assignment>();
-            public readonly BnfiTermConversion<Reference<Function>> FunctionReference = new BnfiTermConversion<Reference<Function>>();
-            public readonly BnfiTermRecord<FunctionCall> FunctionCall = new BnfiTermRecord<FunctionCall>();
-            public readonly BnfiTermRecord<Write> Write = new BnfiTermRecord<Write>();
-            public readonly BnfiTermRecord<WriteLn> WriteLn = new BnfiTermRecord<WriteLn>();
-            public readonly BnfiTermRecord<VariableReference> VariableReference = new BnfiTermRecord<VariableReference>();
+            public readonly BnfiTermRecord<D.Program> Program = new BnfiTermRecord<D.Program>();
+            public readonly BnfiTermRecord<D.Function> Function = new BnfiTermRecord<D.Function>();
+            public readonly BnfiTermChoice<D.Type> Type = new BnfiTermChoice<D.Type>();
+            public readonly BnfiTermRecord<D.LocalVariable> LocalVariable = new BnfiTermRecord<D.LocalVariable>();
+            public readonly BnfiTermRecord<D.Parameter> Parameter = new BnfiTermRecord<D.Parameter>();
+            public readonly BnfiTermRecord<D.Argument> Argument = new BnfiTermRecord<D.Argument>();
+            public readonly BnfiTermChoice<D.Statement> Statement = new BnfiTermChoice<D.Statement>();
+            public readonly BnfiTermRecord<D.StatementList> StatementList = new BnfiTermRecord<D.StatementList>();
+            public readonly BnfiTermRecord<D.While> While = new BnfiTermRecord<D.While>();
+            public readonly BnfiTermRecord<D.For> For = new BnfiTermRecord<D.For>();
+            public readonly BnfiTermRecord<D.If> If = new BnfiTermRecord<D.If>();
+//            public readonly BnfiTermRecord<D.IfElse> IfElse = new BnfiTermRecord<D.IfElse>();
+            public readonly BnfiTermRecord<D.Return> Return = new BnfiTermRecord<D.Return>();
+            public readonly BnfiTermRecord<D.Assignment> Assignment = new BnfiTermRecord<D.Assignment>();
+            public readonly BnfiTermConversion<Reference<D.Function>> FunctionReference = new BnfiTermConversion<Reference<D.Function>>();
+            public readonly BnfiTermRecord<D.FunctionCall> FunctionCall = new BnfiTermRecord<D.FunctionCall>();
+            public readonly BnfiTermRecord<D.Write> Write = new BnfiTermRecord<D.Write>();
+            public readonly BnfiTermRecord<D.WriteLn> WriteLn = new BnfiTermRecord<D.WriteLn>();
+            public readonly BnfiTermRecord<D.VariableReference> VariableReference = new BnfiTermRecord<D.VariableReference>();
 
             public readonly BnfiTermChoice<D.Expression> Expression = new BnfiTermChoice<D.Expression>();
-            public readonly BnfiTermRecord<BinaryExpression> BinaryExpression = new BnfiTermRecord<BinaryExpression>();
-            public readonly BnfiTermRecord<UnaryExpression> UnaryExpression = new BnfiTermRecord<UnaryExpression>();
-            public readonly BnfiTermRecord<ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<ConditionalTernaryExpression>();
+            public readonly BnfiTermRecord<D.BinaryExpression> BinaryExpression = new BnfiTermRecord<D.BinaryExpression>();
+            public readonly BnfiTermRecord<D.UnaryExpression> UnaryExpression = new BnfiTermRecord<D.UnaryExpression>();
+            public readonly BnfiTermRecord<D.ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<D.ConditionalTernaryExpression>();
 
-            public readonly BnfiTermChoice<BinaryOperator> BinaryOperator = new BnfiTermChoice<BinaryOperator>();
-            public readonly BnfiTermChoice<UnaryOperator> UnaryOperator = new BnfiTermChoice<UnaryOperator>();
+            public readonly BnfiTermChoice<D.BinaryOperator> BinaryOperator = new BnfiTermChoice<D.BinaryOperator>();
+            public readonly BnfiTermChoice<D.UnaryOperator> UnaryOperator = new BnfiTermChoice<D.UnaryOperator>();
 
-            public readonly BnfiTermRecord<NumberLiteral> NumberLiteral = new BnfiTermRecord<NumberLiteral>();
-            public readonly BnfiTermRecord<StringLiteral> StringLiteral = new BnfiTermRecord<StringLiteral>();
-            public readonly BnfiTermRecord<BoolLiteral> BoolLiteral = new BnfiTermRecord<BoolLiteral>();
+            public readonly BnfiTermRecord<D.NumberLiteral> NumberLiteral = new BnfiTermRecord<D.NumberLiteral>();
+            public readonly BnfiTermRecord<D.StringLiteral> StringLiteral = new BnfiTermRecord<D.StringLiteral>();
+            public readonly BnfiTermRecord<D.BoolLiteral> BoolLiteral = new BnfiTermRecord<D.BoolLiteral>();
 
             public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
             public readonly BnfiTermConversion<NameRef> NamespaceName = new BnfiTermConversion<NameRef>("namespace_name");
@@ -168,33 +164,33 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm RIGHT_PAREN;
             public readonly BnfiTermKeyTerm QUESTION_MARK;
 
-            public readonly BnfiTermConversion<BinaryOperator> ADD_OP;
-            public readonly BnfiTermConversion<BinaryOperator> SUB_OP;
-            public readonly BnfiTermConversion<BinaryOperator> MUL_OP;
-            public readonly BnfiTermConversion<BinaryOperator> DIV_OP;
-            public readonly BnfiTermConversion<BinaryOperator> POW_OP;
-            public readonly BnfiTermConversion<BinaryOperator> MOD_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> ADD_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> SUB_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> MUL_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> DIV_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> POW_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> MOD_OP;
 
-            public readonly BnfiTermConversion<UnaryOperator> POS_OP;
-            public readonly BnfiTermConversion<UnaryOperator> NEG_OP;
+            public readonly BnfiTermConversion<D.UnaryOperator> POS_OP;
+            public readonly BnfiTermConversion<D.UnaryOperator> NEG_OP;
 
-            public readonly BnfiTermConversion<BinaryOperator> EQ_OP;
-            public readonly BnfiTermConversion<BinaryOperator> NEQ_OP;
-            public readonly BnfiTermConversion<BinaryOperator> LT_OP;
-            public readonly BnfiTermConversion<BinaryOperator> LTE_OP;
-            public readonly BnfiTermConversion<BinaryOperator> GT_OP;
-            public readonly BnfiTermConversion<BinaryOperator> GTE_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> EQ_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> NEQ_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> LT_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> LTE_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> GT_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> GTE_OP;
 
-            public readonly BnfiTermConversion<BinaryOperator> AND_OP;
-            public readonly BnfiTermConversion<BinaryOperator> OR_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> AND_OP;
+            public readonly BnfiTermConversion<D.BinaryOperator> OR_OP;
 
-            public readonly BnfiTermConversion<UnaryOperator> NOT_OP;
+            public readonly BnfiTermConversion<D.UnaryOperator> NOT_OP;
 
-            public readonly BnfiTermConversion<Type> INTEGER_TYPE;
-            public readonly BnfiTermConversion<Type> REAL_TYPE;
-            public readonly BnfiTermConversion<Type> STRING_TYPE;
-            public readonly BnfiTermConversion<Type> CHAR_TYPE;
-            public readonly BnfiTermConversion<Type> BOOL_TYPE;
+            public readonly BnfiTermConversion<D.Type> INTEGER_TYPE;
+            public readonly BnfiTermConversion<D.Type> REAL_TYPE;
+            public readonly BnfiTermConversion<D.Type> STRING_TYPE;
+            public readonly BnfiTermConversion<D.Type> CHAR_TYPE;
+            public readonly BnfiTermConversion<D.Type> BOOL_TYPE;
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
@@ -270,12 +266,12 @@ namespace MiniPL.Grammars
 
             B.VariableReference.Rule =
                 B.NameRef
-                .ConvertValue(_nameRef => ReferenceFactory.Get<IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
+                .ConvertValue(_nameRef => ReferenceFactory.Get<D.IVariable>(_nameRef), _variableReference => _variableReference.NameRef)
                 .BindTo(B.VariableReference, t => t.Target)
                 ;
 
             B.FunctionReference.Rule =
-                B.NameRef.ConvertValue(_nameRef => ReferenceFactory.Get<Function>(_nameRef), _variableReference => _variableReference.NameRef)
+                B.NameRef.ConvertValue(_nameRef => ReferenceFactory.Get<D.Function>(_nameRef), _variableReference => _variableReference.NameRef)
                 ;
 
             B.StatementList.Rule =
