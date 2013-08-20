@@ -168,6 +168,15 @@ namespace Sarcasm.DomainCore
         }
     }
 
+    public enum NumberLiteralBase { Decimal = 10, Hexadecimal = 16, Octal = 8, Binary = 2 }
+
+    public interface INumberLiteral
+    {
+        object Value { get; set; }
+        NumberLiteralBase Base { get; set; }
+        bool HasExplicitTypeModifier { get; set; }
+    }
+
     public enum CommentCategory
     {
         Outline,

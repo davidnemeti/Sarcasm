@@ -198,16 +198,24 @@ namespace MiniPL
             }
         }
 
-        public class NumberLiteral : Expression
+        public class NumberLiteral : Expression, INumberLiteral
         {
-            public NumberLiteral() { }
+            public const NumberLiteralBase DefaultBase = NumberLiteralBase.Decimal;
+
+            public NumberLiteral()
+            {
+                this.Base = DefaultBase;
+            }
 
             public NumberLiteral(object value)
+                : this()
             {
                 this.Value = value;
             }
 
             public object Value { get; set; }
+            public NumberLiteralBase Base { get; set; }
+            public bool HasExplicitTypeModifier { get; set; }
 
             public override string ToString()
             {

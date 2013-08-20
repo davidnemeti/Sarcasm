@@ -2,19 +2,25 @@
   "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
   "Term1": {
     "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-    "Value": 1
+    "Value": 1,
+    "Base": "Decimal",
+    "HasExplicitTypeModifier": false
   },
   "Op": "Add",
   "Term2": {
     "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
     "Term1": {
       "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-      "Value": 2
+      "Value": 2,
+      "Base": "Decimal",
+      "HasExplicitTypeModifier": false
     },
     "Op": "Mul",
     "Term2": {
       "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-      "Value": 3
+      "Value": 3,
+      "Base": "Decimal",
+      "HasExplicitTypeModifier": false
     }
   }
 }

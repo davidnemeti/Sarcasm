@@ -271,6 +271,12 @@ namespace Sarcasm.GrammarAst
             return BnfiTermConversion.Intro(terminal, valueIntroducer, inverseValueConverterForUnparse, astForChild);
         }
 
+        public static BnfiTermConversion<TNumberLiteral> IntroNumberLiteral<TNumberLiteral>(this NumberLiteral numberLiteral, NumberLiteralInfo numberLiteralInfo)
+            where TNumberLiteral : INumberLiteral, new()
+        {
+            return BnfiTermConversion.IntroNumberLiteral<TNumberLiteral>(numberLiteral, numberLiteralInfo);
+        }
+
         public static BnfiTermConversion<string> IntroIdentifier(this IdentifierTerminal identifierTerminal)
         {
             return BnfiTermConversion.IntroIdentifier(identifierTerminal);

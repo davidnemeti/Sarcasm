@@ -20,7 +20,9 @@
         "Type": "Integer",
         "InitValue": {
           "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-          "Value": 5
+          "Value": 5,
+          "Base": "Decimal",
+          "HasExplicitTypeModifier": false
         }
       },
       {
@@ -134,14 +136,18 @@
                 "Op": "Eq",
                 "Term2": {
                   "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                  "Value": 0
+                  "Value": 0,
+                  "Base": "Decimal",
+                  "HasExplicitTypeModifier": false
                 }
               },
               "Body": {
                 "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                 "Value": {
                   "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                  "Value": 0
+                  "Value": 0,
+                  "Base": "Decimal",
+                  "HasExplicitTypeModifier": false
                 }
               },
               "ElseBody": {
@@ -162,14 +168,18 @@
                   "Op": "Eq",
                   "Term2": {
                     "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                    "Value": 1
+                    "Value": 1,
+                    "Base": "Decimal",
+                    "HasExplicitTypeModifier": false
                   }
                 },
                 "Body": {
                   "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                   "Value": {
                     "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                    "Value": 1
+                    "Value": 1,
+                    "Base": "Decimal",
+                    "HasExplicitTypeModifier": false
                   }
                 },
                 "ElseBody": {
@@ -207,7 +217,9 @@
                               "Op": "Sub",
                               "Term2": {
                                 "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                                "Value": 1
+                                "Value": 1,
+                                "Base": "Decimal",
+                                "HasExplicitTypeModifier": false
                               }
                             }
                           }
@@ -246,7 +258,9 @@
                               "Op": "Sub",
                               "Term2": {
                                 "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
-                                "Value": 2
+                                "Value": 2,
+                                "Base": "Decimal",
+                                "HasExplicitTypeModifier": false
                               }
                             }
                           }

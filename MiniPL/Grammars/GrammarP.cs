@@ -179,7 +179,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermChoice<D.BinaryOperator> BinaryOperator = new BnfiTermChoice<D.BinaryOperator>();
             public readonly BnfiTermChoice<D.UnaryOperator> UnaryOperator = new BnfiTermChoice<D.UnaryOperator>();
 
-            public readonly BnfiTermRecord<D.NumberLiteral> NumberLiteral = new BnfiTermRecord<D.NumberLiteral>();
+            public readonly BnfiTermConversion<D.NumberLiteral> NumberLiteral = new BnfiTermConversion<D.NumberLiteral>();
             public readonly BnfiTermRecord<D.StringLiteral> StringLiteral = new BnfiTermRecord<D.StringLiteral>();
             public readonly BnfiTermRecord<D.BoolLiteral> BoolLiteral = new BnfiTermRecord<D.BoolLiteral>();
 
@@ -443,8 +443,16 @@ namespace MiniPL.Grammars
                 + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
-            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().MakeContractible().BindTo(B.NumberLiteral, t => t.Value);
-            B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "'").MakeContractible().BindTo(B.StringLiteral, t => t.Value);
+            var numberLiteralInfo = new NumberLiteralInfo()
+                .AddSuffix("D", TypeCode.Double)
+                .AddSuffix("M", TypeCode.Decimal)
+                .AddPrefix("#b", NumberLiteralBase.Binary)
+                .AddPrefix("#o", NumberLiteralBase.Octal)
+                .AddPrefix("#x", NumberLiteralBase.Hexadecimal);
+
+            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral<D.NumberLiteral>(numberLiteralInfo);
+//            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().BindTo(B.NumberLiteral, t => t.Value);   // B.NumberLiteral used to be a BnfiTermRecord
+            B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "'").BindTo(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;

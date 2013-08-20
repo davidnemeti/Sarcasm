@@ -34,6 +34,7 @@ using Irony.Parsing;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.GrammarAst
 {
@@ -214,6 +215,29 @@ namespace Sarcasm.GrammarAst
             //    };
 
             return bnfiTermConversion;
+        }
+
+        public static BnfiTermConversion<TNumberLiteral> IntroNumberLiteral<TNumberLiteral>(NumberLiteral numberLiteral, NumberLiteralInfo numberLiteralInfo)
+            where TNumberLiteral : INumberLiteral, new()
+        {
+            var _numberLiteral = Intro(
+                numberLiteral,
+                (context, parseNode) =>
+                {
+                    string tokenText = parseNode.FindTokenAndGetText();
+                    bool hasExplicitTypeModifier = numberLiteralInfo.HasTokenTextExplicitTypeSuffix(tokenText);
+                    NumberLiteralBase @base = numberLiteralInfo.GetBaseFromTokenText(tokenText);
+                    return new TNumberLiteral() { Value = parseNode.FindToken().Value, HasExplicitTypeModifier = hasExplicitTypeModifier, Base = @base };
+                },
+                NoUnparseByInverse<TNumberLiteral>(),
+                astForChild: false
+                );
+
+            _numberLiteral.UtokenizerForUnparse =
+                (formatProvider, reference, astValue) =>
+                    new[] { UtokenValue.CreateText(numberLiteralInfo.NumberLiteralToText(astValue, formatProvider), reference) };
+
+            return _numberLiteral;
         }
 
         public static BnfiTermConversion<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)
@@ -603,7 +627,13 @@ namespace Sarcasm.GrammarAst
 
         private object ConvertAstValueForChild(object astValue, BnfTerm childBnfTerm)
         {
-            if (IsMainChild(childBnfTerm))
+            /*
+             * If UtokenizerForUnparse is not null then this method is being called only for child priority calculations, and not for
+             * actually getting the children for unparse. However, if we are being called for priority calculations, we shouldn't
+             * throw an exception because of the unimplemented inverseValueConverterForUnparse.
+             * */
+
+            if (IsMainChild(childBnfTerm) && UtokenizerForUnparse == null)
                 return this.inverseValueConverterForUnparse(astValue);
             else
                 return astValue;

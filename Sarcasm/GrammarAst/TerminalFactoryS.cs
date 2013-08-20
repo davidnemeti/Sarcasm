@@ -31,6 +31,7 @@ using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Unparsing;
+using Sarcasm.DomainCore;
 
 namespace Sarcasm.GrammarAst
 {
@@ -106,6 +107,28 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermConversion<string> CreateStringLiteral(string name, string startEndSymbol, StringOptions options)
         {
             return new StringLiteral(name, startEndSymbol, options).IntroStringLiteral();
+        }
+
+        #endregion
+
+        #region Number
+
+        public static BnfiTermConversion<TNumberLiteral> CreateNumberLiteral<TNumberLiteral>(NumberLiteralInfo numberLiteralInfo, string name = "numberliteral")
+            where TNumberLiteral : INumberLiteral, new()
+        {
+            return new NumberLiteral(name: name).AttachNumberLiteralInfo(numberLiteralInfo).IntroNumberLiteral<TNumberLiteral>(numberLiteralInfo);
+        }
+
+        public static BnfiTermConversion<TNumberLiteral> CreateNumberLiteral<TNumberLiteral>(NumberLiteralInfo numberLiteralInfo, NumberOptions options)
+            where TNumberLiteral : INumberLiteral, new()
+        {
+            return new NumberLiteral(name: "numberliteral", options: options).AttachNumberLiteralInfo(numberLiteralInfo).IntroNumberLiteral<TNumberLiteral>(numberLiteralInfo);
+        }
+
+        public static BnfiTermConversion<TNumberLiteral> CreateNumberLiteral<TNumberLiteral>(NumberLiteralInfo numberLiteralInfo, string name, NumberOptions options)
+            where TNumberLiteral : INumberLiteral, new()
+        {
+            return new NumberLiteral(name: name, options: options).AttachNumberLiteralInfo(numberLiteralInfo).IntroNumberLiteral<TNumberLiteral>(numberLiteralInfo);
         }
 
         #endregion
