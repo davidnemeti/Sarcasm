@@ -66,7 +66,7 @@ namespace MiniPL.Grammars
                     this.DO = TerminalFactoryS.CreateKeyTerm("csináld");
                     this.RETURN = TerminalFactoryS.CreateKeyTerm("visszatér");
                     this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiír");
-                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírÚjsor");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírSor");
                     this.VAR = TerminalFactoryS.CreateKeyTerm("változó");
 
                     this.AND_OP = TerminalFactoryS.CreateKeyTerm("és", DomainDefinitions.BinaryOperator.And);
@@ -78,12 +78,47 @@ namespace MiniPL.Grammars
                     this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valós", DomainDefinitions.Type.Real);
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", DomainDefinitions.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", DomainDefinitions.Type.Char);
-                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_érték", DomainDefinitions.Type.Bool);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai", DomainDefinitions.Type.Bool);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
-                        { "Igaz", true },
-                        { "Hamis", false }
+                        { "igaz", true },
+                        { "hamis", false }
+                    };
+                }
+                else if (cultureInfo.Name == "de")
+                {
+                    this.PROGRAM = TerminalFactoryS.CreateKeyTerm("Programm");
+                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("NameRaum");
+                    this.BEGIN = TerminalFactoryS.CreateKeyTerm("Beginn");
+                    this.END = TerminalFactoryS.CreateKeyTerm("Ende");
+                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("Funktion");
+                    this.WHILE = TerminalFactoryS.CreateKeyTerm("während");
+                    this.FOR = TerminalFactoryS.CreateKeyTerm("Zyklus");
+                    this.IF = TerminalFactoryS.CreateKeyTerm("wenn");
+                    this.THEN = TerminalFactoryS.CreateKeyTerm("dann");
+                    this.ELSE = TerminalFactoryS.CreateKeyTerm("sonst");
+                    this.DO = TerminalFactoryS.CreateKeyTerm("tun");
+                    this.RETURN = TerminalFactoryS.CreateKeyTerm("zurückholen");
+                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Schreiben");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("SchreibenLeine");
+                    this.VAR = TerminalFactoryS.CreateKeyTerm("Variable");
+
+                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("und", DomainDefinitions.BinaryOperator.And);
+                    this.OR_OP = TerminalFactoryS.CreateKeyTerm("oder", DomainDefinitions.BinaryOperator.Or);
+
+                    this.NOT_OP = TerminalFactoryS.CreateKeyTerm("nicht", DomainDefinitions.UnaryOperator.Not);
+
+                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("Ganzzahl", DomainDefinitions.Type.Integer);
+                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("ReeleZahl", DomainDefinitions.Type.Real);
+                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("Schnur", DomainDefinitions.Type.String);
+                    this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("Charakter", DomainDefinitions.Type.Char);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("Boolsche", DomainDefinitions.Type.Bool);
+
+                    this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
+                    {
+                        { "richtig", true },
+                        { "falsch", false }
                     };
                 }
                 else
