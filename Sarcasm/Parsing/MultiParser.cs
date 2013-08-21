@@ -66,7 +66,7 @@ namespace Sarcasm.Parsing
         /// </param>
         internal MultiParser(Grammar grammar, bool makeParsableEveryNonTerminal = makeParsableEveryNonTerminalDefault)
         {
-            grammar.SetDecimalSeparatorOnNumberLiterals();
+            grammar.SetDecimalSeparatorOnNumberLiterals();  // it works with Irony.Grammar as well, not just with Sarcasm.Grammar
 
             // NOTE: grammar.SnippetRoots should be extended before creating LanguageData
             if (makeParsableEveryNonTerminal)

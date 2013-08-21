@@ -46,6 +46,13 @@ namespace Sarcasm.GrammarAst
 
     public abstract partial class Grammar : Irony.Parsing.Grammar
     {
+        public override void OnGrammarDataConstructed(LanguageData language)
+        {
+            SetDecimalSeparatorOnNumberLiterals();      // it works with Irony.Parser as well, not just with Sarcasm.MultiParser
+
+            base.OnGrammarDataConstructed(language);
+        }
+
         #region Defaults
 
         private const AstCreation astCreationDefault = AstCreation.CreateAstWithAutoBrowsableAstNodes;
