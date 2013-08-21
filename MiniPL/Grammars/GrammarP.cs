@@ -54,31 +54,31 @@ namespace MiniPL.Grammars
                 if (cultureInfo.Name == "hu")
                 {
                     this.PROGRAM = TerminalFactoryS.CreateKeyTerm("program");
-                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("nevter");
+                    this.NAMESPACE = TerminalFactoryS.CreateKeyTerm("névtér");
                     this.BEGIN = TerminalFactoryS.CreateKeyTerm("eleje");
-                    this.END = TerminalFactoryS.CreateKeyTerm("vege");
-                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("fuggveny");
-                    this.WHILE = TerminalFactoryS.CreateKeyTerm("amig");
+                    this.END = TerminalFactoryS.CreateKeyTerm("vége");
+                    this.FUNCTION = TerminalFactoryS.CreateKeyTerm("függvény");
+                    this.WHILE = TerminalFactoryS.CreateKeyTerm("amíg");
                     this.FOR = TerminalFactoryS.CreateKeyTerm("ciklus");
                     this.IF = TerminalFactoryS.CreateKeyTerm("ha");
                     this.THEN = TerminalFactoryS.CreateKeyTerm("akkor");
-                    this.ELSE = TerminalFactoryS.CreateKeyTerm("egyebkent");
-                    this.DO = TerminalFactoryS.CreateKeyTerm("csinald");
-                    this.RETURN = TerminalFactoryS.CreateKeyTerm("visszater");
-                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiir");
-                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiirUjsor");
-                    this.VAR = TerminalFactoryS.CreateKeyTerm("valtozo");
+                    this.ELSE = TerminalFactoryS.CreateKeyTerm("egyébként");
+                    this.DO = TerminalFactoryS.CreateKeyTerm("csináld");
+                    this.RETURN = TerminalFactoryS.CreateKeyTerm("visszatér");
+                    this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiír");
+                    this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírÚjsor");
+                    this.VAR = TerminalFactoryS.CreateKeyTerm("változó");
 
-                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("es", DomainDefinitions.BinaryOperator.And);
+                    this.AND_OP = TerminalFactoryS.CreateKeyTerm("és", DomainDefinitions.BinaryOperator.And);
                     this.OR_OP = TerminalFactoryS.CreateKeyTerm("vagy", DomainDefinitions.BinaryOperator.Or);
 
                     this.NOT_OP = TerminalFactoryS.CreateKeyTerm("nem", DomainDefinitions.UnaryOperator.Not);
 
-                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("egesz", DomainDefinitions.Type.Integer);
-                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valos", DomainDefinitions.Type.Real);
-                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlanc", DomainDefinitions.Type.String);
+                    this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("egész", DomainDefinitions.Type.Integer);
+                    this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("valós", DomainDefinitions.Type.Real);
+                    this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", DomainDefinitions.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", DomainDefinitions.Type.Char);
-                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_ertek", DomainDefinitions.Type.Bool);
+                    this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai_érték", DomainDefinitions.Type.Bool);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
@@ -148,7 +148,10 @@ namespace MiniPL.Grammars
                 this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainDefinitions.BinaryOperator.Gt);
                 this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainDefinitions.BinaryOperator.Gte);
 
-                this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
+                // NOTE: to parse keyterms with international characters properly we need to allow international characters in identifiers as well:
+                //       CreateCSharpIdentifier creates an identifier terminal that allows internation characters
+//                this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
+                this.IDENTIFIER = TerminalFactory.CreateCSharpIdentifier("identifier").IntroIdentifier();
             }
 
             public readonly BnfiTermRecord<D.Program> Program = new BnfiTermRecord<D.Program>();

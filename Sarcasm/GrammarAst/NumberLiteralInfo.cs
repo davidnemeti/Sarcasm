@@ -255,7 +255,7 @@ namespace Sarcasm.GrammarAst
 
     public static class NumberLiteralInfoExtensions
     {
-        internal static NumberLiteral AttachNumberLiteralInfo(this NumberLiteral numberLiteral, NumberLiteralInfo numberLiteralInfo)
+        public static NumberLiteral AttachNumberLiteralInfo(this NumberLiteral numberLiteral, NumberLiteralInfo numberLiteralInfo)
         {
             numberLiteralInfo.NumberLiteral = numberLiteral;
             return numberLiteral;

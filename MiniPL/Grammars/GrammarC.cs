@@ -105,7 +105,10 @@ namespace MiniPL.Grammars
                     { "false", false }
                 };
 
-                this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
+                // NOTE: to parse keyterms with international characters properly we need to allow international characters in identifiers as well:
+                //       CreateCSharpIdentifier creates an identifier terminal that allows internation characters
+                //                this.IDENTIFIER = TerminalFactoryS.CreateIdentifier();
+                this.IDENTIFIER = TerminalFactory.CreateCSharpIdentifier("identifier").IntroIdentifier();
             }
 
             public readonly BnfiTermRecord<D.Program> Program = new BnfiTermRecord<D.Program>();
