@@ -34,7 +34,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Expression\Domain.cs" />
+    <Compile Include="Expression\Grammars\GrammarFunc.cs" />
     <Compile Include="Expression\Grammars\GrammarInfix.cs" />
+    <Compile Include="Expression\Grammars\GrammarPostfix.cs" />
     <Compile Include="Expression\Grammars\GrammarPrefix.cs" />
     <Compile Include="MiniPL\CodeGenerators\CppGenerator.cs" />
     <Compile Include="MiniPL\CodeGenerators\CppGeneratorTemplate.cs">
