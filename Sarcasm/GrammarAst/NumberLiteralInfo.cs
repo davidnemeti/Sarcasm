@@ -66,6 +66,22 @@ namespace Sarcasm.GrammarAst
             _sortedSuffixesByDescLength = null;
         }
 
+        private bool _caseSensitivePrefixesSuffixes = false;
+        public bool CaseSensitivePrefixesSuffixes
+        {
+            get { return NumberLiteral != null ? (_caseSensitivePrefixesSuffixes = NumberLiteral.CaseSensitivePrefixesSuffixes) : _caseSensitivePrefixesSuffixes; }
+
+            set
+            {
+                _caseSensitivePrefixesSuffixes = value;
+
+                if (NumberLiteral != null)
+                    NumberLiteral.CaseSensitivePrefixesSuffixes = value;
+            }
+        }
+
+        private StringComparison comparisonType { get { return CaseSensitivePrefixesSuffixes ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase; } }
+
         public NumberLiteral NumberLiteral
         {
             get { return numberLiteral; }
@@ -85,6 +101,8 @@ namespace Sarcasm.GrammarAst
                     foreach (var suffix_typeCode in suffixToTypeCode)
                         value.AddSuffix(suffix_typeCode.Key, suffix_typeCode.Value);
                 }
+
+                numberLiteral.CaseSensitivePrefixesSuffixes = this._caseSensitivePrefixesSuffixes;  // NOTE: we are getting the _caseSensitivePrefixesSuffixes field here intentionally
             }
         }
 
@@ -94,7 +112,7 @@ namespace Sarcasm.GrammarAst
 
         public NumberLiteralInfo(NumberLiteral numberLiteral)
         {
-            this.NumberLiteral = numberLiteral;
+            this.numberLiteral = numberLiteral;     // NOTE: we are setting the numberLiteral field here intentionally
         }
 
         public NumberLiteralInfo AddPrefix(string prefix, NumberLiteralBase @base)
@@ -171,7 +189,7 @@ namespace Sarcasm.GrammarAst
         {
             foreach (string prefix in sortedPrefixesByDescLength)
             {
-                if (prefix.Length < tokenText.Length && tokenText.StartsWith(prefix))
+                if (prefix.Length < tokenText.Length && tokenText.StartsWith(prefix, comparisonType))
                     return prefixToBase[prefix];
             }
 
@@ -180,7 +198,7 @@ namespace Sarcasm.GrammarAst
 
         public bool HasTokenTextExplicitTypeSuffix(string tokenText)
         {
-            return sortedSuffixesByDescLength.Any(suffix => suffix.Length < tokenText.Length && tokenText.EndsWith(suffix));
+            return sortedSuffixesByDescLength.Any(suffix => suffix.Length < tokenText.Length && tokenText.EndsWith(suffix, comparisonType));
         }
 
         public string TypeToSuffix(INumberLiteral numberLiteral)
@@ -210,7 +228,11 @@ namespace Sarcasm.GrammarAst
             string body;
 
             if (numberLiteral.Base == NumberLiteralBase.Decimal)
-                body = Convert.ToString(numberLiteral, formatProvider);
+            {
+                body = (numberLiteral.Value is float || numberLiteral.Value is double || numberLiteral.Value is decimal) && !numberLiteral.HasExplicitTypeModifier
+                    ? string.Format(formatProvider, "{0:0.0}", numberLiteral.Value)
+                    : Convert.ToString(numberLiteral, formatProvider);
+            }
 
             else if (numberLiteral.Value is byte)
                 body = Convert.ToString((byte)numberLiteral.Value, @base);
