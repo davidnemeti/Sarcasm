@@ -46,13 +46,6 @@ namespace Sarcasm.GrammarAst
 
     public abstract partial class Grammar : Irony.Parsing.Grammar
     {
-        public override void OnGrammarDataConstructed(LanguageData language)
-        {
-            SetDecimalSeparatorOnNumberLiterals();      // it works with Irony.Parser as well, not just with Sarcasm.MultiParser
-
-            base.OnGrammarDataConstructed(language);
-        }
-
         #region Defaults
 
         private const AstCreation astCreationDefault = AstCreation.CreateAstWithAutoBrowsableAstNodes;
@@ -208,11 +201,6 @@ namespace Sarcasm.GrammarAst
             return ToTerm(text).IntroValue(value);
         }
 
-        public static BnfiTermKeyTerm ToPunctuation(string text)
-        {
-            return new BnfiTermKeyTerm(text, text).ToPunctuation();
-        }
-
         public static void RegisterBracePair(KeyTerm openBrace, KeyTerm closeBrace)
         {
             openBrace.SetFlag(TermFlags.IsOpenBrace);
@@ -323,6 +311,25 @@ namespace Sarcasm.GrammarAst
         #endregion
 
         #region Misc
+
+        protected void IncludeGrammar(Irony.Parsing.Grammar grammarToInclude, bool includeNonGrammarTerminals = true)
+        {
+            foreach (var keyTerm in grammarToInclude.KeyTerms)
+                this.KeyTerms.Add(keyTerm.Key, keyTerm.Value);
+
+            if (includeNonGrammarTerminals)
+            {
+                foreach (Terminal nonGrammarTerminal in grammarToInclude.NonGrammarTerminals)
+                    this.NonGrammarTerminals.Add(nonGrammarTerminal);
+            }
+        }
+
+        public override void OnGrammarDataConstructed(LanguageData language)
+        {
+            SetDecimalSeparatorOnNumberLiterals();      // it works with Irony.Parser as well, not just with Sarcasm.MultiParser
+
+            base.OnGrammarDataConstructed(language);
+        }
 
         public new CultureInfo DefaultCulture
         {

@@ -66,11 +66,6 @@ namespace Sarcasm.GrammarAst
             return grammar.ToTerm(text, value);
         }
 
-        public static BnfiTermKeyTerm CreatePunctuation(string text)
-        {
-            return Grammar.ToPunctuation(text);
-        }
-
         #endregion
 
         #region Identifiers

@@ -48,11 +48,5 @@ namespace Sarcasm.GrammarAst
         {
             get { return null; }
         }
-
-        public BnfiTermKeyTerm ToPunctuation()
-        {
-            this.SetFlag(TermFlags.IsPunctuation);
-            return this;
-        }
     }
 }
