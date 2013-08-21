@@ -191,7 +191,7 @@ namespace Expr.Grammars
 
         public enum SyntaxHighlight { Color, BlackAndWhite }
 
-        [Formatter(typeof(GrammarInfix), "Default")]
+        [Formatter(typeof(GrammarPrefix), "Default")]
         public class Formatter : Sarcasm.Unparsing.Formatter
         {
             #region Settings
@@ -235,12 +235,9 @@ namespace Expr.Grammars
             {
                 if (target.BnfTerm is KeyTerm)
                 {
-                    if (target.BnfTerm.IsOperator() || target.BnfTerm.IsBrace())
-                    {
-                        decoration
-                            .Add(DecorationKey.Foreground, ForeColorOfOperator)
-                            ;
-                    }
+                    decoration
+                        .Add(DecorationKey.Foreground, ForeColorOfOperator)
+                        ;
                 }
                 else if (target.BnfTerm.IsLiteral() || target.BnfTerm.IsConstant())
                 {

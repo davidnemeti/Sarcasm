@@ -237,6 +237,8 @@ namespace Sarcasm.GrammarAst
                 (formatProvider, reference, astValue) =>
                     new[] { UtokenValue.CreateText(numberLiteralInfo.NumberLiteralToText(astValue, formatProvider), reference) };
 
+            _numberLiteral.SetFlag(TermFlags.IsLiteral);
+
             return _numberLiteral;
         }
 
