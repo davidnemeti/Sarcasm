@@ -73,7 +73,7 @@ namespace Sarcasm.GrammarAst
 <#
         }
 #>
-            return Intro<#= introMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Intro<#= introMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MarkLiteral();
         }
 <#
 		if (IsNumeric(typeCode))
@@ -82,7 +82,7 @@ namespace Sarcasm.GrammarAst
 
 		public static BnfiTermConversion<#= typeParamsStr #> IntroNumberLiteral<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
-            return Intro<#= introMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false);
+            return Intro<#= introMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MarkLiteral();
         }
 <#
         }

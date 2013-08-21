@@ -237,9 +237,7 @@ namespace Sarcasm.GrammarAst
                 (formatProvider, reference, astValue) =>
                     new[] { UtokenValue.CreateText(numberLiteralInfo.NumberLiteralToText(astValue, formatProvider), reference) };
 
-            _numberLiteral.SetFlag(TermFlags.IsLiteral);
-
-            return _numberLiteral;
+            return _numberLiteral.MarkLiteral();
         }
 
         public static BnfiTermConversion<T> IntroConstantTerminal<T>(ConstantTerminal constantTerminal)

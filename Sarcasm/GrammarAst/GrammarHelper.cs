@@ -471,6 +471,13 @@ namespace Sarcasm.GrammarAst
             return bnfTerm.Flags.IsSet(TermFlags.IsLiteral);
         }
 
+        internal static TBnfTerm MarkLiteral<TBnfTerm>(this TBnfTerm bnfTerm)
+            where TBnfTerm : BnfTerm
+        {
+            bnfTerm.SetFlag(TermFlags.IsLiteral);
+            return bnfTerm;
+        }
+
         internal static void MarkTransient(NonTerminal nonTerminal)
         {
             nonTerminal.SetFlag(TermFlags.IsTransient | TermFlags.NoAstNode);
