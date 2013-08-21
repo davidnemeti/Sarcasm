@@ -480,7 +480,7 @@ namespace MiniPL.Grammars
                 ShowNamesInBold = true;
                 ShowNameRefsInItalic = false;
 
-                MultiLineCommentDecorator = " * ";
+                MultiLineCommentDecorator = " *";
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)

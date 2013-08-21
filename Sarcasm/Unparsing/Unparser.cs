@@ -306,9 +306,28 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UtokenBase> _UnparseComment(UnparsableAst owner, Comment comment)
         {
-            string[] commentTextLines = Formatter.GetDecoratedCommentTextLines(owner, comment);
-            var commentTerminal = GetProperCommentTerminal(comment);
+            bool commentBreakUp;
+            CommentKind commentKind;
+            var commentTerminal = GetProperCommentTerminal(comment, out commentKind, out commentBreakUp);
 
+            if (commentBreakUp)
+            {
+                return comment.TextLines.SelectMany(commentTextLine => _UnparseComment(owner, new[] { commentTextLine }, commentTerminal, CommentKind.SingleLine));
+            }
+            else
+            {
+                string[] commentTextLines = Formatter.GetDecoratedCommentTextLines(owner, comment);
+                var commentUtokens = _UnparseComment(owner, commentTextLines, commentTerminal, commentKind);
+
+                if (comment.Kind == CommentKind.SingleLine && commentKind == CommentKind.Delimited)
+                    commentUtokens = commentUtokens.Concat(UtokenWhitespace.NewLine());
+
+                return commentUtokens;
+            }
+        }
+
+        private IEnumerable<UtokenBase> _UnparseComment(UnparsableAst owner, string[] commentTextLines, CommentTerminal commentTerminal, CommentKind commentKind)
+        {
             yield return UtokenValue.CreateText(commentTerminal.StartSymbol, owner).SetDiscriminator(Formatter.CommentStartSymbol);
             yield return UtokenControl.NoWhitespace();
 
@@ -322,7 +341,7 @@ namespace Sarcasm.Unparsing
 
             yield return UtokenControl.NoWhitespace();
 
-            if (comment.Kind == CommentKind.SingleLine)
+            if (commentKind == CommentKind.SingleLine)
             {
                 /*
                  * returning a NewLine is more expressive here than returning commentTerminal.EndSymbols[0] (which is a newline string)
@@ -338,7 +357,7 @@ namespace Sarcasm.Unparsing
                 yield return UtokenValue.CreateText(commentTerminal.EndSymbols[0], owner).SetDiscriminator(Formatter.CommentEndSymbol);
         }
 
-        private CommentTerminal GetProperCommentTerminal(Comment comment)
+        private CommentTerminal GetProperCommentTerminal(Comment comment, out CommentKind commentKind, out bool commentBreakUp)
         {
             var commentTerminals = Grammar.NonGrammarTerminals.OfType<CommentTerminal>();
             var matchingCommentTerminal = commentTerminals.FirstOrDefault(commentTerminal => GetCommentKind(commentTerminal) == comment.Kind);
@@ -347,13 +366,27 @@ namespace Sarcasm.Unparsing
                 throw new UnparseException("Grammar has no comment terminals therefore cannot unparse domain comments");
 
             if (matchingCommentTerminal != null)
+            {
+                commentKind = comment.Kind;
+                commentBreakUp = false;
                 return matchingCommentTerminal;     // we found a matching comment terminal
+            }
 
-            else if (comment.Kind == CommentKind.SingleLine || comment.TextLines.Length == 1)
-                return commentTerminals.First();    // for a singleline comment (or if it can fit into a singleline comment) any comment terminal would be appropriate
+            else if (comment.TextLines.Length == 1)
+            {
+                var commentTerminal = commentTerminals.First();     // for a comment with only one line any comment terminal would be appropriate
+                commentKind = GetCommentKind(commentTerminal);
+                commentBreakUp = false;
+                return commentTerminal;
+            }
 
             else
-                throw new UnparseException("Grammar has no delimited comment terminals, therefore cannot unparse multiline domain comments");
+            {
+                var commentTerminal = commentTerminals.First();     // choose the first one since there is not even almost proper choice
+                commentKind = GetCommentKind(commentTerminal);
+                commentBreakUp = true;                              // comment with multiple lines -> comment break up is inevitable
+                return commentTerminal;    
+            }
         }
 
         private CommentKind GetCommentKind(CommentTerminal commentTerminal)

@@ -569,7 +569,7 @@ namespace MiniPL.Grammars
                 ForeColorOfLiteral = Color.ForestGreen;
                 ForeColorOfComment = Color.DarkGreen;
 
-                MultiLineCommentDecorator = " @ ";
+                MultiLineCommentDecorator = " @";
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
