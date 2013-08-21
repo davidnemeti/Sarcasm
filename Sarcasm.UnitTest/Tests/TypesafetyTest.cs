@@ -38,6 +38,7 @@ using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 
 using globalMiniPL::MiniPL.DomainDefinitions;
+using globalMiniPL::Expr.DomainDefinitions;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using CompilerError = global::System.CodeDom.Compiler.CompilerError;
@@ -186,7 +187,7 @@ namespace Sarcasm.UnitTest
         {
             // BindTo for Choice is not good
             string sourceCodeFail = @"
-                var numberLiteral = new BnfiTermChoice<MiniPL.DomainDefinitions.NumberLiteral>();
+                var numberLiteral = new BnfiTermChoice<Expr.DomainDefinitions.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
                     + B.Expression.BindTo(numberLiteral, t => t.Value)
@@ -195,7 +196,7 @@ namespace Sarcasm.UnitTest
 
             // BindTo for Record is good
             string sourceCodeSuccess = @"
-                var numberLiteral = new BnfiTermRecord<MiniPL.DomainDefinitions.NumberLiteral>();
+                var numberLiteral = new BnfiTermRecord<Expr.DomainDefinitions.NumberLiteral>();
                 numberLiteral.Rule =
                     B.LEFT_PAREN
                     + B.Expression.BindTo(numberLiteral, t => t.Value)
@@ -214,7 +215,7 @@ namespace Sarcasm.UnitTest
                 var logicalBinaryBoolExpression = new BnfiTermRecord<MiniPLExtension.LogicalBinaryBoolExpression>();
                 var logicalBinaryBoolExpressionTL = new BnfiTermRecordTL(typeof(MiniPLExtension.LogicalBinaryBoolExpression));
                 var boolExpression = new BnfiTermRecord<MiniPLExtension.BoolExpression>();
-                var expressionTL = new BnfiTermChoiceTL(typeof(MiniPL.DomainDefinitions.Expression));
+                var expressionTL = new BnfiTermChoiceTL(typeof(Expr.DomainDefinitions.Expression));
             ";
 
             string sourceCodeFail = @"
@@ -353,7 +354,7 @@ namespace Sarcasm.UnitTest
             string sourceCodeSuccess = @"
                 B.Program.RuleTypeless =
                     new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Type)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().Type)
-                    + new BnfiTermRecordTL(typeof(MiniPL.DomainDefinitions.Expression)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().InitValue);
+                    + new BnfiTermRecordTL(typeof(Expr.DomainDefinitions.Expression)).BindTo(() => new MiniPL.DomainDefinitions.LocalVariable().InitValue);
             ";
 
             CompileShouldFail(sourceCodeFail, "CS0029");
@@ -441,6 +442,8 @@ namespace Sarcasm.UnitTest
                 using Sarcasm.UnitTest;
                 using MiniPL;
                 using MiniPL.DomainDefinitions;
+                using Expr;
+                using Expr.DomainDefinitions;
 
                 public static class TestCode
                 {
@@ -475,7 +478,7 @@ namespace Sarcasm.UnitTest
             public BoolExpression Term2 { get; set; }
         }
 
-        public class BoolExpression : globalMiniPL::MiniPL.DomainDefinitions.Expression
+        public class BoolExpression : globalMiniPL::Expr.DomainDefinitions.Expression
         {
         }
 

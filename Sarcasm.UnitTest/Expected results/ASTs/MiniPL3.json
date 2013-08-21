@@ -19,7 +19,7 @@
         },
         "Type": "Integer",
         "InitValue": {
-          "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+          "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
           "Value": 5,
           "Base": "Decimal",
           "HasExplicitTypeModifier": false
@@ -33,14 +33,14 @@
         },
         "Type": "Bool",
         "InitValue": {
-          "$type": "MiniPL.DomainDefinitions.BoolLiteral, MiniPL",
+          "$type": "Expr.DomainDefinitions.BoolLiteral, MiniPL",
           "Value": true
         }
       },
       {
         "$type": "MiniPL.DomainDefinitions.WriteLn, MiniPL",
         "Arguments": {
-          "$type": "System.Collections.Generic.List`1[[MiniPL.DomainDefinitions.Expression, MiniPL]], mscorlib",
+          "$type": "System.Collections.Generic.List`1[[Expr.DomainDefinitions.Expression, MiniPL]], mscorlib",
           "$values": [
             {
               "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
@@ -121,7 +121,7 @@
             {
               "$type": "MiniPL.DomainDefinitions.If, MiniPL",
               "Condition": {
-                "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+                "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
                 "Term1": {
                   "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                   "Target": {
@@ -135,7 +135,7 @@
                 },
                 "Op": "Eq",
                 "Term2": {
-                  "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                  "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                   "Value": 0,
                   "Base": "Decimal",
                   "HasExplicitTypeModifier": false
@@ -144,7 +144,7 @@
               "Body": {
                 "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                 "Value": {
-                  "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                  "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                   "Value": 0,
                   "Base": "Decimal",
                   "HasExplicitTypeModifier": false
@@ -153,7 +153,7 @@
               "ElseBody": {
                 "$type": "MiniPL.DomainDefinitions.If, MiniPL",
                 "Condition": {
-                  "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+                  "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
                   "Term1": {
                     "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                     "Target": {
@@ -167,7 +167,7 @@
                   },
                   "Op": "Eq",
                   "Term2": {
-                    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                    "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                     "Value": 1,
                     "Base": "Decimal",
                     "HasExplicitTypeModifier": false
@@ -176,7 +176,7 @@
                 "Body": {
                   "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                   "Value": {
-                    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                    "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                     "Value": 1,
                     "Base": "Decimal",
                     "HasExplicitTypeModifier": false
@@ -185,7 +185,7 @@
                 "ElseBody": {
                   "$type": "MiniPL.DomainDefinitions.Return, MiniPL",
                   "Value": {
-                    "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+                    "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
                     "Term1": {
                       "$type": "MiniPL.DomainDefinitions.FunctionCall, MiniPL",
                       "FunctionReference": {
@@ -202,7 +202,7 @@
                           {
                             "$type": "MiniPL.DomainDefinitions.Argument, MiniPL",
                             "Expression": {
-                              "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+                              "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
                               "Term1": {
                                 "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                                 "Target": {
@@ -216,7 +216,7 @@
                               },
                               "Op": "Sub",
                               "Term2": {
-                                "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                                "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                                 "Value": 1,
                                 "Base": "Decimal",
                                 "HasExplicitTypeModifier": false
@@ -243,7 +243,7 @@
                           {
                             "$type": "MiniPL.DomainDefinitions.Argument, MiniPL",
                             "Expression": {
-                              "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+                              "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
                               "Term1": {
                                 "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
                                 "Target": {
@@ -257,7 +257,7 @@
                               },
                               "Op": "Sub",
                               "Term2": {
-                                "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+                                "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
                                 "Value": 2,
                                 "Base": "Decimal",
                                 "HasExplicitTypeModifier": false

@@ -37,12 +37,13 @@ using Sarcasm.Reflection;
 using Sarcasm.Utility;
 
 using D = MiniPL.DomainDefinitions;
+using DE = Expr.DomainDefinitions;
 using DC = Sarcasm.DomainCore;
 
 namespace MiniPL.Grammars
 {
     [Grammar(typeof(Domain), "C-like")]
-    public class GrammarC : Sarcasm.GrammarAst.Grammar<MiniPL.DomainDefinitions.Program>
+    public class GrammarC : Sarcasm.GrammarAst.Grammar<D.Program>
     {
         #region BnfTerms
 
@@ -71,33 +72,33 @@ namespace MiniPL.Grammars
                 this.RIGHT_PAREN = TerminalFactoryS.CreateKeyTerm(")");
                 this.QUESTION_MARK = TerminalFactoryS.CreateKeyTerm("?");
 
-                this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DomainDefinitions.BinaryOperator.Add);
-                this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DomainDefinitions.BinaryOperator.Sub);
-                this.MUL_OP = TerminalFactoryS.CreateKeyTerm("*", DomainDefinitions.BinaryOperator.Mul);
-                this.DIV_OP = TerminalFactoryS.CreateKeyTerm("/", DomainDefinitions.BinaryOperator.Div);
-                this.POW_OP = TerminalFactoryS.CreateKeyTerm("^", DomainDefinitions.BinaryOperator.Pow);
-                this.MOD_OP = TerminalFactoryS.CreateKeyTerm("%", DomainDefinitions.BinaryOperator.Mod);
+                this.ADD_OP = TerminalFactoryS.CreateKeyTerm("+", DE.BinaryOperator.Add);
+                this.SUB_OP = TerminalFactoryS.CreateKeyTerm("-", DE.BinaryOperator.Sub);
+                this.MUL_OP = TerminalFactoryS.CreateKeyTerm("*", DE.BinaryOperator.Mul);
+                this.DIV_OP = TerminalFactoryS.CreateKeyTerm("/", DE.BinaryOperator.Div);
+                this.POW_OP = TerminalFactoryS.CreateKeyTerm("^", DE.BinaryOperator.Pow);
+                this.MOD_OP = TerminalFactoryS.CreateKeyTerm("%", DE.BinaryOperator.Mod);
 
-                this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DomainDefinitions.UnaryOperator.Pos);
-                this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DomainDefinitions.UnaryOperator.Neg);
+                this.POS_OP = TerminalFactoryS.CreateKeyTerm("+", DE.UnaryOperator.Pos);
+                this.NEG_OP = TerminalFactoryS.CreateKeyTerm("-", DE.UnaryOperator.Neg);
 
-                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("==", DomainDefinitions.BinaryOperator.Eq);
-                this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DomainDefinitions.BinaryOperator.Neq);
-                this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DomainDefinitions.BinaryOperator.Lt);
-                this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DomainDefinitions.BinaryOperator.Lte);
-                this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DomainDefinitions.BinaryOperator.Gt);
-                this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DomainDefinitions.BinaryOperator.Gte);
+                this.EQ_OP = TerminalFactoryS.CreateKeyTerm("==", DE.BinaryOperator.Eq);
+                this.NEQ_OP = TerminalFactoryS.CreateKeyTerm("<>", DE.BinaryOperator.Neq);
+                this.LT_OP = TerminalFactoryS.CreateKeyTerm("<", DE.BinaryOperator.Lt);
+                this.LTE_OP = TerminalFactoryS.CreateKeyTerm("<=", DE.BinaryOperator.Lte);
+                this.GT_OP = TerminalFactoryS.CreateKeyTerm(">", DE.BinaryOperator.Gt);
+                this.GTE_OP = TerminalFactoryS.CreateKeyTerm(">=", DE.BinaryOperator.Gte);
 
-                this.AND_OP = TerminalFactoryS.CreateKeyTerm("&&", DomainDefinitions.BinaryOperator.And);
-                this.OR_OP = TerminalFactoryS.CreateKeyTerm("||", DomainDefinitions.BinaryOperator.Or);
+                this.AND_OP = TerminalFactoryS.CreateKeyTerm("&&", DE.BinaryOperator.And);
+                this.OR_OP = TerminalFactoryS.CreateKeyTerm("||", DE.BinaryOperator.Or);
 
-                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", DomainDefinitions.UnaryOperator.Not);
+                this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", DE.UnaryOperator.Not);
 
-                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("int", DomainDefinitions.Type.Integer);
-                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("double", DomainDefinitions.Type.Real);
-                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", DomainDefinitions.Type.String);
-                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", DomainDefinitions.Type.Char);
-                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("bool", DomainDefinitions.Type.Bool);
+                this.INTEGER_TYPE = TerminalFactoryS.CreateKeyTerm("int", D.Type.Integer);
+                this.REAL_TYPE = TerminalFactoryS.CreateKeyTerm("double", D.Type.Real);
+                this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", D.Type.String);
+                this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", D.Type.Char);
+                this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("bool", D.Type.Bool);
 
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
@@ -131,17 +132,17 @@ namespace MiniPL.Grammars
             public readonly BnfiTermRecord<D.WriteLn> WriteLn = new BnfiTermRecord<D.WriteLn>();
             public readonly BnfiTermRecord<D.VariableReference> VariableReference = new BnfiTermRecord<D.VariableReference>();
 
-            public readonly BnfiTermChoice<D.Expression> Expression = new BnfiTermChoice<D.Expression>();
-            public readonly BnfiTermRecord<D.BinaryExpression> BinaryExpression = new BnfiTermRecord<D.BinaryExpression>();
-            public readonly BnfiTermRecord<D.UnaryExpression> UnaryExpression = new BnfiTermRecord<D.UnaryExpression>();
-            public readonly BnfiTermRecord<D.ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<D.ConditionalTernaryExpression>();
+            public readonly BnfiTermChoice<DE.Expression> Expression = new BnfiTermChoice<DE.Expression>();
+            public readonly BnfiTermRecord<DE.BinaryExpression> BinaryExpression = new BnfiTermRecord<DE.BinaryExpression>();
+            public readonly BnfiTermRecord<DE.UnaryExpression> UnaryExpression = new BnfiTermRecord<DE.UnaryExpression>();
+            public readonly BnfiTermRecord<DE.ConditionalTernaryExpression> ConditionalTernaryExpression = new BnfiTermRecord<DE.ConditionalTernaryExpression>();
 
-            public readonly BnfiTermChoice<D.BinaryOperator> BinaryOperator = new BnfiTermChoice<D.BinaryOperator>();
-            public readonly BnfiTermChoice<D.UnaryOperator> UnaryOperator = new BnfiTermChoice<D.UnaryOperator>();
+            public readonly BnfiTermChoice<DE.BinaryOperator> BinaryOperator = new BnfiTermChoice<DE.BinaryOperator>();
+            public readonly BnfiTermChoice<DE.UnaryOperator> UnaryOperator = new BnfiTermChoice<DE.UnaryOperator>();
 
-            public readonly BnfiTermConversion<D.NumberLiteral> NumberLiteral = new BnfiTermConversion<D.NumberLiteral>();
+            public readonly BnfiTermConversion<DE.NumberLiteral> NumberLiteral = new BnfiTermConversion<DE.NumberLiteral>();
             public readonly BnfiTermRecord<D.StringLiteral> StringLiteral = new BnfiTermRecord<D.StringLiteral>();
-            public readonly BnfiTermRecord<D.BoolLiteral> BoolLiteral = new BnfiTermRecord<D.BoolLiteral>();
+            public readonly BnfiTermRecord<DE.BoolLiteral> BoolLiteral = new BnfiTermRecord<DE.BoolLiteral>();
 
             public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
             public readonly BnfiTermConversion<NameRef> NamespaceName = new BnfiTermConversion<NameRef>("namespace_name");
@@ -167,27 +168,27 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm RIGHT_PAREN;
             public readonly BnfiTermKeyTerm QUESTION_MARK;
 
-            public readonly BnfiTermConversion<D.BinaryOperator> ADD_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> SUB_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> MUL_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> DIV_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> POW_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> MOD_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> ADD_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> SUB_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> MUL_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> DIV_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> POW_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> MOD_OP;
 
-            public readonly BnfiTermConversion<D.UnaryOperator> POS_OP;
-            public readonly BnfiTermConversion<D.UnaryOperator> NEG_OP;
+            public readonly BnfiTermConversion<DE.UnaryOperator> POS_OP;
+            public readonly BnfiTermConversion<DE.UnaryOperator> NEG_OP;
 
-            public readonly BnfiTermConversion<D.BinaryOperator> EQ_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> NEQ_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> LT_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> LTE_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> GT_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> GTE_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> EQ_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> NEQ_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> LT_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> LTE_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> GT_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> GTE_OP;
 
-            public readonly BnfiTermConversion<D.BinaryOperator> AND_OP;
-            public readonly BnfiTermConversion<D.BinaryOperator> OR_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> AND_OP;
+            public readonly BnfiTermConversion<DE.BinaryOperator> OR_OP;
 
-            public readonly BnfiTermConversion<D.UnaryOperator> NOT_OP;
+            public readonly BnfiTermConversion<DE.UnaryOperator> NOT_OP;
 
             public readonly BnfiTermConversion<D.Type> INTEGER_TYPE;
             public readonly BnfiTermConversion<D.Type> REAL_TYPE;
@@ -390,7 +391,7 @@ namespace MiniPL.Grammars
                 .AddPrefix("0", NumberLiteralBase.Octal)
                 .AddPrefix("0x", NumberLiteralBase.Hexadecimal);
 
-            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral<D.NumberLiteral>(numberLiteralInfo);
+            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral<DE.NumberLiteral>(numberLiteralInfo);
 //            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().BindTo(B.NumberLiteral, t => t.Value);   // B.NumberLiteral used to be a BnfiTermRecord
             B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "\"").BindTo(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);

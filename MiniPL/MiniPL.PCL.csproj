@@ -33,35 +33,25 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CodeGenerators\CppGeneratorTemplate.cs">
-      <DependentUpon>CppGeneratorTemplate.tt</DependentUpon>
+    <Compile Include="Expression\Domain.cs" />
+    <Compile Include="Expression\Grammars\GrammarInfix.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CppGenerator.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CppGeneratorTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
+      <DependentUpon>CppGeneratorTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="CodeGenerators\CppGenerator.cs" />
-    <Compile Include="CodeGenerators\CSharpGenerator.cs" />
-    <Compile Include="CodeGenerators\CSharpGeneratorTemplate.cs">
+    <Compile Include="MiniPL\CodeGenerators\CSharpGenerator.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharpGeneratorTemplate.tt</DependentUpon>
     </Compile>
+    <Compile Include="MiniPL\Domain.cs" />
+    <Compile Include="MiniPL\Grammars\GrammarC.cs" />
+    <Compile Include="MiniPL\Grammars\GrammarP.cs" />
     <Compile Include="PortableOnly\Helpers.cs" />
-    <Compile Include="Domain.cs" />
-    <Compile Include="Grammars\GrammarC.cs" />
-    <Compile Include="Grammars\GrammarP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CodeGenerators\CppGeneratorTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CppGeneratorTemplate.cs</LastGenOutput>
-      <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
-&lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
-    </None>
-    <None Include="CodeGenerators\CSharpGeneratorTemplate.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -76,6 +66,18 @@
       <Project>{e70f1a8c-e2e4-4676-acf1-f429c23cb4f5}</Project>
       <Name>Sarcasm.PCL</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MiniPL\CodeGenerators\CppGeneratorTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
+      <LastGenOutput>CppGeneratorTemplate.cs</LastGenOutput>
+    </None>
+    <None Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -42,21 +42,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGenerators\CppGeneratorTemplate.cs">
+    <Compile Include="Expression\Domain.cs" />
+    <Compile Include="Expression\Grammars\GrammarInfix.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CppGeneratorTemplate.cs">
       <DependentUpon>CppGeneratorTemplate.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="CodeGenerators\CppGenerator.cs" />
-    <Compile Include="CodeGenerators\CSharpGenerator.cs" />
-    <Compile Include="CodeGenerators\CSharpGeneratorTemplate.cs">
+    <Compile Include="MiniPL\CodeGenerators\CppGenerator.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CSharpGenerator.cs" />
+    <Compile Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharpGeneratorTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="Domain.cs" />
-    <Compile Include="Grammars\GrammarC.cs" />
-    <Compile Include="Grammars\GrammarP.cs" />
+    <Compile Include="MiniPL\Domain.cs" />
+    <Compile Include="MiniPL\Grammars\GrammarC.cs" />
+    <Compile Include="MiniPL\Grammars\GrammarP.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -66,15 +68,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="CodeGenerators\CppGeneratorTemplate.tt">
+    <None Include="MiniPL\CodeGenerators\CppGeneratorTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CppGeneratorTemplate.cs</LastGenOutput>
       <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
 &lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
+      <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
     </None>
-    <None Include="CodeGenerators\CSharpGeneratorTemplate.tt">
+    <None Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
+      <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
     </None>
   </ItemGroup>
   <ItemGroup>

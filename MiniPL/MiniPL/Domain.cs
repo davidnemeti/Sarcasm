@@ -28,6 +28,8 @@ using System.Threading.Tasks;
 using Sarcasm.DomainCore;
 using Sarcasm.Reflection;
 
+using DE = Expr.DomainDefinitions;
+
 namespace MiniPL
 {
     [Domain("MiniPL")]
@@ -76,7 +78,7 @@ namespace MiniPL
 
         public class Argument
         {
-            public Expression Expression { get; set; }
+            public DE.Expression Expression { get; set; }
         }
 
         public abstract class Statement
@@ -94,48 +96,48 @@ namespace MiniPL
             public Name Name { get; set; }
             public Type Type { get; set; }
             [Optional]
-            public Expression InitValue { get; set; }
+            public DE.Expression InitValue { get; set; }
         }
 
         public class Assignment : Statement
         {
             public VariableReference LValue { get; set; }
-            public Expression RValue { get; set; }
+            public DE.Expression RValue { get; set; }
         }
 
         public class Return : Statement
         {
-            public Expression Value { get; set; }
+            public DE.Expression Value { get; set; }
         }
 
         public class While : Statement
         {
-            public Expression Condition { get; set; }
+            public DE.Expression Condition { get; set; }
             public Statement Body { get; set; }
         }
 
         public class For : Statement
         {
             public IList<LocalVariable> Init { get; set; }
-            public Expression Condition { get; set; }
+            public DE.Expression Condition { get; set; }
             public IList<Assignment> Update { get; set; }
             public Statement Body { get; set; }
         }
 
         public class Write : Statement
         {
-            public IList<Expression> Arguments;
+            public IList<DE.Expression> Arguments;
         }
 
         public class WriteLn : Statement
         {
-            public IList<Expression> Arguments;
+            public IList<DE.Expression> Arguments;
         }
 
 #if true
         public class If : Statement
         {
-            public Expression Condition { get; set; }
+            public DE.Expression Condition { get; set; }
             public Statement Body { get; set; }
             [Optional]
             public Statement ElseBody { get; set; }
@@ -153,77 +155,13 @@ namespace MiniPL
     }
 #endif
 
-        public class FunctionCall : Statement, Expression
+        public class FunctionCall : Statement, DE.Expression
         {
             public Reference<Function> FunctionReference { get; set; }
             public IList<Argument> Arguments { get; set; }
         }
 
-        public interface Expression
-        {
-        }
-
-        public class BinaryExpression : Expression
-        {
-            public Expression Term1 { get; set; }
-            public BinaryOperator Op { get; set; }
-            public Expression Term2 { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("({0} {1} {2})", Term1, Op, Term2);
-            }
-        }
-
-        public class UnaryExpression : Expression
-        {
-            public UnaryOperator Op { get; set; }
-            public Expression Term { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("({0} {1})", Op, Term);
-            }
-        }
-
-        public class ConditionalTernaryExpression : Expression
-        {
-            public Expression Cond { get; set; }
-            public Expression Term1 { get; set; }
-            public Expression Term2 { get; set; }
-
-            public override string ToString()
-            {
-                return string.Format("({0} ? {1} : {2})", Cond, Term1, Term2);
-            }
-        }
-
-        public class NumberLiteral : Expression, INumberLiteral
-        {
-            public const NumberLiteralBase DefaultBase = NumberLiteralBase.Decimal;
-
-            public NumberLiteral()
-            {
-                this.Base = DefaultBase;
-            }
-
-            public NumberLiteral(object value)
-                : this()
-            {
-                this.Value = value;
-            }
-
-            public object Value { get; set; }
-            public NumberLiteralBase Base { get; set; }
-            public bool HasExplicitTypeModifier { get; set; }
-
-            public override string ToString()
-            {
-                return Value.ToString();
-            }
-        }
-
-        public class StringLiteral : Expression
+        public class StringLiteral : DE.Expression
         {
             public StringLiteral() { }
 
@@ -240,51 +178,9 @@ namespace MiniPL
             }
         }
 
-        public class BoolLiteral : Expression
-        {
-            public BoolLiteral() { }
-
-            public BoolLiteral(bool value)
-            {
-                this.Value = value;
-            }
-
-            public bool Value { get; set; }
-
-            public override string ToString()
-            {
-                return Value.ToString();
-            }
-        }
-
-        public class VariableReference : Expression
+        public class VariableReference : DE.Expression
         {
             public Reference<IVariable> Target { get; set; }
-        }
-
-        public enum BinaryOperator
-        {
-            Add,
-            Sub,
-            Mul,
-            Div,
-            Pow,
-            Mod,
-            Eq,
-            Neq,
-            Lt,
-            Lte,
-            Gt,
-            Gte,
-            And,
-            Or
-        }
-
-        public enum UnaryOperator
-        {
-            Pos,
-            Neg,
-            Not
         }
     }
 }

@@ -1,10 +1,10 @@
 {
-  "$type": "MiniPL.DomainDefinitions.BinaryExpression, MiniPL",
+  "$type": "Expr.DomainDefinitions.BinaryExpression, MiniPL",
   "Term1": {
-    "$type": "MiniPL.DomainDefinitions.UnaryExpression, MiniPL",
+    "$type": "Expr.DomainDefinitions.UnaryExpression, MiniPL",
     "Op": "Neg",
     "Term": {
-      "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+      "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
       "Value": 1,
       "Base": "Decimal",
       "HasExplicitTypeModifier": false
@@ -12,7 +12,7 @@
   },
   "Op": "Mul",
   "Term2": {
-    "$type": "MiniPL.DomainDefinitions.NumberLiteral, MiniPL",
+    "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
     "Value": 2,
     "Base": "Decimal",
     "HasExplicitTypeModifier": false
