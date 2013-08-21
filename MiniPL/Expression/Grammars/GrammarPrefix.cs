@@ -42,8 +42,8 @@ using DC = Sarcasm.DomainCore;
 
 namespace Expr.Grammars
 {
-    [Grammar(typeof(Domain), "Infix")]
-    public class GrammarInfix : Sarcasm.GrammarAst.Grammar<D.Expression>
+    [Grammar(typeof(Domain), "Prefix")]
+    public class GrammarPrefix : Sarcasm.GrammarAst.Grammar<D.Expression>
     {
         #region BnfTerms
 
@@ -73,8 +73,7 @@ namespace Expr.Grammars
 
                 this.NOT_OP = TerminalFactoryS.CreateKeyTerm("!", D.UnaryOperator.Not);
 
-                this.QUESTION_MARK = TerminalFactoryS.CreateKeyTerm("?");
-                this.COLON = TerminalFactoryS.CreateKeyTerm(":");
+                this.QUESTION_MARK_COLON = TerminalFactoryS.CreateKeyTerm("?:");
 
                 this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                 {
@@ -121,18 +120,16 @@ namespace Expr.Grammars
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
-            public readonly BnfiTermKeyTerm QUESTION_MARK;
-            public readonly BnfiTermKeyTerm COLON;
-
             public readonly BnfiTermKeyTerm LEFT_PAREN;
             public readonly BnfiTermKeyTerm RIGHT_PAREN;
+            public readonly BnfiTermKeyTerm QUESTION_MARK_COLON;
         }
 
         #endregion
 
         public readonly BnfTerms B;
 
-        public GrammarInfix()
+        public GrammarPrefix()
             : base(new Domain())
         {
             B = new BnfTerms(new TerminalFactoryS(this));
@@ -144,31 +141,26 @@ namespace Expr.Grammars
                 B.UnaryExpression,
                 B.ConditionalTernaryExpression,
                 B.NumberLiteral,
-                B.BoolLiteral,
-                B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
+                B.BoolLiteral
                 );
 
             B.BinaryExpression.Rule =
-                B.Expression.BindTo(B.BinaryExpression, t => t.Term1)
-                + B.BinaryOperator.BindTo(B.BinaryExpression, t => t.Op)
+                B.BinaryOperator.BindTo(B.BinaryExpression, t => t.Op)
+                + B.Expression.BindTo(B.BinaryExpression, t => t.Term1)
                 + B.Expression.BindTo(B.BinaryExpression, t => t.Term2)
                 ;
 
-            /*
-             * NOTE: ImplyPrecedenceHere does not work properly, so we do not use it (it parsed operator NEG as operator POS, and omitted the expression after).
-             * So we use ReduceHere instead, which means that unary operators has the highest precedence among operators when used inside a unary expressions.
-             * */
             B.UnaryExpression.Rule =
-                B.UnaryOperator.BindTo(B.UnaryExpression, t => t.Op)
+                B.LEFT_PAREN
+                + B.UnaryOperator.BindTo(B.UnaryExpression, t => t.Op)
                 + B.Expression.BindTo(B.UnaryExpression, t => t.Term)
-                + ReduceHere()      // this is needed for implying precedence (see note above)
+                + B.RIGHT_PAREN
                 ;
 
             B.ConditionalTernaryExpression.Rule =
-                B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Cond)
-                + B.QUESTION_MARK
+                B.QUESTION_MARK_COLON
+                + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Cond)
                 + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term1)
-                + B.COLON
                 + B.Expression.BindTo(B.ConditionalTernaryExpression, t => t.Term2)
                 ;
 
@@ -182,23 +174,6 @@ namespace Expr.Grammars
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
-
-            /*
-             * NOTE: RegisterOperators in Irony is string-based, therefore it is impossible to specify different precedences
-             * for binary '+' and unary '+', and for binary '-' and unary '-', so we encode the precedences of unary operators
-             * into the grammar by specifying a ReduceHere() hint after unary expressions.
-             * */
-            RegisterOperators(10, Associativity.Right, B.QUESTION_MARK, B.COLON);
-            RegisterOperators(20, B.OR_OP);
-            RegisterOperators(30, B.AND_OP);
-            RegisterOperators(40, B.EQ_OP, B.NEQ_OP);
-            RegisterOperators(50, B.LT_OP, B.LTE_OP, B.GT_OP, B.GTE_OP);
-            RegisterOperators(60, B.ADD_OP, B.SUB_OP);
-            RegisterOperators(70, B.MUL_OP, B.DIV_OP, B.MOD_OP);
-            RegisterOperators(80, Associativity.Right, B.POW_OP);
-            RegisterOperators(90, Associativity.Neutral, recurse: false, operators: new[] { B.NEG_OP, B.POS_OP, B.NOT_OP });
-            // NOTE: for the parser the unary operators precedences are encoded into the grammar, but for the unparser we have to specify the precedences
-            // NOTE: we must not recurse, since NEG_OP and POS_OP has the same terminals as SUB_OP and ADD_OP, respectively ('-' and '+').
 
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
         }
@@ -230,12 +205,12 @@ namespace Expr.Grammars
 
             private readonly BnfTerms B;
 
-            public Formatter(GrammarInfix grammar)
+            public Formatter(GrammarPrefix grammar)
                 : base(grammar)
             {
                 this.B = grammar.B;
 
-                SyntaxHighlight = GrammarInfix.SyntaxHighlight.Color;
+                SyntaxHighlight = GrammarPrefix.SyntaxHighlight.Color;
 
                 ForeColorOfOperator = Color.Red;
                 ForeColorOfLiteral = Color.ForestGreen;
@@ -249,7 +224,7 @@ namespace Expr.Grammars
 
                 if (target != null)
                 {
-                    if (SyntaxHighlight == GrammarInfix.SyntaxHighlight.Color)
+                    if (SyntaxHighlight == GrammarPrefix.SyntaxHighlight.Color)
                         NormalSyntaxHighlight(utoken, target, decoration);
                 }
 
