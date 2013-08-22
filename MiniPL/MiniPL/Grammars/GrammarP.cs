@@ -519,7 +519,7 @@ namespace MiniPL.Grammars
             RegisterBracePair(B.LEFT_PAREN, B.RIGHT_PAREN);
 
             CommentTerminal DelimitedComment = new CommentTerminal("DelimitedComment", "(@", "@)");
-            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "@@", Environment.NewLine);
+            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "@@", Environment.NewLine, "\n", "\r");
 
             NonGrammarTerminals.Add(DelimitedComment);
             NonGrammarTerminals.Add(SingleLineComment);
