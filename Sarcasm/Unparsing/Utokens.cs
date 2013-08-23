@@ -39,7 +39,15 @@ using Grammar = Sarcasm.GrammarAst.Grammar;
 
 namespace Sarcasm.Unparsing
 {
-    public class Discriminator { }
+    public class Discriminator
+    {
+        public string Name { get; private set; }
+
+        public Discriminator(string name)
+        {
+            this.Name = name;
+        }
+    }
 
     public abstract class UtokenBase
     {

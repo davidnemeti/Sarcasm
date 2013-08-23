@@ -51,9 +51,9 @@ namespace Sarcasm.Unparsing
     {
         static Formatter()
         {
-            CommentContent = new Discriminator();
-            CommentStartSymbol = new Discriminator();
-            CommentEndSymbol = new Discriminator();
+            CommentContent = new Discriminator("CommentContent");
+            CommentStartSymbol = new Discriminator("CommentStartSymbol");
+            CommentEndSymbol = new Discriminator("CommentEndSymbol");
 
 #if DEBUG && !PCL
             tsRaw.Listeners.Clear();

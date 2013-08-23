@@ -191,7 +191,7 @@ namespace Sarcasm.Parsing
                         continue;
                     }
 
-                    if (isTextInLineAtLeftOfComment && comment.Location.Line == currentLine.Span.Location.Line && currentLine.AstNode != null)
+                    if (isTextInLineAtLeftOfComment && currentLine != null && comment.Location.Line == currentLine.Span.Location.Line && currentLine.AstNode != null)
                     {
                         /*
                          * The comment belongs to the previous node (they are in the same line).
@@ -203,7 +203,7 @@ namespace Sarcasm.Parsing
 
                         AddCommentToRightOfAstValue(currentLine, comment);
                     }
-                    else if (isTextInLineAtLeftOfComment && comment.Location.Line == prevLine.Span.Location.Line && prevLine.AstNode != null)
+                    else if (isTextInLineAtLeftOfComment && prevLine != null && comment.Location.Line == prevLine.Span.Location.Line && prevLine.AstNode != null)
                     {
                         /*
                          * The comment belongs to the previous node (they are in the same line).
@@ -242,16 +242,19 @@ namespace Sarcasm.Parsing
 
         private bool IsTextInLineAtLeftOfComment(Token comment)
         {
-            for (int position = comment.Location.Position - 1; !IsLineStart(position); position--)
+            var commentCleaner = GetCommentCleaner((CommentTerminal)comment.Terminal);
+
+            for (int position = comment.Location.Position - 1; !IsLineStart(position, commentCleaner.NewLine); position--)
                 if (!char.IsWhiteSpace(this.SourceText, position))
                     return true;
 
             return false;
         }
 
-        private bool IsLineStart(int position)
+        private bool IsLineStart(int position, string newLine)
         {
-            return position <= 0 || this.SourceText[position] == '\n';
+            // NOTE: we handle '\n' and '\r' as well to deal with wrongly formatted input
+            return position <= 0 || this.SourceText.Substring(position, newLine.Length) == newLine || this.SourceText[position].EqualToAny('\n', '\r');
         }
 
         private void AddCommentToLeftOfAstValue(ParseTreeNode owner, Token comment, int? lineIndexDistanceFromOwnerExplicit = null)
@@ -322,7 +325,8 @@ namespace Sarcasm.Parsing
                 .Remove(0, startSymbol.Length);
 
             var commentCleaner = GetCommentCleaner(commentTerminal);
-            string[] textLines = text.Split(new[] { commentCleaner.NewLine }, StringSplitOptions.None);
+            // NOTE: we handle "\n" and "\r" as well to deal with wrongly formatted input
+            string[] textLines = text.Split(new[] { commentCleaner.NewLine, "\r", "\n" }, StringSplitOptions.None);
             textLines = commentCleaner.GetCleanedUpCommentTextLines(textLines, comment.Location.Column, commentTerminal, out isDecorated);
 
             return textLines;

@@ -23,7 +23,7 @@ $msbuild = "C:\Windows\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe"
 
 if ($project -eq "Irony")
 {
-    & $msbuild ..\Irony\Irony\Irony.csproj /p:Configuration=Release
+    & $msbuild ..\Irony\Irony\010.Irony.2010.csproj /p:Configuration=Release
     & $msbuild ..\Irony\Irony\Irony.PCL.csproj /p:Configuration=Release
 
     Copy-Item -Path ..\Irony\Irony\bin\Release\Irony.dll -Destination Libraries -Force

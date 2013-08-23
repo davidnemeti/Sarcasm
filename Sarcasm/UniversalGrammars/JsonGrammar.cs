@@ -155,7 +155,7 @@ namespace Sarcasm.UniversalGrammars
 
             // TODO: although JSON does not have comments, we define C-style comments for until we solve parsing and unparsing of comments into JSON data
             CommentTerminal DelimitedComment = new CommentTerminal("DelimitedComment", "/*", "*/");
-            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "//", Environment.NewLine);
+            CommentTerminal SingleLineComment = new CommentTerminal("SingleLineComment", "//", Environment.NewLine, "\n", "\r");
 
             NonGrammarTerminals.Add(DelimitedComment);
             NonGrammarTerminals.Add(SingleLineComment);
