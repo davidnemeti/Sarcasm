@@ -673,8 +673,8 @@ namespace MiniPL.Grammars
                 {
                     decoration
                         .Add(DecorationKey.FontStyle, FontStyle.Italic)
-                        .Add(DecorationKey.Foreground, Color.White)
-                        .Add(DecorationKey.Background, Color.Red)
+                        .Add(DecorationKey.Foreground, Color.Red)
+                        .Add(DecorationKey.Background, Color.Yellow)
                         .Add(DecorationKey.FontSize, 30);
                 }
                 else if (target.AstValue is D.Type)
@@ -683,14 +683,22 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.BaselineAlignment, BaselineAlignment.Subscript)
                         .Add(DecorationKey.FontSizeRelativePercent, 0.75);
                 }
-                else if (target.AstValue is int)
+                else if (target.AstValue is INumberLiteral)
                 {
-                    int number = (int)target.AstValue;
+                    INumberLiteral number = (INumberLiteral)target.AstValue;
 
-                    if (number % 2 == 0)
-                        decoration.Add(DecorationKey.Foreground, Color.Red);
-                    else
-                        decoration.Add(DecorationKey.Background, Color.Yellow);
+                    if (number.Value is int)
+                    {
+                        if (((int)number.Value) % 2 == 0)
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.Red)
+                                ;
+                        else
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.Green)
+                                .Add(DecorationKey.Background, Color.Yellow)
+                                ;
+                    }
                 }
             }
 
