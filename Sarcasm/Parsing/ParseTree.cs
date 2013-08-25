@@ -77,7 +77,7 @@ namespace Sarcasm.Parsing
         public ParseTreeStatus Status { get { return parseTree.Status; } }
 
         public ParseTreeNode Root { get { return parseTree.Root; } }
-        public object RootAstValue { get { return GrammarHelper.AstNodeToValue(parseTree.Root.AstNode); } }
+        public object RootAstValue { get { return parseTree.Root != null ? GrammarHelper.AstNodeToValue(parseTree.Root.AstNode) : null; } }
 
         public ParseTree SetCommentCleaner(ICommentCleaner commentCleaner)
         {
