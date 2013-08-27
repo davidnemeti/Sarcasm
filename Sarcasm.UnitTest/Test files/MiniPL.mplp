@@ -13,7 +13,10 @@ begin
 end
 
 begin
-    var number : integer := 5;
-    var just_for_test : boolean := True;
-    WriteLn(number, 'th Fibonacci number: ', Fibonacci(number));
+    if (true) then
+    begin
+        var number : integer := 5;
+        var just_for_test : boolean := True;
+        WriteLn(number, 'th Fibonacci number: ', Fibonacci(number));
+    end
 end.
