@@ -167,7 +167,7 @@ namespace Sarcasm.Parsing
                 StoreAstValueToParseTreeNodeRecursive(parseTreeChild.Value, parseTreeChild.Index);
             }
 
-            if (currentNode.Comments.Count > 0)
+            if (currentNode.Comments != null && currentNode.Comments.Count > 0)
             {
                 bool isTextInLineAtLeftOfFirstComment = IsTextInLineAtLeftOfComment(currentNode.Comments[0]);
                 int lineIndexForFirstComment = currentNode.Comments[0].Location.Line;

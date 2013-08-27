@@ -91,6 +91,7 @@ namespace Playground
             //var utokens = unparser.Unparse(astRootValue).ToList();
             //ShowTimeAndRestart(stopwatch, "Unparsing to utokens");
 
+            //unparser.EnableParallelProcessing = false;
             //string unparsedText = unparser.Unparse(astRootValue).AsText(unparser);
             //var document = parseTree.GetDocument();
             //string unparsedText = unparser.Unparse(document).AsText(unparser);

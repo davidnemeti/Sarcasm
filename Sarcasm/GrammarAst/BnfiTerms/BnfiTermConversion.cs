@@ -44,6 +44,7 @@ namespace Sarcasm.GrammarAst
 
         private BnfTerm bnfTerm;
         private object value;
+        internal bool isOptionalValue { get; private set; }
 
         private ValueConverter<object, object> inverseValueConverterForUnparse;
         public ValueUtokenizer<object> UtokenizerForUnparse { private get; set; }
@@ -82,6 +83,7 @@ namespace Sarcasm.GrammarAst
         {
             this.IsContractible = true;
             this.bnfTerm = bnfTerm;
+            this.isOptionalValue = isOptionalValue;
 
             if (!astForChild)
                 bnfTerm.SetFlag(TermFlags.NoAstNode);
@@ -499,6 +501,7 @@ namespace Sarcasm.GrammarAst
         {
             this.bnfTerm = source.bnfTerm;
             this.value = source.value;
+            this.isOptionalValue = source.isOptionalValue;
             this.Flags = source.Flags;
             this.AstConfig = source.AstConfig;
 
@@ -512,6 +515,7 @@ namespace Sarcasm.GrammarAst
         {
             this.bnfTerm = null;
             this.value = null;
+            this.isOptionalValue = false;
             this.Flags = TermFlags.None;
             this.AstConfig = null;
             this.inverseValueConverterForUnparse = null;
@@ -605,7 +609,9 @@ namespace Sarcasm.GrammarAst
 
         protected override int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
-            if (this.value != null)
+            if (astValue == null && this.isOptionalValue)
+                return 0;
+            else if (this.value != null)
                 return this.value.Equals(astValue) ? (int?)1 : null;
             else if (this.UtokenizerForUnparse != null)
                 return 1;
@@ -674,8 +680,12 @@ namespace Sarcasm.GrammarAst
 
         protected override string GetExtraStrForToString()
         {
-            return string.Format("child bnfterm: {0}, value: {1}, utokenizer: {2}, inverse value converter: {3}",
-                this.bnfTerm.Name, this.value != null ? value.ToString() : "<<NULL>>", this.UtokenizerForUnparse != null, this.inverseValueConverterForUnparse != null);
+            return string.Format("child bnfterm: {0}, value: {1}, isOptionalValue: {2}, utokenizer: {3}, inverse value converter: {4}",
+                this.bnfTerm.Name,
+                this.value != null ? value.ToString() : "<<NULL>>",
+                this.isOptionalValue,
+                this.UtokenizerForUnparse != null,
+                this.inverseValueConverterForUnparse != null);
         }
 
         protected static ValueConverter<TInTo, TOutTo> CastValueConverter<TInFrom, TOutFrom, TInTo, TOutTo>(ValueConverter<TInFrom, TOutFrom> valueConverter)

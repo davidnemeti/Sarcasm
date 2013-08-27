@@ -373,6 +373,9 @@ namespace Sarcasm.GrammarAst
                     childAstValue = astValue;
                 }
 
+                if (childAstValue == null && childRuleReferredBnfTerm.BnfTerm is BnfiTermConversion && ((BnfiTermConversion)childRuleReferredBnfTerm.BnfTerm).isOptionalValue)
+                    continue;
+
                 yield return new UnparsableAst(childRuleReferredBnfTerm.BnfTerm, childAstValue, member);
             }
         }
@@ -392,6 +395,8 @@ namespace Sarcasm.GrammarAst
             if (unparsableAst.AstValue != null)
                 return 1;
             else if (unparsableAst.BnfTerm is BnfiTermCollection && ((BnfiTermCollection)unparsableAst.BnfTerm).EmptyCollectionHandling == EmptyCollectionHandling.ReturnNull)
+                return 0;
+            else if (unparsableAst.BnfTerm is BnfiTermConversion && ((BnfiTermConversion)unparsableAst.BnfTerm).isOptionalValue)
                 return 0;
             else
                 return null;
