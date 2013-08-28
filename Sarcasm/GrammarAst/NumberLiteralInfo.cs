@@ -224,42 +224,63 @@ namespace Sarcasm.GrammarAst
 
         public string NumberLiteralToText(INumberLiteral numberLiteral, IFormatProvider formatProvider)
         {
-            int @base = (int)numberLiteral.Base;
-            string body;
-
-            if (numberLiteral.Base == NumberLiteralBase.Decimal)
-            {
-                body = IsExplicitDecimalSeparatorNeeded(numberLiteral)
-                    ? string.Format(formatProvider, "{0:0.0}", numberLiteral.Value)
-                    : Convert.ToString(numberLiteral.Value, formatProvider);
-            }
-
-            else if (numberLiteral.Value is byte)
-                body = Convert.ToString((byte)numberLiteral.Value, @base);
-
-            else if (numberLiteral.Value is short)
-                body = Convert.ToString((short)numberLiteral.Value, @base);
-
-            else if (numberLiteral.Value is int)
-                body = Convert.ToString((int)numberLiteral.Value, @base);
-
-            else if (numberLiteral.Value is long)
-                body = Convert.ToString((long)numberLiteral.Value, @base);
-
-            else
-                throw new UnparseException(string.Format("Cannot unparse number {0} with type '{1}' and base {2}", numberLiteral.Value, numberLiteral.Value.GetType().FullName, numberLiteral.Base));
-
+            string body = NumberToText(numberLiteral.Value, (int)numberLiteral.Base, formatProvider, numberLiteral.HasExplicitTypeModifier);
             return BaseToPrefix(numberLiteral.Base) + body + TypeToSuffix(numberLiteral);
         }
 
-        private static bool IsExplicitDecimalSeparatorNeeded(INumberLiteral numberLiteral)
+        public static string NumberToText(object number, int @base, IFormatProvider formatProvider, bool hasExplicitTypeModifier = false)
+        {
+            if (@base == 10)
+            {
+                return IsExplicitDecimalSeparatorNeeded(number, hasExplicitTypeModifier)
+                    ? string.Format(formatProvider, "{0:0.0}", number)
+                    : Convert.ToString(number, formatProvider);
+            }
+
+            else if (number is byte)
+                return Convert.ToString((byte)number, @base);
+
+            else if (number is short)
+                return Convert.ToString((short)number, @base);
+
+            else if (number is int)
+                return Convert.ToString((int)number, @base);
+
+            else if (number is long)
+                return Convert.ToString((long)number, @base);
+
+            else if (number is sbyte)
+                return Convert.ToString((sbyte)number, @base);
+
+            else if (number is ushort)
+                return Convert.ToString((ushort)number, @base);
+
+            else if (number is uint)
+                return Convert.ToString((uint)number, @base);
+
+            else if (number is ulong && ((ulong)number) <= long.MaxValue)
+                return Convert.ToString((long)(ulong)number, @base);
+
+            else
+                throw new UnparseException(string.Format("Cannot unparse number {0} with type '{1}' and base {2}", number, number.GetType().FullName, @base));
+        }
+
+        public static bool IsNumber(object number)
         {
             return
-                (numberLiteral.Value is float || numberLiteral.Value is double || numberLiteral.Value is decimal)
+                number is byte || number is short || number is int || number is long ||
+                number is sbyte || number is ushort || number is uint || number is ulong ||
+                number is float || number is double || number is decimal;
+        }
+
+        private static bool IsExplicitDecimalSeparatorNeeded(object number, bool hasExplicitTypeModifier)
+        {
+            return
+                (number is float || number is double || number is decimal)
                 &&
-                object.Equals(Round(numberLiteral.Value), numberLiteral.Value)
+                object.Equals(Round(number), number)
                 &&
-                !numberLiteral.HasExplicitTypeModifier;
+                !hasExplicitTypeModifier;
         }
 
         private static object Round(object number)

@@ -176,9 +176,16 @@ namespace Sarcasm.Unparsing
             {
                 DataLiteralBase dataLiteral = (DataLiteralBase)reference.BnfTerm;
 
-                string text = reference.AstValue is DateTime
-                    ? ((DateTime)reference.AstValue).ToString(dataLiteral.DateTimeFormat, formatProvider)
-                    : Convert.ToString(reference.AstValue, formatProvider);
+                string text;
+
+                if (reference.AstValue is DateTime)
+                    text = ((DateTime)reference.AstValue).ToString(dataLiteral.DateTimeFormat, formatProvider);
+
+                else if (NumberLiteralInfo.IsNumber(reference.AstValue))
+                    text = NumberLiteralInfo.NumberToText(reference.AstValue, dataLiteral.IntRadix, formatProvider);
+
+                else
+                    text = Convert.ToString(reference.AstValue, formatProvider);
 
                 if (dataLiteral is DsvLiteral)
                     text = text + (((DsvLiteral)dataLiteral).Terminator ?? string.Empty);
@@ -194,6 +201,10 @@ namespace Sarcasm.Unparsing
 
                 return text;
             }
+
+            else if (reference.BnfTerm is NumberLiteral)
+                return NumberLiteralInfo.NumberToText(reference.AstValue, @base: 10, formatProvider: formatProvider);
+
             else
                 return Convert.ToString(reference.AstValue, formatProvider);
         }
