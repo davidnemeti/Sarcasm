@@ -47,6 +47,34 @@
                 "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
                 "Name": {
                   "$type": "Sarcasm.DomainCore.Name, Sarcasm",
+                  "Value": "number2"
+                },
+                "Type": "Real",
+                "InitValue": {
+                  "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
+                  "Value": 8.0,
+                  "Base": "Decimal",
+                  "HasExplicitTypeModifier": false
+                }
+              },
+              {
+                "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
+                "Name": {
+                  "$type": "Sarcasm.DomainCore.Name, Sarcasm",
+                  "Value": "number3"
+                },
+                "Type": "Real",
+                "InitValue": {
+                  "$type": "Expr.DomainDefinitions.NumberLiteral, MiniPL",
+                  "Value": 3.1415,
+                  "Base": "Decimal",
+                  "HasExplicitTypeModifier": false
+                }
+              },
+              {
+                "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
+                "Name": {
+                  "$type": "Sarcasm.DomainCore.Name, Sarcasm",
                   "Value": "just_for_test"
                 },
                 "Type": "Bool",

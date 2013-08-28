@@ -155,7 +155,7 @@ namespace Sarcasm.Unparsing
 
         public string ToText(Formatter formatter)
         {
-            return this.Text ?? Util.ToString(formatter.FormatProvider, this.Reference.AstValue);
+            return this.Text ?? Convert.ToString(this.Reference.AstValue, formatter.FormatProvider);
         }
 
         public new UtokenText SetDiscriminator(Discriminator discriminator)

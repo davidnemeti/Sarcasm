@@ -231,7 +231,7 @@ namespace Sarcasm.GrammarAst
             {
                 body = IsExplicitDecimalSeparatorNeeded(numberLiteral)
                     ? string.Format(formatProvider, "{0:0.0}", numberLiteral.Value)
-                    : Convert.ToString(numberLiteral, formatProvider);
+                    : Convert.ToString(numberLiteral.Value, formatProvider);
             }
 
             else if (numberLiteral.Value is byte)

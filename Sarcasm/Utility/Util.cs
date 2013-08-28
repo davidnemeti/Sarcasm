@@ -440,11 +440,6 @@ namespace Sarcasm.Utility
             return items.Cast<object>().Aggregate(17, (hashCode, current) => hashCode * 23 + (current != null ? current.GetHashCode() : 0));
         }
 
-        public static string ToString(IFormatProvider formatProvider, object obj)
-        {
-            return string.Format(formatProvider, "{0}", obj);
-        }
-
         public static int? SumIncludingNullValues<TSource>(this IEnumerable<TSource> items, Func<TSource, int?> selector)
         {
             return items.Select(selector).SumIncludingNullValues();
