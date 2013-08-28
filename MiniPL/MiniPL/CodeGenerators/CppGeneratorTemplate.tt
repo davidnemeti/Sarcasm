@@ -190,7 +190,7 @@ string GetExpressionString(Expression expression)
     else if (expression is NumberLiteral)
     {
         var numberLiteral = (NumberLiteral)expression;
-        return numberLiteral.Value.ToString();
+        return ToStringHelper.ToStringWithCulture(numberLiteral.Value);
     }
     else if (expression is StringLiteral)
     {

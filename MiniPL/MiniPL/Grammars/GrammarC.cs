@@ -475,7 +475,7 @@ namespace MiniPL.Grammars
                 ForeColorOfKeyword = Color.Blue;
                 ForeColorOfOperator = Color.Red;
                 ForeColorOfType = Color.Cyan;
-                ForeColorOfLiteral = Color.ForestGreen;
+                ForeColorOfLiteral = Color.Purple;
                 ForeColorOfComment = Color.DarkGreen;
 
                 ShowNamesInBold = true;
