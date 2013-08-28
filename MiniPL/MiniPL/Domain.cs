@@ -61,7 +61,8 @@ namespace MiniPL
             Real,
             String,
             Char,
-            Bool
+            Bool,
+            DateTime
         }
 
         public interface IVariable
@@ -175,6 +176,23 @@ namespace MiniPL
             public override string ToString()
             {
                 return Value;
+            }
+        }
+
+        public class DateTimeLiteral : DE.Expression
+        {
+            public DateTimeLiteral() { }
+
+            public DateTimeLiteral(DateTime value)
+            {
+                this.Value = value;
+            }
+
+            public DateTime Value { get; set; }
+
+            public override string ToString()
+            {
+                return Value.ToString();
             }
         }
 

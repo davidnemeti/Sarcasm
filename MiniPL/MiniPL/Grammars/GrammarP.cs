@@ -80,6 +80,7 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai", D.Type.Bool);
+                    this.DATETIME_TYPE = TerminalFactoryS.CreateKeyTerm("dátumidő", D.Type.DateTime);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
@@ -115,6 +116,7 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("Schnur", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("Charakter", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("Boolsche", D.Type.Bool);
+                    this.DATETIME_TYPE = TerminalFactoryS.CreateKeyTerm("DatumZeit", D.Type.DateTime);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
@@ -150,6 +152,7 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", D.Type.Bool);
+                    this.DATETIME_TYPE = TerminalFactoryS.CreateKeyTerm("datetime", D.Type.DateTime);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
@@ -221,6 +224,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermConversion<DE.NumberLiteral> NumberLiteral = new BnfiTermConversion<DE.NumberLiteral>();
             public readonly BnfiTermRecord<D.StringLiteral> StringLiteral = new BnfiTermRecord<D.StringLiteral>();
             public readonly BnfiTermRecord<DE.BoolLiteral> BoolLiteral = new BnfiTermRecord<DE.BoolLiteral>();
+            public readonly BnfiTermRecord<D.DateTimeLiteral> DateTimeLiteral = new BnfiTermRecord<D.DateTimeLiteral>();
 
             public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
             public readonly BnfiTermConversion<NameRef> NamespaceName = new BnfiTermConversion<NameRef>("namespace_name");
@@ -277,6 +281,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermConversion<D.Type> STRING_TYPE;
             public readonly BnfiTermConversion<D.Type> CHAR_TYPE;
             public readonly BnfiTermConversion<D.Type> BOOL_TYPE;
+            public readonly BnfiTermConversion<D.Type> DATETIME_TYPE;
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
 
@@ -451,6 +456,7 @@ namespace MiniPL.Grammars
                 B.UnaryExpression,
                 B.ConditionalTernaryExpression,
                 B.NumberLiteral,
+                B.DateTimeLiteral,
                 B.StringLiteral,
                 B.BoolLiteral,
                 B.FunctionCall,
@@ -493,11 +499,12 @@ namespace MiniPL.Grammars
 //            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().BindTo(B.NumberLiteral, t => t.Value);   // B.NumberLiteral used to be a BnfiTermRecord
             B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "'").BindTo(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);
+            B.DateTimeLiteral.Rule = TerminalFactoryS.CreateDataLiteralDateTimeQuoted("dateTimeLiteral", "$").BindTo(B.DateTimeLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
 
-            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE;
+            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE | B.DATETIME_TYPE;
 
             /*
              * NOTE: RegisterOperators in Irony is string-based, therefore it is impossible to specify different precedences

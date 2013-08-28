@@ -155,7 +155,7 @@ namespace Sarcasm.Unparsing
 
         public string ToText(Formatter formatter)
         {
-            return this.Text ?? Convert.ToString(this.Reference.AstValue, formatter.FormatProvider);
+            return this.Text ?? ConvertToString(this.Reference, formatter.FormatProvider);
         }
 
         public new UtokenText SetDiscriminator(Discriminator discriminator)
@@ -168,6 +168,34 @@ namespace Sarcasm.Unparsing
         {
             string text = this.Text ?? this.Reference.ToString();
             return ToString("\"{0}\"{1}", text, Reference != null ? " (with ref)" : string.Empty);
+        }
+
+        private static string ConvertToString(UnparsableAst reference, IFormatProvider formatProvider)
+        {
+            if (reference.BnfTerm is DataLiteralBase)
+            {
+                DataLiteralBase dataLiteral = (DataLiteralBase)reference.BnfTerm;
+
+                string text = reference.AstValue is DateTime
+                    ? ((DateTime)reference.AstValue).ToString(dataLiteral.DateTimeFormat, formatProvider)
+                    : Convert.ToString(reference.AstValue, formatProvider);
+
+                if (dataLiteral is DsvLiteral)
+                    text = text + (((DsvLiteral)dataLiteral).Terminator ?? string.Empty);
+
+                else if (dataLiteral is QuotedValueLiteral)
+                    text = ((QuotedValueLiteral)dataLiteral).StartSymbol + text + ((QuotedValueLiteral)dataLiteral).EndSymbol;
+
+                else if (dataLiteral is FixedLengthLiteral)
+                {
+                    string format = "{0,-" + ((FixedLengthLiteral)dataLiteral).Length + "}";
+                    text = string.Format(formatProvider, format, text);
+                }
+
+                return text;
+            }
+            else
+                return Convert.ToString(reference.AstValue, formatProvider);
         }
     }
 
