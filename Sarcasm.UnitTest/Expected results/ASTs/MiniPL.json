@@ -33,6 +33,18 @@
                 "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
                 "Name": {
                   "$type": "Sarcasm.DomainCore.Name, Sarcasm",
+                  "Value": "date"
+                },
+                "Type": "DateTime",
+                "InitValue": {
+                  "$type": "MiniPL.DomainDefinitions.DateTimeLiteral, MiniPL",
+                  "Value": "2008-10-06T00:00:00"
+                }
+              },
+              {
+                "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
+                "Name": {
+                  "$type": "Sarcasm.DomainCore.Name, Sarcasm",
                   "Value": "number"
                 },
                 "Type": "Integer",
