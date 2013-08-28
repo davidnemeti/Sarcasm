@@ -229,7 +229,7 @@ namespace Sarcasm.GrammarAst
 
             if (numberLiteral.Base == NumberLiteralBase.Decimal)
             {
-                body = (numberLiteral.Value is float || numberLiteral.Value is double || numberLiteral.Value is decimal) && !numberLiteral.HasExplicitTypeModifier
+                body = IsExplicitDecimalSeparatorNeeded(numberLiteral)
                     ? string.Format(formatProvider, "{0:0.0}", numberLiteral.Value)
                     : Convert.ToString(numberLiteral, formatProvider);
             }
@@ -250,6 +250,31 @@ namespace Sarcasm.GrammarAst
                 throw new UnparseException(string.Format("Cannot unparse number {0} with type '{1}' and base {2}", numberLiteral.Value, numberLiteral.Value.GetType().FullName, numberLiteral.Base));
 
             return BaseToPrefix(numberLiteral.Base) + body + TypeToSuffix(numberLiteral);
+        }
+
+        private static bool IsExplicitDecimalSeparatorNeeded(INumberLiteral numberLiteral)
+        {
+            return
+                (numberLiteral.Value is float || numberLiteral.Value is double || numberLiteral.Value is decimal)
+                &&
+                object.Equals(Round(numberLiteral.Value), numberLiteral.Value)
+                &&
+                !numberLiteral.HasExplicitTypeModifier;
+        }
+
+        private static object Round(object number)
+        {
+            if (number is float)
+                return Math.Round((double)(float)number);
+
+            else if (number is double)
+                return Math.Round((double)number);
+
+            else if (number is decimal)
+                return Math.Round((decimal)number);
+
+            else
+                return number;
         }
     }
 

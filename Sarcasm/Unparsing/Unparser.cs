@@ -256,6 +256,12 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<Utoken> _Unparse(object astValue, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction)
         {
+            if (astValue == null)
+                throw new ArgumentNullException("astValue must not be null", "astValue");
+
+            else if (bnfTerm == null)
+                throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
+
             ResetMutableState();
             this.cancellationToken = cancellationToken;
             this.direction = direction;
@@ -283,8 +289,14 @@ namespace Sarcasm.Unparsing
 
         internal IEnumerable<UtokenBase> UnparseRaw(UnparsableAst self)
         {
-            if (self.BnfTerm == null)
-                throw new ArgumentNullException("bnfTerm must not be null", "bnfTerm");
+            if (self == null)
+                throw new ArgumentNullException("self must not be null", "self");
+
+            else if (self.AstValue == null)
+                throw new ArgumentNullException("AstValue must not be null", "self.AstValue");
+
+            else if (self.BnfTerm == null)
+                throw new ArgumentNullException("BnfTerm must not be null", "self.BnfTerm");
 
             Formatter.Params @params;
 
