@@ -463,7 +463,7 @@ namespace Sarcasm.UniversalGrammars
                         decoration.Add(DecorationKey.Foreground, ForeColorOfLiteral);
                     else if (target.AstParentMember != null && target.AstParentMember.BnfTerm == B.Key)
                     {
-                        if (((string)target.AstImage.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
+                        if (target.AstValue is string && ((string)target.AstValue).EqualToAny(TYPE_KEYWORD, COLLECTION_VALUES_KEYWORD, PRIMITIVE_VALUE_KEYWORD))
                             decoration.Add(DecorationKey.Foreground, ForeColorOfKeyword);
                         else
                             decoration.Add(DecorationKey.Foreground, ForeColorOfKey);
