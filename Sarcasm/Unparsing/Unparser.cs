@@ -445,11 +445,53 @@ namespace Sarcasm.Unparsing
                 self.SetAsLeave();
 
                 var subType = ((StringLiteral)self.BnfTerm)._subtypes.First();
+
                 yield return UtokenValue.CreateText(subType.Start, self).SetDiscriminator(Formatter.StringLiteralStartSymbol);
                 yield return UtokenValue.NoWhitespace();
-                yield return UtokenValue.CreateText((string)self.AstValue, self).SetDiscriminator(Formatter.StringLiteralContent);
+
+                yield return UtokenValue.CreateText(self).SetDiscriminator(Formatter.StringLiteralContent);
+
                 yield return UtokenValue.NoWhitespace();
                 yield return UtokenValue.CreateText(subType.End, self).SetDiscriminator(Formatter.StringLiteralEndSymbol);
+            }
+            else if (self.BnfTerm is DataLiteralBase)
+            {
+                tsUnparse.Debug("DataLiteralBase: [\"{0}\"]", self.AstValue.ToString());
+                tsUnparse.Debug("SetAsLeave: {0}", self);
+                self.SetAsLeave();
+
+                DataLiteralBase dataLiteral = (DataLiteralBase)self.BnfTerm;
+
+                if (dataLiteral is DsvLiteral)
+                {
+                    yield return UtokenValue.CreateText(self).SetDiscriminator(Formatter.DataLiteralContent);
+
+                    string terminator = ((DsvLiteral)dataLiteral).Terminator;
+                    if (!string.IsNullOrEmpty(terminator))
+                    {
+                        yield return UtokenValue.NoWhitespace();
+                        yield return UtokenValue.CreateText(((DsvLiteral)dataLiteral).Terminator, self).SetDiscriminator(Formatter.DsvLiteralTerminator);
+                    }
+                }
+
+                else if (dataLiteral is QuotedValueLiteral)
+                {
+                    yield return UtokenValue.CreateText(((QuotedValueLiteral)dataLiteral).StartSymbol, self).SetDiscriminator(Formatter.QuotedValueLiteralStartSymbol);
+                    yield return UtokenValue.NoWhitespace();
+
+                    yield return UtokenValue.CreateText(self).SetDiscriminator(Formatter.DataLiteralContent);
+
+                    yield return UtokenValue.NoWhitespace();
+                    yield return UtokenValue.CreateText(((QuotedValueLiteral)dataLiteral).EndSymbol, self).SetDiscriminator(Formatter.QuotedValueLiteralEndSymbol);
+                }
+
+                else if (dataLiteral is FixedLengthLiteral)
+                {
+                    string format = "{0,-" + ((FixedLengthLiteral)dataLiteral).Length + "}";
+                    string text = string.Format(Formatter.FormatProvider, format, self.AstValue);
+
+                    yield return UtokenValue.CreateText(text, self).SetDiscriminator(Formatter.DataLiteralContent);
+                }
             }
             else if (self.BnfTerm is Terminal)
             {

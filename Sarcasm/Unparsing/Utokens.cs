@@ -197,18 +197,6 @@ namespace Sarcasm.Unparsing
                 else
                     text = Convert.ToString(reference.AstValue, formatProvider);
 
-                if (dataLiteral is DsvLiteral)
-                    text = text + (((DsvLiteral)dataLiteral).Terminator ?? string.Empty);
-
-                else if (dataLiteral is QuotedValueLiteral)
-                    text = ((QuotedValueLiteral)dataLiteral).StartSymbol + text + ((QuotedValueLiteral)dataLiteral).EndSymbol;
-
-                else if (dataLiteral is FixedLengthLiteral)
-                {
-                    string format = "{0,-" + ((FixedLengthLiteral)dataLiteral).Length + "}";
-                    text = string.Format(formatProvider, format, text);
-                }
-
                 return text;
             }
 
