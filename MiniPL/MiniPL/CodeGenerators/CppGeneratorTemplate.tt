@@ -7,6 +7,19 @@
 <#@ import namespace="MiniPL.DomainDefinitions" #>
 <#@ import namespace="Expr.DomainDefinitions" #>
 #include <iostream>
+#include <ctime>
+
+namespace stdplus
+{
+    std::tm makeTmFromDate(int year, int month, int day)
+    {
+        std::tm t;
+        t.tm_year = year - 1900;
+        t.tm_mon = month - 1;
+        t.tm_mday = day;
+        return t;
+    }
+}
 
 namespace <#= Program.Namespace #>.<#= Program.Name #>
 {
@@ -182,15 +195,18 @@ string GetExpressionString(Expression expression)
         var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
         return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
     }
-    else if (expression is ConditionalTernaryExpression)
-    {
-        var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
-        return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
-    }
     else if (expression is NumberLiteral)
     {
         var numberLiteral = (NumberLiteral)expression;
         return ToStringHelper.ToStringWithCulture(numberLiteral.Value);
+    }
+    else if (expression is DateLiteral)
+    {
+        var dateLiteral = (DateLiteral)expression;
+        return string.Format("stdplus::makeTmFromDate({0}, {1}, {2})",
+            dateLiteral.Value.Year,
+            dateLiteral.Value.Month,
+            dateLiteral.Value.Day);
     }
     else if (expression is StringLiteral)
     {
@@ -225,6 +241,7 @@ string GetTypeString(MiniPL.DomainDefinitions.Type type)
         case MiniPL.DomainDefinitions.Type.String:    return "string";
         case MiniPL.DomainDefinitions.Type.Char:      return "char";
         case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
+        case MiniPL.DomainDefinitions.Type.Date:      return "std::tm";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
 }

@@ -121,32 +121,32 @@ namespace Sarcasm.GrammarAst
 	{
 		#region Data
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>(string name = "dataliteral<#= methodNameExt #>")
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>(string name = "dataliteral<#= methodNameExt #>", string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new DataLiteralBase(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string terminator)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string terminator, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>, terminator: terminator).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startEndSymbol)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startEndSymbol, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral<#= methodNameExt #>();
 		}
 
-        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>FixedLength(string name, int length)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>FixedLength(string name, int length, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
 		{
 			return new FixedLengthLiteral(name: name, dataType: TypeCode.<#= typeCode #>, length: length).IntroDataLiteral<#= methodNameExt #>();
 		}

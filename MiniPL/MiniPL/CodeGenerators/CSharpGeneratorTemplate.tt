@@ -189,15 +189,17 @@ string GetExpressionString(Expression expression)
         var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
         return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
     }
-    else if (expression is ConditionalTernaryExpression)
-    {
-        var conditionalTernaryExpression = (ConditionalTernaryExpression)expression;
-        return string.Format("({0} ? {1} : {2})", GetExpressionString(conditionalTernaryExpression.Cond), GetExpressionString(conditionalTernaryExpression.Term1), GetExpressionString(conditionalTernaryExpression.Term2));
-    }
     else if (expression is NumberLiteral)
     {
         var numberLiteral = (NumberLiteral)expression;
         return ToStringHelper.ToStringWithCulture(numberLiteral.Value);
+    }
+    else if (expression is DateLiteral)
+    {
+        var dateLiteral = (DateLiteral)expression;
+        return string.Format("System.DateTime.ParseExact({0}, {1}, System.Globalization.CultureInfo.InvariantCulture)",
+            ToStringHelper.ToStringWithCulture(dateLiteral.Value),
+            DateLiteral.Format);
     }
     else if (expression is StringLiteral)
     {
@@ -232,6 +234,7 @@ string GetTypeString(MiniPL.DomainDefinitions.Type type)
         case MiniPL.DomainDefinitions.Type.String:    return "string";
         case MiniPL.DomainDefinitions.Type.Char:      return "char";
         case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
+        case MiniPL.DomainDefinitions.Type.Date:      return "DateTime";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
 }

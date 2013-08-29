@@ -62,7 +62,7 @@ namespace MiniPL
             String,
             Char,
             Bool,
-            DateTime
+            Date
         }
 
         public interface IVariable
@@ -179,11 +179,13 @@ namespace MiniPL
             }
         }
 
-        public class DateTimeLiteral : DE.Expression
+        public class DateLiteral : DE.Expression
         {
-            public DateTimeLiteral() { }
+            public const string Format = "d";
 
-            public DateTimeLiteral(DateTime value)
+            public DateLiteral() { }
+
+            public DateLiteral(DateTime value)
             {
                 this.Value = value;
             }

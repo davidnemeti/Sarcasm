@@ -44,6 +44,13 @@ namespace Sarcasm.GrammarAst
             this.grammar = grammar;
         }
 
+        #region Default values
+
+        private const string defaultDateTimeFormat = "d";   // it's the default in Irony
+        private const int defaultIntRadix = 10;             // it's the default in Irony
+
+        #endregion
+
         #region KeyTerms
 
         public BnfiTermKeyTerm CreateKeyTerm(string text)

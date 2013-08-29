@@ -15,7 +15,7 @@ end
 begin
     if (true) then
     begin
-        var date : datetime := $10/06/2008$;
+        var mydate : date := $10/06/2008$;
         var number : integer := 5;
         var number2 : real := 8.0;
         var number3 : real := 3.1415;
