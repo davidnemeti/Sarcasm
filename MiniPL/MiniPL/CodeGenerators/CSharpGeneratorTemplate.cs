@@ -30,23 +30,26 @@ namespace MiniPL.CodeGenerators
         /// </summary>
         public virtual string TransformText()
         {
-            this.Write("using System;\r\nusing System.IO;\r\n\r\nnamespace ");
+            this.Write("using System;\r\nusing System.IO;\r\n\r\nnamespace MiniPLCore\r\n{\r\n    public enum Color" +
+                    "\r\n    {\r\n        Black,\r\n        Blue,\r\n        Brown,\r\n        Gray,\r\n        G" +
+                    "reen,\r\n        Orange,\r\n        Red,\r\n        White,\r\n        Yellow \r\n    }\r\n}\r" +
+                    "\n\r\nnamespace ");
             
-            #line 12 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 28 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Program.Namespace));
             
             #line default
             #line hidden
             this.Write("\r\n{\r\n    public static class ");
             
-            #line 14 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 30 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(Program.Name));
             
             #line default
             #line hidden
             this.Write("\r\n    {\r\n        public static void Main()\r\n        {\r\n");
             
-            #line 18 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 34 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     PushIndent(indent);
     Generate(Program.Body);
@@ -57,7 +60,7 @@ namespace MiniPL.CodeGenerators
             #line hidden
             this.Write("        }\r\n\r\n");
             
-            #line 25 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 41 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     foreach (Function function in Program.Functions)
     {
@@ -67,28 +70,28 @@ namespace MiniPL.CodeGenerators
             #line hidden
             this.Write("        public static ");
             
-            #line 29 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 45 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(function.ReturnType != null ? GetTypeString(function.ReturnType.Value) : "void"));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 29 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 45 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(function.Name));
             
             #line default
             #line hidden
             this.Write("(");
             
-            #line 29 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 45 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", function.Parameters.Select(parameter => GetTypeString(parameter.Type) + " " + parameter.Name))));
             
             #line default
             #line hidden
             this.Write(")\r\n        {\r\n");
             
-            #line 31 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 47 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     PushIndent(indent);
     Generate(function.Body);
@@ -99,7 +102,7 @@ namespace MiniPL.CodeGenerators
             #line hidden
             this.Write("        }\r\n\r\n");
             
-            #line 38 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+            #line 54 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
 
@@ -110,7 +113,7 @@ namespace MiniPL.CodeGenerators
             return this.GenerationEnvironment.ToString();
         }
         
-        #line 44 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 60 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
 void Generate(IEnumerable<Statement> statements)
 {
@@ -137,28 +140,28 @@ void Generate(Statement statement)
         #line default
         #line hidden
         
-        #line 65 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 81 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    ");
 
         
         #line default
         #line hidden
         
-        #line 66 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 82 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetLocalVariableString(localVariable)));
 
         
         #line default
         #line hidden
         
-        #line 66 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 82 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(";\r\n");
 
         
         #line default
         #line hidden
         
-        #line 67 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 83 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         }
         else
@@ -168,42 +171,42 @@ this.Write(";\r\n");
         #line default
         #line hidden
         
-        #line 71 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 87 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    ");
 
         
         #line default
         #line hidden
         
-        #line 72 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 88 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetTypeString(localVariable.Type)));
 
         
         #line default
         #line hidden
         
-        #line 72 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 88 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(" ");
 
         
         #line default
         #line hidden
         
-        #line 72 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 88 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(localVariable.Name));
 
         
         #line default
         #line hidden
         
-        #line 72 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 88 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(";\r\n");
 
         
         #line default
         #line hidden
         
-        #line 73 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 89 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         }
     }
@@ -215,28 +218,28 @@ this.Write(";\r\n");
         #line default
         #line hidden
         
-        #line 79 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 95 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    ");
 
         
         #line default
         #line hidden
         
-        #line 80 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 96 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetAssignmentString(assignment)));
 
         
         #line default
         #line hidden
         
-        #line 80 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 96 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(";\r\n");
 
         
         #line default
         #line hidden
         
-        #line 81 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 97 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is Return)
@@ -247,28 +250,28 @@ this.Write(";\r\n");
         #line default
         #line hidden
         
-        #line 86 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 102 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    return ");
 
         
         #line default
         #line hidden
         
-        #line 87 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 103 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetExpressionString(@return.Value)));
 
         
         #line default
         #line hidden
         
-        #line 87 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 103 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(";\r\n");
 
         
         #line default
         #line hidden
         
-        #line 88 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is While)
@@ -279,41 +282,41 @@ this.Write(";\r\n");
         #line default
         #line hidden
         
-        #line 93 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 109 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    while (");
 
         
         #line default
         #line hidden
         
-        #line 94 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 110 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetExpressionString(@while.Condition)));
 
         
         #line default
         #line hidden
         
-        #line 94 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 110 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(")\r\n    {\r\n");
 
         
         #line default
         #line hidden
         
-        #line 96 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 112 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
  Generate(@while.Body); 
         
         #line default
         #line hidden
         
-        #line 96 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 112 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    }\r\n");
 
         
         #line default
         #line hidden
         
-        #line 98 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 114 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is For)
@@ -324,69 +327,69 @@ this.Write("    }\r\n");
         #line default
         #line hidden
         
-        #line 103 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 119 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    for (");
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", @for.Init.Select(localVariable => GetLocalVariableString(localVariable)))));
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("; ");
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetExpressionString(@for.Condition)));
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("; ");
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(", ", @for.Update.Select(assignment => GetAssignmentString(assignment)))));
 
         
         #line default
         #line hidden
         
-        #line 104 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(")\r\n    {\r\n");
 
         
         #line default
         #line hidden
         
-        #line 106 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 122 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
  Generate(@for.Body); 
         
         #line default
         #line hidden
         
-        #line 106 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 122 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    }\r\n");
 
         
         #line default
         #line hidden
         
-        #line 108 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 124 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is Write)
@@ -397,28 +400,28 @@ this.Write("    }\r\n");
         #line default
         #line hidden
         
-        #line 113 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 129 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    Console.Write(");
 
         
         #line default
         #line hidden
         
-        #line 114 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 130 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(" + ", write.Arguments.Select(argument => GetExpressionString(argument)))));
 
         
         #line default
         #line hidden
         
-        #line 114 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 130 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(");\r\n");
 
         
         #line default
         #line hidden
         
-        #line 115 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 131 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is WriteLn)
@@ -429,28 +432,28 @@ this.Write(");\r\n");
         #line default
         #line hidden
         
-        #line 120 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 136 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    Console.WriteLine(");
 
         
         #line default
         #line hidden
         
-        #line 121 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 137 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(string.Join(" + ", writeLn.Arguments.Select(argument => GetExpressionString(argument)))));
 
         
         #line default
         #line hidden
         
-        #line 121 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 137 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(");\r\n");
 
         
         #line default
         #line hidden
         
-        #line 122 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 138 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else if (statement is If)
@@ -461,28 +464,28 @@ this.Write(");\r\n");
         #line default
         #line hidden
         
-        #line 127 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 143 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    if (");
 
         
         #line default
         #line hidden
         
-        #line 128 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 144 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetExpressionString(@if.Condition)));
 
         
         #line default
         #line hidden
         
-        #line 128 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 144 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(")\r\n    {\r\n");
 
         
         #line default
         #line hidden
         
-        #line 130 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 146 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         Generate(@if.Body);
 
@@ -490,14 +493,14 @@ this.Write(")\r\n    {\r\n");
         #line default
         #line hidden
         
-        #line 132 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 148 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    }\r\n");
 
         
         #line default
         #line hidden
         
-        #line 134 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 150 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         if (@if.ElseBody != null)
         {
@@ -506,14 +509,14 @@ this.Write("    }\r\n");
         #line default
         #line hidden
         
-        #line 137 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 153 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    else\r\n    {\r\n");
 
         
         #line default
         #line hidden
         
-        #line 140 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 156 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         Generate(@if.ElseBody);
 
@@ -521,14 +524,14 @@ this.Write("    else\r\n    {\r\n");
         #line default
         #line hidden
         
-        #line 142 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 158 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    }\r\n");
 
         
         #line default
         #line hidden
         
-        #line 144 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 160 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
         }
     }
@@ -540,28 +543,28 @@ this.Write("    }\r\n");
         #line default
         #line hidden
         
-        #line 150 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 166 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write("    ");
 
         
         #line default
         #line hidden
         
-        #line 151 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 167 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(this.ToStringHelper.ToStringWithCulture(GetExpressionString(functionCall)));
 
         
         #line default
         #line hidden
         
-        #line 151 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 167 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 this.Write(");\r\n");
 
         
         #line default
         #line hidden
         
-        #line 152 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
+        #line 168 "C:\Users\dave\Documents\Programming\Sarcasm\MiniPL\MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt"
 
     }
     else
@@ -610,8 +613,8 @@ string GetExpressionString(Expression expression)
     else if (expression is DateLiteral)
     {
         var dateLiteral = (DateLiteral)expression;
-        return string.Format("System.DateTime.ParseExact({0}, {1}, System.Globalization.CultureInfo.InvariantCulture)",
-            ToStringHelper.ToStringWithCulture(dateLiteral.Value),
+        return string.Format("System.DateTime.ParseExact(\"{0}\", \"{1}\", System.Globalization.CultureInfo.InvariantCulture)",
+            dateLiteral.Value.ToString(DateLiteral.Format, System.Globalization.CultureInfo.InvariantCulture),
             DateLiteral.Format);
     }
     else if (expression is StringLiteral)
@@ -623,6 +626,11 @@ string GetExpressionString(Expression expression)
     {
         var boolLiteral = (BoolLiteral)expression;
         return boolLiteral.Value ? "true" : "false";
+    }
+    else if (expression is ColorLiteral)
+    {
+        var colorLiteral = (ColorLiteral)expression;
+        return "global::MiniPLCore.Color." + colorLiteral.Value.ToString();
     }
     else if (expression is FunctionCall)
     {
@@ -647,7 +655,8 @@ string GetTypeString(MiniPL.DomainDefinitions.Type type)
         case MiniPL.DomainDefinitions.Type.String:    return "string";
         case MiniPL.DomainDefinitions.Type.Char:      return "char";
         case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
-        case MiniPL.DomainDefinitions.Type.Date:      return "DateTime";
+        case MiniPL.DomainDefinitions.Type.Color:      return "global::MiniPLCore.Color";
+        case MiniPL.DomainDefinitions.Type.Date:      return "System.DateTime";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
 }

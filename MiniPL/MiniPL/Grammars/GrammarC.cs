@@ -483,6 +483,8 @@ namespace MiniPL.Grammars
             public bool ShowNamesInBold { get; set; }
             public bool ShowNameRefsInItalic { get; set; }
 
+            public bool SpecialSyntaxHighlightForColorLiterals { get; set; }
+
             #endregion
 
             private readonly BnfTerms B;
@@ -505,6 +507,8 @@ namespace MiniPL.Grammars
                 ShowNamesInBold = true;
                 ShowNameRefsInItalic = false;
 
+                SpecialSyntaxHighlightForColorLiterals = true;
+
                 MultiLineCommentDecorator = " *";
             }
 
@@ -525,7 +529,7 @@ namespace MiniPL.Grammars
 
             private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (target.AstValue is D.Color)
+                if (target.AstValue is D.Color && SpecialSyntaxHighlightForColorLiterals)
                 {
                     Color color;
 

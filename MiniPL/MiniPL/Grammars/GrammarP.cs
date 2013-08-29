@@ -606,6 +606,8 @@ namespace MiniPL.Grammars
             public Color ForeColorOfLiteral { get; set; }
             public Color ForeColorOfComment { get; set; }
 
+            public bool SpecialSyntaxHighlightForColorLiterals { get; set; }
+
             #endregion
 
             private readonly BnfTerms B;
@@ -623,6 +625,8 @@ namespace MiniPL.Grammars
                 ForeColorOfType = Color.Cyan;
                 ForeColorOfLiteral = Color.Purple;
                 ForeColorOfComment = Color.DarkGreen;
+
+                SpecialSyntaxHighlightForColorLiterals = true;
 
                 MultiLineCommentDecorator = " @";
             }
@@ -646,7 +650,7 @@ namespace MiniPL.Grammars
 
             private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (target.AstValue is D.Color)
+                if (target.AstValue is D.Color && SpecialSyntaxHighlightForColorLiterals)
                 {
                     Color color;
 

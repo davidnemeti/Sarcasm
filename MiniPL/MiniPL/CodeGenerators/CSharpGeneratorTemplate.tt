@@ -9,6 +9,22 @@
 using System;
 using System.IO;
 
+namespace MiniPLCore
+{
+    public enum Color
+    {
+        Black,
+        Blue,
+        Brown,
+        Gray,
+        Green,
+        Orange,
+        Red,
+        White,
+        Yellow 
+    }
+}
+
 namespace <#= Program.Namespace #>
 {
     public static class <#= Program.Name #>
@@ -197,8 +213,8 @@ string GetExpressionString(Expression expression)
     else if (expression is DateLiteral)
     {
         var dateLiteral = (DateLiteral)expression;
-        return string.Format("System.DateTime.ParseExact({0}, {1}, System.Globalization.CultureInfo.InvariantCulture)",
-            ToStringHelper.ToStringWithCulture(dateLiteral.Value),
+        return string.Format("System.DateTime.ParseExact(\"{0}\", \"{1}\", System.Globalization.CultureInfo.InvariantCulture)",
+            dateLiteral.Value.ToString(DateLiteral.Format, System.Globalization.CultureInfo.InvariantCulture),
             DateLiteral.Format);
     }
     else if (expression is StringLiteral)
@@ -210,6 +226,11 @@ string GetExpressionString(Expression expression)
     {
         var boolLiteral = (BoolLiteral)expression;
         return boolLiteral.Value ? "true" : "false";
+    }
+    else if (expression is ColorLiteral)
+    {
+        var colorLiteral = (ColorLiteral)expression;
+        return "global::MiniPLCore.Color." + colorLiteral.Value.ToString();
     }
     else if (expression is FunctionCall)
     {
@@ -234,7 +255,8 @@ string GetTypeString(MiniPL.DomainDefinitions.Type type)
         case MiniPL.DomainDefinitions.Type.String:    return "string";
         case MiniPL.DomainDefinitions.Type.Char:      return "char";
         case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
-        case MiniPL.DomainDefinitions.Type.Date:      return "DateTime";
+        case MiniPL.DomainDefinitions.Type.Color:      return "global::MiniPLCore.Color";
+        case MiniPL.DomainDefinitions.Type.Date:      return "System.DateTime";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
 }

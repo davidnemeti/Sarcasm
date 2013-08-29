@@ -9,7 +9,7 @@
 #include <iostream>
 #include <ctime>
 
-namespace stdplus
+namespace MiniPLCore
 {
     std::tm makeTmFromDate(int year, int month, int day)
     {
@@ -18,6 +18,19 @@ namespace stdplus
         t.tm_mon = month - 1;
         t.tm_mday = day;
         return t;
+    }
+
+    enum Color
+    {
+        Black,
+        Blue,
+        Brown,
+        Gray,
+        Green,
+        Orange,
+        Red,
+        White,
+        Yellow 
     }
 }
 
@@ -203,7 +216,7 @@ string GetExpressionString(Expression expression)
     else if (expression is DateLiteral)
     {
         var dateLiteral = (DateLiteral)expression;
-        return string.Format("stdplus::makeTmFromDate({0}, {1}, {2})",
+        return string.Format("::MiniPLCore::makeTmFromDate({0}, {1}, {2})",
             dateLiteral.Value.Year,
             dateLiteral.Value.Month,
             dateLiteral.Value.Day);
@@ -217,6 +230,11 @@ string GetExpressionString(Expression expression)
     {
         var boolLiteral = (BoolLiteral)expression;
         return boolLiteral.Value ? "true" : "false";
+    }
+    else if (expression is ColorLiteral)
+    {
+        var colorLiteral = (ColorLiteral)expression;
+        return "::MiniPLCore::Color::" + colorLiteral.Value.ToString();
     }
     else if (expression is FunctionCall)
     {
@@ -241,6 +259,7 @@ string GetTypeString(MiniPL.DomainDefinitions.Type type)
         case MiniPL.DomainDefinitions.Type.String:    return "string";
         case MiniPL.DomainDefinitions.Type.Char:      return "char";
         case MiniPL.DomainDefinitions.Type.Bool:      return "bool";
+        case MiniPL.DomainDefinitions.Type.Color:     return "::MiniPLCore::Color";
         case MiniPL.DomainDefinitions.Type.Date:      return "std::tm";
         default:                                throw new ArgumentException("Unknown type: " + type, "type");
     }
