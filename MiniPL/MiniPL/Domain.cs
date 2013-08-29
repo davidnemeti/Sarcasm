@@ -62,7 +62,21 @@ namespace MiniPL
             String,
             Char,
             Bool,
-            Date
+            Date,
+            Color
+        }
+
+        public enum Color
+        {
+            Black,
+            Blue,
+            Brown,
+            Gray,
+            Green,
+            Orange,
+            Red,
+            White,
+            Yellow 
         }
 
         public interface IVariable
@@ -191,6 +205,23 @@ namespace MiniPL
             }
 
             public DateTime Value { get; set; }
+
+            public override string ToString()
+            {
+                return Value.ToString();
+            }
+        }
+
+        public class ColorLiteral : DE.Expression
+        {
+            public ColorLiteral() { }
+
+            public ColorLiteral(Color value)
+            {
+                this.Value = value;
+            }
+
+            public Color Value { get; set; }
 
             public override string ToString()
             {

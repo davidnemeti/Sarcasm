@@ -80,12 +80,26 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("karakterlánc", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("karakter", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("logikai", D.Type.Bool);
+                    this.COLOR_TYPE = TerminalFactoryS.CreateKeyTerm("szín", D.Type.Color);
                     this.DATE_TYPE = TerminalFactoryS.CreateKeyTerm("dátum", D.Type.Date);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
                         { "igaz", true },
                         { "hamis", false }
+                    };
+
+                    this.COLOR_CONSTANT = new BnfiTermConstant<D.Color>()
+                    {
+                        { "szín_fekete", D.Color.Black },
+                        { "szín_kék", D.Color.Blue },
+                        { "szín_barna", D.Color.Brown },
+                        { "szín_szürke", D.Color.Gray },
+                        { "szín_zöld", D.Color.Green },
+                        { "szín_narancs", D.Color.Orange },
+                        { "szín_piros", D.Color.Red },
+                        { "szín_fehér", D.Color.White },
+                        { "szín_sárga", D.Color.Yellow }
                     };
                 }
                 else if (cultureInfo.Name == "de")
@@ -116,12 +130,26 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("Schnur", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("Charakter", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("Boolsche", D.Type.Bool);
+                    this.COLOR_TYPE = TerminalFactoryS.CreateKeyTerm("Farbe", D.Type.Color);
                     this.DATE_TYPE = TerminalFactoryS.CreateKeyTerm("Datum", D.Type.Date);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
                         { "richtig", true },
                         { "falsch", false }
+                    };
+
+                    this.COLOR_CONSTANT = new BnfiTermConstant<D.Color>()
+                    {
+                        { "Farbe_schwarz", D.Color.Black },
+                        { "Farbe_blau", D.Color.Blue },
+                        { "Farbe_braun", D.Color.Brown },
+                        { "Farbe_grau", D.Color.Gray },
+                        { "Farbe_grün", D.Color.Green },
+                        { "Farbe_orange", D.Color.Orange },
+                        { "Farbe_rot", D.Color.Red },
+                        { "Farbe_weiss", D.Color.White },
+                        { "Farbe_gelb", D.Color.Yellow }
                     };
                 }
                 else
@@ -152,12 +180,26 @@ namespace MiniPL.Grammars
                     this.STRING_TYPE = TerminalFactoryS.CreateKeyTerm("string", D.Type.String);
                     this.CHAR_TYPE = TerminalFactoryS.CreateKeyTerm("char", D.Type.Char);
                     this.BOOL_TYPE = TerminalFactoryS.CreateKeyTerm("boolean", D.Type.Bool);
+                    this.COLOR_TYPE = TerminalFactoryS.CreateKeyTerm("color", D.Type.Color);
                     this.DATE_TYPE = TerminalFactoryS.CreateKeyTerm("date", D.Type.Date);
 
                     this.BOOL_CONSTANT = new BnfiTermConstant<bool>()
                     {
                         { "True", true },
                         { "False", false }
+                    };
+
+                    this.COLOR_CONSTANT = new BnfiTermConstant<D.Color>()
+                    {
+                        { "Color_Black", D.Color.Black },
+                        { "Color_Blue", D.Color.Blue },
+                        { "Color_Brown", D.Color.Brown },
+                        { "Color_Gray", D.Color.Gray },
+                        { "Color_Green", D.Color.Green },
+                        { "Color_Orange", D.Color.Orange },
+                        { "Color_Red", D.Color.Red },
+                        { "Color_White", D.Color.White },
+                        { "Color_Yellow", D.Color.Yellow }
                     };
                 }
 
@@ -224,6 +266,7 @@ namespace MiniPL.Grammars
             public readonly BnfiTermConversion<DE.NumberLiteral> NumberLiteral = new BnfiTermConversion<DE.NumberLiteral>();
             public readonly BnfiTermRecord<D.StringLiteral> StringLiteral = new BnfiTermRecord<D.StringLiteral>();
             public readonly BnfiTermRecord<DE.BoolLiteral> BoolLiteral = new BnfiTermRecord<DE.BoolLiteral>();
+            public readonly BnfiTermRecord<D.ColorLiteral> ColorLiteral = new BnfiTermRecord<D.ColorLiteral>();
             public readonly BnfiTermRecord<D.DateLiteral> DateLiteral = new BnfiTermRecord<D.DateLiteral>();
 
             public readonly BnfiTermRecord<Name> Name = new BnfiTermRecord<Name>();
@@ -281,9 +324,11 @@ namespace MiniPL.Grammars
             public readonly BnfiTermConversion<D.Type> STRING_TYPE;
             public readonly BnfiTermConversion<D.Type> CHAR_TYPE;
             public readonly BnfiTermConversion<D.Type> BOOL_TYPE;
+            public readonly BnfiTermConversion<D.Type> COLOR_TYPE;
             public readonly BnfiTermConversion<D.Type> DATE_TYPE;
 
             public readonly BnfiTermConstant<bool> BOOL_CONSTANT;
+            public readonly BnfiTermConstant<D.Color> COLOR_CONSTANT;
 
             public readonly BnfiTermConversion<string> IDENTIFIER;
         }
@@ -459,6 +504,7 @@ namespace MiniPL.Grammars
                 B.DateLiteral,
                 B.StringLiteral,
                 B.BoolLiteral,
+                B.ColorLiteral,
                 B.FunctionCall,
                 B.VariableReference,
                 B.LEFT_PAREN + B.Expression + B.RIGHT_PAREN
@@ -499,12 +545,13 @@ namespace MiniPL.Grammars
 //            B.NumberLiteral.Rule = TerminalFactoryS.CreateNumberLiteral().BindTo(B.NumberLiteral, t => t.Value);   // B.NumberLiteral used to be a BnfiTermRecord
             B.StringLiteral.Rule = TerminalFactoryS.CreateStringLiteral(name: "stringliteral", startEndSymbol: "'").BindTo(B.StringLiteral, t => t.Value);
             B.BoolLiteral.Rule = B.BOOL_CONSTANT.BindTo(B.BoolLiteral, t => t.Value);
+            B.ColorLiteral.Rule = B.COLOR_CONSTANT.BindTo(B.ColorLiteral, t => t.Value);
             B.DateLiteral.Rule = TerminalFactoryS.CreateDataLiteralDateTimeQuoted(name: "dateliteral", startEndSymbol: "$", dateTimeFormat: D.DateLiteral.Format).BindTo(B.DateLiteral, t => t.Value);
 
             B.BinaryOperator.Rule = B.ADD_OP | B.SUB_OP | B.MUL_OP | B.DIV_OP | B.POW_OP | B.MOD_OP | B.EQ_OP | B.NEQ_OP | B.LT_OP | B.LTE_OP | B.GT_OP | B.GTE_OP | B.AND_OP | B.OR_OP;
             B.UnaryOperator.Rule = B.POS_OP | B.NEG_OP | B.NOT_OP;
 
-            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE | B.DATE_TYPE;
+            B.Type.Rule = B.INTEGER_TYPE | B.REAL_TYPE | B.STRING_TYPE | B.CHAR_TYPE | B.BOOL_TYPE | B.COLOR_TYPE | B.DATE_TYPE;
 
             /*
              * NOTE: RegisterOperators in Irony is string-based, therefore it is impossible to specify different precedences
@@ -599,7 +646,31 @@ namespace MiniPL.Grammars
 
             private void NormalSyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
+                if (target.AstValue is D.Color)
+                {
+                    Color color;
+
+                    if (Enum.TryParse<Color>(target.AstValue.ToString(), out color))
+                    {
+                        decoration
+                            .Add(DecorationKey.Background, color)
+                            ;
+
+                        if (color.EqualToAny(Color.Black, Color.Blue, Color.Green, Color.Red))
+                        {
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.White)
+                                ;
+                        }
+                        else
+                        {
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.Black)
+                                ;
+                        }
+                    }
+                }
+                else if (utoken.Discriminator.EqualToAny(CommentContent, CommentStartSymbol, CommentEndSymbol))
                 {
                     decoration
                         .Add(DecorationKey.Foreground, ForeColorOfComment)
@@ -636,7 +707,31 @@ namespace MiniPL.Grammars
 
             private void CrazySyntaxHighlight(Utoken utoken, UnparsableAst target, IDecoration decoration)
             {
-                if (utoken.Discriminator == CommentContent)
+                if (target.AstValue is D.Color)
+                {
+                    Color color;
+
+                    if (Enum.TryParse<Color>(target.AstValue.ToString(), out color))
+                    {
+                        decoration
+                            .Add(DecorationKey.Background, color)
+                            ;
+
+                        if (color.EqualToAny(Color.Black, Color.Blue, Color.Green, Color.Red))
+                        {
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.White)
+                                ;
+                        }
+                        else
+                        {
+                            decoration
+                                .Add(DecorationKey.Foreground, Color.Black)
+                                ;
+                        }
+                    }
+                }
+                else if (utoken.Discriminator == CommentContent)
                 {
                     decoration
                         .Add(DecorationKey.Foreground, Color.Pink)

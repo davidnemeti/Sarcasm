@@ -45,6 +45,25 @@
                 "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
                 "Name": {
                   "$type": "Sarcasm.DomainCore.Name, Sarcasm",
+                  "Value": "mycolor"
+                },
+                "Type": "Color",
+                "InitValue": {
+                  "$type": "MiniPL.DomainDefinitions.VariableReference, MiniPL",
+                  "Target": {
+                    "$type": "Sarcasm.DomainCore.ReferenceImpl`1[[MiniPL.DomainDefinitions.IVariable, MiniPL]], Sarcasm",
+                    "NameRef": {
+                      "$type": "Sarcasm.DomainCore.NameRef, Sarcasm",
+                      "Value": "color_green"
+                    },
+                    "Type": "MiniPL.DomainDefinitions.IVariable, MiniPL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                  }
+                }
+              },
+              {
+                "$type": "MiniPL.DomainDefinitions.LocalVariable, MiniPL",
+                "Name": {
+                  "$type": "Sarcasm.DomainCore.Name, Sarcasm",
                   "Value": "number"
                 },
                 "Type": "Integer",
