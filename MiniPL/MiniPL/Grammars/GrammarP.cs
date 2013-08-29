@@ -757,6 +757,14 @@ namespace MiniPL.Grammars
                         .Add(DecorationKey.Background, Color.Yellow)
                         ;
                 }
+                else if (utoken.Discriminator == StringLiteralStartSymbol)
+                {
+                    decoration
+                        .Add(DecorationKey.FontSizeRelativePercent, 2)
+                        .Add(DecorationKey.Foreground, Color.Red)
+                        .Add(DecorationKey.Background, Color.Blue)
+                        ;
+                }
                 else if (target.AstValue is D.If)
                 {
                     if (target.BnfTerm == B.LEFT_PAREN)
