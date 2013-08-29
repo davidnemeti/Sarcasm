@@ -55,6 +55,19 @@ namespace Sarcasm.Unparsing
             CommentStartSymbol = new Discriminator("CommentStartSymbol");
             CommentEndSymbol = new Discriminator("CommentEndSymbol");
 
+            StringLiteralContent = new Discriminator("StringLiteralContent");
+            StringLiteralStartSymbol = new Discriminator("StringLiteralStartSymbol");
+            StringLiteralEndSymbol = new Discriminator("StringLiteralEndSymbol");
+
+            DataLiteralContent = new Discriminator("DataLiteralContent");
+            DsvLiteralTerminator = new Discriminator("DsvLiteralTerminator");
+            QuotedValueLiteralStartSymbol = new Discriminator("QuotedValueLiteralStartSymbol");
+            QuotedValueLiteralEndSymbol = new Discriminator("QuotedValueLiteralEndSymbol");
+
+            NumberLiteralContent = new Discriminator("NumberLiteralContent");
+            NumberLiteralBasePrefix = new Discriminator("NumberLiteralBasePrefix");
+            NumberLiteralTypeModifierSuffix = new Discriminator("NumberLiteralTypeModifierSuffix");
+
 #if DEBUG && !PCL
             tsRaw.Listeners.Clear();
             tsRaw.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_raw.log"))));
@@ -114,6 +127,19 @@ namespace Sarcasm.Unparsing
         public static Discriminator CommentContent { get; private set; }
         public static Discriminator CommentStartSymbol { get; private set; }
         public static Discriminator CommentEndSymbol { get; private set; }
+
+        public static Discriminator StringLiteralContent { get; private set; }
+        public static Discriminator StringLiteralStartSymbol { get; private set; }
+        public static Discriminator StringLiteralEndSymbol { get; private set; }
+
+        public static Discriminator DataLiteralContent { get; private set; }
+        public static Discriminator DsvLiteralTerminator { get; private set; }
+        public static Discriminator QuotedValueLiteralStartSymbol { get; private set; }
+        public static Discriminator QuotedValueLiteralEndSymbol { get; private set; }
+
+        public static Discriminator NumberLiteralContent { get; private set; }
+        public static Discriminator NumberLiteralBasePrefix { get; private set; }
+        public static Discriminator NumberLiteralTypeModifierSuffix { get; private set; }
 
         #endregion
 

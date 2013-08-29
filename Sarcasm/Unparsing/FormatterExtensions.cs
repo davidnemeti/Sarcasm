@@ -339,6 +339,10 @@ namespace Sarcasm.Unparsing
                             throw new InvalidOperationException(string.Format("Unknown UtokenControl '{0}'", utokenControl.kind));
                     }
                 }
+                else if (utoken == UtokenValueControl.NoWhitespace)
+                {
+                    allowWhitespaceBetweenUtokens = false;
+                }
                 else
                 {
                     if (postProcessHelper.Direction == Unparser.Direction.RightToLeft && IsLineSeparator(utoken) && (formatter.IndentEmptyLines || !IsLineSeparator(prevNotControlUtoken)))

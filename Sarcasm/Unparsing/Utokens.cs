@@ -100,6 +100,11 @@ namespace Sarcasm.Unparsing
 
     public abstract class UtokenValue : UtokenBase
     {
+        public static UtokenValue NoWhitespace()
+        {
+            return UtokenValueControl.NoWhitespace;
+        }
+
         public static UtokenValue CreateText(UnparsableAst reference)
         {
             return new UtokenText(reference);
@@ -130,6 +135,11 @@ namespace Sarcasm.Unparsing
             this.Discriminator = discriminator;
             return this;
         }
+    }
+
+    public class UtokenValueControl : UtokenValue
+    {
+        internal static new readonly UtokenValueControl NoWhitespace = new UtokenValueControl();
     }
 
     public class UtokenText : UtokenValue, Utoken

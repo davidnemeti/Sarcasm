@@ -222,10 +222,27 @@ namespace Sarcasm.GrammarAst
             }
         }
 
-        public string NumberLiteralToText(INumberLiteral numberLiteral, IFormatProvider formatProvider)
+        public IEnumerable<UtokenValue> NumberLiteralToText(UnparsableAst reference, IFormatProvider formatProvider)
         {
+            INumberLiteral numberLiteral = (INumberLiteral)reference.AstValue;
+
+            string prefix = BaseToPrefix(numberLiteral.Base);
             string body = NumberToText(numberLiteral.Value, (int)numberLiteral.Base, formatProvider, numberLiteral.HasExplicitTypeModifier);
-            return BaseToPrefix(numberLiteral.Base) + body + TypeToSuffix(numberLiteral);
+            string suffix = TypeToSuffix(numberLiteral);
+
+            if (!string.IsNullOrEmpty(prefix))
+            {
+                yield return UtokenValue.CreateText(prefix, reference).SetDiscriminator(Formatter.NumberLiteralBasePrefix);
+                yield return UtokenValue.NoWhitespace();
+            }
+
+            yield return UtokenValue.CreateText(body, reference).SetDiscriminator(Formatter.NumberLiteralContent);
+
+            if (!string.IsNullOrEmpty(suffix))
+            {
+                yield return UtokenValue.NoWhitespace();
+                yield return UtokenValue.CreateText(suffix, reference).SetDiscriminator(Formatter.NumberLiteralTypeModifierSuffix);
+            }
         }
 
         public static string NumberToText(object number, int @base, IFormatProvider formatProvider, bool hasExplicitTypeModifier = false)

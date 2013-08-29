@@ -438,6 +438,19 @@ namespace Sarcasm.Unparsing
                 self.SetAsLeave();
                 yield return UtokenValue.CreateText(lexeme, self);
             }
+            else if (self.BnfTerm is StringLiteral)
+            {
+                tsUnparse.Debug("StringLiteral: [\"{0}\"]", self.AstValue.ToString());
+                tsUnparse.Debug("SetAsLeave: {0}", self);
+                self.SetAsLeave();
+
+                var subType = ((StringLiteral)self.BnfTerm)._subtypes.First();
+                yield return UtokenValue.CreateText(subType.Start, self).SetDiscriminator(Formatter.StringLiteralStartSymbol);
+                yield return UtokenValue.NoWhitespace();
+                yield return UtokenValue.CreateText((string)self.AstValue, self).SetDiscriminator(Formatter.StringLiteralContent);
+                yield return UtokenValue.NoWhitespace();
+                yield return UtokenValue.CreateText(subType.End, self).SetDiscriminator(Formatter.StringLiteralEndSymbol);
+            }
             else if (self.BnfTerm is Terminal)
             {
                 tsUnparse.Debug("terminal: [\"{0}\"]", self.AstValue.ToString());

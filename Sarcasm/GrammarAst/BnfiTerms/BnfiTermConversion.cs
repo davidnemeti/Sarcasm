@@ -185,38 +185,12 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversion<string> IntroIdentifier(IdentifierTerminal identifierTerminal)
         {
-            return Intro<string>(identifierTerminal, (context, parseNode) => parseNode.FindTokenAndGetText(), IdentityFunction, astForChild: false);
+            return Intro<string>(identifierTerminal, (context, parseNode) => (string)parseNode.FindToken().Value, IdentityFunction, astForChild: false);
         }
 
         public static BnfiTermConversion<string> IntroStringLiteral(StringLiteral stringLiteral)
         {
-            var bnfiTermConversion = Intro<string>(
-                stringLiteral,
-                (context, parseNode) =>
-                {
-                    string quotedStr = parseNode.FindTokenAndGetText();
-                    var subType = stringLiteral._subtypes.First(_subType => quotedStr.StartsWith(_subType.Start) && quotedStr.EndsWith(_subType.End));
-                    return quotedStr
-                        .Remove(quotedStr.Length - subType.End.Length)
-                        .Remove(0, subType.Start.Length);
-                },
-//                NoUnparseByInverse<string>(),
-                str =>
-                {
-                    var subType = stringLiteral._subtypes.First();
-                    return subType.Start + str + subType.End;
-                },
-                astForChild: false
-                );
-
-            //bnfiTermConversion.UtokenizerForUnparse =
-            //    (formatProvider, reference, astValue) =>
-            //    {
-            //        var subType = stringLiteral._subtypes.First();
-            //        return new UtokenValue[] { UtokenValue.CreateText(subType.Start), UtokenValue.CreateText(reference), UtokenValue.CreateText(subType.End) };
-            //    };
-
-            return bnfiTermConversion;
+            return Intro<string>(stringLiteral, (context, parseNode) => (string)parseNode.FindToken().Value, IdentityFunction, astForChild: false);
         }
 
         public static BnfiTermConversion<TNumberLiteral> IntroNumberLiteral<TNumberLiteral>(NumberLiteral numberLiteral, NumberLiteralInfo numberLiteralInfo)
@@ -235,9 +209,7 @@ namespace Sarcasm.GrammarAst
                 astForChild: false
                 );
 
-            _numberLiteral.UtokenizerForUnparse =
-                (formatProvider, reference, astValue) =>
-                    new[] { UtokenValue.CreateText(numberLiteralInfo.NumberLiteralToText(astValue, formatProvider), reference) };
+            _numberLiteral.UtokenizerForUnparse = (formatProvider, reference, astValue) => numberLiteralInfo.NumberLiteralToText(reference, formatProvider);
 
             return _numberLiteral.MarkLiteral();
         }
