@@ -1,8 +1,8 @@
 #Sarcasm
 
-Sarcasm is an SDK for creating typesafe and typeless domain bound grammar and using the general unparser.
+Sarcasm is an SDK for creating typesafe domain bound grammars. It also has a general unparser.
 
-It provides the following features:
+Sarcasm provides the following features:
 
   - Index-free AST building using domain-grammar bindings.
   - Typesafe grammar and typesafe AST building using domain-grammar bindings.
