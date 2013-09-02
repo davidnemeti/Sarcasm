@@ -18,7 +18,9 @@ binaryExpression.Rule =
     ;
 ```
 
-For more information see the [Introduction](https://github.com/davidnemeti/Sarcasm/wiki/Introduction).
+For more information see the [Documentation](https://github.com/davidnemeti/Sarcasm/wiki). You can start with [Introduction](https://github.com/davidnemeti/Sarcasm/wiki/Introduction).
+
+You can download the latest version of Sarcasm SDK from the [Downloads directory](Downloads).
 
 ===
 
