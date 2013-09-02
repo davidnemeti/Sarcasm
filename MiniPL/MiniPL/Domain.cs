@@ -160,7 +160,7 @@ namespace MiniPL
 #else
     public class If : Statement
     {
-        public BoolExpression Condition { get; set; }
+        public DE.Expression Condition { get; set; }
         public Statement Body { get; set; }
     }
 
