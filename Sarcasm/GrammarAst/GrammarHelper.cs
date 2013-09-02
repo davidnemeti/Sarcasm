@@ -377,9 +377,10 @@ namespace Sarcasm.GrammarAst
             return BnfiTermCopy.Copy(bnfiTerm);
         }
 
-        public static BnfiTermCopy<T> Copy<T>(this IBnfiTermCopyable<T> bnfiTerm)
+        public static BnfiTermCopy<TDerived> Copy<TBase, TDerived>(this IBnfiTermCopyable<TBase> bnfiTerm, IBnfiTerm<TDerived> dummyBnfiTerm)
+            where TDerived : TBase
         {
-            return BnfiTermCopy.Copy<T>(bnfiTerm);
+            return BnfiTermCopy.Copy(bnfiTerm, dummyBnfiTerm);
         }
 
         #endregion

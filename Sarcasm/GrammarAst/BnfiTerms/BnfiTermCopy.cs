@@ -58,9 +58,16 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermCopyTL(bnfiTerm.DomainType, bnfiTerm.AsBnfTerm());
         }
 
-        public static BnfiTermCopy<T> Copy<T>(IBnfiTermCopyable<T> bnfiTerm)
+        public static BnfiTermCopy<TDerived> Copy<TBase, TDerived>(IBnfiTermCopyable<TBase> bnfiTerm)
+            where TDerived : TBase
         {
-            return new BnfiTermCopy<T>(bnfiTerm.AsBnfTerm());
+            return new BnfiTermCopy<TDerived>(bnfiTerm.AsBnfTerm());
+        }
+
+        public static BnfiTermCopy<TDerived> Copy<TBase, TDerived>(IBnfiTermCopyable<TBase> bnfiTerm, IBnfiTerm<TDerived> dummyBnfiTerm)
+            where TDerived : TBase
+        {
+            return Copy<TBase, TDerived>(bnfiTerm);
         }
 
         private static string GetName(Type domainType, BnfTerm bnfTerm)
