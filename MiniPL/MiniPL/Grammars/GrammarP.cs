@@ -387,6 +387,7 @@ namespace MiniPL.Grammars
                 B.While,
                 B.For,
                 B.If,
+//                B.IfElse,
                 B.FunctionCall + B.SEMICOLON,
                 B.Write + B.SEMICOLON,
                 B.WriteLn + B.SEMICOLON,
@@ -451,6 +452,7 @@ namespace MiniPL.Grammars
                 + B.Statement.BindTo(B.For, t => t.Body)
                 ;
 
+#if true
             B.If.Rule =
                 B.IF
                 + B.LEFT_PAREN
@@ -460,6 +462,23 @@ namespace MiniPL.Grammars
                 + B.Statement.BindTo(B.If, t => t.Body)
                 + (B.ELSE + B.Statement).QRef().BindTo(B.If, t => t.ElseBody)
                 ;
+#else
+            B.If.Rule =
+                B.IF
+                + B.LEFT_PAREN
+                + B.Expression.BindTo(B.If, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.THEN
+                + B.Statement.BindTo(B.If, t => t.Body)
+                ;
+
+            B.IfElse.Rule =
+                B.If.Copy(B.IfElse)
+                + PreferShiftHere()
+                + B.ELSE
+                + B.Statement.BindTo(B.IfElse, t => t.ElseBody)
+                ;
+#endif
 
             B.FunctionCall.Rule =
                 B.FunctionReference.BindTo(B.FunctionCall, t => t.FunctionReference)
