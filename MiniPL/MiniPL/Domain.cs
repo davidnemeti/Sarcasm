@@ -19,6 +19,8 @@
 */
 #endregion
 
+//#define SEPARATE_IFELSE
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -149,7 +151,18 @@ namespace MiniPL
             public IList<DE.Expression> Arguments;
         }
 
-#if true
+#if SEPARATE_IFELSE
+        public class If : Statement
+        {
+            public DE.Expression Condition { get; set; }
+            public Statement Body { get; set; }
+        }
+
+        public class IfElse : If
+        {
+            public Statement ElseBody { get; set; }
+        }
+#else
         public class If : Statement
         {
             public DE.Expression Condition { get; set; }
@@ -157,17 +170,6 @@ namespace MiniPL
             [Optional]
             public Statement ElseBody { get; set; }
         }
-#else
-    public class If : Statement
-    {
-        public DE.Expression Condition { get; set; }
-        public Statement Body { get; set; }
-    }
-
-    public class IfElse : If
-    {
-        public Statement ElseBody { get; set; }
-    }
 #endif
 
         public class FunctionCall : Statement, DE.Expression

@@ -42,7 +42,7 @@ namespace Sarcasm.GrammarAst
             {
                 // "this" BnfiTermCopy is not an independent bnfTerm, just a syntax magic for BnfiTermRecord<TType> (we were called by the Copy method)
                 this.IsContractible = true;
-                this.RuleRaw = bnfTerm.ToBnfExpression();
+                this.RuleRaw = bnfTerm.ToBnfExpression() + GrammarHelper.ReduceHere();
             }
             else
             {

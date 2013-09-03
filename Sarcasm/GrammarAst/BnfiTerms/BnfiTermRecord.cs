@@ -180,7 +180,7 @@ namespace Sarcasm.GrammarAst
 
                     // 1. memberwise copy for BnfiTermCopy items
                     foreach (var parseChildValue in parseChildValues)
-                        if (!IsMemberAtParse(parseChildValue.ReferredBnfTerm) && astValue.GetType().IsAssignableFrom(parseChildValue.Value.GetType()))
+                        if (!IsMemberAtParse(parseChildValue.ReferredBnfTerm) && IsMemberwiseCopyable(astValue, parseChildValue.Value))
                             MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
 
                     // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
@@ -203,6 +203,11 @@ namespace Sarcasm.GrammarAst
             };
         }
 
+        protected static bool IsMemberwiseCopyable(object destination, object source)
+        {
+            return source.GetType().IsAssignableFrom(destination.GetType());
+        }
+
         protected static void MemberwiseCopyExceptNullValues(object destination, object source)
         {
             MemberwiseCopy(destination, source, fieldValue => fieldValue != null);
@@ -218,7 +223,7 @@ namespace Sarcasm.GrammarAst
             Type destinationType = destination.GetType();
             Type sourceType = source.GetType();
 
-            if (!destinationType.IsAssignableFrom(sourceType))
+            if (!IsMemberwiseCopyable(destination, source))
                 throw new ArgumentException(string.Format("{0} is not assignable from {1}", destinationType.Name, sourceType.Name), "source");
 
             foreach (FieldInfo fieldInfo in GetAllFields(sourceType))

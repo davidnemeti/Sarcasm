@@ -19,6 +19,8 @@
 */
 #endregion
 
+//#define SEPARATE_IFELSE
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -246,7 +248,9 @@ namespace MiniPL.Grammars
             public readonly BnfiTermRecord<D.While> While = new BnfiTermRecord<D.While>();
             public readonly BnfiTermRecord<D.For> For = new BnfiTermRecord<D.For>();
             public readonly BnfiTermRecord<D.If> If = new BnfiTermRecord<D.If>();
-//            public readonly BnfiTermRecord<D.IfElse> IfElse = new BnfiTermRecord<D.IfElse>();
+#if SEPARATE_IFELSE
+            public readonly BnfiTermRecord<D.IfElse> IfElse = new BnfiTermRecord<D.IfElse>();
+#endif
             public readonly BnfiTermRecord<D.Return> Return = new BnfiTermRecord<D.Return>();
             public readonly BnfiTermRecord<D.Assignment> Assignment = new BnfiTermRecord<D.Assignment>();
             public readonly BnfiTermConversion<Reference<D.Function>> FunctionReference = new BnfiTermConversion<Reference<D.Function>>();
@@ -387,7 +391,9 @@ namespace MiniPL.Grammars
                 B.While,
                 B.For,
                 B.If,
-//                B.IfElse,
+#if SEPARATE_IFELSE
+                B.IfElse,
+#endif
                 B.FunctionCall + B.SEMICOLON,
                 B.Write + B.SEMICOLON,
                 B.WriteLn + B.SEMICOLON,
@@ -452,17 +458,7 @@ namespace MiniPL.Grammars
                 + B.Statement.BindTo(B.For, t => t.Body)
                 ;
 
-#if true
-            B.If.Rule =
-                B.IF
-                + B.LEFT_PAREN
-                + B.Expression.BindTo(B.If, t => t.Condition)
-                + B.RIGHT_PAREN
-                + B.THEN
-                + B.Statement.BindTo(B.If, t => t.Body)
-                + (B.ELSE + B.Statement).QRef().BindTo(B.If, t => t.ElseBody)
-                ;
-#else
+#if SEPARATE_IFELSE
             B.If.Rule =
                 B.IF
                 + B.LEFT_PAREN
@@ -474,9 +470,18 @@ namespace MiniPL.Grammars
 
             B.IfElse.Rule =
                 B.If.Copy(B.IfElse)
-                + PreferShiftHere()
                 + B.ELSE
                 + B.Statement.BindTo(B.IfElse, t => t.ElseBody)
+                ;
+#else
+            B.If.Rule =
+                B.IF
+                + B.LEFT_PAREN
+                + B.Expression.BindTo(B.If, t => t.Condition)
+                + B.RIGHT_PAREN
+                + B.THEN
+                + B.Statement.BindTo(B.If, t => t.Body)
+                + (B.ELSE + B.Statement).QRef().BindTo(B.If, t => t.ElseBody)
                 ;
 #endif
 
