@@ -219,7 +219,7 @@ namespace Sarcasm.GrammarAst
             get
             {
                 if (empty == null)
-                    empty = base.Empty.NoAst(valueCreatorFromNoAst: null);
+                    empty = base.Empty.NoAst_(valueCreatorFromNoAst: null);
 
                 return empty;
             }
@@ -405,6 +405,11 @@ namespace Sarcasm.GrammarAst
         public static ValueConverter<TDIn, TDOut> NoUnparseByInverse<TDIn, TDOut>()
         {
             return BnfiTermConversion.NoUnparseByInverse<TDIn, TDOut>();
+        }
+
+        public static ValueCreatorFromNoAst<TD> NoUnparseByInverseCreatorFromNoAst<TD>()
+        {
+            return BnfiTermConversion.NoUnparseByInverseCreatorFromNoAst<TD>();
         }
 
         public static UnparseHint SetUnparsePriority(ChildrenPriorityGetter getChildrenPriority)

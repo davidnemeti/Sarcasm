@@ -623,19 +623,30 @@ namespace Sarcasm.GrammarAst
                 throw new UnparseException("Cannot unparse. Inverse value converter parameter for unparse is missing");
             };
 
+        private static readonly ValueCreatorFromNoAst<object> noUnparseByInverseCreatorFromNoAst =
+            () =>
+            {
+                throw new UnparseException("Cannot unparse. Inverse \"value creator from no ast\" parameter for unparse is missing");
+            };
+
         public static ValueConverter<object, object> NoUnparseByInverse()
         {
             return noUnparseByInverse;
         }
 
-        public static ValueConverter<T, object> NoUnparseByInverse<T>()
+        public static ValueConverter<TD, object> NoUnparseByInverse<TD>()
         {
-            return CastValueConverter<object, object, T, object>(noUnparseByInverse);
+            return CastValueConverter<object, object, TD, object>(noUnparseByInverse);
         }
 
         public static ValueConverter<TDIn, TDOut> NoUnparseByInverse<TDIn, TDOut>()
         {
             return CastValueConverter<object, object, TDIn, TDOut>(noUnparseByInverse);
+        }
+
+        public static ValueCreatorFromNoAst<TD> NoUnparseByInverseCreatorFromNoAst<TD>()
+        {
+            return CastValueCreatorFromNoAst<object, TD>(noUnparseByInverseCreatorFromNoAst);
         }
 
         internal const string messageForMissingUnparseValueConverter = "Value converter parameter for unparse is missing. "
@@ -663,6 +674,11 @@ namespace Sarcasm.GrammarAst
         protected static ValueConverter<TInTo, TOutTo> CastValueConverter<TInFrom, TOutFrom, TInTo, TOutTo>(ValueConverter<TInFrom, TOutFrom> valueConverter)
         {
             return obj => (TOutTo)(object)valueConverter((TInFrom)(object)obj);
+        }
+
+        protected static ValueCreatorFromNoAst<TTo> CastValueCreatorFromNoAst<TFrom, TTo>(ValueCreatorFromNoAst<TFrom> valueCreator)
+        {
+            return () => (TTo)(object)valueCreator();
         }
 
         protected static ValueUtokenizer<object> CastUtokenizerToObject<T>(ValueUtokenizer<T> utokenizer)

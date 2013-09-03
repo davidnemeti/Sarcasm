@@ -58,7 +58,7 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermNoAst(keyTerm, valueCreatorFromNoAst: null);
         }
 
-        public static BnfiTermNoAst For(BnfTerm bnfTerm, ValueCreatorFromNoAst<object> valueCreatorFromNoAst)
+        public static BnfiTermNoAst For_(BnfTerm bnfTerm, ValueCreatorFromNoAst<object> valueCreatorFromNoAst)
         {
             return new BnfiTermNoAst(bnfTerm, valueCreatorFromNoAst);
         }
