@@ -5,10 +5,10 @@ Sarcasm is an SDK for creating typesafe domain bound grammars. It also has a gen
 Sarcasm provides the following features:
 
   - Index-free AST building using domain-grammar bindings.
-  - Typesafe grammar and typesafe AST building using domain-grammar bindings.
-  - Automatic unparsing provided by the general unparser based on domain bound grammar.
+  - Typesafe AST building using typesafe grammar.
+  - Automatic unparsing provided by the general unparser based on the grammar.
 
-In a domain bound grammar you can write this e.g.:
+In a Sarcasm's domain-bound grammar you can write this e.g.:
 
 ```
 binaryExpression.Rule =
