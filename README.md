@@ -10,7 +10,7 @@ Sarcasm provides the following features:
 
 In a Sarcasm's domain-bound grammar you can write this e.g.:
 
-```
+```c#
 binaryExpression.Rule =
     expression.BindTo(binaryExpression, t => t.Term1)
     + binaryOperator.BindTo(binaryExpression, t => t.Op)
