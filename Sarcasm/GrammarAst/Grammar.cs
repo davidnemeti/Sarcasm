@@ -412,6 +412,11 @@ namespace Sarcasm.GrammarAst
             return BnfiTermConversion.NoUnparseByInverseCreatorFromNoAst<TD>();
         }
 
+        public static ValueCreatorFromNoAst<object> NoUnparseByInverseCreatorFromNoAst()
+        {
+            return BnfiTermConversion.NoUnparseByInverseCreatorFromNoAst();
+        }
+
         public static UnparseHint SetUnparsePriority(ChildrenPriorityGetter getChildrenPriority)
         {
             return new UnparseHint(getChildrenPriority);

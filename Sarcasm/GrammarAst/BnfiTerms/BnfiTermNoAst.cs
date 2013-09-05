@@ -63,6 +63,12 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermNoAst(bnfTerm, valueCreatorFromNoAst);
         }
 
+        [Obsolete(BnfiTermConversion.messageForMissingUnparseValueConverter, BnfiTermConversion.errorForMissingUnparseValueConverter)]
+        public static BnfiTermNoAst For_(BnfTerm bnfTerm)
+        {
+            return new BnfiTermNoAst(bnfTerm, BnfiTermConversion.NoUnparseByInverseCreatorFromNoAst<object>());
+        }
+
         public static BnfiTermNoAst For(BnfiTermKeyTerm bnfiTermKeyTerm)
         {
             return new BnfiTermNoAst(bnfiTermKeyTerm, valueCreatorFromNoAst: null);
@@ -71,6 +77,12 @@ namespace Sarcasm.GrammarAst
         public static BnfiTermNoAst For<T>(IBnfiTerm<T> bnfTerm, ValueCreatorFromNoAst<T> valueCreatorFromNoAst)
         {
             return new BnfiTermNoAst(bnfTerm.AsBnfTerm(), CastValueCreator(valueCreatorFromNoAst));
+        }
+
+        [Obsolete(BnfiTermConversion.messageForMissingUnparseValueConverter, BnfiTermConversion.errorForMissingUnparseValueConverter)]
+        public static BnfiTermNoAst For<T>(IBnfiTerm<T> bnfTerm)
+        {
+            return new BnfiTermNoAst(bnfTerm.AsBnfTerm(), BnfiTermConversion.NoUnparseByInverseCreatorFromNoAst<object>());
         }
 
         #region Unparse

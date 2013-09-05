@@ -649,6 +649,11 @@ namespace Sarcasm.GrammarAst
             return CastValueCreatorFromNoAst<object, TD>(noUnparseByInverseCreatorFromNoAst);
         }
 
+        public static ValueCreatorFromNoAst<object> NoUnparseByInverseCreatorFromNoAst()
+        {
+            return noUnparseByInverseCreatorFromNoAst;
+        }
+
         internal const string messageForMissingUnparseValueConverter = "Value converter parameter for unparse is missing. "
             + "You should do any of the followings: [ "
             + "1. Specify a value converter for unparse in order to get a functional unparse behavior | "
