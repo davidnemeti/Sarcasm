@@ -295,7 +295,7 @@ namespace MiniPL.Grammars
                 ;
 
             B.FunctionReference.Rule =
-                B.NameRef.ConvertValue(_nameRef => ReferenceFactory.Get<D.Function>(_nameRef), _variableReference => _variableReference.NameRef)
+                B.NameRef.ConvertValue(_nameRef => ReferenceFactory.Get<D.Function>(_nameRef), _functionReference => _functionReference.NameRef)
                 ;
 
             B.StatementList.Rule =
