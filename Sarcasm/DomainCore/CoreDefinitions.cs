@@ -66,7 +66,8 @@ namespace Sarcasm.DomainCore
             this.Value = value;
         }
 
-        public string Value { get; private set; }
+        // internal setter (instead of private) for parsers of universal grammars
+        public string Value { get; internal set; }
 
         public override string ToString()
         {
