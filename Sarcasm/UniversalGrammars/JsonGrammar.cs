@@ -163,6 +163,8 @@ namespace Sarcasm.UniversalGrammars
 
         #region Helpers
 
+        private const BindingFlags bindingAttrForMembers = BindingFlags.Public | BindingFlags.Instance;
+
         private object KeyValuePairsToObject(IEnumerable<KeyValuePair<string, object>> keyValuePairs)
         {
             var typeKeyValue = keyValuePairs.First();
@@ -263,7 +265,19 @@ namespace Sarcasm.UniversalGrammars
                 if (!IsCollectionType(type))
                     throw new AstException(string.Format("{0} for collection style is only possible for types that implements IList or ICollection<>", COLLECTION_VALUES_KEYWORD));
 
-                dynamic array = Activator.CreateInstance(type);
+                dynamic array;
+                try
+                {
+#if PCL
+                    array = ActivatorEx.CreateInstance(type, nonPublic: true);
+#else
+                    array = Activator.CreateInstance(type, nonPublic: true);
+#endif
+                }
+                catch (MissingMemberException)
+                {
+                    throw new AstException(string.Format("Type '{0}' does not have a parameterless public or internal constructor", type.FullName));
+                }
 
                 foreach (dynamic element in ((Array)discriminatorKeyValue.Value).Elements)
                     array.Add(element);
@@ -272,18 +286,26 @@ namespace Sarcasm.UniversalGrammars
             }
             else
             {
+                object obj;
+                try
+                {
 #if PCL
-                object obj = Activator.CreateInstance(type);
+                    obj = ActivatorEx.CreateInstance(type, nonPublic: true);
 #else
-                object obj = Activator.CreateInstance(type, nonPublic: true);
+                    obj = Activator.CreateInstance(type, nonPublic: true);
 #endif
+                }
+                catch (MissingMemberException)
+                {
+                    throw new AstException(string.Format("Type '{0}' does not have a parameterless public or internal constructor", type.FullName));
+                }
 
                 foreach (var keyValuePair in keyValuePairs.Skip(1))
                 {
                     string fieldName = keyValuePair.Key;
                     object value = keyValuePair.Value;
 
-                    MemberInfo field = (MemberInfo)type.GetProperty(fieldName) ?? (MemberInfo)type.GetField(fieldName);
+                    MemberInfo field = (MemberInfo)type.GetProperty(fieldName, bindingAttrForMembers) ?? (MemberInfo)type.GetField(fieldName, bindingAttrForMembers);
 
                     if (field is PropertyInfo)
                         ((PropertyInfo)field).SetValue(obj, value, index: null);
@@ -329,10 +351,10 @@ namespace Sarcasm.UniversalGrammars
             {
                 var keyValuePairs =
                     Enumerable.Concat(
-                        type.GetFields()
+                        type.GetFields(bindingAttrForMembers)
                             .Select(field => KeyValuePair.Create(field.Name, field.GetValue(obj)))
                         ,
-                        type.GetProperties()
+                        type.GetProperties(bindingAttrForMembers)
                             .Where(property => !IsNonSerializableMemberOfReferenceType(obj, property))
                             .Select(property => KeyValuePair.Create(property.Name, property.GetValue(obj, index: null)))
                     )

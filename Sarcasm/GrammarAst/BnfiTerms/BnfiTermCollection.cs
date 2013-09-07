@@ -34,6 +34,7 @@ using Irony.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
 using Sarcasm.DomainCore;
+using Sarcasm.Parsing;
 
 namespace Sarcasm.GrammarAst
 {
@@ -210,13 +211,25 @@ namespace Sarcasm.GrammarAst
              * an IList, ICollection, etc., so we are just working here with an object type and require that the collection has an 'Add' method during runtime.
              * */
             SetNodeCreator<object, object>(
-#if PCL
-                () => Activator.CreateInstance(DomainCollectionType),
-#else
-                () => Activator.CreateInstance(DomainCollectionType, nonPublic: true),
-#endif
+                CreateInstance,
                 (collection, element) => addMethod.Invoke(obj: collection, parameters: new[] { element })
                 );
+        }
+
+        protected object CreateInstance()
+        {
+            try
+            {
+#if PCL
+                return ActivatorEx.CreateInstance(DomainCollectionType, nonPublic: true);
+#else
+                return Activator.CreateInstance(DomainCollectionType, nonPublic: true);
+#endif
+            }
+            catch (MissingMemberException)
+            {
+                throw new AstException(string.Format("Type '{0}' does not have a parameterless public or internal constructor", DomainCollectionType.FullName));
+            }
         }
 
         protected void SetNodeCreator<TCollectionStaticType, TElementStaticType>(Func<TCollectionStaticType> createCollection, Action<TCollectionStaticType, TElementStaticType> addElementToCollection)

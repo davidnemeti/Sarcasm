@@ -30,6 +30,26 @@ using System.Reflection;
 namespace Sarcasm
 {
 #if PCL
+    public static class ActivatorEx
+    {
+        public static object CreateInstance(Type type, bool nonPublic = false)
+        {
+            BindingFlags bindingAttr = nonPublic
+                ? BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance
+                : BindingFlags.Public | BindingFlags.Instance;
+
+            try
+            {
+                var constructorInfo = type.GetConstructors(bindingAttr).First(_constructorInfo => _constructorInfo.GetParameters().Length == 0);
+                return constructorInfo.Invoke(parameters: null);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new MissingMemberException(string.Format("Type '{0}' does not have a parameterless constructor", type.FullName), e);
+            }
+        }
+    }
+
     public static class Extensions
     {
         public static TAttribute GetCustomAttribute<TAttribute>(this Type type)

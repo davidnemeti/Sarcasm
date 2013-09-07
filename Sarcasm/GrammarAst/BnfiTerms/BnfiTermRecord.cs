@@ -159,11 +159,19 @@ namespace Sarcasm.GrammarAst
             {
                 try
                 {
+                    object astValue;
+                    try
+                    {
 #if PCL
-                    object astValue = Activator.CreateInstance(domainType);
+                        astValue = ActivatorEx.CreateInstance(domainType, nonPublic: true);
 #else
-                    object astValue = Activator.CreateInstance(domainType, nonPublic: true);
+                        astValue = Activator.CreateInstance(domainType, nonPublic: true);
 #endif
+                    }
+                    catch (MissingMemberException)
+                    {
+                        throw new AstException(string.Format("Type '{0}' does not have a parameterless public or internal constructor", domainType.FullName));
+                    }
 
                     var parseChildBnfTerms = parseTreeNode.ChildNodes.Select(childParseTreeNode => childParseTreeNode.Term).ToList();
 
