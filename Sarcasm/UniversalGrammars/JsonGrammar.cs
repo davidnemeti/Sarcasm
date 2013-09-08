@@ -462,6 +462,8 @@ namespace Sarcasm.UniversalGrammars
                 ForeColorOfValue = Color.Black;
                 ForeColorOfLiteral = Color.Violet;
                 ForeColorOfComment = Color.DarkGray;
+
+                MultiLineCommentDecorator = " *";
             }
 
             protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
