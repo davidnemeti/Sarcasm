@@ -519,6 +519,11 @@ namespace Sarcasm.Utility
             return candidateValues.Contains(value);
         }
 
+        public static bool EqualToAny<T>(this T value, IEnumerable<T> candidateValues)
+        {
+            return candidateValues.Contains(value);
+        }
+
         #endregion
 
         #region Trace and Debug

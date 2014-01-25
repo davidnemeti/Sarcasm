@@ -59,6 +59,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "License", "License", "{0791
 		License\License.txt = License\License.txt
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasmizer", "Sarcasmizer\Sarcasmizer.csproj", "{2614618C-7627-46AD-AD0C-EAA1A883A914}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -109,6 +111,10 @@ Global
 		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E2EC38B-9F22-447F-B5C7-919A03A9BFFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
