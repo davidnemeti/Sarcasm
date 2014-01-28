@@ -444,10 +444,22 @@ namespace Sarcasm.Unparsing
                 tsUnparse.Debug("SetAsLeave: {0}", self);
                 self.SetAsLeave();
 
-                var subType = ((StringLiteral)self.BnfTerm)._subtypes.First();
+                var stringLiteral = ((StringLiteral)self.BnfTerm);
+                var subType = stringLiteral._subtypes.First();
 
                 yield return UtokenValue.CreateText(subType.Start, self).SetDiscriminator(Formatter.StringLiteralStartSymbol);
                 yield return UtokenValue.NoWhitespace();
+
+                var stringContent = self.AstValue.ToString();
+
+                if (subType.Flags.HasFlag(StringOptions.AllowsDoubledQuote))
+                    stringContent = stringContent.Replace(subType.End, subType.End + subType.End);
+
+                else if (!subType.Flags.HasFlag(StringOptions.NoEscapes))
+                    stringContent = stringContent.Replace(subType.End, stringLiteral.EscapeChar + subType.End);
+
+                else
+                    throw new UnparseException(string.Format("string literal contains end-symbol but StringOptions.AllowsDoubledQuote is turned off and StringOptions.NoEscapes is turned on: {0}", stringContent));
 
                 yield return UtokenValue.CreateText(self).SetDiscriminator(Formatter.StringLiteralContent);
 
