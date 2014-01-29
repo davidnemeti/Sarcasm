@@ -461,7 +461,7 @@ namespace Sarcasm.Unparsing
                 else
                     throw new UnparseException(string.Format("string literal contains end-symbol but StringOptions.AllowsDoubledQuote is turned off and StringOptions.NoEscapes is turned on: {0}", stringContent));
 
-                yield return UtokenValue.CreateText(self).SetDiscriminator(Formatter.StringLiteralContent);
+                yield return UtokenValue.CreateText(stringContent, self).SetDiscriminator(Formatter.StringLiteralContent);
 
                 yield return UtokenValue.NoWhitespace();
                 yield return UtokenValue.CreateText(subType.End, self).SetDiscriminator(Formatter.StringLiteralEndSymbol);
