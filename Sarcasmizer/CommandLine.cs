@@ -57,7 +57,9 @@ namespace Sarcasmizer
 
         private string ToString(ExampleParameter parameter)
         {
-            return string.Format("{0}{1} {2}", LongNamePrefix, parameter.Parameter.LongName, parameter.Parameter.ValueToString(parameter.Value, FormatProvider));
+            return object.Equals(parameter.Value, true)
+                ? string.Format("{0}{1}", LongNamePrefix, parameter.Parameter.LongName)
+                : string.Format("{0}{1} {2}", LongNamePrefix, parameter.Parameter.LongName, parameter.Parameter.ValueToString(parameter.Value, FormatProvider));
         }
 
         private void ShowHelp(TextWriter tw, IEnumerable<IParameter> parameters, int depth)
