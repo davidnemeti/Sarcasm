@@ -170,9 +170,19 @@ namespace Sarcasmizer
             }
         }
 
-        private string GetParameterName(IParameter parameter)
+        private string GetParameterName(IParameter parameter, string valueName = "")
         {
-            return string.Format("{0}{1} / {2}{3}", LongNamePrefix, parameter.LongName, ShortNamePrefix, parameter.ShortName);
+            if (parameter.LongName != null && parameter.ShortName != null)
+                return string.Format("{0}{1}{4} / {2}{3}{4}", LongNamePrefix, parameter.LongName, ShortNamePrefix, parameter.ShortName, valueName);
+
+            else if (parameter.LongName != null)
+                return string.Format("{0}{1}{2}", LongNamePrefix, parameter.LongName, valueName);
+
+            else if (parameter.ShortName != null)
+                return string.Format("{0}{1}{2}", ShortNamePrefix, parameter.ShortName, valueName);
+
+            else
+                throw new ApplicationException("Neither longname nor shortname specified for parameter");
         }
 
         private string GetParameterNameWithValue(IParameter parameter)
@@ -188,7 +198,7 @@ namespace Sarcasmizer
                 valueName = " " + valueName;
             }
 
-            return string.Format("{0}{1}{4} / {2}{3}{4}", LongNamePrefix, parameter.LongName, ShortNamePrefix, parameter.ShortName, valueName);
+            return GetParameterName(parameter, valueName);
         }
     }
 }
