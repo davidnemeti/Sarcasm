@@ -135,7 +135,6 @@ namespace Sarcasmizer
             }
 
             HandleParameterIfWithoutValue(currentParameter);
-            HandleNonSpecifiedBoolParameters(possibleParameters);
 
             var missingRequiredParameters = possibleParameters.Where(parameter => !parameter.IsOptional && !parameter.IsSpecified);
 
@@ -168,15 +167,6 @@ namespace Sarcasmizer
                     ((Parameter<bool>)parameter).SetValue(true);
                 else
                     throw new ApplicationException(string.Format("Parameter '{0}' needs a value", GetParameterName(parameter)));
-            }
-        }
-
-        private void HandleNonSpecifiedBoolParameters(IEnumerable<IParameter> parameters)
-        {
-            foreach (var parameter in parameters)
-            {
-                if (parameter.Type == typeof(bool) && !parameter.IsList && !parameter.IsSpecified)
-                    ((Parameter<bool>)parameter).SetValue(false);
             }
         }
 
