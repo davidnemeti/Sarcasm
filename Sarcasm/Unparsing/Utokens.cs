@@ -90,6 +90,34 @@ namespace Sarcasm.Unparsing
         public Discriminator Discriminator { get; protected set; }
     }
 
+    public abstract class UtokenInsert : UtokenBase
+    {
+        public static UtokenInsert NewLine()
+        {
+            return UtokenWhitespace.NewLine();
+        }
+
+        public static UtokenInsert EmptyLine()
+        {
+            return UtokenWhitespace.EmptyLine();
+        }
+
+        public static UtokenInsert Space()
+        {
+            return UtokenWhitespace.Space();
+        }
+
+        public static UtokenInsert Tab()
+        {
+            return UtokenWhitespace.Tab();
+        }
+
+        public static UtokenInsert NoWhitespace()
+        {
+            return UtokenControl.NoWhitespace;
+        }
+    }
+
     public interface Utoken
     {
         string ToText(Formatter formatter);
@@ -98,7 +126,7 @@ namespace Sarcasm.Unparsing
         Discriminator Discriminator { get; }
     }
 
-    public abstract class UtokenValue : UtokenBase
+    public abstract class UtokenValue : UtokenInsert
     {
         public static UtokenValue NoWhitespace()
         {
@@ -220,34 +248,6 @@ namespace Sarcasm.Unparsing
         public override string ToString()
         {
             return ToString("UtokenToUnparse: " + UnparsableAst.ToString());
-        }
-    }
-
-    public abstract class UtokenInsert : UtokenBase
-    {
-        public static UtokenInsert NewLine()
-        {
-            return UtokenWhitespace.NewLine();
-        }
-
-        public static UtokenInsert EmptyLine()
-        {
-            return UtokenWhitespace.EmptyLine();
-        }
-
-        public static UtokenInsert Space()
-        {
-            return UtokenWhitespace.Space();
-        }
-
-        public static UtokenInsert Tab()
-        {
-            return UtokenWhitespace.Tab();
-        }
-
-        public static UtokenInsert NoWhitespace()
-        {
-            return UtokenControl.NoWhitespace;
         }
     }
 
