@@ -452,14 +452,17 @@ namespace Sarcasm.Unparsing
 
                 var stringContent = self.AstValue.ToString();
 
-                if (subType.Flags.HasFlag(StringOptions.AllowsDoubledQuote))
-                    stringContent = stringContent.Replace(subType.End, subType.End + subType.End);
+                if (stringContent.Contains(subType.End))
+                {
+                    if (subType.Flags.HasFlag(StringOptions.AllowsDoubledQuote))
+                        stringContent = stringContent.Replace(subType.End, subType.End + subType.End);
 
-                else if (!subType.Flags.HasFlag(StringOptions.NoEscapes))
-                    stringContent = stringContent.Replace(subType.End, stringLiteral.EscapeChar + subType.End);
+                    else if (!subType.Flags.HasFlag(StringOptions.NoEscapes))
+                        stringContent = stringContent.Replace(subType.End, stringLiteral.EscapeChar + subType.End);
 
-                else
-                    throw new UnparseException(string.Format("string literal contains end-symbol but StringOptions.AllowsDoubledQuote is turned off and StringOptions.NoEscapes is turned on: {0}", stringContent));
+                    else
+                        throw new UnparseException(string.Format("string literal contains end-symbol but StringOptions.AllowsDoubledQuote is turned off and StringOptions.NoEscapes is turned on: {0}", stringContent));
+                }
 
                 yield return UtokenValue.CreateText(stringContent, self).SetDiscriminator(Formatter.StringLiteralContent);
 
