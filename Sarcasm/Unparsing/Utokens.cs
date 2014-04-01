@@ -128,7 +128,7 @@ namespace Sarcasm.Unparsing
 
     public abstract class UtokenValue : UtokenInsert
     {
-        public static UtokenValue NoWhitespace()
+        public new static UtokenValue NoWhitespace()
         {
             return UtokenValueControl.NoWhitespace;
         }
