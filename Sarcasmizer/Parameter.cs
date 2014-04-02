@@ -177,7 +177,7 @@ namespace Sarcasmizer
         }
     }
 
-    public class ParameterList<T> : ParameterBase<IReadOnlyList<T>, IList<T>, T>
+    public class ParameterList<T> : ParameterBase<IReadOnlyList<T>, IList<T>, T>, IEnumerable<T>
     {
         public override bool IsList { get { return true; } }
 
@@ -216,6 +216,16 @@ namespace Sarcasmizer
         public override string ToString()
         {
             return string.Join(", ", Value);
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            return Value.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
