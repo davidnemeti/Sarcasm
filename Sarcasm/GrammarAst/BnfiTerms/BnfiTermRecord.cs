@@ -189,7 +189,7 @@ namespace Sarcasm.GrammarAst
                     // 1. memberwise copy for BnfiTermCopy items
                     foreach (var parseChildValue in parseChildValues)
                         if (!IsMemberAtParse(parseChildValue.ReferredBnfTerm) && IsMemberwiseCopyable(astValue, parseChildValue.Value))
-                            MemberwiseCopyExceptNullValues(astValue, parseChildValue.Value);
+                            MemberwiseCopyExceptNullAndEmptyCollectionValues(astValue, parseChildValue.Value);
 
                     // 2. set member values for member items (it's the second step, so that we can overwrite the copied members if we want)
                     foreach (var parseChildValue in parseChildValues)
@@ -216,17 +216,18 @@ namespace Sarcasm.GrammarAst
             return source.GetType().IsAssignableFrom(destination.GetType());
         }
 
-        protected static void MemberwiseCopyExceptNullValues(object destination, object source)
+        protected static void MemberwiseCopyExceptNullAndEmptyCollectionValues(object destination, object source)
         {
-            MemberwiseCopy(destination, source, fieldValue => fieldValue != null);
+            MemberwiseCopy(destination, source,
+                (destinationFieldValue, sourceFieldValue) => sourceFieldValue != null && !IsEmptyCollection(sourceFieldValue) || destinationFieldValue == null);
         }
 
         protected static void MemberwiseCopy(object destination, object source)
         {
-            MemberwiseCopy(destination, source, fieldValue => true);
+            MemberwiseCopy(destination, source, (destinationFieldValue, sourceFieldValue) => true);
         }
 
-        protected static void MemberwiseCopy(object destination, object source, Predicate<object> cloneFieldValue)
+        protected static void MemberwiseCopy(object destination, object source, Func<object, object, bool> cloneFieldValue)
         {
             Type destinationType = destination.GetType();
             Type sourceType = source.GetType();
@@ -236,10 +237,19 @@ namespace Sarcasm.GrammarAst
 
             foreach (FieldInfo fieldInfo in GetAllFields(sourceType))
             {
-                object fieldValue = fieldInfo.GetValue(source);
-                if (cloneFieldValue(fieldValue))
-                    fieldInfo.SetValue(destination, fieldValue);
+                object destinationFieldValue = fieldInfo.GetValue(destination);
+                object sourceFieldValue = fieldInfo.GetValue(source);
+
+                if (cloneFieldValue(destinationFieldValue, sourceFieldValue))
+                    fieldInfo.SetValue(destination, sourceFieldValue);
             }
+        }
+
+        protected static bool IsEmptyCollection(object value)
+        {
+            var items = value as System.Collections.IEnumerable;
+
+            return items != null && !items.Cast<object>().Any();
         }
 
         protected static IEnumerable<FieldInfo> GetAllFields(Type domainType)
