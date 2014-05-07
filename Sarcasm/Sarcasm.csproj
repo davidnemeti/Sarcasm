@@ -118,6 +118,7 @@
     <Compile Include="Reflection\MetaDomain.cs" />
     <Compile Include="Reflection\MetaRepository.cs" />
     <Compile Include="UniversalGrammars\JsonGrammar.cs" />
+    <Compile Include="Unparsing\FormatYielder.cs" />
     <Compile Include="Unparsing\Styles.cs" />
     <Compile Include="Unparsing\UnparseHint.cs" />
     <Compile Include="Unparsing\UnparsableAst.cs" />

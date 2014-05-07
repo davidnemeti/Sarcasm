@@ -88,7 +88,7 @@ namespace Sarcasm.Unparsing
                 maxBufferSizeForDebug = Math.Max(maxBufferSizeForDebug, utokensBuffer.Count);
 #endif
 
-                Formatter.tsCalculatedDeferredDetailed.Debug("Consumed and enqueued utoken: {0} (queue size is now {1})",
+                FormatYielder.tsCalculatedDeferredDetailed.Debug("Consumed and enqueued utoken: {0} (queue size is now {1})",
                     _utoken != null ? _utoken.ToString() : "extra <<NULL>> utoken after last real utoken", utokensBuffer.Count);
 
             LProcessBufferWithoutConsumingNewUtoken:
@@ -106,16 +106,16 @@ namespace Sarcasm.Unparsing
 //                        postProcessHelper.UnlinkChildFromChildPrevSiblingIfNotFullUnparse(deferredUtokens.Self);
                         prefetchCount = 0;
 
-                        Formatter.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
+                        FormatYielder.tsCalculatedDeferredDetailed.Debug("Calculated: {0}", deferredUtokens);
                     }
                     catch (NonCalculatedException)
                     {
-                        Formatter.tsCalculatedDeferredDetailed.Debug("Tried to calculate but failed: {0}", deferredUtokens);
+                        FormatYielder.tsCalculatedDeferredDetailed.Debug("Tried to calculate but failed: {0}", deferredUtokens);
 
                         if (_utoken == null)
                         {
                             // after the last real utoken every deferred utokens should be calculable
-                            Formatter.tsCalculatedDeferredDetailed.Debug("ERROR: Calculate should not fail after last real token");
+                            FormatYielder.tsCalculatedDeferredDetailed.Debug("ERROR: Calculate should not fail after last real token");
 #if DEBUG
                             DebugUnprocessedBuffer(utokensBuffer, maxBufferSizeForDebug);
 #endif
@@ -130,16 +130,16 @@ namespace Sarcasm.Unparsing
                         continue;
                     }
 
-                    Formatter.tsCalculatedDeferredDetailed.Debug("Successfully calculated: {0}", deferredUtokens);
-                    Formatter.tsCalculatedDeferredDetailed.Indent();
+                    FormatYielder.tsCalculatedDeferredDetailed.Debug("Successfully calculated: {0}", deferredUtokens);
+                    FormatYielder.tsCalculatedDeferredDetailed.Indent();
 
                     foreach (UtokenBase calculatedUtoken in calculatedUtokens)
                     {
-                        Formatter.tsCalculatedDeferredDetailed.Debug("Yielded calculated: {0}", calculatedUtoken);
+                        FormatYielder.tsCalculatedDeferredDetailed.Debug("Yielded calculated: {0}", calculatedUtoken);
                         yield return calculatedUtoken;
                     }
 
-                    Formatter.tsCalculatedDeferredDetailed.Unindent();
+                    FormatYielder.tsCalculatedDeferredDetailed.Unindent();
                 }
                 else if (utokensBuffer.Peek() == null)
                 {
@@ -148,13 +148,13 @@ namespace Sarcasm.Unparsing
                 }
                 else
                 {
-                    Formatter.tsCalculatedDeferredDetailed.Debug("Yielded normal: {0}", utokensBuffer.Peek());
+                    FormatYielder.tsCalculatedDeferredDetailed.Debug("Yielded normal: {0}", utokensBuffer.Peek());
                     yield return utokensBuffer.Dequeue();
                 }
 
                 if (utokensBuffer.Count > 0)
                 {
-                    Formatter.tsCalculatedDeferredDetailed.Debug("Queue has elements -> process without consuming new utoken (queue size is {0})", utokensBuffer.Count);
+                    FormatYielder.tsCalculatedDeferredDetailed.Debug("Queue has elements -> process without consuming new utoken (queue size is {0})", utokensBuffer.Count);
                     goto LProcessBufferWithoutConsumingNewUtoken;
                 }
             }
@@ -169,23 +169,23 @@ namespace Sarcasm.Unparsing
         [Conditional("DEBUG")]
         private static void DebugUnprocessedBuffer(IEnumerable<UtokenBase> utokensBuffer, int maxBufferSizeForDebug)
         {
-            Formatter.tsCalculatedDeferredDetailed.Debug("");
-            Formatter.tsCalculatedDeferredDetailed.Debug("");
-            Formatter.tsCalculatedDeferredDetailed.Debug("Max buffer size was: {0}", maxBufferSizeForDebug);
+            FormatYielder.tsCalculatedDeferredDetailed.Debug("");
+            FormatYielder.tsCalculatedDeferredDetailed.Debug("");
+            FormatYielder.tsCalculatedDeferredDetailed.Debug("Max buffer size was: {0}", maxBufferSizeForDebug);
 
             if (utokensBuffer.Any())
             {
-                Formatter.tsCalculatedDeferredDetailed.Debug("");
-                Formatter.tsCalculatedDeferredDetailed.Debug("Buffer has unprocessed elements: ", utokensBuffer.Count());
+                FormatYielder.tsCalculatedDeferredDetailed.Debug("");
+                FormatYielder.tsCalculatedDeferredDetailed.Debug("Buffer has unprocessed elements: ", utokensBuffer.Count());
 
-                Formatter.tsCalculatedDeferredDetailed.Indent();
+                FormatYielder.tsCalculatedDeferredDetailed.Indent();
 
                 foreach (UtokenBase utokenUnprocessed in utokensBuffer)
                 {
-                    Formatter.tsCalculatedDeferredDetailed.Debug(utokenUnprocessed);
+                    FormatYielder.tsCalculatedDeferredDetailed.Debug(utokenUnprocessed);
                 }
 
-                Formatter.tsCalculatedDeferredDetailed.Unindent();
+                FormatYielder.tsCalculatedDeferredDetailed.Unindent();
             }
         }
 

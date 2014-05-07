@@ -466,7 +466,7 @@ namespace Sarcasm.UniversalGrammars
                 MultiLineCommentDecorator = " *";
             }
 
-            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
+            public override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
                 var decoration = base.GetDecoration(utoken, target);
 
@@ -504,7 +504,7 @@ namespace Sarcasm.UniversalGrammars
                 return decoration;
             }
 
-            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
+            public override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
@@ -530,7 +530,7 @@ namespace Sarcasm.UniversalGrammars
                     rightInsertedUtokens = UtokenInsert.NewLine();
             }
 
-            protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
+            public override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
                 if (target.BnfTerm == B.KeyValuePairs)
                     return BlockIndentation.Indent;

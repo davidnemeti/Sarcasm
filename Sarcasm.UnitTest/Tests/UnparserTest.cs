@@ -103,7 +103,7 @@ namespace Sarcasm.UnitTest
             {
             }
 
-            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
+            public override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 

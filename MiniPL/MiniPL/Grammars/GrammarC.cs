@@ -512,7 +512,7 @@ namespace MiniPL.Grammars
                 MultiLineCommentDecorator = " *";
             }
 
-            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
+            public override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
                 var decoration = base.GetDecoration(utoken, target);
 
@@ -600,7 +600,7 @@ namespace MiniPL.Grammars
                 }
             }
 
-            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
+            public override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
@@ -650,7 +650,7 @@ namespace MiniPL.Grammars
                     rightInsertedUtokens = UtokenInsert.EmptyLine();
             }
 
-            protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
+            public override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
                 if (leftTerminalLeaveTarget.AstImage != null && leftTerminalLeaveTarget.AstImage.AstValue is DC.Name && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();
@@ -677,7 +677,7 @@ namespace MiniPL.Grammars
                     return base.GetUtokensBetween(leftTerminalLeaveTarget, rightTarget);
             }
 
-            protected override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
+            public override BlockIndentation GetBlockIndentation(UnparsableAst leftTerminalLeaveIfAny, UnparsableAst target)
             {
                 if (target.BnfTerm == B.Statement && !(target.AstValue is D.StatementList))
                     return BlockIndentation.Indent;

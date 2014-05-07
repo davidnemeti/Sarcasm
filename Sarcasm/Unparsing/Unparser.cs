@@ -91,12 +91,13 @@ namespace Sarcasm.Unparsing
         public bool EnableParallelProcessing { get; set; }
         public readonly AsyncLock Lock = new AsyncLock();
         private CancellationToken cancellationToken;
+        public Formatter formatter;
 
         #endregion
 
         #region Mutable
 
-        public Formatter Formatter { get; set; }
+        private FormatYielder formatYielder;
         private ExpressionUnparser expressionUnparser;
         private Direction _direction;
         private ResourceCounter parallelTaskCounter;
@@ -144,6 +145,17 @@ namespace Sarcasm.Unparsing
 
         public LanguageData Language { get { return _language; } }
 
+        public Formatter Formatter
+        {
+            get { return formatter; }
+
+            set
+            {
+                formatter = value;
+                this.formatYielder = new FormatYielder(value);
+            }
+        }
+
         #endregion
 
         #region Construction
@@ -177,21 +189,22 @@ namespace Sarcasm.Unparsing
             this._direction = that._direction;
             this.cancellationToken = that.cancellationToken;
             this.constantTerminalToInverseConstantTable = that.constantTerminalToInverseConstantTable;
+            this.Formatter = that.Formatter;
 
             // the following should be set after the constructor
-            this.Formatter = null;
+            this.formatYielder = null;
             this.expressionUnparser = null;
         }
 
-        private Unparser Spawn(Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
+        private Unparser Spawn(FormatYielder.ChildLocation childLocation = FormatYielder.ChildLocation.Unknown)
         {
             return Spawn(child: null, childLocation: childLocation);
         }
 
-        private Unparser Spawn(UnparsableAst child, Formatter.ChildLocation childLocation = Formatter.ChildLocation.Unknown)
+        private Unparser Spawn(UnparsableAst child, FormatYielder.ChildLocation childLocation = FormatYielder.ChildLocation.Unknown)
         {
             Unparser spawn = new Unparser(this);
-            spawn.Formatter = this.Formatter.Spawn(child, childLocation);
+            spawn.formatYielder = this.formatYielder.Spawn(child, childLocation);
             spawn.expressionUnparser = this.expressionUnparser.Spawn(spawn);
             return spawn;
         }
@@ -277,13 +290,13 @@ namespace Sarcasm.Unparsing
             set
             {
                 this._direction = value;
-                Formatter.Direction = value;
+                formatYielder.Direction = value;
             }
         }
 
         private void ResetMutableState()
         {
-            Formatter.ResetMutableState();
+            formatYielder.ResetMutableState();
             // NOTE: expressionUnparser does ResetMutableState automatically
         }
 
@@ -298,14 +311,14 @@ namespace Sarcasm.Unparsing
             else if (self.BnfTerm == null)
                 throw new ArgumentNullException("BnfTerm must not be null", "self.BnfTerm");
 
-            Formatter.Params @params;
+            FormatYielder.Params @params;
 
             return expressionUnparser.OngoingOperatorGet
                 ? UnparseRawMiddle(self)
                 : ConcatIfAnyMiddle(
-                    Formatter.YieldBefore(self, out @params),
+                    formatYielder.YieldBefore(self, out @params),
                     UnparseRawMiddle(self),
-                    Formatter.YieldAfter(self, @params)
+                    formatYielder.YieldAfter(self, @params)
                     );
         }
 
@@ -417,7 +430,7 @@ namespace Sarcasm.Unparsing
             {
                 unparsedComments.Add(comments);
 
-                foreach (UtokenBase utoken in Formatter.YieldBeforeComments(self, comments, UnparseComment))
+                foreach (UtokenBase utoken in formatYielder.YieldBeforeComments(self, comments, UnparseComment))
                     yield return utoken;
             }
 
@@ -606,7 +619,7 @@ namespace Sarcasm.Unparsing
             }
 
             if (comments != null)
-                foreach (UtokenBase utoken in Formatter.YieldAfterComments(self, comments, UnparseComment))
+                foreach (UtokenBase utoken in formatYielder.YieldAfterComments(self, comments, UnparseComment))
                     yield return utoken;
         }
 
@@ -656,11 +669,11 @@ namespace Sarcasm.Unparsing
                                             int subRangeBeginIndex = taskIndex * subRangeCount;
                                             int subRangeEndIndex = Math.Min(subRangeBeginIndex + subRangeCount, chosenChildrenList.Count);
 
-                                            Formatter.ChildLocation childLocation =
-                                                chosenChildrenList.Count == 1                       ?   Formatter.ChildLocation.Only :
-                                                subRangeBeginIndex == 0                             ?   Formatter.ChildLocation.First :
-                                                subRangeBeginIndex == chosenChildrenList.Count - 1  ?   Formatter.ChildLocation.Last :
-                                                                                                        Formatter.ChildLocation.Middle;
+                                            FormatYielder.ChildLocation childLocation =
+                                                chosenChildrenList.Count == 1                       ?   FormatYielder.ChildLocation.Only :
+                                                subRangeBeginIndex == 0                             ?   FormatYielder.ChildLocation.First :
+                                                subRangeBeginIndex == chosenChildrenList.Count - 1  ?   FormatYielder.ChildLocation.Last :
+                                                                                                        FormatYielder.ChildLocation.Middle;
 
                                             Unparser subUnparser = this.Spawn(chosenChildrenList[subRangeBeginIndex], childLocation);
 

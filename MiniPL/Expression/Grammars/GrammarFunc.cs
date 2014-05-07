@@ -226,7 +226,7 @@ namespace Expr.Grammars
                 ForeColorOfLiteral = Color.ForestGreen;
             }
 
-            protected override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
+            public override IDecoration GetDecoration(Utoken utoken, UnparsableAst target)
             {
                 var decoration = base.GetDecoration(utoken, target);
 
@@ -257,7 +257,7 @@ namespace Expr.Grammars
                 }
             }
 
-            protected override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
+            public override void GetUtokensAround(UnparsableAst target, out InsertedUtokens leftInsertedUtokens, out InsertedUtokens rightInsertedUtokens)
             {
                 base.GetUtokensAround(target, out leftInsertedUtokens, out rightInsertedUtokens);
 
@@ -274,7 +274,7 @@ namespace Expr.Grammars
                     rightInsertedUtokens = UtokenInsert.NoWhitespace();
             }
 
-            protected override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
+            public override InsertedUtokens GetUtokensBetween(UnparsableAst leftTerminalLeaveTarget, UnparsableAst rightTarget)
             {
                 if (leftTerminalLeaveTarget.BnfTerm is KeyTerm && rightTarget.BnfTerm == B.LEFT_PAREN)
                     return UtokenInsert.NoWhitespace();

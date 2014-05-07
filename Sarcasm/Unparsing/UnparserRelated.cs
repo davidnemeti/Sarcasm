@@ -175,7 +175,7 @@ namespace Sarcasm.Unparsing
 
         internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {
-            return Formatter.PostProcess(utokens, postProcessHelper);
+            return FormatYielder.PostProcess(utokens, postProcessHelper);
         }
     }
 }
