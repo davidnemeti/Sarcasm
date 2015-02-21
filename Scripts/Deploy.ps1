@@ -44,9 +44,11 @@ elseif ($project -eq "Sarcasm")
     Copy-Item -Path DecorationConnectors\DecorationConnector.Silverlight\bin\Release\DecorationConnector.Silverlight.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnectors\DecorationConnector.Android\bin\Release\DecorationConnector.Android.dll -Destination Downloads\Temp -Force
 
-    $zipFileName = "Downloads\Sarcasm" + "_" + (Get-Date).ToShortDateString().TrimEnd('.').Replace('.', '-') + ".zip"
+    $currentPath = (Get-Item -Path ".\").FullName
+
+    $zipFileName = $currentPath + "\Downloads\Sarcasm" + "_" + (Get-Date).ToShortDateString().TrimEnd('.').Replace('.', '-') + ".zip"
     Remove-Item -Path $zipFileName -Force
-    CreateZipFile -zipfilename $zipFileName -sourcedir Downloads\Temp
+    CreateZipFile -zipfilename $zipFileName -sourcedir ($currentPath + "\Downloads\Temp")
 
     Remove-Item -Path Downloads\Temp -Force -Recurse
 }
