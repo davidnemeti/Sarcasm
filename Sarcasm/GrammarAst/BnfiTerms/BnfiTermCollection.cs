@@ -521,7 +521,28 @@ namespace Sarcasm.GrammarAst
                 if (!firstElement && this.delimiter != null)
                     yield return new UnparsableAst(this.delimiter, astCollection);
 
-                yield return new UnparsableAst(this.element, astElement);
+                if (this.element is BnfExpression)
+                {   // handle element of starlist/pluslist which consists of inline multi-bnfterms
+                    BnfTermList elementBnfterms;
+
+                    try
+                    {
+                        elementBnfterms = ((BnfExpression)this.element).GetBnfTermsList().Single();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        throw new InvalidOperationException("Choice-rule inside element of starlist/pluslist which consists of inline multi-bnfterms is not allowed. Create a separate bnfiterm for the collection element.");
+                    }
+
+                    foreach (var elementBnfTerm in elementBnfterms)
+                    {
+                        yield return new UnparsableAst(elementBnfTerm, astElement);
+                    }
+                }
+                else
+                {
+                    yield return new UnparsableAst(this.element, astElement);
+                }
 
                 firstElement = false;
             }
