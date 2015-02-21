@@ -55,6 +55,7 @@ namespace MiniPL
             public IList<Parameter> Parameters { get; set; }
             [NonEmptyList]
             public IList<Statement> Body { get; set; }
+            public bool IsAsync { get; set; }
         }
 
         public enum Type

@@ -62,6 +62,7 @@ namespace MiniPL.Grammars
                 this.RETURN = TerminalFactoryS.CreateKeyTerm("return");
                 this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                 this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
+                this.ASYNC = TerminalFactoryS.CreateKeyTerm("async", true);
 
                 this.DOT = TerminalFactoryS.CreateKeyTerm(".");
                 this.LET = TerminalFactoryS.CreateKeyTerm("=");
@@ -176,6 +177,8 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm RETURN;
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
+            public readonly BnfiTermConversion<bool> ASYNC;
+
             public readonly BnfiTermKeyTerm DOT;
             public readonly BnfiTermKeyTerm LET;
             public readonly BnfiTermKeyTerm SEMICOLON;
@@ -243,7 +246,8 @@ namespace MiniPL.Grammars
                 ;
 
             B.Function.Rule =
-                B.Type.QVal().BindTo(B.Function, t => t.ReturnType)
+                B.ASYNC.QVal(false).BindTo(B.Function, t => t.IsAsync)
+                + B.Type.QVal().BindTo(B.Function, t => t.ReturnType)
                 + B.Name.BindTo(B.Function, t => t.Name)
                 + B.LEFT_PAREN
                 + B.Parameter.StarList(B.COMMA).BindTo(B.Function, t => t.Parameters)

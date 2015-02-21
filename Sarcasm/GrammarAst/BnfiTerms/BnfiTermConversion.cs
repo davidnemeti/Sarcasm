@@ -44,6 +44,7 @@ namespace Sarcasm.GrammarAst
 
         private BnfTerm bnfTerm;
         private object value;
+        private object defaultValue;
         internal bool isOptionalValue { get; private set; }
 
         private ValueConverter<object, object> inverseValueConverterForUnparse;
@@ -65,25 +66,26 @@ namespace Sarcasm.GrammarAst
             GrammarHelper.MarkTransientForced(this);    // default "transient" behavior (the Rule of this BnfiTermConversion will contain the BnfiTermConversion which actually does something)
         }
 
-        protected BnfiTermConversion(Type domainType, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
-            : this(domainType, bnfTerm, (context, parseNode) => value, IdentityFunction, isOptionalValue, name, astForChild)
+        protected BnfiTermConversion(Type domainType, BnfTerm bnfTerm, object value, object defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : this(domainType, bnfTerm, (context, parseNode) => value, IdentityFunction, defaultValue, isOptionalValue, name, astForChild)
         {
             this.value = value;
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        protected BnfiTermConversion(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
-            : this(domainType, bnfTerm, valueIntroducer, NoUnparseByInverse(), isOptionalValue, name, astForChild)
+        protected BnfiTermConversion(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, object defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : this(domainType, bnfTerm, valueIntroducer, NoUnparseByInverse(), defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
         protected BnfiTermConversion(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse,
-            bool isOptionalValue, string name, bool astForChild)
+            object defaultValue, bool isOptionalValue, string name, bool astForChild)
             : base(domainType, name)
         {
             this.IsContractible = true;
             this.bnfTerm = bnfTerm;
             this.isOptionalValue = isOptionalValue;
+            this.defaultValue = defaultValue;
 
             if (!astForChild)
                 bnfTerm.SetFlag(TermFlags.NoAstNode);
@@ -125,7 +127,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversionTL Intro(Type domainType, Terminal terminal, object value, bool astForChild = true)
         {
-            return new BnfiTermConversionTL(domainType, terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversionTL(domainType, terminal, value, defaultValue: null, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -152,6 +154,7 @@ namespace Sarcasm.GrammarAst
                 terminal,
                 (context, parseNode) => valueIntroducer(context, parseNode),
                 inverseValueConverterForUnparse,
+                defaultValue: null,
                 isOptionalValue: false,
                 name: terminal.Name + "_intro",
                 astForChild: astForChild
@@ -161,7 +164,7 @@ namespace Sarcasm.GrammarAst
 
         public static BnfiTermConversion<T> Intro<T>(Terminal terminal, T value, bool astForChild = true)
         {
-            return new BnfiTermConversion<T>(terminal, value, isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
+            return new BnfiTermConversion<T>(terminal, value, defaultValue: default(T), isOptionalValue: false, name: terminal.Name + "_parse", astForChild: astForChild).MakeUncontractible();
         }
 
         [Obsolete(messageForMissingUnparseValueConverter, errorForMissingUnparseValueConverter)]
@@ -175,7 +178,8 @@ namespace Sarcasm.GrammarAst
             return new BnfiTermConversion<T>(
                 terminal,
                 (context, parseNode) => valueIntroducer(context, parseNode),
-                inverseValueConverterForUnparse, 
+                inverseValueConverterForUnparse,
+                defaultValue: default(T),
                 isOptionalValue: false,
                 name: terminal.Name + "_introAs_" + typeof(T).Name.ToLower(),
                 astForChild: astForChild
@@ -254,6 +258,7 @@ namespace Sarcasm.GrammarAst
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 inverseValueConverterForUnparse,
+                defaultValue: null,
                 isOptionalValue: false,
                 name: bnfiTerm.AsBnfTerm().Name + "_convert",
                 astForChild: true
@@ -272,6 +277,7 @@ namespace Sarcasm.GrammarAst
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 inverseValueConverterForUnparse,
+                defaultValue: default(TDOut),
                 isOptionalValue: false,
                 name: bnfiTerm.AsBnfTerm().Name + "_convertTo_" + typeof(TDOut).Name.ToLower(),
                 astForChild: true
@@ -290,6 +296,7 @@ namespace Sarcasm.GrammarAst
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducer(valueConverter),
                 CastValueConverter<TDOut, TDIn, TDOut, object>(inverseValueConverterForUnparse),
+                defaultValue: default(TDOut),
                 isOptionalValue: false,
                 name: typeof(TDIn).Name.ToLower() + "_convertTo_" + typeof(TDOut).Name.ToLower(),
                 astForChild: true
@@ -393,6 +400,7 @@ namespace Sarcasm.GrammarAst
                 bnfiTerm.AsBnfTerm(),
                 ConvertValueConverterToValueIntroducerOpt(valueConverter, defaultValue),
                 CastValueConverter<TDOut, TDIn, TDOut, object>(inverseValueConverterForUnparse),
+                defaultValue: defaultValue,
                 isOptionalValue: true,
                 name: typeof(TDIn).Name.ToLower() + "_convertOptTo_" + typeof(TDOut).Name.ToLower(),
                 astForChild: true
@@ -473,6 +481,7 @@ namespace Sarcasm.GrammarAst
         {
             this.bnfTerm = source.bnfTerm;
             this.value = source.value;
+            this.defaultValue = source.defaultValue;
             this.isOptionalValue = source.isOptionalValue;
             this.Flags = source.Flags;
             this.AstConfig = source.AstConfig;
@@ -487,6 +496,7 @@ namespace Sarcasm.GrammarAst
         {
             this.bnfTerm = null;
             this.value = null;
+            this.defaultValue = null;
             this.isOptionalValue = false;
             this.Flags = TermFlags.None;
             this.AstConfig = null;
@@ -555,6 +565,11 @@ namespace Sarcasm.GrammarAst
                 utokens = this.UtokenizerForUnparse(unparser.FormatProvider, self, self.AstValue);
                 return true;
             }
+            else if (this.isOptionalValue && object.Equals(self.AstValue, this.defaultValue))
+            {
+                utokens = Enumerable.Empty<UtokenValue>();
+                return true;
+            }
             else if (this.inverseValueConverterForUnparse != null)
             {
                 /*
@@ -581,7 +596,7 @@ namespace Sarcasm.GrammarAst
 
         protected override int? GetChildrenPriority(IUnparser unparser, object astValue, Unparser.Children children, Unparser.Direction direction)
         {
-            if (astValue == null && this.isOptionalValue)
+            if (this.isOptionalValue && object.Equals(astValue, this.defaultValue))
                 return 0;
             else if (this.value != null)
                 return this.value.Equals(astValue) ? (int?)1 : null;
@@ -706,19 +721,19 @@ namespace Sarcasm.GrammarAst
         {
         }
 
-        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, object value, bool isOptionalValue, string name, bool astForChild)
-            : base(domainType, bnfTerm, value, isOptionalValue, name, astForChild)
+        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, object value, object defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : base(domainType, bnfTerm, value, defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
-            : this(domainType, bnfTerm, valueIntroducer, NoUnparseByInverse(), isOptionalValue, name, astForChild)
+        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, object defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : this(domainType, bnfTerm, valueIntroducer, NoUnparseByInverse(), defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
-            : base(domainType, bnfTerm, valueIntroducer, inverseValueConverterForUnparse, isOptionalValue, name, astForChild)
+        internal BnfiTermConversionTL(Type domainType, BnfTerm bnfTerm, ValueIntroducer<object> valueIntroducer, ValueConverter<object, object> inverseValueConverterForUnparse, object defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : base(domainType, bnfTerm, valueIntroducer, inverseValueConverterForUnparse, defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
@@ -746,19 +761,19 @@ namespace Sarcasm.GrammarAst
         {
         }
 
-        internal BnfiTermConversion(BnfTerm bnfTerm, TD value, bool isOptionalValue, string name, bool astForChild)
-            : base(typeof(TD), bnfTerm, value, isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, TD value, TD defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(TD), bnfTerm, value, defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
         [Obsolete("Pass either a 'value', or a valueIntroducer with an inverseValueConverterForUnparse", error: true)]
-        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, bool isOptionalValue, string name, bool astForChild)
-            : this(bnfTerm, valueIntroducer, NoUnparseByInverse<TD>(), isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, TD defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : this(bnfTerm, valueIntroducer, NoUnparseByInverse<TD>(), defaultValue, isOptionalValue, name, astForChild)
         {
         }
 
-        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, ValueConverter<TD, object> inverseValueConverterForUnparse, bool isOptionalValue, string name, bool astForChild)
-            : base(typeof(TD), bnfTerm, (context, parseNode) => valueIntroducer(context, parseNode), CastValueConverter<TD, object, object, object>(inverseValueConverterForUnparse), isOptionalValue, name, astForChild)
+        internal BnfiTermConversion(BnfTerm bnfTerm, ValueIntroducer<TD> valueIntroducer, ValueConverter<TD, object> inverseValueConverterForUnparse, TD defaultValue, bool isOptionalValue, string name, bool astForChild)
+            : base(typeof(TD), bnfTerm, (context, parseNode) => valueIntroducer(context, parseNode), CastValueConverter<TD, object, object, object>(inverseValueConverterForUnparse), defaultValue, isOptionalValue, name, astForChild)
         {
         }
 

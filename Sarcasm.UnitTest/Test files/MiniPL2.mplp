@@ -2,7 +2,7 @@ program HelloWorld
 
 namespace Sea.Shell
 
-function Fibonacci(var n : integer) : integer
+function async Fibonacci(var n : integer) : integer
 begin
 
     if (n = 0) then

@@ -71,6 +71,7 @@ namespace MiniPL.Grammars
                     this.WRITE = TerminalFactoryS.CreateKeyTerm("Kiír");
                     this.WRITELN = TerminalFactoryS.CreateKeyTerm("KiírSor");
                     this.VAR = TerminalFactoryS.CreateKeyTerm("változó");
+                    this.ASYNC = TerminalFactoryS.CreateKeyTerm("aszink", true);
 
                     this.AND_OP = TerminalFactoryS.CreateKeyTerm("és", DE.BinaryOperator.And);
                     this.OR_OP = TerminalFactoryS.CreateKeyTerm("vagy", DE.BinaryOperator.Or);
@@ -121,6 +122,7 @@ namespace MiniPL.Grammars
                     this.WRITE = TerminalFactoryS.CreateKeyTerm("Schreiben");
                     this.WRITELN = TerminalFactoryS.CreateKeyTerm("SchreibenLeine");
                     this.VAR = TerminalFactoryS.CreateKeyTerm("Variable");
+                    this.ASYNC = TerminalFactoryS.CreateKeyTerm("async", true);
 
                     this.AND_OP = TerminalFactoryS.CreateKeyTerm("und", DE.BinaryOperator.And);
                     this.OR_OP = TerminalFactoryS.CreateKeyTerm("oder", DE.BinaryOperator.Or);
@@ -171,6 +173,7 @@ namespace MiniPL.Grammars
                     this.WRITE = TerminalFactoryS.CreateKeyTerm("Write");
                     this.WRITELN = TerminalFactoryS.CreateKeyTerm("WriteLn");
                     this.VAR = TerminalFactoryS.CreateKeyTerm("var");
+                    this.ASYNC = TerminalFactoryS.CreateKeyTerm("async", true);
 
                     this.AND_OP = TerminalFactoryS.CreateKeyTerm("and", DE.BinaryOperator.And);
                     this.OR_OP = TerminalFactoryS.CreateKeyTerm("or", DE.BinaryOperator.Or);
@@ -292,6 +295,8 @@ namespace MiniPL.Grammars
             public readonly BnfiTermKeyTerm WRITE;
             public readonly BnfiTermKeyTerm WRITELN;
             public readonly BnfiTermKeyTerm VAR;
+            public readonly BnfiTermConversion<bool> ASYNC;
+
             public readonly BnfiTermKeyTerm DOT;
             public readonly BnfiTermKeyTerm LET;
             public readonly BnfiTermKeyTerm SEMICOLON;
@@ -368,6 +373,7 @@ namespace MiniPL.Grammars
 
             B.Function.Rule =
                 B.FUNCTION
+                + B.ASYNC.QVal(false).BindTo(B.Function, t => t.IsAsync)
                 + B.Name.BindTo(B.Function, t => t.Name)
                 + B.LEFT_PAREN
                 + B.Parameter.StarList(B.COMMA).BindTo(B.Function, t => t.Parameters)
