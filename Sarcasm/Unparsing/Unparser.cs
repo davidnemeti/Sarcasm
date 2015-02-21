@@ -615,7 +615,7 @@ namespace Sarcasm.Unparsing
             }
             else
             {
-                throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'" + self.BnfTerm.Name, self.BnfTerm.GetType().Name));
+                throw new ArgumentException(string.Format("bnfTerm '{0}' with unknown type: '{1}'", self.BnfTerm.Name ?? self.BnfTerm.ToString(), self.BnfTerm.GetType().Name));
             }
 
             if (comments != null)
