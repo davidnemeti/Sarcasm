@@ -528,7 +528,11 @@ namespace Sarcasm.Unparsing
                 self.SetAsLeave();
                 yield return UtokenValue.CreateText(self);
             }
-            else if (self.BnfTerm is NonTerminal)
+            else if (self.BnfTerm is GrammarHint)
+            {
+                // GrammarHint is legal, but it does not need any unparse
+            }
+            else if (self.BnfTerm is BnfTerm)
             {
                 tsUnparse.Debug("nonterminal: {0}", self);
                 tsUnparse.Indent();
@@ -537,12 +541,17 @@ namespace Sarcasm.Unparsing
                 {
                     IUnparsableNonTerminal unparsableSelf = self.BnfTerm as IUnparsableNonTerminal;
 
-                    if (unparsableSelf == null)
-                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is not IUnparsable.", self.AstValue, self.AstValue.GetType().Name, self.BnfTerm.Name));
+                    if (unparsableSelf == null && !(self.BnfTerm is BnfExpression))
+                    {
+                        throw new UnparseException(string.Format("Cannot unparse '{0}' (type: '{1}'). BnfTerm '{2}' is neither an IUnparsable nor a BnfExpression.",
+                            self.AstValue,
+                            self.AstValue.GetType().Name,
+                            self.BnfTerm.Name));
+                    }
 
                     IEnumerable<UtokenValue> directUtokens;
 
-                    if (unparsableSelf.TryGetUtokensDirectly(this, self, out directUtokens))
+                    if (unparsableSelf != null && unparsableSelf.TryGetUtokensDirectly(this, self, out directUtokens))
                     {
                         tsUnparse.Debug("SetAsLeave: {0}", self);
                         self.SetAsLeave();
@@ -608,10 +617,6 @@ namespace Sarcasm.Unparsing
                 {
                     tsUnparse.Unindent();
                 }
-            }
-            else if (self.BnfTerm is GrammarHint)
-            {
-                // GrammarHint is legal, but it does not need any unparse
             }
             else
             {
@@ -915,9 +920,10 @@ namespace Sarcasm.Unparsing
 
         private IEnumerable<UnparsableAst> ChooseChildrenByPriority(UnparsableAst self)
         {
-            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
+            IUnparsableNonTerminal unparsable = self.BnfTerm as IUnparsableNonTerminal;
+            BnfTerm bnfTerm = unparsable != null ? unparsable.AsNonTerminal() : self.BnfTerm;
 
-            tsPriorities.Debug("{0} BEGIN priorities", unparsable.AsNonTerminal());
+            tsPriorities.Debug("{0} BEGIN priorities", bnfTerm);
             tsPriorities.Indent();
 
             var childrenWithPriority = GetChildrenWithMaxPriority(self);
@@ -929,7 +935,7 @@ namespace Sarcasm.Unparsing
             }
 
             tsPriorities.Unindent();
-            tsPriorities.Debug("{0} END priorities", unparsable.AsNonTerminal());
+            tsPriorities.Debug("{0} END priorities", bnfTerm);
             tsPriorities.Debug("");
 
             return childrenWithPriority.Children;
@@ -937,15 +943,18 @@ namespace Sarcasm.Unparsing
 
         private ChildrenWithPriority GetChildrenWithMaxPriority(UnparsableAst self)
         {
-            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
+            IUnparsableNonTerminal unparsable = self.BnfTerm as IUnparsableNonTerminal;
+            BnfTerm bnfTerm = unparsable != null ? unparsable.AsNonTerminal() : self.BnfTerm;
 
-            return GetChildBnfTermLists(unparsable.AsNonTerminal())
+            return GetChildBnfTermLists(bnfTerm)
                 .Select(
                     (childBnfTerms, childBnfTermsIndex) =>
                     {
-                        Children children = new Children(
-                            unparsable.GetChildren(new ChildBnfTerms(childBnfTerms, childBnfTermsIndex), self.AstValue, direction),
-                            childBnfTermsIndex);
+                        var unparsableAstChildren = unparsable != null
+                            ? unparsable.GetChildren(new ChildBnfTerms(childBnfTerms, childBnfTermsIndex), self.AstValue, direction)
+                            : GetChildrenForBnfExpression(new ChildBnfTerms(childBnfTerms, childBnfTermsIndex), self.AstValue, direction);
+
+                        Children children = new Children(unparsableAstChildren, childBnfTermsIndex);
 
                         return new ChildrenWithPriority(
                             children,
@@ -958,27 +967,54 @@ namespace Sarcasm.Unparsing
                 .MaxItem(childrenWithPriority => childrenWithPriority.Priority);
         }
 
+        private IEnumerable<UnparsableAst> GetChildrenForBnfExpression(Unparser.ChildBnfTerms childBnfTerms, object astValue, Unparser.Direction direction)
+        {
+            var unparsableAstChildren = childBnfTerms.Select(childBnfTerm => new UnparsableAst(childBnfTerm, astValue));
+
+            if (direction == Unparser.Direction.RightToLeft)
+                unparsableAstChildren = unparsableAstChildren.Reverse();
+
+            return unparsableAstChildren;
+        }
+
         private Priority GetChildrenPriority(UnparsableAst self, Unparser.Children children, int childrenIndex)
         {
-            IUnparsableNonTerminal unparsable = (IUnparsableNonTerminal)self.BnfTerm;
+            IUnparsableNonTerminal unparsable = self.BnfTerm as IUnparsableNonTerminal;
+            BnfTerm bnfTerm = unparsable != null ? unparsable.AsNonTerminal() : self.BnfTerm;
 
             UnparseHint unparseHint = self.BnfTerm is BnfiTermNonTerminal
                 ? ((BnfiTermNonTerminal)self.BnfTerm).GetUnparseHint(childrenIndex)
                 : null;
 
-            return unparseHint != null
-                ? new Priority(PriorityKind.User, unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue)))
-                : new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children, direction));
+            if (unparseHint != null)
+                return new Priority(PriorityKind.User, unparseHint.GetChildrenPriority(self.AstValue, children.Select(childUnparsableAst => childUnparsableAst.AstValue)));
+            else if (unparsable != null)
+                return new Priority(PriorityKind.System, unparsable.GetChildrenPriority(this, self.AstValue, children, direction));
+            else
+                return new Priority(PriorityKind.System, GetChildrenPriorityForBnfExpression(self.AstValue, children, direction));
         }
 
-        internal static IEnumerable<BnfTermList> GetChildBnfTermListsLeftToRight(NonTerminal nonTerminal)
+        private int? GetChildrenPriorityForBnfExpression(object astValue, Children children, Unparser.Direction direction)
         {
-            return nonTerminal.Productions.Select(production => production.RValues);
+            return children.SumIncludingNullValues(child => ((IUnparser)this).GetPriority(child));
         }
 
-        internal IEnumerable<IEnumerable<BnfTerm>> GetChildBnfTermLists(NonTerminal nonTerminal)
+        internal static IEnumerable<BnfTermList> GetChildBnfTermListsLeftToRight(BnfTerm bnfTerm)
         {
-            return GetChildBnfTermListsLeftToRight(nonTerminal)
+            var nonTerminal = bnfTerm as NonTerminal;
+            var bnfExpression = bnfTerm as BnfExpression;
+
+            if (nonTerminal == null && bnfExpression == null)
+                throw new UnparseException(string.Format("Cannot unparse bnfTerm '{0}'. It should be a nonterminal or a bnfexpression.", bnfTerm.Name));
+
+            return nonTerminal != null
+                ? nonTerminal.Productions.Select(production => production.RValues)
+                : bnfExpression.GetBnfTermsList();
+        }
+
+        internal IEnumerable<IEnumerable<BnfTerm>> GetChildBnfTermLists(BnfTerm bnfTerm)
+        {
+            return GetChildBnfTermListsLeftToRight(bnfTerm)
                 .Select(bnfTerms => direction == Direction.LeftToRight ? bnfTerms : bnfTerms.ReverseOptimized());
         }
 
