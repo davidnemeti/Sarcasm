@@ -277,17 +277,28 @@ namespace Sarcasm.DomainCore
             obj.Props().Parent = parent;
         }
 
+        /// <summary>
+        /// Get direct parent of <paramref name="obj"/>.
+        /// If <paramref name="obj"/> is an item of a container, then the container object will be returned.
+        /// </summary>
         public static object GetDirectParent(this object obj)
         {
             return obj.Props().Parent;
         }
 
+        /// <summary>
+        /// Get parent of <paramref name="obj"/>.
+        /// If <paramref name="obj"/> is an item of a container, then object which owns the container will be returned.
+        /// </summary>
         public static object GetParent(this object obj)
         {
             object directParent = obj.GetDirectParent();
             return directParent is IEnumerable ? directParent.GetDirectParent() : directParent;
         }
 
+        /// <summary>
+        /// Get the top ancestor of <paramref name="obj"/>.
+        /// </summary>
         public static object GetRoot(this object obj)
         {
             return Util.RecurseStopBeforeNull(obj, objT => objT.GetDirectParent()).Last();
