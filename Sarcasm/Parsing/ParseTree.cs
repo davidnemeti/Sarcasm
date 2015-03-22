@@ -148,8 +148,8 @@ namespace Sarcasm.Parsing
             if (astValue != null && astValue.GetType().IsClass && !astValueToParseTreeNode.ContainsKey(astValue))
                 astValueToParseTreeNode.Add(astValue, currentNode);
 
-            if (astValue != null && astValue.GetParent() == null)
-                astValue.SetParent(astValueParent);
+            if (astValue != null && astValue.GetDirectParent() == null)
+                astValue.SetDirectParent(astValueParent);
 
             foreach (var parseTreeChild in currentNode.ChildNodes.Select((parseTreeChild, childIndex) => new { Value = parseTreeChild, Index = childIndex }))
             {

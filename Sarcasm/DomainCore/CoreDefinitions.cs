@@ -19,7 +19,9 @@
 */
 #endregion
 
+using Sarcasm.Utility;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -270,14 +272,25 @@ namespace Sarcasm.DomainCore
             return obj.Props().Comments;
         }
 
-        internal static void SetParent(this object obj, object parent)
+        internal static void SetDirectParent(this object obj, object parent)
         {
             obj.Props().Parent = parent;
         }
 
-        public static object GetParent(this object obj)
+        public static object GetDirectParent(this object obj)
         {
             return obj.Props().Parent;
+        }
+
+        public static object GetParent(this object obj)
+        {
+            object directParent = obj.GetDirectParent();
+            return directParent is IEnumerable ? directParent.GetDirectParent() : directParent;
+        }
+
+        public static object GetRoot(this object obj)
+        {
+            return Util.RecurseStopBeforeNull(obj, objT => objT.GetDirectParent()).Last();
         }
     }
 
