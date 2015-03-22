@@ -124,7 +124,7 @@ namespace Sarcasm.Parsing
 
             if (Root != null)
             {
-                StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0);
+                StoreAstValueToParseTreeNodeRecursive(parseTree.Root, nodeIndex: 0, astValueParent: null);
 
                 // decorate comments at the end (Irony does not put these comments into the parse tree)
                 var commentsAtTheEnd = Tokens
@@ -141,17 +141,20 @@ namespace Sarcasm.Parsing
             }
         }
 
-        private void StoreAstValueToParseTreeNodeRecursive(ParseTreeNode currentNode, int nodeIndex)
+        private void StoreAstValueToParseTreeNodeRecursive(ParseTreeNode currentNode, int nodeIndex, object astValueParent)
         {
             object astValue = GrammarHelper.AstNodeToValue(currentNode.AstNode);
 
             if (astValue != null && astValue.GetType().IsClass && !astValueToParseTreeNode.ContainsKey(astValue))
                 astValueToParseTreeNode.Add(astValue, currentNode);
 
+            if (astValue != null && astValue.GetParent() == null)
+                astValue.SetParent(astValueParent);
+
             foreach (var parseTreeChild in currentNode.ChildNodes.Select((parseTreeChild, childIndex) => new { Value = parseTreeChild, Index = childIndex }))
             {
                 parseTreeNodeToParent.Add(parseTreeChild.Value, currentNode);
-                StoreAstValueToParseTreeNodeRecursive(parseTreeChild.Value, parseTreeChild.Index);
+                StoreAstValueToParseTreeNodeRecursive(parseTreeChild.Value, parseTreeChild.Index, astValueParent: astValue);
             }
 
             if (currentNode.Comments != null && currentNode.Comments.Count > 0)

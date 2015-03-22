@@ -269,6 +269,16 @@ namespace Sarcasm.DomainCore
         {
             return obj.Props().Comments;
         }
+
+        internal static void SetParent(this object obj, object parent)
+        {
+            obj.Props().Parent = parent;
+        }
+
+        public static object GetParent(this object obj)
+        {
+            return obj.Props().Parent;
+        }
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = true)]
