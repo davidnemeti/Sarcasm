@@ -69,20 +69,20 @@ namespace Sarcasm.UnitTest
         protected void ReunparseCheck(NonTerminal root, string parseFileName, bool leftToRight)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
-            Document document = ParseTextAndCheck(root, sourceText, parseFileName).GetDocument();
-            ReunparseCheck(root, document, sourceText, parseFileName, leftToRight);
+            object astRootValue = ParseTextAndCheck(root, sourceText, parseFileName).RootAstValue;
+            ReunparseCheck(root, astRootValue, sourceText, parseFileName, leftToRight);
         }
 
         protected void ReunparseCheckTS<TRoot>(INonTerminal<TRoot> root, string parseFileName, bool leftToRight)
         {
             string sourceText = File.ReadAllText(GetParseFilePath(parseFileName));
-            Document document = ParseTextAndCheckTS(root, sourceText, parseFileName).GetDocument();
-            ReunparseCheck(root.AsNonTerminal(), document, sourceText, parseFileName, leftToRight);
+            TRoot astRootValue = ParseTextAndCheckTS(root, sourceText, parseFileName).RootAstValue;
+            ReunparseCheck(root.AsNonTerminal(), astRootValue, sourceText, parseFileName, leftToRight);
         }
 
-        private void ReunparseCheck(NonTerminal root, Document document, string originalSourceText, string parseFileName, bool leftToRight)
+        private void ReunparseCheck<TRoot>(NonTerminal root, TRoot astRootValue, string originalSourceText, string parseFileName, bool leftToRight)
         {
-            var utokens = unparser.Unparse(document, root, leftToRight ? Unparser.Direction.LeftToRight : Unparser.Direction.RightToLeft);
+            var utokens = unparser.Unparse(astRootValue, root, leftToRight ? Unparser.Direction.LeftToRight : Unparser.Direction.RightToLeft);
 
             if (!leftToRight)
                 utokens = utokens.Reverse();

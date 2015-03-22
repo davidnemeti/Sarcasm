@@ -21,7 +21,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -232,25 +234,40 @@ namespace Sarcasm.DomainCore
         }
     }
 
-    public class Document
+    internal class ExpandoObjectLight : DynamicObject
     {
-        public object Root { get; private set; }
-        public IDictionary<object, Comments> AstValueToComments { get; private set; }
+        private readonly Dictionary<string, object> propertyToValue = new Dictionary<string, object>();
 
-        public Document(object root, IDictionary<object, Comments> astValueToComments)
+        public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            this.Root = root;
-            this.AstValueToComments = astValueToComments;
+            propertyToValue[binder.Name] = value;
+            return true;
+        }
+
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
+        {
+            propertyToValue.TryGetValue(binder.Name, out result);
+            return true;
         }
     }
 
-    public class Document<TRoot> : Document
+    public static class ExpandoExtensions
     {
-        public new TRoot Root { get { return (TRoot)base.Root; } }
+        private static readonly ConditionalWeakTable<object, ExpandoObjectLight> props = new ConditionalWeakTable<object, ExpandoObjectLight>();
 
-        public Document(TRoot root, IDictionary<object, Comments> astValueToComments)
-            : base(root, astValueToComments)
+        public static dynamic Props(this object key)
         {
+            return props.GetOrCreateValue(key);
+        }
+
+        public static void SetComments(this object obj, Comments comments)
+        {
+            obj.Props().Comments = comments;
+        }
+
+        public static Comments GetComments(this object obj)
+        {
+            return obj.Props().Comments;
         }
     }
 

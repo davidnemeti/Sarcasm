@@ -213,37 +213,6 @@ namespace Sarcasm.Unparsing
 
         #region Unparse logic
 
-        public IEnumerable<Utoken> Unparse(Document document, Direction direction = directionDefault)
-        {
-            return Unparse(document, CancellationToken.None, direction);
-        }
-
-        public IEnumerable<Utoken> Unparse(Document document, CancellationToken cancellationToken, Direction direction = directionDefault)
-        {
-            return Unparse(document, Grammar.Root, cancellationToken, direction);
-        }
-
-        public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, Direction direction = directionDefault)
-        {
-            return Unparse(document, bnfTerm, CancellationToken.None, direction);
-        }
-
-        public IEnumerable<Utoken> Unparse(Document document, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction = directionDefault)
-        {
-            this.astValueToComments =
-                astValue =>
-                {
-                    Comments comments;
-                    return document.AstValueToComments.TryGetValue(astValue, out comments)
-                        ? comments
-                        : null;
-                };
-
-            this.unparsedComments = new HashSet<Comments>();
-
-            return _Unparse(document.Root, bnfTerm, cancellationToken, direction);
-        }
-
         public IEnumerable<Utoken> Unparse(object astValue, Direction direction = directionDefault)
         {
             return Unparse(astValue, CancellationToken.None, direction);
@@ -261,7 +230,7 @@ namespace Sarcasm.Unparsing
 
         public IEnumerable<Utoken> Unparse(object astValue, BnfTerm bnfTerm, CancellationToken cancellationToken, Direction direction = directionDefault)
         {
-            this.astValueToComments = _ => null;
+            this.astValueToComments = astValueT => astValueT.GetComments();
             this.unparsedComments = new HashSet<Comments>();
 
             return _Unparse(astValue, bnfTerm, cancellationToken, direction);

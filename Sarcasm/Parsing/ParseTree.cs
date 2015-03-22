@@ -46,20 +46,6 @@ namespace Sarcasm.Parsing
         private ParseTreeNode prevLine;
         private ParseTreeNode currentLine;
 
-        private Dictionary<object, Comments> _astValueToDomainComments;
-        protected Dictionary<object, Comments> astValueToDomainComments
-        {
-            get
-            {
-                if (_astValueToDomainComments == null)
-                    BuildAstValueToParseTreeNode();
-
-                return _astValueToDomainComments;
-            }
-
-            set { _astValueToDomainComments = value; }
-        }
-
         internal ICommentCleaner CommentCleaner { get; set; }
 
         public ParseTree(Irony.Parsing.ParseTree parseTree)
@@ -77,7 +63,15 @@ namespace Sarcasm.Parsing
         public ParseTreeStatus Status { get { return parseTree.Status; } }
 
         public ParseTreeNode Root { get { return parseTree.Root; } }
-        public object RootAstValue { get { return parseTree.Root != null ? GrammarHelper.AstNodeToValue(parseTree.Root.AstNode) : null; } }
+
+        public object RootAstValue
+        {
+            get
+            {
+                MakeBuiltAstValueToParseTreeNode();
+                return parseTree.Root != null ? GrammarHelper.AstNodeToValue(parseTree.Root.AstNode) : null;
+            }
+        }
 
         public ParseTree SetCommentCleaner(ICommentCleaner commentCleaner)
         {
@@ -107,30 +101,23 @@ namespace Sarcasm.Parsing
 
         public ParseTreeNode GetParseTreeNodeForAstValue(object astValue)
         {
-            if (astValueToParseTreeNode == null)
-                BuildAstValueToParseTreeNode();
-
+            MakeBuiltAstValueToParseTreeNode();
             return astValueToParseTreeNode[astValue];
         }
 
         public ParseTreeNode GetParent(ParseTreeNode parseTreeNode)
         {
-            if (parseTreeNodeToParent == null)
-                BuildAstValueToParseTreeNode();
-
+            MakeBuiltAstValueToParseTreeNode();
             return parseTreeNodeToParent[parseTreeNode];
         }
 
-        public Document GetDocument()
+        private void MakeBuiltAstValueToParseTreeNode()
         {
-            return Root != null ? new Document(RootAstValue, astValueToDomainComments) : null;
-        }
+            if (astValueToParseTreeNode != null)
+                return;
 
-        private void BuildAstValueToParseTreeNode()
-        {
             astValueToParseTreeNode = new Dictionary<object, ParseTreeNode>();
             parseTreeNodeToParent = new Dictionary<ParseTreeNode, ParseTreeNode>() { { parseTree.Root, null } };
-            astValueToDomainComments = new Dictionary<object, Comments>();
             decoratedComments = new HashSet<Token>();
             prevLine = null;
             currentLine = null;
@@ -274,12 +261,12 @@ namespace Sarcasm.Parsing
             owner = Util.Recurse(owner, GetParent).First(_parseTreeNode => _parseTreeNode.AstNode != null);
             object astValue = GrammarHelper.AstNodeToValue(owner.AstNode);
 
-            Comments domainComments;
+            Comments domainComments = astValue.GetComments();
 
-            if (!astValueToDomainComments.TryGetValue(astValue, out domainComments))
+            if (domainComments == null)
             {
                 domainComments = new Comments();
-                astValueToDomainComments.Add(astValue, domainComments);
+                astValue.SetComments(domainComments);
             }
 
             var commentList = commentPlacement == CommentPlacement.OwnerLeft
@@ -373,11 +360,6 @@ namespace Sarcasm.Parsing
         public static implicit operator Irony.Parsing.ParseTree(ParseTree<TRoot> parseTree)
         {
             return parseTree;
-        }
-
-        public new Document<TRoot> GetDocument()
-        {
-            return Root != null ? new Document<TRoot>(RootAstValue, astValueToDomainComments) : null;
         }
     }
 }
