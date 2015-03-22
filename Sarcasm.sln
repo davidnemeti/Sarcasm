@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{E8BB73D5-07BA-42F5-9E1E-A84CAF30E702}"
 	ProjectSection(SolutionItems) = preProject
 		Libraries\Irony.dll = Libraries\Irony.dll
