@@ -1,4 +1,4 @@
-#Sarcasm
+# Sarcasm
 
 Sarcasm is an SDK for creating typesafe, domain-bound grammars. It also has a grammar driven general unparser.
 
@@ -24,7 +24,7 @@ You can download the latest version of Sarcasm SDK from the [Downloads directory
 
 ===
 
-###License information
+### License information
 
 **Sarcasm** has been released under the **GNU Lesser General Public License (LGPL)**. It means that you can use it **freely** as a library even in your **prorietary (closed source) software**. However, if you copy or modify the whole source code or part of it, that **derivate work** should also be released under the LGPL.
 
