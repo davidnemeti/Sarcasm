@@ -22,7 +22,7 @@ For more information see the [Documentation](https://github.com/davidnemeti/Sarc
 
 You can download the latest version of Sarcasm SDK from the [Downloads directory](Downloads).
 
-===
+---
 
 ### License information
 
