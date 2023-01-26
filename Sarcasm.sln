@@ -3,12 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{E8BB73D5-07BA-42F5-9E1E-A84CAF30E702}"
-	ProjectSection(SolutionItems) = preProject
-		Libraries\Irony.dll = Libraries\Irony.dll
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Playground", "Playground\Playground.csproj", "{65B89830-A608-40DC-96AF-D87C30FED087}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playground", "Playground\Playground.csproj", "{65B89830-A608-40DC-96AF-D87C30FED087}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarcasm", "Sarcasm\Sarcasm.csproj", "{A02FB9DE-B174-4438-83AF-034F8004C724}"
 EndProject
@@ -43,7 +38,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "License", "License", "{0791
 		License\License.txt = License\License.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sarcasmizer", "Sarcasmizer\Sarcasmizer.csproj", "{2614618C-7627-46AD-AD0C-EAA1A883A914}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarcasmizer", "Sarcasmizer\Sarcasmizer.csproj", "{2614618C-7627-46AD-AD0C-EAA1A883A914}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,17 +63,11 @@ Global
 		{30C09358-F048-417B-9DF6-75D51CA96349}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C09358-F048-417B-9DF6-75D51CA96349}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Release|Any CPU.ActiveCfg = Release|Any CPU

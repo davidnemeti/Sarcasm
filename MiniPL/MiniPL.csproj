@@ -9,12 +9,6 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   
-  <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
   <ItemGroup Condition=" '$(TargetFramework)' != 'net48' ">
     <PackageReference Include="System.CodeDom" Version="6.0.0" />
   </ItemGroup>

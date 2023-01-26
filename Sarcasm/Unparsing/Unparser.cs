@@ -37,6 +37,7 @@ using Sarcasm.GrammarAst;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using Sarcasm.DomainCore;
+using Sarcasm.Publicizing;
 
 namespace Sarcasm.Unparsing
 {
@@ -427,7 +428,7 @@ namespace Sarcasm.Unparsing
                 self.SetAsLeave();
 
                 var stringLiteral = ((StringLiteral)self.BnfTerm);
-                var subType = stringLiteral._subtypes.First();
+                var subType = stringLiteral.GetPrivate_subtypes().First();
 
                 yield return UtokenValue.CreateText(subType.Start, self).SetDiscriminator(Formatter.StringLiteralStartSymbol);
                 yield return UtokenValue.NoWhitespace();
