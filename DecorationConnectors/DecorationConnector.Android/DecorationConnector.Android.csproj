@@ -52,9 +52,9 @@
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Sarcasm\Sarcasm.PCL.csproj">
-      <Project>{e70f1a8c-e2e4-4676-acf1-f429c23cb4f5}</Project>
-      <Name>Sarcasm.PCL</Name>
+    <ProjectReference Include="..\..\Sarcasm\Sarcasm.csproj">
+      <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
+      <Name>Sarcasm</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
