@@ -38,9 +38,7 @@ using System.Runtime.Serialization;
 
 namespace Sarcasm.Parsing
 {
-#if !PCL
     [Serializable]
-#endif
     public class AstException : Exception
     {
         public AstException()
@@ -52,25 +50,19 @@ namespace Sarcasm.Parsing
         {
         }
 
-#if !PCL
         protected AstException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
-#endif
 
         internal readonly static ErrorLevel ErrorLevel = ErrorLevel.Error;
     }
 
-#if !PCL
     [Serializable]
-#endif
     public class FatalAstException : Exception
     {
         // NOTE: Irony.Parsing.SourceLocation struct is not serializable (we serialize it manually)
-#if !PCL
         [NonSerialized]
-#endif
         private SourceLocation location;
         public SourceLocation Location { get { return location; } internal set { location = value; } }
 
@@ -83,7 +75,6 @@ namespace Sarcasm.Parsing
         {
         }
 
-#if !PCL
         protected FatalAstException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
@@ -106,7 +97,6 @@ namespace Sarcasm.Parsing
         private const string locationPositionStr = "Position";
         private const string locationLineStr = "Line";
         private const string locationColumnStr = "Column";
-#endif
 
         internal readonly static ErrorLevel ErrorLevel = ErrorLevel.Error;
     }

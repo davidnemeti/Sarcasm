@@ -23,11 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq.Expressions;
-using System.IO;
-
 using Irony;
 using Irony.Ast;
 using Irony.Parsing;
@@ -111,20 +106,10 @@ namespace Sarcasm.GrammarAst
 
             if (runtimeCheck)
             {
-#if !WINDOWS_STORE
-#if PCL
-                if (collectionType.GetConstructor(new Type[0]) == null)
-#else
                 if (collectionType.GetConstructor(BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, types: System.Type.EmptyTypes, modifiers: null) == null)
-#endif
                     throw new ArgumentException("Collection type has no default constructor (neither public nor nonpublic)", "type");
-#endif
 
-#if PCL
-                this.addMethod = collectionType.GetMethod("Add", new[] { domainElementType });
-#else
                 this.addMethod = collectionType.GetMethod("Add", BnfiTermRecord.bindingAttrInstanceAll, System.Type.DefaultBinder, new[] { domainElementType }, modifiers: null);
-#endif
 
                 if (this.addMethod == null)
                     throw new ArgumentException("Collection type has proper 'Add' method (neither public nor nonpublic)", "collectionType");
@@ -220,11 +205,7 @@ namespace Sarcasm.GrammarAst
         {
             try
             {
-#if PCL
-                return ActivatorEx.CreateInstance(DomainCollectionType, nonPublic: true);
-#else
                 return Activator.CreateInstance(DomainCollectionType, nonPublic: true);
-#endif
             }
             catch (MissingMemberException)
             {

@@ -42,7 +42,7 @@ namespace Sarcasm.Unparsing
 
         internal readonly static TraceSource tsParentheses = new TraceSource("PARENTHESES", SourceLevels.Verbose);
 
-#if DEBUG && !PCL
+#if DEBUG
         static ExpressionUnparser()
         {
             Directory.CreateDirectory(Unparser.logDirectoryName);

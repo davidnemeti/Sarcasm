@@ -395,15 +395,9 @@ namespace Sarcasm.UnitTest
             parameters.GenerateInMemory = true;
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Core.dll");
-#if PCL
-            parameters.ReferencedAssemblies.Add("Irony.PCL.dll");
-            parameters.ReferencedAssemblies.Add("Sarcasm.PCL.dll");
-            parameters.ReferencedAssemblies.Add("MiniPL.PCL.dll");
-#else
             parameters.ReferencedAssemblies.Add("Irony.dll");
             parameters.ReferencedAssemblies.Add("Sarcasm.dll");
             parameters.ReferencedAssemblies.Add("MiniPL.dll");
-#endif
             parameters.ReferencedAssemblies.Add(typeof(TypesafetyTest).Assembly.Location);
 
             string sourceCode = GetFullSourceCodeFromMethodBody(methodBodySourceCode);

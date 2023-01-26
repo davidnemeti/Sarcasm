@@ -24,10 +24,8 @@ $msbuild = "c:\Program Files (x86)\MSBuild\12.0\Bin\MSBuild.exe"
 if ($project -eq "Irony")
 {
     & $msbuild ..\Irony\Irony\010.Irony.2010.csproj /p:Configuration=Release
-    & $msbuild ..\Irony\Irony\Irony.PCL.csproj /p:Configuration=Release
 
     Copy-Item -Path ..\Irony\Irony\bin\Release\Irony.dll -Destination Libraries -Force
-    Copy-Item -Path ..\Irony\Irony\bin\Release\Irony.PCL.dll -Destination Libraries -Force
 }
 elseif ($project -eq "Sarcasm")
 {
@@ -36,9 +34,7 @@ elseif ($project -eq "Sarcasm")
     New-Item -Path Downloads\Temp -ItemType directory -Force
 
     Copy-Item -Path Sarcasm\bin\Release\Irony.dll -Destination Downloads\Temp -Force
-    Copy-Item -Path Sarcasm\bin\Release\Irony.PCL.dll -Destination Downloads\Temp -Force
     Copy-Item -Path Sarcasm\bin\Release\Sarcasm.dll -Destination Downloads\Temp -Force
-    Copy-Item -Path Sarcasm\bin\Release\Sarcasm.PCL.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnectors\DecorationConnector.WPF\bin\Release\DecorationConnector.WPF.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnectors\DecorationConnector.Forms\bin\Release\DecorationConnector.Forms.dll -Destination Downloads\Temp -Force
     Copy-Item -Path DecorationConnectors\DecorationConnector.Silverlight\bin\Release\DecorationConnector.Silverlight.dll -Destination Downloads\Temp -Force

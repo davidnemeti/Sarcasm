@@ -83,12 +83,6 @@ namespace Sarcasm.UnitTest
             string expectedAstPath = Path.Combine(expectedAstDir, astFileName);
             string expectedAstContent = File.ReadAllText(expectedAstPath);
 
-#if PCL
-            actualAstContent = actualAstContent.Replace(", MiniPL.PCL", ", MiniPL");
-            actualAstContent = actualAstContent.Replace(", Sarcasm.PCL", ", Sarcasm");
-            actualAstContent = actualAstContent.Replace(", Irony.PCL", ", Irony");
-#endif
-
             // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
             Assert.AreEqual(expectedAstContent, actualAstContent, string.Format("Expected and actual parsed tree differs for file: '{0}'", parseFileName));
         }

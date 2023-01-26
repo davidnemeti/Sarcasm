@@ -28,7 +28,7 @@
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Collections.Generic" #> 
 <#
-	WriteLine("// GENERATED FILE");
+    WriteLine("// GENERATED FILE");
 #>
 
 using System;
@@ -42,29 +42,26 @@ using Irony.Parsing;
 namespace Sarcasm.GrammarAst
 {
 <#
-	foreach (TypeCode typeCode in Enum.GetValues(typeof(TypeCode)))
+    foreach (TypeCode typeCode in Enum.GetValues(typeof(TypeCode)))
     {
-		if (typeCode == TypeCode.Empty)
-			continue;
+        if (typeCode == TypeCode.Empty)
+            continue;
 
-        if (typeCode == TypeCode.DBNull)
-            WriteLine("#if !PCL");
-
-		Type type = TypeCodeToType(typeCode);
-		string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
-		string introMethodNameExt = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
-		string typeParamsStr = typeCode == TypeCode.Object ? "TL" : string.Format("<{0}>", typeCode);
+        Type type = TypeCodeToType(typeCode);
+        string methodNameExt = typeCode == TypeCode.Object ? string.Empty : typeCode.ToString();
+        string introMethodNameExt = typeCode == TypeCode.Object ? string.Empty : string.Format("<{0}>", typeCode);
+        string typeParamsStr = typeCode == TypeCode.Object ? "TL" : string.Format("<{0}>", typeCode);
 #>
-	#region Intro <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
+    #region Intro <#= type.Name #> (<#= IsNumeric(typeCode) ? "Data and Number" : "Data" #>)
 
-	#region BnfiTermConversion
+    #region BnfiTermConversion
 
     public partial class BnfiTermConversion
-	{
+    {
         public static BnfiTermConversion<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>(DataLiteralBase dataLiteral)
         {
 <#
-		if (typeCode != TypeCode.Object)
+        if (typeCode != TypeCode.Object)
         {
 #>
             if (dataLiteral.DataType != TypeCode.<#= typeCode #>)
@@ -76,117 +73,115 @@ namespace Sarcasm.GrammarAst
             return Intro<#= introMethodNameExt #>(dataLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MarkLiteral();
         }
 <#
-		if (IsNumeric(typeCode))
+        if (IsNumeric(typeCode))
         {
 #>
 
-		public static BnfiTermConversion<#= typeParamsStr #> IntroNumberLiteral<#= methodNameExt #>(NumberLiteral numberLiteral)
+        public static BnfiTermConversion<#= typeParamsStr #> IntroNumberLiteral<#= methodNameExt #>(NumberLiteral numberLiteral)
         {
             return Intro<#= introMethodNameExt #>(numberLiteral, (context, parseNode) => { return (<#= type.Name #>)parseNode.FindToken().Value; }, IdentityFunctionForceCast<<#= type.Name #>, object>, astForChild: false).MarkLiteral();
         }
 <#
         }
 #>
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region GrammarHelper
+    #region GrammarHelper
 
     public static partial class GrammarHelper
-	{
+    {
         public static BnfiTermConversion<#= typeParamsStr #> IntroDataLiteral<#= methodNameExt #>(this DataLiteralBase dataLiteral)
         {
-			return BnfiTermConversion.IntroDataLiteral<#= methodNameExt #>(dataLiteral);
+            return BnfiTermConversion.IntroDataLiteral<#= methodNameExt #>(dataLiteral);
         }
 <#
-		if (IsNumeric(typeCode))
+        if (IsNumeric(typeCode))
         {
 #>
 
-		public static BnfiTermConversion<#= typeParamsStr #> IntroNumberLiteral<#= methodNameExt #>(this NumberLiteral numberLiteral)
+        public static BnfiTermConversion<#= typeParamsStr #> IntroNumberLiteral<#= methodNameExt #>(this NumberLiteral numberLiteral)
         {
-			return BnfiTermConversion.IntroNumberLiteral<#= methodNameExt #>(numberLiteral);
+            return BnfiTermConversion.IntroNumberLiteral<#= methodNameExt #>(numberLiteral);
         }
 <#
         }
 #>
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#region TerminalFactoryS
+    #region TerminalFactoryS
 
     public partial class TerminalFactoryS
-	{
-		#region Data
+    {
+        #region Data
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>(string name = "dataliteral<#= methodNameExt #>", string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new DataLiteralBase(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new DataLiteralBase(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
+        }
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>).IntroDataLiteral<#= methodNameExt #>();
+        }
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Dsv(string name, string terminator, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>, terminator: terminator).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new DsvLiteral(name: name, dataType: TypeCode.<#= typeCode #>, terminator: terminator).IntroDataLiteral<#= methodNameExt #>();
+        }
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startEndSymbol, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startEndSymbol: startEndSymbol).IntroDataLiteral<#= methodNameExt #>();
+        }
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>Quoted(string name, string startSymbol, string endSymbol, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new QuotedValueLiteral(name: name, dataType: TypeCode.<#= typeCode #>, startSymbol: startSymbol, endSymbol: endSymbol).IntroDataLiteral<#= methodNameExt #>();
+        }
 
         public static BnfiTermConversion<#= typeParamsStr #> CreateDataLiteral<#= methodNameExt #>FixedLength(string name, int length, string dateTimeFormat = defaultDateTimeFormat, int intRadix = defaultIntRadix)
-		{
-			return new FixedLengthLiteral(name: name, dataType: TypeCode.<#= typeCode #>, length: length).IntroDataLiteral<#= methodNameExt #>();
-		}
+        {
+            return new FixedLengthLiteral(name: name, dataType: TypeCode.<#= typeCode #>, length: length).IntroDataLiteral<#= methodNameExt #>();
+        }
 
-		#endregion
+        #endregion
 <#
-		if (IsNumeric(typeCode))
+        if (IsNumeric(typeCode))
         {
 #>
 
-		#region Number
+        #region Number
 
-		public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(string name = "numberliteral")
+        public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(string name = "numberliteral")
         {
-			return new NumberLiteral(name: name).IntroNumberLiteral<#= methodNameExt #>();
+            return new NumberLiteral(name: name).IntroNumberLiteral<#= methodNameExt #>();
         }
 
-		public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(NumberOptions options)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(NumberOptions options)
         {
-			return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteral<#= methodNameExt #>();
+            return new NumberLiteral(name: "numberliteral", options: options).IntroNumberLiteral<#= methodNameExt #>();
         }
 
-		public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(string name, NumberOptions options)
+        public static BnfiTermConversion<#= typeParamsStr #> CreateNumberLiteral<#= methodNameExt #>(string name, NumberOptions options)
         {
-			return new NumberLiteral(name: name, options: options).IntroNumberLiteral<#= methodNameExt #>();
+            return new NumberLiteral(name: name, options: options).IntroNumberLiteral<#= methodNameExt #>();
         }
 
-		#endregion
+        #endregion
 <#
         }
 #>
-	}
+    }
 
-	#endregion
+    #endregion
 
-	#endregion
+    #endregion
 
 <#
-        if (typeCode == TypeCode.DBNull)
-            WriteLine("#endif");
     }
 #>
 }
@@ -194,29 +189,29 @@ namespace Sarcasm.GrammarAst
 <#+
 Type TypeCodeToType(TypeCode typeCode)
 {
-	return Type.GetType("System." + typeCode.ToString());
+    return Type.GetType("System." + typeCode.ToString());
 }
 
 bool IsNumeric(TypeCode typeCode)
 {
-	switch (typeCode)
+    switch (typeCode)
     {
-		case TypeCode.Byte:
-		case TypeCode.Decimal:
-		case TypeCode.Double:
-		case TypeCode.Int16:
-		case TypeCode.Int32:
-		case TypeCode.Int64:
-		case TypeCode.SByte:
-		case TypeCode.Single:
-		case TypeCode.UInt16:
-		case TypeCode.UInt32:
-		case TypeCode.UInt64:
-		case TypeCode.Object:
-			return true;
+        case TypeCode.Byte:
+        case TypeCode.Decimal:
+        case TypeCode.Double:
+        case TypeCode.Int16:
+        case TypeCode.Int32:
+        case TypeCode.Int64:
+        case TypeCode.SByte:
+        case TypeCode.Single:
+        case TypeCode.UInt16:
+        case TypeCode.UInt32:
+        case TypeCode.UInt64:
+        case TypeCode.Object:
+            return true;
 
-		default:
-			return false;
+        default:
+            return false;
     }
 }
 #>
