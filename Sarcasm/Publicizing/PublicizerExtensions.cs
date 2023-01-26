@@ -10,7 +10,7 @@ namespace Sarcasm.Publicizing
     {
         private static readonly Func<StringLiteral, IReadOnlyList<object>> _GetField__subtypes =
             MemberInfoHelpers.CreateGetFuncByExpression<StringLiteral, IReadOnlyList<object>>(
-                typeof(StringLiteral).GetField("_subtypes", BindingFlags.Instance | BindingFlags.NonPublic)
+                typeof(StringLiteral).GetField("_subtypes", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             );
 
         public static IEnumerable<StringSubTypeProxy> GetPrivate_subtypes(this StringLiteral stringLiteral) =>
