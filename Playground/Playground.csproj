@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Irony.PCL">
+    <Reference Include="Irony">
       <HintPath>..\Libraries\Irony.dll</HintPath>
     </Reference>
   </ItemGroup>

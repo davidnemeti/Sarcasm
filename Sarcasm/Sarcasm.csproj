@@ -24,12 +24,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Irony" Version="1.1.0" />
     <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.6.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
     <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Irony">
+      <HintPath>..\Libraries\Irony.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
