@@ -20,11 +20,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <InternalsAssemblyName Include="Irony" />
+    <Publicize Include="Irony" IncludeVirtualMembers="false" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.6.0" PrivateAssets="All" />
+    <!--
+      using Krafs.Publicizer instead of IgnoresAccessChecksToGenerator, because:
+        - IgnoresAccessChecksToGenerator raised error when processing netstandard2.0 Irony.dll
+        - IgnoresAccessChecksToGenerator cannot publicize private members
+    -->
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">

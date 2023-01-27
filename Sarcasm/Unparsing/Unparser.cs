@@ -428,7 +428,7 @@ namespace Sarcasm.Unparsing
                 self.SetAsLeave();
 
                 var stringLiteral = ((StringLiteral)self.BnfTerm);
-                var subType = stringLiteral.GetPrivate_subtypes().First();
+                var subType = stringLiteral._subtypes.First();
 
                 yield return UtokenValue.CreateText(subType.Start, self).SetDiscriminator(Formatter.StringLiteralStartSymbol);
                 yield return UtokenValue.NoWhitespace();
