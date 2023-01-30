@@ -83,6 +83,10 @@ namespace Sarcasm.UnitTest
             string expectedAstPath = Path.Combine(expectedAstDir, astFileName);
             string expectedAstContent = File.ReadAllText(expectedAstPath);
 
+#if !NET48
+            expectedAstContent = expectedAstContent.Replace("mscorlib", "System.Private.CoreLib");
+#endif
+
             // NOTE: Assert.AreEqual handles format string incorrectly (.NET bug), that's why we use string.Format here
             Assert.AreEqual(expectedAstContent, actualAstContent, string.Format("Expected and actual parsed tree differs for file: '{0}'", parseFileName));
         }
