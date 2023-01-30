@@ -21,6 +21,7 @@
 
 extern alias globalMiniPL;
 
+using System.Reflection;
 using System.Collections.Immutable;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
@@ -36,7 +37,6 @@ using Sarcasm.Unparsing;
 
 using globalMiniPL::MiniPL.DomainDefinitions;
 using globalMiniPL::Expr.DomainDefinitions;
-
 
 namespace Sarcasm.UnitTest
 {
@@ -389,21 +389,18 @@ namespace Sarcasm.UnitTest
 
             var sourceCode = GetFullSourceCodeFromMethodBody(methodBodySourceCode);
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
-            var assemblyPath = Path.GetDirectoryName(typeof(System.Object).Assembly.Location);
 
             var references = new MetadataReference[]
             {
                 MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Enum).Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
+#if NET48
                 MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
+#else
                 MetadataReference.CreateFromFile(typeof(System.Linq.Expressions.Expression).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Text.StringBuilder).Assembly.Location),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Collections.dll")),
-                MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location),
+#endif
                 MetadataReference.CreateFromFile("Irony.dll"),
                 MetadataReference.CreateFromFile("Sarcasm.dll"),
                 MetadataReference.CreateFromFile("MiniPL.dll"),
@@ -469,7 +466,7 @@ namespace Sarcasm.UnitTest
             return sourceCode.Replace(oldValue, newValue);
         }
 
-        #endregion
+#endregion
     }
 
     public class MiniPLExtension
