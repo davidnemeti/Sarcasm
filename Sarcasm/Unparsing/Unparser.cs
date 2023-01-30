@@ -37,7 +37,6 @@ using Sarcasm.GrammarAst;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
 using Sarcasm.DomainCore;
-using Sarcasm.Publicizing;
 
 namespace Sarcasm.Unparsing
 {
