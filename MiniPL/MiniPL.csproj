@@ -8,9 +8,9 @@
     <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  
-  <ItemGroup Condition=" '$(TargetFramework)' != 'net48' ">
-    <PackageReference Include="System.CodeDom" Version="6.0.0" />
+
+  <ItemGroup>
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
