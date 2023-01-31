@@ -72,33 +72,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary1_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary1.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary1_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Binary1.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary1_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary1.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_Binary2_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;
@@ -121,33 +94,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatterDefault;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Expression, "Binary2.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary2_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary2.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary2_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Binary2.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary2_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Expression, "Binary2.expr", leftToRight: false);
         }
 
@@ -180,33 +126,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Binary3_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary3.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary3_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Binary3.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary3_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary3.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_Binary4_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;
@@ -229,33 +148,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatterDefault;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Expression, "Binary4.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary4_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Binary4.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary4_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Binary4.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Binary4_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Expression, "Binary4.expr", leftToRight: false);
         }
 
@@ -288,33 +180,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_MiniPL_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPL.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Program, "MiniPL.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPL.mplp", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_MiniPL2_Sequential_Typesafe()
         {
             unparser.Formatter = formatter2;
@@ -337,33 +202,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatter2;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Program, "MiniPL2.mplp", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL2_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatter2;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPL2.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL2_Parallel()
-        {
-            unparser.Formatter = formatter2;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Program, "MiniPL2.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL2_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatter2;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Program, "MiniPL2.mplp", leftToRight: false);
         }
 
@@ -396,33 +234,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_MiniPL3_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatter3;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPL3.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL3_Parallel()
-        {
-            unparser.Formatter = formatter3;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Program, "MiniPL3.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPL3_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatter3;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPL3.mplp", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_MiniPLWithComments_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;
@@ -445,33 +256,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatterDefault;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPLWithComments_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPLWithComments_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Program, "MiniPLWithComments.mplp", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_MiniPLWithComments_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Program, "MiniPLWithComments.mplp", leftToRight: false);
         }
 
@@ -504,33 +288,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary1_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary1.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary1_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Unary1.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary1_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary1.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_Unary2_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;
@@ -553,33 +310,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatterDefault;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Expression, "Unary2.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary2_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary2.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary2_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Unary2.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary2_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Expression, "Unary2.expr", leftToRight: false);
         }
 
@@ -612,33 +342,6 @@ namespace Sarcasm.UnitTest
 
         [TestMethod]
         [TestCategory(category)]
-        public void Unparse_Unary3_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary3.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary3_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Unary3.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary3_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary3.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
         public void Unparse_Unary4_Sequential_Typesafe()
         {
             unparser.Formatter = formatterDefault;
@@ -661,33 +364,6 @@ namespace Sarcasm.UnitTest
         {
             unparser.Formatter = formatterDefault;
             unparser.EnableParallelProcessing = false;
-            ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: false);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary4_Parallel_Typesafe()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary4_Parallel()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
-            ReunparseCheck(B.Expression, "Unary4.expr", leftToRight: true);
-        }
-
-        [TestMethod]
-        [TestCategory(category)]
-        public void Unparse_Unary4_Parallel_Typesafe_Reversed()
-        {
-            unparser.Formatter = formatterDefault;
-            unparser.EnableParallelProcessing = true;
             ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: false);
         }
 

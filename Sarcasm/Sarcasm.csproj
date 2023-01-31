@@ -11,7 +11,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
-    <NoWarn>CS1591</NoWarn>
+    <NoWarn>CS1591,CS0618</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Signature\Sarcasm.snk</AssemblyOriginatorKeyFile>
     <!--<TransformOnBuild>true</TransformOnBuild>

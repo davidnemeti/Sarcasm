@@ -58,9 +58,10 @@ namespace Sarcasm.UnitTest
         GenerateTestMethod(filePath, typesafe: false, leftToRight: true, enableParallelProcessing: false);
         GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: false);
 
-        GenerateTestMethod(filePath, typesafe: true, leftToRight: true, enableParallelProcessing: true);
-        GenerateTestMethod(filePath, typesafe: false, leftToRight: true, enableParallelProcessing: true);
-        GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: true);
+// NOTE: parallel unparsing has been disabled, because it is buggy
+//        GenerateTestMethod(filePath, typesafe: true, leftToRight: true, enableParallelProcessing: true);
+//        GenerateTestMethod(filePath, typesafe: false, leftToRight: true, enableParallelProcessing: true);
+//        GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: true);
     }
 #>
     }

@@ -97,13 +97,13 @@ namespace Playground
             //string unparsedText = unparser.Unparse(document).AsText(unparser);
             //ShowTimeAndRestart(stopwatch, "Converting utokens to string");
 
-            unparser.EnableParallelProcessing = false;
+            //unparser.EnableParallelProcessing = false;
             //foreach (Utoken utoken in unparser.Unparse(astRootValue))
             //    Console.WriteLine(utoken.ToString());
             unparser.Unparse(astRootValue).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Sequential unparsing to string");
 
-            unparser.EnableParallelProcessing = true;
+            //unparser.EnableParallelProcessing = true;
             //foreach (Utoken utoken in unparser.Unparse(astRootValue))
             //    Console.WriteLine(utoken.ToString());
             unparser.Unparse(astRootValue).ConsumeAll();
@@ -112,11 +112,11 @@ namespace Playground
             //var utokensReverse = unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ToList();
             //ShowTimeAndRestart(stopwatch, "Reverse unparsing to utokens");
 
-            unparser.EnableParallelProcessing = false;
+            //unparser.EnableParallelProcessing = false;
             unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Reverse sequential unparsing to string");
 
-            unparser.EnableParallelProcessing = true;
+            //unparser.EnableParallelProcessing = true;
             unparser.Unparse(astRootValue, Unparser.Direction.RightToLeft).ConsumeAll();
             ShowTimeAndRestart(stopwatch, "Reverse parallel unparsing to string");
 

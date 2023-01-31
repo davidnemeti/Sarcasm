@@ -88,6 +88,7 @@ namespace Sarcasm.Unparsing
         private Func<object, Comments> astValueToComments;
         private HashSet<Comments> unparsedComments;
         public bool EnablePartialInvalidation { get; set; }
+        [Obsolete("Do not use it, because it is buggy")]
         public bool EnableParallelProcessing { get; set; }
         public readonly AsyncLock Lock = new AsyncLock();
         private CancellationToken cancellationToken;
