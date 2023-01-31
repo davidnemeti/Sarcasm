@@ -1,5 +1,9 @@
 # Sarcasm
 
+[![NuGet](https://img.shields.io/nuget/v/Sarcasm.svg)](https://www.nuget.org/packages/Sarcasm) [![NuGet](https://img.shields.io/github/release/davidnemeti/Sarcasm?display_name=tag&sort=semver)](../../releases/latest) [![Build](https://github.com/davidnemeti/Sarcasm/actions/workflows/build.yml/badge.svg)](https://github.com/davidnemeti/Sarcasm/actions/workflows/build.yml) [![License](https://img.shields.io/badge/license-LGPLv3-green)](https://licenses.nuget.org/LGPL-3.0-only)
+
+## Summary
+
 Sarcasm is an SDK for creating typesafe, domain-bound grammars. It also has a grammar driven general unparser.
 
 Sarcasm provides the following features:
