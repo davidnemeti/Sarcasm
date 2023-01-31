@@ -14,6 +14,7 @@
     <NoWarn>CS1591,CS0618</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Signature\Sarcasm.snk</AssemblyOriginatorKeyFile>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetMyPackageFiles</TargetsForTfmSpecificBuildOutput>
     <!--<TransformOnBuild>true</TransformOnBuild>
     <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>-->
@@ -44,6 +45,12 @@
       <HintPath>..\Libraries\Irony.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Target Name="GetMyPackageFiles">
+    <ItemGroup>
+      <BuildOutputInPackage Include="..\Libraries\Irony.dll" />
+    </ItemGroup>
+  </Target>
 
   <ItemGroup>
     <Compile Update="GrammarAst\BnfiExpressions\BnfiExpression.generated.cs">
