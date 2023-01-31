@@ -3,10 +3,10 @@
   <PropertyGroup>
     <TargetFrameworks>net48;net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
-    <TransformOnBuild>true</TransformOnBuild>
-    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
     <IsPackable>false</IsPackable>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <!--<TransformOnBuild>true</TransformOnBuild>
+    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>-->
   </PropertyGroup>
 
   <ItemGroup>
@@ -140,6 +140,6 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
 
-  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />
+  <!--<Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />-->
 
 </Project>
