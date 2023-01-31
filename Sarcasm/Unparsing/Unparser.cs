@@ -51,7 +51,7 @@ namespace Sarcasm.Unparsing
         internal readonly static TraceSource tsUnparse = new TraceSource("UNPARSE", SourceLevels.Verbose);
         internal readonly static TraceSource tsPriorities = new TraceSource("PRIORITIES", SourceLevels.Verbose);
 
-#if DEBUG && !PCL
+#if DEBUG
         static Unparser()
         {
             Directory.CreateDirectory(logDirectoryName);

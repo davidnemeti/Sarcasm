@@ -1,192 +1,82 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
-    <UpgradeBackupLocation />
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A02FB9DE-B174-4438-83AF-034F8004C724}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net48;net6.0</TargetFrameworks>
     <RootNamespace>Sarcasm</RootNamespace>
     <AssemblyName>Sarcasm</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <Description>SDK for creating typesafe and typeless domain bound grammar and using the general unparser</Description>
+    <Version>4.0.0</Version>
+    <Authors>Dávid Németi</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsInferRequires>False</CodeContractsInferRequires>
-    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
-    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
-    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
-    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
-    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
-    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
-    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
+    <DebugSymbols>true</DebugSymbols>
+    <NoWarn>CS1591</NoWarn>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>Signature\Sarcasm.snk</AssemblyOriginatorKeyFile>
+    <TransformOnBuild>true</TransformOnBuild>
+    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Publicize Include="Irony" IncludeVirtualMembers="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      using Krafs.Publicizer instead of IgnoresAccessChecksToGenerator, because:
+        - IgnoresAccessChecksToGenerator raised error when processing netstandard2.0 Irony.dll
+        - IgnoresAccessChecksToGenerator cannot publicize private members
+    -->
+    <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+
   <ItemGroup>
     <Reference Include="Irony">
       <HintPath>..\Libraries\Irony.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="CodeGeneration\CodeGenerator.cs" />
-    <Compile Include="GrammarAst\AstBuilder.cs" />
-    <Compile Include="GrammarAst\AstNodeWrapper.cs" />
-    <Compile Include="GrammarAst\BnfiExpressions\BnfiExpression.cs" />
-    <Compile Include="GrammarAst\BnfiExpressions\BnfiExpression.generated.cs">
+    <Compile Update="GrammarAst\BnfiExpressions\BnfiExpression.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiExpression.tt</DependentUpon>
     </Compile>
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermCopy.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermKeyTerm.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermNoAst.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.generated.cs">
+    <Compile Update="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.generated.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>BnfiTermConversionForDataAndNumber.tt</DependentUpon>
     </Compile>
-    <Compile Include="GrammarAst\Common.cs" />
-    <Compile Include="DomainCore\CoreDefinitions.cs" />
-    <Compile Include="GrammarAst\NumberLiteralInfo.cs" />
-    <Compile Include="GrammarAst\TerminalFactoryS.cs" />
-    <Compile Include="Parsing\Exceptions.cs" />
-    <Compile Include="Reflection\Attributes.cs" />
-    <Compile Include="Reflection\MetaCodeGenerator.cs" />
-    <Compile Include="Reflection\MetaFormatter.cs" />
-    <Compile Include="Reflection\MetaGrammar.cs" />
-    <Compile Include="Reflection\MetaDomain.cs" />
-    <Compile Include="Reflection\MetaRepository.cs" />
-    <Compile Include="UniversalGrammars\JsonGrammar.cs" />
-    <Compile Include="Unparsing\FormatYielder.cs" />
-    <Compile Include="Unparsing\Styles.cs" />
-    <Compile Include="Unparsing\UnparseHint.cs" />
-    <Compile Include="Unparsing\UnparsableAst.cs" />
-    <Compile Include="Unparsing\FormatterExtensions.cs" />
-    <Compile Include="Unparsing\Decoration.cs" />
-    <Compile Include="Utility\AsyncSemaphore.cs" />
-    <Compile Include="Utility\AsyncLock.cs" />
-    <Compile Include="Utility\ResourceCounter.cs" />
-    <Compile Include="Utility\ReverseList.cs" />
-    <Compile Include="Utility\ForAll.cs" />
-    <Compile Include="Parsing\ParseTree.cs" />
-    <Compile Include="GrammarAst\GrammarHelper.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConstant.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermConversion.cs" />
-    <Compile Include="Parsing\ParseTreeNodeWithoutAst.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermChoice.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermCollection.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\BnfiTermRecord.cs" />
-    <Compile Include="GrammarAst\BnfiTerms\Member.cs" />
-    <Compile Include="GrammarAst\Grammar.cs" />
-    <Compile Include="Utility\Bag.cs" />
-    <Compile Include="Utility\AutoCleanup.cs" />
-    <Compile Include="Utility\Misc.cs" />
-    <Compile Include="Parsing\MultiParser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Unparsing\ExpressionUnparser.cs" />
-    <Compile Include="Unparsing\Formatter.cs" />
-    <Compile Include="Unparsing\Exceptions.cs" />
-    <Compile Include="Unparsing\BlockIndentation.cs" />
-    <Compile Include="Unparsing\UnparseControl.cs" />
-    <Compile Include="Unparsing\UnparserRelated.cs" />
-    <Compile Include="Unparsing\Utokens.cs" />
-    <Compile Include="Unparsing\Unparser.cs" />
-    <Compile Include="Utility\Util.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="GrammarAst\BnfiExpressions\BnfiExpressionGeneration.ttinclude" />
-    <None Include="GrammarAst\BnfiExpressions\BnfiExpression.tt">
+    <None Update="GrammarAst\BnfiExpressions\BnfiExpression.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiExpression.generated.cs</LastGenOutput>
     </None>
-    <None Include="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.tt">
+    <None Update="GrammarAst\BnfiTerms\BnfiTermConversionForDataAndNumber.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>BnfiTermConversionForDataAndNumber.generated.cs</LastGenOutput>
     </None>
-    <None Include="Signature\Sarcasm.pub" />
-    <None Include="Signature\Sarcasm.snk" />
-    <None Include="Unparsing\StylesGenerator.tt" />
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="Readme.txt" />
+    <Content Update="Readme.txt" />
   </ItemGroup>
+
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <PropertyGroup>
-    <TransformOnBuild>true</TransformOnBuild>
-    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
-  </PropertyGroup>
+
   <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />
-  <PropertyGroup>
-    <PreBuildEvent>%25SystemRoot%25\system32\WindowsPowerShell\v1.0\powershell.exe $(ProjectDir)..\Scripts\AutoIncrementAssemblyFileVersion.ps1 -assemblyInfoPath $(ProjectDir)\Properties\AssemblyInfo.cs</PreBuildEvent>
-  </PropertyGroup>
+
 </Project>

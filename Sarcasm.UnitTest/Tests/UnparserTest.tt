@@ -51,7 +51,7 @@ namespace Sarcasm.UnitTest
     public partial class UnparserTest
     {
 <#
-	string testFileDirPath = Host.ResolvePath(@"..\Test files");
+    string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
         GenerateTestMethod(filePath, typesafe: true, leftToRight: true, enableParallelProcessing: false);
@@ -63,7 +63,7 @@ namespace Sarcasm.UnitTest
         GenerateTestMethod(filePath, typesafe: true, leftToRight: false, enableParallelProcessing: true);
     }
 #>
-	}
+    }
 }
 
 <#+

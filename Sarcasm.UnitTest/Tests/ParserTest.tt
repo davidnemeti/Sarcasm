@@ -51,14 +51,14 @@ namespace Sarcasm.UnitTest
     public partial class ParserTest
     {
 <#
-	string testFileDirPath = Host.ResolvePath(@"..\Test files");
+    string testFileDirPath = Host.ResolvePath(@"..\Test files");
     foreach (string filePath in Directory.GetFiles(testFileDirPath))
     {
         GenerateTestMethod(filePath, typesafe: true);
         GenerateTestMethod(filePath, typesafe: false);
     }
 #>
-	}
+    }
 }
 
 <#+

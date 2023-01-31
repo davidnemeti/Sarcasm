@@ -181,9 +181,7 @@ namespace Sarcasm.GrammarAst
             //create new term
             if (!CaseSensitive)
                 text = text.ToLowerInvariant();
-#if !PCL
             string.Intern(text);
-#endif
             term = new BnfiTermKeyTerm(text, name);
             KeyTerms[text] = term;
             return (BnfiTermKeyTerm)term;

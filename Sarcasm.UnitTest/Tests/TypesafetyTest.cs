@@ -21,12 +21,10 @@
 
 extern alias globalMiniPL;
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Collections.Generic;
-using System.CodeDom.Compiler;
-using Microsoft.CSharp;
+using System.Reflection;
+using System.Collections.Immutable;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Irony;
@@ -39,10 +37,6 @@ using Sarcasm.Unparsing;
 
 using globalMiniPL::MiniPL.DomainDefinitions;
 using globalMiniPL::Expr.DomainDefinitions;
-
-using Grammar = Sarcasm.GrammarAst.Grammar;
-using CompilerError = global::System.CodeDom.Compiler.CompilerError;
-using System.Reflection;
 
 namespace Sarcasm.UnitTest
 {
@@ -123,7 +117,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
+            CompileShouldFail(sourceCodeFail, "CS1503");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -161,7 +155,7 @@ namespace Sarcasm.UnitTest
                     ;
             ";
 
-            CompileShouldFail(sourceCodeFail, "CS1502", "CS1503");
+            CompileShouldFail(sourceCodeFail, "CS1503");
             CompileShouldSucceed(sourceCodeSuccess);
         }
 
@@ -390,40 +384,46 @@ namespace Sarcasm.UnitTest
 
         private void CompileAndCheck(string methodBodySourceCode, bool shouldCompile, params string[] expectedErrorCodes)
         {
-            CSharpCodeProvider provider = new CSharpCodeProvider();
-            CompilerParameters parameters = new CompilerParameters();
-            parameters.GenerateInMemory = true;
-            parameters.ReferencedAssemblies.Add("System.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
-#if PCL
-            parameters.ReferencedAssemblies.Add("Irony.PCL.dll");
-            parameters.ReferencedAssemblies.Add("Sarcasm.PCL.dll");
-            parameters.ReferencedAssemblies.Add("MiniPL.PCL.dll");
+            if (!shouldCompile && !expectedErrorCodes.Any())
+                throw new ArgumentException("If a code should not compile, then expected error codes are required");
+
+            var sourceCode = GetFullSourceCodeFromMethodBody(methodBodySourceCode);
+            var syntaxTree = CSharpSyntaxTree.ParseText(sourceCode);
+
+            var references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load("netstandard").Location),
+#if NET48
+                MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
 #else
-            parameters.ReferencedAssemblies.Add("Irony.dll");
-            parameters.ReferencedAssemblies.Add("Sarcasm.dll");
-            parameters.ReferencedAssemblies.Add("MiniPL.dll");
+                MetadataReference.CreateFromFile(typeof(System.Linq.Expressions.Expression).Assembly.Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Runtime").Location),
+                MetadataReference.CreateFromFile(Assembly.Load("System.Collections").Location),
 #endif
-            parameters.ReferencedAssemblies.Add(typeof(TypesafetyTest).Assembly.Location);
+                MetadataReference.CreateFromFile("Irony.dll"),
+                MetadataReference.CreateFromFile("Sarcasm.dll"),
+                MetadataReference.CreateFromFile("MiniPL.dll"),
+                MetadataReference.CreateFromFile(typeof(TypesafetyTest).Assembly.Location),
+            };
 
-            string sourceCode = GetFullSourceCodeFromMethodBody(methodBodySourceCode);
+            var options = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
 
-            CompilerResults results = provider.CompileAssemblyFromSource(parameters, sourceCode);
+            var compilation = CSharpCompilation.Create(assemblyName: null, new[] { syntaxTree }, references, options);
+            var diagnostics = compilation.GetDiagnostics();
+            var actualErrors = diagnostics.Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Error).ToImmutableArray();
 
             if (shouldCompile)
-                Assert.IsTrue(results.Errors.Count == 0, string.Join("\n", results.Errors.Cast<CompilerError>()));
+                Assert.IsTrue(actualErrors.Length == 0, string.Join("\n", actualErrors));
             else
             {
-                Assert.IsTrue(results.Errors.Count > 0, "This should have failed, but has been compiled with success:\n{0}", methodBodySourceCode);
+                Assert.IsTrue(actualErrors.Length > 0, "This should have failed, but has been compiled with success:\n{0}", methodBodySourceCode);
 
-                var actualErrorCodes = results.Errors.Cast<CompilerError>().Select(error => error.ErrorNumber);
+                var actualErrorCodes = actualErrors.Select(error => error.Id).ToImmutableArray();
 
-                if (expectedErrorCodes.Length > 0)
-                {
-                    CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes.ToList(),
-                        "Failed:\n{0}\nbut not with the expected errors. (Probably the test sourcecode needs to be updated.)\nExpected errors: {1}\nActual errors: {2}",
-                        methodBodySourceCode, string.Join(", ", expectedErrorCodes), string.Join(", ", actualErrorCodes));
-                }
+                CollectionAssert.AreEquivalent(expectedErrorCodes, actualErrorCodes,
+                    "Failed:\n{0}\nbut not with the expected errors. (Probably the test sourcecode needs to be updated.)\nExpected errors: {1}\nActual errors: {2}\n\n{3}",
+                    methodBodySourceCode, string.Join(", ", expectedErrorCodes), string.Join(", ", actualErrorCodes), string.Join(", ", actualErrors));
             }
         }
 
@@ -466,7 +466,7 @@ namespace Sarcasm.UnitTest
             return sourceCode.Replace(oldValue, newValue);
         }
 
-        #endregion
+#endregion
     }
 
     public class MiniPLExtension

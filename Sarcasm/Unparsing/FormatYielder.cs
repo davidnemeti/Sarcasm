@@ -46,7 +46,7 @@ namespace Sarcasm.Unparsing
     {
         static FormatYielder()
         {
-#if DEBUG && !PCL
+#if DEBUG
             tsRaw.Listeners.Clear();
             tsRaw.Listeners.Add(new TextWriterTraceListener(File.Create(Path.Combine(Unparser.logDirectoryName, "01_raw.log"))));
 
@@ -414,7 +414,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        /// <exception cref="UnparsableAst.NonCalculatedException">
+        /// <exception cref="NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
         private static IEnumerable<UtokenBase> _YieldBetween(UnparsableAst self, FormatYielder formatYielder)
@@ -527,7 +527,7 @@ namespace Sarcasm.Unparsing
             }
         }
 
-        /// <exception cref="UnparsableAst.NonCalculatedException">
+        /// <exception cref="NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
         private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableAst self, BlockIndentation blockIndentationParameter, Unparser.Direction direction,
@@ -544,7 +544,7 @@ namespace Sarcasm.Unparsing
             return utokens;
         }
 
-        /// <exception cref="UnparsableAst.NonCalculatedException">
+        /// <exception cref="Sarcasm.Unparsing.NonCalculatedException">
         /// If topLeft is non-calculated or thrown out.
         /// </exception>
         private static IEnumerable<UtokenBase> _YieldIndentation(UnparsableAst self, ref BlockIndentation blockIndentationParameter, Unparser.Direction direction,
@@ -690,7 +690,7 @@ namespace Sarcasm.Unparsing
             return GetSelfAndAncestors(self).FirstOrDefault(current => current.LeftSibling != null);
         }
 
-        /// <exception cref="UnparsableAst.NonCalculatedException">
+        /// <exception cref="NonCalculatedException">
         /// If topLeft is non-calculated.
         /// </exception>
         private static IEnumerable<UnparsableAst> GetLeftsFromTopToBottom(UnparsableAst self, FormatYielder formatYielder = null)
@@ -702,7 +702,7 @@ namespace Sarcasm.Unparsing
                 : Enumerable.Empty<UnparsableAst>();
         }
 
-        /// <exception cref="UnparsableAst.NonCalculatedException">
+        /// <exception cref="NonCalculatedException">
         /// If topLeft is non-calculated.
         /// </exception>
         private static UnparsableAst GetLeftTerminalLeave(UnparsableAst self, FormatYielder formatYielder = null)

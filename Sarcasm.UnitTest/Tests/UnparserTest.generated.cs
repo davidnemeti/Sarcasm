@@ -691,6 +691,6 @@ namespace Sarcasm.UnitTest
             ReunparseCheckTS(B.Expression, "Unary4.expr", leftToRight: false);
         }
 
-	}
+    }
 }
 

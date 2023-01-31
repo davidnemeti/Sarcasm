@@ -19,12 +19,8 @@
 */
 #endregion
 
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace Sarcasm.UnitTest
 {
@@ -39,13 +35,10 @@ namespace Sarcasm.UnitTest
 
         public static void Register()
         {
-#if !PCL
             if (!System.Diagnostics.Debugger.IsAttached)
-                System.Diagnostics.Debug.Listeners.Insert(0, new ExceptionThrowerTraceListener());
-#endif
+                System.Diagnostics.Trace.Listeners.Insert(0, new ExceptionThrowerTraceListener());
         }
 
-#if !PCL
         public override void Fail(string message, string detailMessage)
         {
             string messageException = "Assert failed: " + message;
@@ -65,7 +58,6 @@ namespace Sarcasm.UnitTest
         {
             // do nothing
         }
-#endif
     }
 
     [Serializable]

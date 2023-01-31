@@ -139,21 +139,13 @@ namespace Sarcasm.GrammarAst
 
         #endregion
 
-#if !WINDOWS_STORE
         internal const BindingFlags bindingAttrInstanceAll = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-#endif
 
         protected BnfiTermRecord(Type domainType, string name)
             : base(domainType, name)
         {
-#if !WINDOWS_STORE
-#if PCL
-            if (domainType.GetConstructor(new Type[0]) == null)
-#else
             if (domainType.GetConstructor(bindingAttrInstanceAll, binder: null, types: Type.EmptyTypes, modifiers: null) == null)
-#endif
                 throw new ArgumentException("Type has no default constructor (neither public nor nonpublic)", "type");
-#endif
 
             this.AstConfig.NodeCreator = (context, parseTreeNode) =>
             {
@@ -162,11 +154,7 @@ namespace Sarcasm.GrammarAst
                     object astValue;
                     try
                     {
-#if PCL
-                        astValue = ActivatorEx.CreateInstance(domainType, nonPublic: true);
-#else
                         astValue = Activator.CreateInstance(domainType, nonPublic: true);
-#endif
                     }
                     catch (MissingMemberException)
                     {

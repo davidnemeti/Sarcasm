@@ -33,46 +33,17 @@ namespace Sarcasm.Utility
 {
     public static class Util
     {
-#if PCL
-        private static class Comparer<T>
-        {
-            public static readonly IComparer<T> Default = System.Collections.Generic.Comparer<T>.Default;
-
-            public static IComparer<T> Create(Comparison<T> comparison)
-            {
-                return new ComparisonComparer<T>(comparison);
-            }
-        }
-
-        private class ComparisonComparer<T> : IComparer<T>
-        {
-            private readonly Comparison<T> comparison;
-
-            public ComparisonComparer(Comparison<T> comparison)
-            {
-                this.comparison = comparison;
-            }
-
-            public int Compare(T x, T y)
-            {
-                return comparison(x, y);
-            }
-        }
-#endif
-
         public static ReadOnlyObservableCollection<T> CreateAndGetReadonlyCollection<T>(out ObservableCollection<T> source)
         {
             source = new ObservableCollection<T>();
             return new ReadOnlyObservableCollection<T>(source);
         }
 
-#if !NET4_0
         public static ReadOnlyDictionary<TKey, TValue> CreateAndGetReadonlyDictionary<TKey, TValue>(out Dictionary<TKey, TValue> source)
         {
             source = new Dictionary<TKey, TValue>();
             return new ReadOnlyDictionary<TKey, TValue>(source);
         }
-#endif
 
         #region GetType/GetMember
 

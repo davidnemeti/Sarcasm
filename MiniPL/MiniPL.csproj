@@ -1,98 +1,61 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{30C09358-F048-417B-9DF6-75D51CA96349}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <TargetFrameworks>net48;net6.0</TargetFrameworks>
     <RootNamespace>MiniPL</RootNamespace>
     <AssemblyName>MiniPL</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <TransformOnBuild>true</TransformOnBuild>
+    <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="System.CodeDom" Version="7.0.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Expression\Domain.cs" />
-    <Compile Include="Expression\Grammars\GrammarFunc.cs" />
-    <Compile Include="Expression\Grammars\GrammarPostfix.cs" />
-    <Compile Include="Expression\Grammars\GrammarPrefix.cs" />
-    <Compile Include="Expression\Grammars\GrammarInfix.cs" />
-    <Compile Include="MiniPL\CodeGenerators\CppGeneratorTemplate.cs">
+    <Compile Update="MiniPL\CodeGenerators\CppGeneratorTemplate.cs">
       <DependentUpon>CppGeneratorTemplate.tt</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="MiniPL\CodeGenerators\CppGenerator.cs" />
-    <Compile Include="MiniPL\CodeGenerators\CSharpGenerator.cs" />
-    <Compile Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.cs">
+    <Compile Update="MiniPL\CodeGenerators\CSharpGeneratorTemplate.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>CSharpGeneratorTemplate.tt</DependentUpon>
     </Compile>
-    <Compile Include="MiniPL\Domain.cs" />
-    <Compile Include="MiniPL\Grammars\GrammarC.cs" />
-    <Compile Include="MiniPL\Grammars\GrammarP.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Sarcasm\Sarcasm.csproj">
       <Project>{a02fb9de-b174-4438-83af-034f8004c724}</Project>
       <Name>Sarcasm</Name>
     </ProjectReference>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="MiniPL\CodeGenerators\CppGeneratorTemplate.tt">
+    <Reference Include="Irony">
+      <HintPath>..\Libraries\Irony.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="MiniPL\CodeGenerators\CppGeneratorTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CppGeneratorTemplate.cs</LastGenOutput>
-      <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
-&lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
       <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
     </None>
-    <None Include="MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt">
+    <None Update="MiniPL\CodeGenerators\CSharpGeneratorTemplate.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>CSharpGeneratorTemplate.cs</LastGenOutput>
       <CustomToolNamespace>MiniPL.CodeGenerators</CustomToolNamespace>
     </None>
   </ItemGroup>
+
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Project="$(VSToolsPath)\TextTemplating\Microsoft.TextTemplating.targets" Condition="'$(VSToolsPath)' != ''" />
+
 </Project>

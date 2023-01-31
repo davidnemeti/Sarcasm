@@ -226,17 +226,7 @@ namespace Sarcasm.UniversalGrammars
                         return Decimal.Parse(primitiveValueStr, this.DefaultCulture);
 
                     else if (type == typeof(Char))
-                    {
-#if PCL
-                        char ch;
-                        if (Char.TryParse(primitiveValueStr, out ch))
-                            return ch;
-                        else
-                            throw new FormatException();
-#else
                         return Char.Parse(primitiveValueStr);
-#endif
-                    }
 
                     else if (type == typeof(String))
                         return primitiveValueStr;
@@ -268,11 +258,7 @@ namespace Sarcasm.UniversalGrammars
                 dynamic array;
                 try
                 {
-#if PCL
-                    array = ActivatorEx.CreateInstance(type, nonPublic: true);
-#else
                     array = Activator.CreateInstance(type, nonPublic: true);
-#endif
                 }
                 catch (MissingMemberException)
                 {
@@ -289,11 +275,7 @@ namespace Sarcasm.UniversalGrammars
                 object obj;
                 try
                 {
-#if PCL
-                    obj = ActivatorEx.CreateInstance(type, nonPublic: true);
-#else
                     obj = Activator.CreateInstance(type, nonPublic: true);
-#endif
                 }
                 catch (MissingMemberException)
                 {
