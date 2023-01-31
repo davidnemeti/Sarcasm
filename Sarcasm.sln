@@ -19,8 +19,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4962E38A-C8F6-43B8-BC1B-6C19C7340471}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\AddOrUpdateLicenseInfoOnSourceFiles.ps1 = Scripts\AddOrUpdateLicenseInfoOnSourceFiles.ps1
-		Scripts\AutoIncrementAssemblyFileVersion.ps1 = Scripts\AutoIncrementAssemblyFileVersion.ps1
-		Scripts\Deploy.ps1 = Scripts\Deploy.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "License", "License", "{0791E093-96C6-4F4A-BE26-DEAEE2648109}"
