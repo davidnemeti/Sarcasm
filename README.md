@@ -36,4 +36,4 @@ For *precise, legal* license information see [License descriptions](License).
 
 For *usable, comprehensible* information see [LGPL on Wikipedia](http://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License).
 
-As of Aug 18, 2013, **Irony** is released under the *MIT License*, which is even more permissive than LGPL. For more and up to date information see [Irony's License](http://irony.codeplex.com/license). About the MIT License see [MIT License on Wikipedia](http://en.wikipedia.org/wiki/Mit_license).
+As of Jan 31, 2023, **Irony** is released under the *MIT License*, which is even more permissive than LGPL. For more and up to date information see [Irony's License](https://github.com/IronyProject/Irony/blob/master/LICENSE). About the MIT License see [MIT License on Wikipedia](http://en.wikipedia.org/wiki/Mit_license).
