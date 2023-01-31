@@ -11,18 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sarcasm.UnitTest", "Sarcasm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniPL", "MiniPL\MiniPL.csproj", "{30C09358-F048-417B-9DF6-75D51CA96349}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.WPF", "DecorationConnectors\DecorationConnector.WPF\DecorationConnector.WPF.csproj", "{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Forms", "DecorationConnectors\DecorationConnector.Forms\DecorationConnector.Forms.csproj", "{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Misc", "Misc", "{AC0608C7-181C-49F0-AB19-28187C6ACAA6}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DecorationConnector.Android", "DecorationConnectors\DecorationConnector.Android\DecorationConnector.Android.csproj", "{FA9EBCF3-4E59-4652-B7EC-0222C552609C}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DecorationConnectors", "DecorationConnectors", "{C822E0E5-18D7-4087-9742-41D50521D68E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4962E38A-C8F6-43B8-BC1B-6C19C7340471}"
 	ProjectSection(SolutionItems) = preProject
@@ -62,12 +54,6 @@ Global
 		{30C09358-F048-417B-9DF6-75D51CA96349}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30C09358-F048-417B-9DF6-75D51CA96349}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30C09358-F048-417B-9DF6-75D51CA96349}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA9EBCF3-4E59-4652-B7EC-0222C552609C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2614618C-7627-46AD-AD0C-EAA1A883A914}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,11 +61,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{2D7EE736-64E4-4CFB-9BD1-A6C5D8B56AA0} = {C822E0E5-18D7-4087-9742-41D50521D68E}
-		{7BB430CC-7DFA-43D6-B3CB-DFF21166F978} = {C822E0E5-18D7-4087-9742-41D50521D68E}
-		{FA9EBCF3-4E59-4652-B7EC-0222C552609C} = {C822E0E5-18D7-4087-9742-41D50521D68E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63B34347-0BED-400C-9333-BFF0E81A9AED}
