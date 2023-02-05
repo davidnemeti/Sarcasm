@@ -47,12 +47,6 @@
  
 // GENERATED FILE
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
 
 namespace Sarcasm.GrammarAst

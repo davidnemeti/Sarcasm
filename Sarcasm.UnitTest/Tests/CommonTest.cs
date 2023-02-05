@@ -21,26 +21,18 @@
 
 extern alias globalMiniPL;
 
-using System;
-using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
-using Sarcasm.Unparsing;
 
 using globalMiniPL::MiniPL.DomainDefinitions;
 
 using MiniPLG = globalMiniPL::MiniPL.Grammars;
-using Grammar = Sarcasm.GrammarAst.Grammar;
 using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Sarcasm.UnitTest

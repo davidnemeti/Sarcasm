@@ -22,8 +22,6 @@
 // GENERATED FILE
 // NOTE: we store the resulted C# file in a separate file detached from the tt file since using the PresentationCore assembly during generation somehow causing problems for MSBuild
 
-using System;
-
 namespace Sarcasm.Unparsing.Styles
 {
     public enum FontWeight { Normal, Bold, Thin }

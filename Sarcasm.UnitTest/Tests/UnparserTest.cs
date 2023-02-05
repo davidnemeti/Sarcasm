@@ -21,23 +21,11 @@
 
 extern alias globalMiniPL;
 
-using System;
-using System.IO;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
 using Sarcasm.GrammarAst;
-using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
-
-using globalMiniPL::MiniPL.DomainDefinitions;
-
-using Grammar = Sarcasm.GrammarAst.Grammar;
-using Sarcasm.DomainCore;
 
 namespace Sarcasm.UnitTest
 {

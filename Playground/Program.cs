@@ -20,27 +20,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
-using System.Globalization;
 
-using Irony;
-using Irony.Ast;
-using Irony.Parsing;
-using Sarcasm;
-using Sarcasm.GrammarAst;
-using Sarcasm.UniversalGrammars;
 using Sarcasm.Parsing;
 using Sarcasm.Unparsing;
 using Sarcasm.Utility;
 
 using MiniPLG = MiniPL.Grammars;
-using MiniPLC = MiniPL.CodeGenerators;
-using ParseTree = Sarcasm.Parsing.ParseTree;
 
 namespace Playground
 {

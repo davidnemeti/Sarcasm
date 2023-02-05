@@ -23,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Irony;
 using Irony.Ast;
 using Irony.Parsing;
 using Sarcasm.Unparsing;

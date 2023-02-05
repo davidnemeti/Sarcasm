@@ -22,21 +22,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
-
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
 using Sarcasm.Utility;
 using Sarcasm.GrammarAst;
+using Sarcasm.DomainCore;
 
 using Grammar = Sarcasm.GrammarAst.Grammar;
-using Sarcasm.DomainCore;
 
 namespace Sarcasm.Unparsing
 {

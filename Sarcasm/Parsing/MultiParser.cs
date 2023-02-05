@@ -22,13 +22,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Utility;
 

@@ -19,26 +19,14 @@
 */
 #endregion
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
 using Sarcasm.GrammarAst;
 using Sarcasm.Unparsing;
 using Sarcasm.Unparsing.Styles;
 using Sarcasm.DomainCore;
-using Sarcasm.Utility;
 using Sarcasm.Reflection;
-using System.Globalization;
 
 using D = Expr.DomainDefinitions;
-using DC = Sarcasm.DomainCore;
 
 namespace Expr.Grammars
 {

@@ -27,16 +27,10 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using Irony;
-using Irony.Ast;
 using Irony.Parsing;
-using Sarcasm;
-using Sarcasm.GrammarAst;
 using Sarcasm.Parsing;
-using Sarcasm.Unparsing;
 
 using globalMiniPL::MiniPL.DomainDefinitions;
-using globalMiniPL::Expr.DomainDefinitions;
 
 namespace Sarcasm.UnitTest
 {
