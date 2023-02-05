@@ -5,7 +5,7 @@
     <RootNamespace>Sarcasm</RootNamespace>
     <AssemblyName>Sarcasm</AssemblyName>
     <Description>SDK for creating typesafe and typeless domain bound grammar and using the general unparser</Description>
-    <Version>4.0.0</Version>
+    <Version>4.1.0</Version>
     <Authors>Dávid Németi</Authors>
     <PackageTags>Parser;Unparser;Grammar;AST;DomainBinding;Typesafety;CompileTimeSafety</PackageTags>
     <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
@@ -18,7 +18,6 @@
     <NoWarn>CS1591,CS0618</NoWarn>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Signature\Sarcasm.snk</AssemblyOriginatorKeyFile>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);GetMyPackageFiles</TargetsForTfmSpecificBuildOutput>
     <!--<TransformOnBuild>true</TransformOnBuild>
     <TransformOutOfDateOnly>true</TransformOutOfDateOnly>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>-->
@@ -31,13 +30,14 @@
   <ItemGroup>
     <!--
       using Krafs.Publicizer instead of IgnoresAccessChecksToGenerator, because:
-        - IgnoresAccessChecksToGenerator raised error when processing netstandard2.0 Irony.dll
+        - IgnoresAccessChecksToGenerator raised error when processing the netstandard2.0 version of Irony.dll
         - IgnoresAccessChecksToGenerator cannot publicize private members
     -->
     <PackageReference Include="Krafs.Publicizer" Version="2.2.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Irony" Version="1.2.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net48' ">
@@ -45,20 +45,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
-  <Target Name="GetMyPackageFiles">
-    <ItemGroup>
-      <BuildOutputInPackage Include="..\Libraries\Irony.dll" />
-    </ItemGroup>
-  </Target>
 
   <ItemGroup>
     <Compile Update="GrammarAst\BnfiExpressions\BnfiExpression.generated.cs">

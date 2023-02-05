@@ -48,12 +48,7 @@
       <Name>Sarcasm</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  
+
   <ItemGroup>
     <None Update="Expected results\ASTs\Binary3.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

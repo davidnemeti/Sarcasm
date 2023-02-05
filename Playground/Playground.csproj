@@ -9,12 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Irony">
-      <HintPath>..\Libraries\Irony.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="MiniPL_long.mplp">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
