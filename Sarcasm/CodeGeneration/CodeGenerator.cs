@@ -40,22 +40,4 @@ namespace Sarcasm.CodeGeneration
         string Generate(object root);
         AsyncLock Lock { get; }
     }
-
-    public static class CodeGeneratorExtensions
-    {
-#if NET4_0
-        public static Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
-        {
-            return codeGenerator.Lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => codeGenerator.Generate(root)); })
-                .Unwrap();
-        }
-#else
-        public static async Task<string> GenerateAsync(this ICodeGenerator codeGenerator, object root)
-        {
-            using (await codeGenerator.Lock.LockAsync())
-                return await Task.Run(() => codeGenerator.Generate(root));
-        }
-#endif
-    }
 }

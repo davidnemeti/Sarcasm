@@ -132,68 +132,6 @@ namespace Sarcasm.Parsing
             return ScanOnly(GetParser(root), sourceText, fileName);
         }
 
-#if NET4_0
-        public Task<ParseTree> ParseAsync(string sourceText)
-        {
-            return ParseAsync(mainParser, sourceText);
-        }
-
-        public Task<ParseTree> ParseAsync(string sourceText, NonTerminal root)
-        {
-            return ParseAsync(GetParser(root), sourceText);
-        }
-
-        public Task<ParseTree> ParseAsync(string sourceText, string fileName)
-        {
-            return ParseAsync(mainParser, sourceText, fileName);
-        }
-
-        public Task<ParseTree> ParseAsync(string sourceText, string fileName, NonTerminal root)
-        {
-            return ParseAsync(GetParser(root), sourceText, fileName);
-        }
-
-        public Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName)
-        {
-            return ScanOnlyAsync(mainParser, sourceText, fileName);
-        }
-
-        public Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName, NonTerminal root)
-        {
-            return ScanOnlyAsync(GetParser(root), sourceText, fileName);
-        }
-#else
-        public async Task<ParseTree> ParseAsync(string sourceText)
-        {
-            return await ParseAsync(mainParser, sourceText);
-        }
-
-        public async Task<ParseTree> ParseAsync(string sourceText, NonTerminal root)
-        {
-            return await ParseAsync(GetParser(root), sourceText);
-        }
-
-        public async Task<ParseTree> ParseAsync(string sourceText, string fileName)
-        {
-            return await ParseAsync(mainParser, sourceText, fileName);
-        }
-
-        public async Task<ParseTree> ParseAsync(string sourceText, string fileName, NonTerminal root)
-        {
-            return await ParseAsync(GetParser(root), sourceText, fileName);
-        }
-
-        public async Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName)
-        {
-            return await ScanOnlyAsync(mainParser, sourceText, fileName);
-        }
-
-        public async Task<ParseTree> ScanOnlyAsync(string sourceText, string fileName, NonTerminal root)
-        {
-            return await ScanOnlyAsync(GetParser(root), sourceText, fileName);
-        }
-#endif
-
         #endregion
 
         #region Misc
@@ -281,44 +219,6 @@ namespace Sarcasm.Parsing
                 .SetCommentCleaner(this.CommentCleaner);
         }
 
-#if NET4_0
-        private Task<ParseTree> ParseAsync(Parser parser, string sourceText)
-        {
-            return parser.ParsePlusAsync(sourceText, this.Lock)
-                .ContinueWith(task => new ParseTree(task.Result).SetCommentCleaner(this.CommentCleaner));
-        }
-
-        private Task<ParseTree> ParseAsync(Parser parser, string sourceText, string fileName)
-        {
-            return parser.ParsePlusAsync(sourceText, fileName, this.Lock)
-                .ContinueWith(task => new ParseTree(task.Result).SetCommentCleaner(this.CommentCleaner));
-        }
-
-        private Task<ParseTree> ScanOnlyAsync(Parser parser, string sourceText, string fileName)
-        {
-            return parser.ScanOnlyPlusAsync(sourceText, fileName, this.Lock)
-                .ContinueWith(task => new ParseTree(task.Result).SetCommentCleaner(this.CommentCleaner));
-        }
-#else
-        private async Task<ParseTree> ParseAsync(Parser parser, string sourceText)
-        {
-            return new ParseTree(await parser.ParsePlusAsync(sourceText, this.Lock))
-                .SetCommentCleaner(this.CommentCleaner);
-        }
-
-        private async Task<ParseTree> ParseAsync(Parser parser, string sourceText, string fileName)
-        {
-            return new ParseTree(await parser.ParsePlusAsync(sourceText, fileName, this.Lock))
-                .SetCommentCleaner(this.CommentCleaner);
-        }
-
-        private async Task<ParseTree> ScanOnlyAsync(Parser parser, string sourceText, string fileName)
-        {
-            return new ParseTree(await parser.ScanOnlyPlusAsync(sourceText, fileName, this.Lock))
-                .SetCommentCleaner(this.CommentCleaner);
-        }
-#endif
-
         #endregion
     }
 
@@ -391,47 +291,6 @@ namespace Sarcasm.Parsing
         {
             return HandleParseErrors(() => parser.ScanOnly(sourceText, fileName), sourceText);
         }
-
-#if NET4_0
-        public static Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, AsyncLock @lock = null)
-        {
-            return @lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ParsePlus(sourceText)); })
-                .Unwrap();
-        }
-
-        public static Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
-        {
-            return @lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ParsePlus(sourceText, fileName)); })
-                .Unwrap();
-        }
-
-        public static Task<Irony.Parsing.ParseTree> ScanOnlyPlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
-        {
-            return @lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => parser.ScanOnlyPlus(sourceText, fileName)); })
-                .Unwrap();
-        }
-#else
-        public static async Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, AsyncLock @lock = null)
-        {
-            using (await @lock.LockAsync())
-                return await Task.Run(() => parser.ParsePlus(sourceText));
-        }
-
-        public static async Task<Irony.Parsing.ParseTree> ParsePlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
-        {
-            using (await @lock.LockAsync())
-                return await Task.Run(() => parser.ParsePlus(sourceText, fileName));
-        }
-
-        public static async Task<Irony.Parsing.ParseTree> ScanOnlyPlusAsync(this Parser parser, string sourceText, string fileName, AsyncLock @lock = null)
-        {
-            using (await @lock.LockAsync())
-                return await Task.Run(() => parser.ScanOnlyPlus(sourceText, fileName));
-        }
-#endif
 
         private static Irony.Parsing.ParseTree HandleParseErrors(Func<Irony.Parsing.ParseTree> action, string sourceText)
         {

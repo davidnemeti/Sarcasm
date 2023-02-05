@@ -276,10 +276,8 @@ namespace Sarcasm.Utility
         {
             if (items is IList<T>)
                 return ReverseOptimized((IList<T>)items);
-#if !NET4_0
             else if (items is IReadOnlyList<T>)
                 return ReverseOptimized((IReadOnlyList<T>)items);
-#endif
             else
                 return items.Reverse();
         }
@@ -295,12 +293,10 @@ namespace Sarcasm.Utility
             return new ReverseList<T>(items);
         }
 
-#if !NET4_0
         public static IReadOnlyList<T> ReverseOptimized<T>(this IReadOnlyList<T> items)
         {
             return new ReverseReadOnlyList<T>(items);
         }
-#endif
 
         public static System.Collections.IEnumerable ReverseNonGenericOptimized(this System.Collections.IEnumerable items)
         {

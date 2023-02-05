@@ -632,11 +632,7 @@ namespace Sarcasm.Unparsing
                         new SubUnparseTask(
                             result: subUnparseUtokens,
                             subTask:
-#if NET4_0
-                                TaskEx.Run(
-#else
                                 Task.Run(
-#endif
                                     () =>
                                     {
                                         try

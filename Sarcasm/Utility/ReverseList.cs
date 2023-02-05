@@ -26,12 +26,7 @@ using System.Linq;
 
 namespace Sarcasm.Utility
 {
-    public abstract class ReverseListBase<T>
-#if NET4_0
-        : IEnumerable<T>
-#else
-        : IReadOnlyCollection<T>
-#endif
+    public abstract class ReverseListBase<T> : IReadOnlyCollection<T>
     {
         public abstract int Count { get; }
 
@@ -59,7 +54,6 @@ namespace Sarcasm.Utility
         }
     }
 
-#if !NET4_0
     public class ReverseReadOnlyList<T> : ReverseListBase<T>, IReadOnlyList<T>
     {
         private readonly IReadOnlyList<T> items;
@@ -84,7 +78,6 @@ namespace Sarcasm.Utility
             return this[reverseIndex];
         }
     }
-#endif
 
     public class ReverseList<T> : ReverseListBase<T>, IList<T>
     {

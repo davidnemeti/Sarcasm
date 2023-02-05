@@ -73,70 +73,6 @@ namespace Sarcasm.Unparsing
             return string.Concat(utokens.Select(utoken => utoken.ToText(formatter)));
         }
 
-#if NET4_0
-        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
-        {
-            return unparser.Lock.LockAsync()
-                .ContinueWith(task => { using (task.Result) return TaskEx.Run(() => utokens.AsText(unparser)); })
-                .Unwrap();
-        }
-
-        public static Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
-        {
-            return unparser.Lock.LockAsync()
-                .ContinueWith(
-                    task =>
-                    {
-                        using (task.Result)
-                            return TaskEx.Run(
-                                () =>
-                                    string.Concat(
-                                        utokens.Select(
-                                            utoken =>
-                                            {
-                                                cancellationToken.ThrowIfCancellationRequested();
-                                                return utoken.ToText(unparser.Formatter);
-                                            }
-                                        )
-                                    )
-                                ,
-                                cancellationToken
-                            );
-                    },
-                    cancellationToken
-                )
-                .Unwrap();
-        }
-#else
-        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser)
-        {
-            using (await unparser.Lock.LockAsync())
-                return await Task.Run(() => utokens.AsText(unparser));
-        }
-
-        public static async Task<string> AsTextAsync(this IEnumerable<Utoken> utokens, Unparser unparser, CancellationToken cancellationToken)
-        {
-            using (await unparser.Lock.LockAsync())
-            {
-                return await Task.Run(
-                    () =>
-                    {
-                        return string.Concat(
-                            utokens.Select(
-                                utoken =>
-                                {
-                                    cancellationToken.ThrowIfCancellationRequested();
-                                    return utoken.ToText(unparser.Formatter);
-                                }
-                            )
-                        );
-                    },
-                    cancellationToken
-                );
-            }
-        }
-#endif
-
         public static void WriteToStream(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
             utokens.WriteToStream(stream, unparser.Formatter);
@@ -151,7 +87,6 @@ namespace Sarcasm.Unparsing
             }
         }
 
-#if !NET4_0
         public static async Task WriteToStreamAsync(this IEnumerable<Utoken> utokens, Stream stream, Unparser unparser)
         {
             await utokens.WriteToStreamAsync(stream, unparser, CancellationToken.None);
@@ -171,7 +106,6 @@ namespace Sarcasm.Unparsing
                 }
             }
         }
-#endif
 
         internal static IEnumerable<Utoken> Cook(this IEnumerable<UtokenBase> utokens, IPostProcessHelper postProcessHelper)
         {

@@ -36,28 +36,9 @@ namespace Sarcasm.Utility
         public AsyncLock()
         {
             m_semaphore = new AsyncSemaphore(1);
-#if NET4_0
-            m_releaser = TaskEx.FromResult(new Releaser(this));
-#else
             m_releaser = Task.FromResult(new Releaser(this));
-#endif
         }
 
-#if NET4_0
-        public Task<Releaser> LockAsync()
-        {
-            Task wait = m_semaphore.WaitAsync();
-
-            return wait.IsCompleted
-                ? m_releaser
-                : wait.ContinueWith(
-                    _ => new Releaser(this),
-                    CancellationToken.None,
-                    TaskContinuationOptions.ExecuteSynchronously,
-                    TaskScheduler.Default
-                    );
-        }
-#else
         public async Task<Releaser> LockAsync()
         {
             Task wait = m_semaphore.WaitAsync();
@@ -70,7 +51,6 @@ namespace Sarcasm.Utility
                 return new Releaser(this);
             }
         }
-#endif
 
         public struct Releaser : IDisposable
         {
